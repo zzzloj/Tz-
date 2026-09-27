@@ -22,7 +22,7 @@ function legacy_html_attributes($tag) {
 }
 
 function legacy_html_link($href) {
-    $href = trim($href);
+    $href = preg_replace('/[\r\n\t]+/', '', trim($href));
     if ($href === '' || preg_match('/[\x00-\x1f]/', $href)) return false;
     if (preg_match('~^(?:https?:)?//~i', $href)) {
         $host = parse_url($href, PHP_URL_HOST);
@@ -98,9 +98,10 @@ function legacy_html_output($output) {
         . '</style></head><body><main><h1>' . $safeTitle . '</h1>' . $html . '</main><script>'
         . 'document.addEventListener("click",function(e){var a=e.target.closest("a.wml-action");if(!a)return;e.preventDefault();'
         . 'var url=new URL(a.dataset.wmlHref,location.href);if(url.origin!==location.origin)return;'
+        . 'document.querySelectorAll("input[name],select[name]").forEach(function(input){if(/^[a-z0-9_]+$/i.test(input.name))sessionStorage.setItem("legacy."+input.name,input.value)});'
         . 'var f=document.createElement("form");f.method="post";f.action=url.pathname;'
         . 'url.searchParams.forEach(function(value,key){var field=document.createElement("input");field.type="hidden";field.name=key;'
-        . 'field.value=value.replace(/\$\(([a-z0-9_]+)(?::escape)?\)/gi,function(_,name){var source=document.getElementsByName(name)[0];return source?source.value:""});'
+        . 'field.value=value.replace(/\$\(([a-z0-9_]+)(?::escape)?\)/gi,function(_,name){var source=document.getElementsByName(name)[0];return source?source.value:(sessionStorage.getItem("legacy."+name)||"")});'
         . 'f.appendChild(field)});document.body.appendChild(f);f.submit()});'
         . '</script></body></html>';
 }
