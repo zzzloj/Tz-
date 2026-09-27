@@ -24,6 +24,9 @@ for server in 1 2; do
     if [ -f "/data/game/$server/F_blank.dat" ] && [ ! -e "/data/game/$server/f_blank.dat" ]; then
         cp "/data/game/$server/F_blank.dat" "/data/game/$server/f_blank.dat"
     fi
+    # Keep the PHP login bridge current on persistent preview volumes.
+    cp "/opt/legacy-game/$server/f_connect.php" "/data/game/$server/f_connect.php"
+    cp "/opt/legacy-game/$server/f_site_reg.dat" "/data/game/$server/f_site_reg.dat"
 done
 
 for config in /data/game/config.ssp /data/game/1/config.ssp /data/game/2/config.ssp; do
