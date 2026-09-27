@@ -52,4 +52,4 @@ printf '1\n/1/\n' > /data/game/1/servers.dat
 printf '1\n/1/\n' > /data/game/2/servers.dat
 
 php -d auto_prepend_file= /opt/init-db.php
-exec apache2-foreground
+exec apache2ctl -D FOREGROUND
