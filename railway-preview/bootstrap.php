@@ -1,5 +1,20 @@
 <?php
 // PHP 5.4 removed the old long array aliases used throughout this archive.
+// The original login script fetches the game page over HTTP. Keep that
+// request on loopback and attach preview authentication only to this call.
+function legacy_internal_request($path) {
+    if (!preg_match('~^[12]/g\.php\?site=connect2&~', $path)) return '';
+    $port = getenv('PORT') ? getenv('PORT') : '8080';
+    $auth = base64_encode(getenv('PREVIEW_USER') . ':' . getenv('PREVIEW_PASSWORD'));
+    $context = stream_context_create(array('http' => array(
+        'method' => 'GET',
+        'header' => "Authorization: Basic " . $auth . "\r\nConnection: close\r\n",
+        'timeout' => 10,
+        'follow_location' => 0,
+    )));
+    $response = @file_get_contents('http://127.0.0.1:' . $port . '/' . $path, false, $context);
+    return $response === false ? '' : $response;
+}
 // The preview password must never become the game's URL-based password.
 // The old engine accepts at most 10 characters and exposes its own password
 // in navigation URLs, so translate the test login to a distinct game secret.
