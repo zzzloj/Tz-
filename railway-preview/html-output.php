@@ -35,6 +35,9 @@ function legacy_html_link($href) {
 }
 
 function legacy_html_output($output) {
+    // f_connect.php fetches g.php internally and streams its original WML.
+    // Let the outer request convert it once, after the legacy translate buffer.
+    if (!empty($_SERVER['HTTP_X_LEGACY_INTERNAL'])) return $output;
     if (stripos($output, '<wml') === false || stripos($output, '<card') === false) return $output;
     header_remove('Content-Encoding');
     header('Content-Type: text/html; charset=UTF-8');
