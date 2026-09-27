@@ -39,7 +39,8 @@ PHP
 done
 
 htpasswd -nbB "$PREVIEW_USER" "$PREVIEW_PASSWORD" > /run/legacy-preview.htpasswd
-chmod 600 /run/legacy-preview.htpasswd
+chown root:www-data /run/legacy-preview.htpasswd
+chmod 640 /run/legacy-preview.htpasswd
 
 # The shipped menu points to a defunct external domain. Do not send test
 # credentials to it. Local single-server links are repaired after boot tests.
