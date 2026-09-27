@@ -49,6 +49,23 @@ function legacy_html_output($output) {
     }
     $body = preg_replace('~^.*?<card\b[^>]*>~is', '', $output, 1);
     $body = preg_replace('~</card>.*$~is', '', $body, 1);
+    // WML posts are nested inside <anchor><go><postfield>. Turn them into
+    // ordinary links handled by the same-origin POST bridge below.
+    $body = preg_replace_callback('~<anchor\b[^>]*>((?:(?!</anchor>).)*?)<go\b([^>]*)>(.*?)</go>\s*</anchor>~is', function ($match) {
+        $go = legacy_html_attributes($match[2]);
+        if (empty($go['href']) || legacy_html_link($go['href']) === false) return '';
+        $fields = array();
+        if (preg_match_all('~<postfield\b[^>]*>~i', $match[3], $tags)) {
+            foreach ($tags[0] as $tag) {
+                $field = legacy_html_attributes($tag);
+                if (isset($field['name'], $field['value']) && preg_match('/^[a-z0-9_]+$/i', $field['name'])) {
+                    $fields[] = rawurlencode($field['name']) . '=' . $field['value'];
+                }
+            }
+        }
+        $href = $go['href'] . (strpos($go['href'], '?') === false ? '?' : '&') . implode('&', $fields);
+        return '<a href="' . htmlspecialchars($href, ENT_QUOTES, 'UTF-8') . '">' . $match[1] . '</a>';
+    }, $body);
     $parts = preg_split('/(<[^>]*>)/s', $body, -1, PREG_SPLIT_DELIM_CAPTURE);
     $html = '';
     foreach ($parts as $part) {
