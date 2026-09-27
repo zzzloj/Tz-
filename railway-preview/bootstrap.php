@@ -8,7 +8,7 @@ function legacy_internal_request($path) {
     $auth = base64_encode(getenv('PREVIEW_USER') . ':' . getenv('PREVIEW_PASSWORD'));
     $context = stream_context_create(array('http' => array(
         'method' => 'GET',
-        'header' => "Authorization: Basic " . $auth . "\r\nConnection: close\r\n",
+        'header' => "Authorization: Basic " . $auth . "\r\nX-Legacy-Internal: 1\r\nConnection: close\r\n",
         'timeout' => 10,
         'follow_location' => 0,
     )));
