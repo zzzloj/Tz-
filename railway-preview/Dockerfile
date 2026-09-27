@@ -13,6 +13,7 @@ COPY railway-preview/init-db.php /opt/init-db.php
 COPY railway-preview/start.sh /usr/local/bin/legacy-start
 RUN chmod +x /usr/local/bin/legacy-start \
     && a2dismod mpm_event mpm_worker \
-    && a2enmod mpm_prefork rewrite headers
+    && a2enmod mpm_prefork rewrite headers \
+    && apache2ctl -t
 EXPOSE 8080
 ENTRYPOINT ["/usr/local/bin/legacy-start"]
