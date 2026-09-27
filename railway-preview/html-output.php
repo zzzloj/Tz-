@@ -73,7 +73,13 @@ function legacy_html_output($output) {
             if (!preg_match('/^[a-z0-9_]+$/i', $input)) continue;
             $type = isset($attrs['type']) && $attrs['type'] === 'password' ? 'password' : 'text';
             $html .= '<input type="' . $type . '" name="' . legacy_html_text($input) . '"';
-            if (isset($attrs['maxlength'])) $html .= ' maxlength="' . intval($attrs['maxlength']) . '"';
+            // The preview login uses a longer password than the WML game's
+            // original 10-character limit; bootstrap maps it to a game key.
+            if ($input === 'pass' && $type === 'password') {
+                $html .= ' maxlength="128"';
+            } elseif (isset($attrs['maxlength'])) {
+                $html .= ' maxlength="' . intval($attrs['maxlength']) . '"';
+            }
             if (isset($attrs['value'])) $html .= ' value="' . legacy_html_text($attrs['value']) . '"';
             $html .= ' autocomplete="' . ($type === 'password' ? 'current-password' : 'username') . '">';
         } elseif ($name === 'a') {
