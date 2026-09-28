@@ -21,9 +21,9 @@
 			}
 
 		
-		if ($use{2}>0 && $use{2}<10) {
+		if ($use[2]>0 && $use[2]<10) {
 			$tm=explode("|",$l_i[$loc][$login]["items"]);
-			$tc=intval($use{2})-1;
+			$tc=intval($use[2])-1;
 			if ($tm[$tc]) {$use=substr($tm[$tc],0,strpos($tm[$tc],":"));$l_i[$loc][$login]["macrol"]="use|$use|to|$to";} else msg("В вашем рюкзаке нет предмета под номером ".($tc+1));
 			}
 		if (strpos($l_i[$loc][$login]["items"],$use.":")===false) msg("<p>Использовать можно только те предметы, что у вас в рюкзаке");

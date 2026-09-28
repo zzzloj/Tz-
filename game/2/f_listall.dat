@@ -36,7 +36,7 @@ for ($i=$start;$i<$start+$g_list && $i<count($keys);$i++) if ($keys[$i]!=$login 
 			$tmp1=explode("|",$l_i[$loc][$tmp[7]]["char"]);
 			if (substr($tmp[7],0,2)!="u." || (substr($tmp[7],0,2)!="u." && !$tmp1[8])) $st.=" атакует ".$tmp1[0];
 			}
-		if ($st) {if ($st{0}==' ') $st=substr($st,1); $k.=" [".$st."]";}
+		if ($st) {if ($st[0]==' ') $st=substr($st,1); $k.=" [".$st."]";}
 		$stmp.=$k;
 		}
 	$stmp.="</a>";
@@ -62,7 +62,7 @@ if ($l_i[$loc][$login]["items"]!="") {
 		if ($k[1]>1) $item.=" (".$k[1].")";
 		$tbp=strpos($l_i[$loc][$login]["equip"],$k[0]);
 	if (substr($k[0],0,5)=="i.rr." && $k[0]!="i.rr.empty") { loadloc(substr($k[0],5)); $tt=explode("|",$l_tt[substr($k[0],5)]["d"]); if (strpos($tt[0],"*")!==false) $tt[0]=substr($tt[0],0,strpos($tt[0],"*")); $item.=" [".$tt[0]."]"; }
-		if ($tbp!==false && ($l_i[$loc][$login]["equip"]{$tbp+strlen($k[0])}=="|" || $l_i[$loc][$login]["equip"]{$tbp+strlen($k[0])}=="")) $item.=" [одето]";
+		if ($tbp!==false && ($l_i[$loc][$login]["equip"][$tbp+strlen($k[0])]=="|" || $l_i[$loc][$login]["equip"][$tbp+strlen($k[0])]=="")) $item.=" [одето]";
 		$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&to=".$k[0]."&use=$use"."\">".$item."</a>";
 		}
 	if ($start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&list=all\">^ </a>";}

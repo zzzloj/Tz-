@@ -14,20 +14,20 @@
 				 if(eregi("i.w.r.", $equip)) $luk="1";
 				if (strpos($equip,$ti)===false) {	// одеваем
 					if (substr($use,0,4)=='i.w.' && substr($use,0,6)!='i.w.r.') { 
-						if (strpos($equip,"i.w.")===false) {if (!$equip) $equip=$use; else if ($equip{strlen($equip)-1}=="|") $equip.=$use; else $equip.="|".$use;}
+						if (strpos($equip,"i.w.")===false) {if (!$equip) $equip=$use; else if ($equip[strlen($equip)-1]=="|") $equip.=$use; else $equip.="|".$use;}
 							else {$equip=preg_replace('/i\.w\.[^|]+/',$use,$equip);}
 					} 
 						//////////////////////////////////////
 						else if (substr($use,0,6)=='i.w.r.' && $shit!="1") {
-						if (strpos($equip,"i.w.")===false) {if (!$equip) $equip=$use; else if ($equip{strlen($equip)-1}=="|") $equip.=$use; else $equip.="|".$use;}
+						if (strpos($equip,"i.w.")===false) {if (!$equip) $equip=$use; else if ($equip[strlen($equip)-1]=="|") $equip.=$use; else $equip.="|".$use;}
 							else {$equip=preg_replace('/i\.w\.[^|]+/',$use,$equip);}
 					} 
 					if (substr($use,0,4)=='i.a.' && substr($use,0,6)!='i.a.s.') { 
-						if (strpos($equip,substr($use,0,6))===false) {if (!$equip) $equip=$use; else if ($equip{strlen($equip)-1}=="|") $equip.=$use; else $equip.="|".$use;}
+						if (strpos($equip,substr($use,0,6))===false) {if (!$equip) $equip=$use; else if ($equip[strlen($equip)-1]=="|") $equip.=$use; else $equip.="|".$use;}
 							else {$equip=preg_replace('/'.substr($use,0,6).'[^|]+/',$use,$equip);}
 						//////////////////////////////////////
 						} else if (substr($use,0,6)=='i.a.s.' && $luk!="1") { 
-						if (strpos($equip,substr($use,0,6))===false) {if (!$equip) $equip=$use; else if ($equip{strlen($equip)-1}=="|") $equip.=$use; else $equip.="|".$use;}
+						if (strpos($equip,substr($use,0,6))===false) {if (!$equip) $equip=$use; else if ($equip[strlen($equip)-1]=="|") $equip.=$use; else $equip.="|".$use;}
 							else {$equip=preg_replace('/'.substr($use,0,6).'[^|]+/',$use,$equip);}
 					} } else $equip=preg_replace('/'.$ti.'[^|]*\|?/',"",$equip);
 				$l_i[$loc][$login]["equip"]=$equip;

@@ -1,9 +1,9 @@
 <?php
 // кастинг заклинаний
            
-		if ($use{2}>0 && $use{2}<10) {
+		if ($use[2]>0 && $use[2]<10) {
 			$tm=explode("|",$l_i[$loc][$login]["magic"]);
-			$tc=intval($use{2})-1;
+			$tc=intval($use[2])-1;
 			if ($tm[$tc]) {$use=substr($tm[$tc],0,strpos($tm[$tc],":"));$l_i[$loc][$login]["macrol"]="use|$use|to|$to";} else msg("В вашей книге заклинаний нет заклинания под номером ".($tc+1));
 			}
 

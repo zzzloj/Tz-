@@ -29,7 +29,7 @@
 		if ($k[1]>1) $item.=" (".$k[1].")";
 		$tbp=strpos($l_i[$loc][$login]["equip"],$k[0]);
 		if (substr($k[0],0,5)=="i.rr." && $k[0]!="i.rr.empty") { loadloc(substr($k[0],5)); $tt=explode("|",$l_tt[substr($k[0],5)]["d"]); if (strpos($tt[0],"*")!==false) $tt[0]=substr($tt[0],0,strpos($tt[0],"*")); $item.=" [".$tt[0]."]"; }
-		if ($tbp!==false && ($l_i[$loc][$login]["equip"]{$tbp+strlen($k[0])}=="|" || $l_i[$loc][$login]["equip"]{$tbp+strlen($k[0])}=="")) $item.=" [одето]";
+		if ($tbp!==false && ($l_i[$loc][$login]["equip"][$tbp+strlen($k[0])]=="|" || $l_i[$loc][$login]["equip"][$tbp+strlen($k[0])]=="")) $item.=" [одето]";
 		if ($to) {
 			$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&to=$to&use=".$k[0]."\">".$item."</a>";
 			} else {	// основное меню

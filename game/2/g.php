@@ -430,10 +430,10 @@ if ($login=='u.ogir' || $login=="u.wildspb" || $login=="u.ps_one" || $login=="u.
 $stmp.="</p></card><card id=\"m\" title=\"[меню]\"><p><a href=\"$PHP_SELF?sid=$sid&cs=$(to)\">[говорить/взять]</a><br/><a href=\"$PHP_SELF?sid=$sid&ca=$(to)\">[атаковать]</a>";
 $b="<br/>";
 $ts=array("","","m","[магия]","i","[предмет]","p","[прием]");
-for($i=0;$i<strlen($g_smenu);$i+=2) if ($ts[$g_smenu{$i}*2]) {
-        $stmp.=$b."<a href=\"$PHP_SELF?sid=$sid&to=$(to)&cl=".$ts[$g_smenu{$i}*2]."\">".$ts[$g_smenu{$i}*2+1]."</a>";
+for($i=0;$i<strlen($g_smenu);$i+=2) if ($ts[$g_smenu[$i]*2]) {
+        $stmp.=$b."<a href=\"$PHP_SELF?sid=$sid&to=$(to)&cl=".$ts[$g_smenu[$i]*2]."\">".$ts[$g_smenu[$i]*2+1]."</a>";
         $b=", ";
-        for ($j=1;$j<=$g_smenu{$i+1};$j++) $stmp.="<a href=\"$PHP_SELF?sid=$sid&to=$(to)&use=".$ts[$g_smenu{$i}*2].".".$j."\">".$j."</a>";
+        for ($j=1;$j<=$g_smenu[$i+1];$j++) $stmp.="<a href=\"$PHP_SELF?sid=$sid&to=$(to)&use=".$ts[$g_smenu[$i]*2].".".$j."\">".$j."</a>";
         }
 
 $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&trade=$(to)\">[обмен]</a>";

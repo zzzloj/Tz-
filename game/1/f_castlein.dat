@@ -1,7 +1,7 @@
 <?php
 
 // проверка флага лидерства
-if ($game["fid"]!=$login && intval($game["floc"]{2})==$loc{2}) {
+if ($game["fid"]!=$login && intval($game["floc"][2])==$loc[2]) {
 	loadloc($game["floc"]);
 	if (!$game["fid"] || !isset($l_i[$game["floc"]][$game["fid"]])) {$l_i[$loc]["i.flag"]="флаг лидерства|1|0"; $game["floc"]=$loc;$game["fid"]="";}
 	}
