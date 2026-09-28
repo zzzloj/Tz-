@@ -45,7 +45,7 @@ header ("Location: http://download.l2db.ru/original%20clients/L2_C5_Installer.zi
         //}
 
                 $auser=unserialize($data);
-                if (!$auser["char"] || !$auser["skills"]) {$data=preg_replace('/s:(?:\d+):"(.*?)";/e',"calcser('\\1')",$data);$auser=unserialize($data);}
+                if (!$auser["char"] || !$auser["skills"]) {$data=preg_replace_callback('/s:(?:\d+):"(.*?)";/',function ($m) { return calcser($m[1]); },$data);$auser=unserialize($data);}
                 if (!$auser["char"] || !$auser["skills"]) msg("Неверный формат, обновите страницу или сообщите на admin@bigwap.org");
                 $auser["srv"]=time();
                 $tuser=explode("|",$auser["user"]);

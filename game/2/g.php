@@ -15,7 +15,7 @@ if (!$_SESSION[traf]) { session_start(); }
 include('gzip.php');
 $tmp=$QUERY_STRING;if($tmp=='')$tmp=$_SERVER['QUERY_STRING'];
 $tmp=urldecode($tmp);
-$tmp=preg_replace("/[^ -}À-ÿ]/e","",$tmp);
+$tmp=preg_replace("/[^ -}À-ÿ]/","",$tmp);
 parse_str($tmp);
 $g_tmp=$tmp;
 $PHP_SELF='g.php';
@@ -505,11 +505,11 @@ function UTF8($str){ // (C) SiMM, $table from http://ru.wikipedia.org/wiki/CP125
                         "\x9E" => "\xD2\xAB", // &#1195; (ñ)
                         "\x9F" => "\xD3\xB3", // &#1267; (ó)
                        );
-  return preg_replace('#[\x80-\xFF]#se',
-                      ' "$0" >= "\xF0" ? "\xD1".chr(ord("$0")-0x70) :
-                       ("$0" >= "\xC0" ? "\xD0".chr(ord("$0")-0x30) :
-                        (isset($table["$0"]) ? $table["$0"] : "")
-                       )',
+  return preg_replace_callback('#[\x80-\xFF]#s',
+                      function ($m) use (&$table) { return $m[0] >= "\xF0" ? "\xD1".chr(ord($m[0])-0x70) :
+                       ($m[0] >= "\xC0" ? "\xD0".chr(ord($m[0])-0x30) :
+                        (isset($table[$m[0]]) ? $table[$m[0]] : "")
+                       ); },
                       $str
                      );
 }
@@ -529,7 +529,7 @@ function msg($msg,$title_v='Òåððèòîðèÿ Çëà',$journal=1,$menu='',$vname='',$vval=
                 setlocale (LC_CTYPE, 'ru_RU.CP1251');
                 function win2unicode ($s) {if ((ord($s)>=192) & (ord($s)<=255)) $hexvalue=dechex(ord($s)+848); if ($s=="¨") $hexvalue="401"; if ($s=="¸") $hexvalue="451"; return("&#x0".$hexvalue.";");}
                 //function win2unicode ($s) {$hexvalue=iconv("cp1251","Utf-8",$hexvalue);}
-				function translate($s) {global $g_ch; if ($g_ch==0) return(preg_replace("/[À-ÿ¨¸]/e","win2unicode('\\0')",$s)); else if ($g_ch==1) return $s; else if ($g_ch==2) return $s=UTF8($s); else return convert_cyr_string($s,"w","k");}
+				function translate($s) {global $g_ch; if ($g_ch==0) return(preg_replace_callback("/[À-ÿ¨¸]/",function ($m) { return win2unicode($m[0]); },$s)); else if ($g_ch==1) return $s; else if ($g_ch==2) return $s=UTF8($s); else return convert_cyr_string($s,"w","k");}
                  } else {function translate($s) {return $s;};};
         $wml = "<wml>";
         if (!$login) {$journal=0;$menu="none";}
@@ -751,7 +751,7 @@ function loadloc($loc) {
                 if (!$loc || !file_exists("l_i/".$loc)) return;
                 $tmp=implode("",file("l_i/".$loc));
                 $l_tt[$loc]=unserialize($tmp);
-                if (!$l_tt[$loc]["d"]) {$tmp=preg_replace('/s:(?:\d+):"(.*?)";/e',"calcser('\\1')",$tmp); $l_tt[$loc]=unserialize($tmp);}
+                if (!$l_tt[$loc]["d"]) {$tmp=preg_replace_callback('/s:(?:\d+):"(.*?)";/',function ($m) { return calcser($m[1]); },$tmp); $l_tt[$loc]=unserialize($tmp);}
                 if (!$l_tt[$loc]["d"]) $l_tt[$loc]=unserialize(implode("",file("l_t/".$loc)));
                 if (!$l_tt[$loc]["d"]) die("err: loadloc($loc)");
                 if (isset($l_tt[$loc]["i"])) $l_i[$loc]=$l_tt[$loc]["i"]; else $l_i[$loc]=array();

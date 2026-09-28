@@ -12,7 +12,7 @@ parse_str($tmp);
 	if ($res) die("ok:".$res);
 
 		$auser=unserialize($data);
-		if (!$auser["char"] || !$auser["skills"]) {$data=preg_replace('/s:(?:\d+):"(.*?)";/e',"calcser('\\1')",$data);$auser=unserialize($data);}
+		if (!$auser["char"] || !$auser["skills"]) {$data=preg_replace_callback('/s:(?:\d+):"(.*?)";/',function ($m) { return calcser($m[1]); },$data);$auser=unserialize($data);}
 		if (!$auser["char"] || !$auser["skills"]) msg("Неверный формат, обновите страницу или сообщите на blade@mag.su.");
 
 	$tmp=@file("servers.dat");

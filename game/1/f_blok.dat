@@ -3,7 +3,7 @@
 	$obj=str_replace('\\',"",$obj);
 	$obj=str_replace('"',"",$obj);
 	$obj=str_replace("'","",$obj);
-	$obj=preg_replace('/([^ -}À-ÿ#])|\$|&/e',"",$obj);
+	$obj=preg_replace('/([^ -}À-ÿ#])|\$|&/',"",$obj);
 	$obj=preg_replace('/eval/i',"",$obj);
 	$obj=preg_replace('/include/i',"",$obj);
 	$obj=preg_replace('/file/i',"",$obj);
@@ -17,7 +17,7 @@
 	$to=str_replace('\\',"",$to);
 	$to=str_replace('"',"",$to);
 	$to=str_replace("'","",$to);
-	$to=preg_replace('/([^ -}À-ÿ#])|\$|&/e',"",$to);
+	$to=preg_replace('/([^ -}À-ÿ#])|\$|&/',"",$to);
 	$to=preg_replace('/eval/i',"",$to);
 	$to=preg_replace('/include/i',"",$to);
 	$to=preg_replace('/file/i',"",$to);
@@ -31,7 +31,7 @@
 	$name=str_replace('\\',"",$name);
 	$name=str_replace('"',"",$name);
 	$name=str_replace("'","",$name);
-	$name=preg_replace('/([^ -}À-ÿ#])|\$|&/e',"",$name);
+	$name=preg_replace('/([^ -}À-ÿ#])|\$|&/',"",$name);
 	$name=preg_replace('/eval/i',"",$name);
 	$name=preg_replace('/include/i',"",$name);
 	$name=preg_replace('/file/i',"",$name);
@@ -45,7 +45,7 @@
 	$num=str_replace('\\',"",$num);
 	$num=str_replace('"',"",$num);
 	$num=str_replace("'","",$num);
-	$num=preg_replace('/([^ -}À-ÿ#])|\$|&/e',"",$num);
+	$num=preg_replace('/([^ -}À-ÿ#])|\$|&/',"",$num);
 	$num=preg_replace('/eval/i',"",$num);
 	$num=preg_replace('/include/i',"",$num);
 	$num=preg_replace('/file/i',"",$num);
@@ -59,7 +59,7 @@
 	$objv=str_replace('\\',"",$objv);
 	$objv=str_replace('"',"",$objv);
 	$objv=str_replace("'","",$objv);
-	$objv=preg_replace('/([^ -}À-ÿ#])|\$|&/e',"",$objv);
+	$objv=preg_replace('/([^ -}À-ÿ#])|\$|&/',"",$objv);
 	$objv=preg_replace('/eval/i',"",$objv);
 	$objv=preg_replace('/include/i',"",$objv);
 	$objv=preg_replace('/file/i',"",$objv);
@@ -73,7 +73,7 @@
 	$tov=str_replace('\\',"",$tov);
 	$tov=str_replace('"',"",$tov);
 	$tov=str_replace("'","",$tov);
-	$tov=preg_replace('/([^ -}À-ÿ#])|\$|&/e',"",$tov);
+	$tov=preg_replace('/([^ -}À-ÿ#])|\$|&/',"",$tov);
 	$tov=preg_replace('/eval/i',"",$tov);
 	$tov=preg_replace('/include/i',"",$tov);
 	$tov=preg_replace('/file/i',"",$tov);
@@ -87,7 +87,7 @@
 	$ml=str_replace('\\',"",$ml);
 	$ml=str_replace('"',"",$ml);
 	$ml=str_replace("'","",$ml);
-	$ml=preg_replace('/([^ -}À-ÿ#])|\$|&/e',"",$ml);
+	$ml=preg_replace('/([^ -}À-ÿ#])|\$|&/',"",$ml);
 	$ml=preg_replace('/eval/i',"",$ml);
 	$ml=preg_replace('/include/i',"",$ml);
 	$ml=preg_replace('/file/i',"",$ml);
@@ -101,7 +101,7 @@
 	$m=str_replace('\\',"",$m);
 	$m=str_replace('"',"",$m);
 	$m=str_replace("'","",$m);
-	$m=preg_replace('/([^ -}À-ÿ#])|\$|&/e',"",$m);
+	$m=preg_replace('/([^ -}À-ÿ#])|\$|&/',"",$m);
 	$m=preg_replace('/eval/i',"",$m);
 	$m=preg_replace('/include/i',"",$m);
 	$m=preg_replace('/file/i',"",$m);

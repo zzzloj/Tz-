@@ -36,7 +36,7 @@ function msg($s,$title_v="Òåððèòîðèÿ çëà") {
 		header("Content-type:text/vnd.wap.wml;charset=utf-8"); 
 	setlocale (LC_CTYPE, 'ru_RU.CP1251'); 
 	function win2unicode ( $s ) { if ( (ord($s)>=192) & (ord($s)<=255) ) $hexvalue=dechex(ord($s)+848); if ($s=="¨") $hexvalue="401"; if ($s=="¸") $hexvalue="451"; return("&#x0".$hexvalue.";");} 
-	function translate($s) {return(preg_replace("/[À-ÿ¨¸]/e","win2unicode('\\0')",$s));} 
+	function translate($s) {return(preg_replace_callback("/[À-ÿ¨¸]/",function ($m) { return win2unicode($m[0]); },$s));} 
 
 	ob_start("translate");
 	$s=str_replace("&amp;","&",$s);

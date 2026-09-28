@@ -18,7 +18,7 @@ $PHP_SELF = "g.php";
 
         setlocale (LC_CTYPE, 'ru_RU.CP1251');
         function win2unicode ( $s ) { if ( (ord($s)>=192) & (ord($s)<=255) ) $hexvalue=dechex(ord($s)+848); if ($s=="¨") $hexvalue="401"; if ($s=="¸") $hexvalue="451"; return("&#x0".$hexvalue.";");}
-        function translate($s) {return(preg_replace("/[À-ÿ¨¸]/e","win2unicode('\\0')",$s));}
+        function translate($s) {return(preg_replace_callback("/[À-ÿ¨¸]/",function ($m) { return win2unicode($m[0]); },$s));}
 
         if (substr($login,0,2)!="u.") $login="u.".$login;
         $login=strtolower($login);
@@ -63,7 +63,7 @@ $PHP_SELF = "g.php";
                         }
 
                 $auser=unserialize($data);
-                if (!$auser["char"] || !$auser["skills"]) {$data=preg_replace('/s:(?:\d+):"(.*?)";/e',"calcser('\\1')",$data);$auser=unserialize($data);}
+                if (!$auser["char"] || !$auser["skills"]) {$data=preg_replace_callback('/s:(?:\d+):"(.*?)";/',function ($m) { return calcser($m[1]); },$data);$auser=unserialize($data);}
                 $tuser=explode("|",$auser["user"]);
                 $tp=$tuser[0];
 

@@ -14,5 +14,5 @@ function alt($s) {
 function trans($s) {
 	global $ttans; 
 	$ttans=true;
-	return preg_replace("/(.*)##??/Ue","alt('\\1')","$s#");
+	return preg_replace_callback("/(.*)##??/U",function ($m) { return alt($m[1]); },"$s#");
 	}

@@ -40,7 +40,7 @@ if (preg_match_all('/(i\.[^fh]\.[^:|]*:\d{4,})/',$data,$arr)) {
         }
 
                 $auser=unserialize($data);
-                if (!$auser["char"] || !$auser["skills"]) {$data=preg_replace('/s:(?:\d+):"(.*?)";/e',"calcser('\\1')",$data);$auser=unserialize($data);}
+                if (!$auser["char"] || !$auser["skills"]) {$data=preg_replace_callback('/s:(?:\d+):"(.*?)";/',function ($m) { return calcser($m[1]); },$data);$auser=unserialize($data);}
                 if (!$auser["char"] || !$auser["skills"]) msg("Неверный формат, обновите страницу или сообщите на snok89@mail.ru");
                 $auser["srv"]=time();
                 $tuser=explode("|",$auser["user"]);

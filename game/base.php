@@ -34,7 +34,7 @@ function w2w($s) {
 	$s = preg_replace("/\s{2,}/"," ",$s);
 	$s = str_replace("> <","><",$s);
 	$s = str_replace("&amp;","&",$s);
-	$s = preg_replace("/&#x(?:0)?(\w\w\w);/e","unicode2win('\\0');",$s);
+	$s = preg_replace_callback("/&#x(?:0)?(\w\w\w);/",function ($m) { return unicode2win($m[0]); },$s);
 	$s = preg_replace("/&(\w+);/","-",$s);
 
 	$xF = preg_match_all("/<do([^>]*)>((?:.|\n)*?)<\/do>/",$s,$regF);
@@ -43,8 +43,8 @@ function w2w($s) {
 	for ($i=0;$i<$xF;$i++) {	// по
 		$label="";
 		$href="";
-		preg_replace("/label=\"(.*?)\"/e",'$label="\\1"',$regF[1][$i]);
-		preg_replace("/href=\"(.*?)\"/e",'$href="\\1"',$regF[2][$i]);
+		preg_replace_callback("/label=\"(.*?)\"/",function ($m) use (&$label) { return $label=$m[1]; },$regF[1][$i]);
+		preg_replace_callback("/href=\"(.*?)\"/",function ($m) use (&$href) { return $href=$m[1]; },$regF[2][$i]);
 		if ($label && $href) {
 			// добавляем у в список ссылок и карту
 			$links[]=array("title"=>$label,"link"=>$href,"from"=>strlen($data),"len"=>strlen($label));
@@ -68,8 +68,8 @@ function w2w($s) {
 			// найдем title и id
 			$title="";
 			$id="";
-			preg_replace("/title=\"(.*?)\"/e",'$title="- \\1 -"',$regF[1][$i]);
-			preg_replace("/id=\"(.*?)\"/e",'$id="\\1"',$regF[1][$i]);
+			preg_replace_callback("/title=\"(.*?)\"/",function ($m) use (&$title) { return $title="- {$m[1]} -"; },$regF[1][$i]);
+			preg_replace_callback("/id=\"(.*?)\"/",function ($m) use (&$id) { return $id=$m[1]; },$regF[1][$i]);
 			$data.=$title.$regF[2][$i];
 			} else
 		if (substr($regF[1][$i],0,6)=="anchor") { 	// обязат. раньше <a (!)
@@ -84,7 +84,7 @@ function w2w($s) {
 				}
 			// go href
 			$href="";
-			preg_replace("/href=\"(.*?)\"/e",'$href="\\1"',$st);
+			preg_replace_callback("/href=\"(.*?)\"/",function ($m) use (&$href) { return $href=$m[1]; },$st);
 			// заменяем POST на GET
 			$xV = preg_match_all("/postfield\s*name=\"(.*?)\"\s*value=\"(.*?)\"/",$st,$regV);
 			if ($xV>0 && strpos($href,"?")!==false) $href.="?";
@@ -100,12 +100,12 @@ function w2w($s) {
 			} else
 		if (strtolower(substr($regF[1][$i],0,6))=="select") { // все option на ссылки на set&name=val:set:# и именем [текст] и добавляем в переменные
 			$name="";
-			preg_replace("/name=\"(.*?)\"/e",'$name="\\1"',$regF[1][$i]);
+			preg_replace_callback("/name=\"(.*?)\"/",function ($m) use (&$name) { return $name=$m[1]; },$regF[1][$i]);
 			if(!isset($vars[$name])) $vars[$name]="";			// добавляем в список переменных, если там нет
 			while($i<$xF && substr($regF[1][$i],0,7)!="/select") {
 				if(strtolower(substr($regF[1][$i],0,6))=="option") {
 					$value="";
-					preg_replace("/value=\"(.*?)\"/e",'$value="\\1"',$regF[1][$i]);
+					preg_replace_callback("/value=\"(.*?)\"/",function ($m) use (&$value) { return $value=$m[1]; },$regF[1][$i]);
 					$data.="[";
 					$links[]=array("title"=>$regF[2][$i],"link"=>"set&".$name."=".$value.":set:#","from"=>strlen($data),"len"=>strlen($regF[2][$i]));
 					$data.=$regF[2][$i]."]\n";
@@ -115,7 +115,7 @@ function w2w($s) {
 			} else
 		if (strtolower(substr($regF[1][$i],0,1))=="a") { 	// парные <a
 			$href="";
-			preg_replace("/href=\"(.*?)\"/e",'$href="\\1"',$regF[1][$i]);
+			preg_replace_callback("/href=\"(.*?)\"/",function ($m) use (&$href) { return $href=$m[1]; },$regF[1][$i]);
 			$title=$regF[2][$i];
 			$st="";
 			while($i<$xF && strtolower(substr($regF[1][$i],0,7))!="/a") {$st.=$regF[2][$i]; $i++;}
@@ -125,16 +125,16 @@ function w2w($s) {
 
 		if (strtolower(substr($regF[1][$i],0,4))=="form") { 	// HTML формы
 			$action="";
-			preg_replace("/action=\"(.*?)\"/e",'$action="\\1"',$regF[1][$i]);
+			preg_replace_callback("/action=\"(.*?)\"/",function ($m) use (&$action) { return $action=$m[1]; },$regF[1][$i]);
 			if (strpos($action,"?")===false) $action.="?";
 			// найдем все переменные формы
 			$j=0;
 			while($j<$xF && strtolower(substr($regF[1][$j],0,5))!="/form") {
 				$name="";
-				preg_replace("/name=\"(.*?)\"/e",'$name="\\1"',$regF[1][$j]);
+				preg_replace_callback("/name=\"(.*?)\"/",function ($m) use (&$name) { return $name=$m[1]; },$regF[1][$j]);
 				if ($name) {
 					$value="";
-					preg_replace("/value=\"(.*?)\"/e",'$value="\\1"',$regF[1][$j]);
+					preg_replace_callback("/value=\"(.*?)\"/",function ($m) use (&$value) { return $value=$m[1]; },$regF[1][$j]);
 					$action.="&".$name."=".$value;
 					}
 				$j++;
@@ -149,8 +149,8 @@ function w2w($s) {
 		if (strtolower(substr($regF[1][$i],0,5))=="input") { 	// <input
 			$name="";
 			$value="";
-			preg_replace("/name=\"(.*?)\"/e",'$name="\\1"',$regF[1][$i]);
-			preg_replace("/value=\"(.*?)\"/e",'$value="\\1"',$regF[1][$i]);
+			preg_replace_callback("/name=\"(.*?)\"/",function ($m) use (&$name) { return $name=$m[1]; },$regF[1][$i]);
+			preg_replace_callback("/value=\"(.*?)\"/",function ($m) use (&$value) { return $value=$m[1]; },$regF[1][$i]);
 			$title="изменить";
 			$vars[$name]=$value;
 			$data.="[";

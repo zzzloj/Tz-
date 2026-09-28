@@ -12,8 +12,8 @@ else if($send) {
 	// UTF-8 русские буквы
 	$send=str_replace("\xd0\x81","Ё",$send);
 	$send=str_replace("\xd1\x91","ё",$send);
-	$send=preg_replace("/\xd0([\x90-\xbf])/e","chr(ord('\\1')+48)",$send);
-	$send=preg_replace("/\xd1([\x80-\x8f])/e","chr(ord('\\1')+112)",$send);
+	$send=preg_replace_callback("/\xd0([\x90-\xbf])/",function ($m) { return chr(ord($m[1])+48); },$send);
+	$send=preg_replace_callback("/\xd1([\x80-\x8f])/",function ($m) { return chr(ord($m[1])+112); },$send);
 	$sid=explode(".",$sid);
 	//@mail("blade@mag.su", $_SERVER["REMOTE_ADDR"], $sid[1]." ".$send);
 	$stmp="Спасибо, ваши данные отправлены на blade@mag.su, через 24 часа в случае успешной проверки вам будет открыт доступ на все сервера, а пока временно можете играть на <a href=\"http://mags.com.ru/game/2/g.php\">Cервере 2</a>.<br/>Пожалуйста, при переписке указывайте ваш IP: ".$_SERVER["REMOTE_ADDR"];
@@ -32,7 +32,7 @@ function msg($s) {
 
 	setlocale (LC_CTYPE, 'ru_RU.CP1251'); 
 	function win2unicode ( $s ) { if ( (ord($s)>=192) & (ord($s)<=255) ) $hexvalue=dechex(ord($s)+848); if ($s=="Ё") $hexvalue="401"; if ($s=="ё") $hexvalue="451"; return("&#x0".$hexvalue.";");} 
-	function translate($s) {return(preg_replace("/[А-яЁё]/e","win2unicode('\\0')",$s));} 
+	function translate($s) {return(preg_replace_callback("/[А-яЁё]/",function ($m) { return win2unicode($m[0]); },$s));} 
 	$s=str_replace("&amp;","&",$s);
 	$s=str_replace("&","&amp;",$s);
 	$s=strtr($s,"КЕНХВАРОСМТехарос","KEHXBAPOCMTexapoc");
