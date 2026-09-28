@@ -1,10 +1,10 @@
 <?php
 //error_reporting(0);
-extract($HTTP_GET_VARS);
-extract($HTTP_POST_VARS);
-extract($HTTP_COOKIE_VARS);
-extract($HTTP_SERVER_VARS);
-//extract($HTTP_SESSION_VARS);
+extract($_GET);
+extract($_POST);
+extract($_COOKIE);
+extract($_SERVER);
+//extract(isset($_SESSION) ? $_SESSION : array());
 
 session_name('SID');
 if (!$_SESSION[traf]) { session_start(); }

@@ -84,7 +84,7 @@ session_register("press_kod");
 session_unset();
 session_destroy();}
 
-$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
+$start = ( isset($_GET['start']) ) ? intval($_GET['start']) : 0;
 $base_url="".$PHP_SELF."?mode=read&sid=".$sid."&blogid='.$blogid.'&start=";
 $num_items=mysql_num_rows(mysql_query("select id from blogs_com where messid='".$blogid."';",$link));
 if($zapis){

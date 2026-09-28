@@ -1,10 +1,10 @@
 <?php
 error_reporting(0);
-extract($HTTP_GET_VARS);
-  extract($HTTP_POST_VARS);
-  extract($HTTP_COOKIE_VARS);
-  extract($HTTP_SESSION_VARS);
-  extract($HTTP_SERVER_VARS);
+extract($_GET);
+  extract($_POST);
+  extract($_COOKIE);
+  extract(isset($_SESSION) ? $_SESSION : array());
+  extract($_SERVER);
 $tmp=$QUERY_STRING;if($tmp=='') $tmp=$_SERVER["QUERY_STRING"];
 $tmp=urldecode($tmp);
 parse_str($tmp);

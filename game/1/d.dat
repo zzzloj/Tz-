@@ -20,7 +20,7 @@ include "./func_val_text.php";
   case "read":
 
 $onpage=7;
-$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
+$start = ( isset($_GET['start']) ) ? intval($_GET['start']) : 0;
 $base_url="'.$PHP_SELF.'?sid='.$sid.'&mode=read&amp;start=";
 $num_items=mysql_num_rows(mysql_query("select id from blogs where userid='".$clan."';",$link));
 
@@ -111,7 +111,7 @@ $stmp.="Проверочный код: <b><u>".$press_kod."</u></b>
 $stmp.= '<small><anchor>[добавить]<go href="'.$PHP_SELF.'?sid='.$sid.'&dn=1&chis=$(chis)" method="post">'.
 '<postfield name="blog_text" value="$(blog_text'.$rand.')"/></go></anchor><br/>';
 $onpage=7;
-$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
+$start = ( isset($_GET['start']) ) ? intval($_GET['start']) : 0;
 $base_url2="'.$PHP_SELF.'?sid='.$sid.'&dn=1&start=";
 $num_items=mysql_num_rows(mysql_query("select id from blogs where userid='".$clan."';",$link));
 

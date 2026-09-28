@@ -1,8 +1,8 @@
 <?php
-  extract($HTTP_GET_VARS);
-  extract($HTTP_POST_VARS);
-  extract($HTTP_COOKIE_VARS);
-  extract($HTTP_SESSION_VARS);
+  extract($_GET);
+  extract($_POST);
+  extract($_COOKIE);
+  extract(isset($_SESSION) ? $_SESSION : array());
 session_name("SID");
 session_start();
 if(empty($_SESSION[press_kod])){
