@@ -14,7 +14,7 @@
 		$arr2[$fname2]=1;
 		}
 	closedir($dh2);
-	if ($a==1) { echo count((array)($arr));  }
-elseif ($a==2) { echo count((array)($arr2)); }
+	if (legacy_cmp($a)==1) { echo count((array)($arr));  }
+elseif (legacy_cmp($a)==2) { echo count((array)($arr2)); }
 else		   { echo count((array)($arr))+count((array)($arr2)); }
 ?>

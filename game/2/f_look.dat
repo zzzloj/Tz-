@@ -1,7 +1,7 @@
 <?php
 if ($look) {
 $look=str_replace('/','',$look);
-	if ($look==1) {
+	if (legacy_cmp($look)==1) {
 	$page_d = "1";
 	}
 	else if (substr($look,0,2)=='i.') include "f_lookitem.dat";
@@ -12,7 +12,7 @@ $look=str_replace('/','',$look);
 		if (file_exists("items/".$look)) $item=explode("|",implode("",(array)(file("items/".$look)))); else die("err: no items/".$look);
 		$skills=explode("|",$l_i[$loc][$login]["skills"]);
 		$stmp="<a href=\"$PHP_SELF?sid=$sid&look=p\">Период</a>: ".$item[1]."<br/>".$item[2];
-		if ($look!="p.d.c" && ($skills[2]-1)*10>0) $stmp.="<br/>---<br/>Шанс успешного использования (с учетом вашего интеллекта): -".(($skills[2]-1)*10)."%";
+		if ($look!="p.d.c" && (legacy_num($skills[2])-1)*10>0) $stmp.="<br/>---<br/>Шанс успешного использования (с учетом вашего интеллекта): -".((legacy_num($skills[2])-1)*10)."%";
 		if ($char[12]) $stmp.="<br/>Так как вы на коне: -10%";
 		if ($game["fid"]==$login && $game["floc"]==$loc) $stmp.="<br/>Так как у вас флаг лидерства: +10%";
 		msg($stmp,$item[0]);

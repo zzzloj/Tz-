@@ -1,7 +1,7 @@
 <?php
 if ($msg) {
-	if ($del && strpos($l_i[$loc][$login]["msgt"],"{".$del."}")!==false) $l_i[$loc][$login]["msgt"]=substr($l_i[$loc][$login]["msgt"],strpos($l_i[$loc][$login]["msgt"],"{".$del."}")+strlen("{".$del."}"));
-	if ($msg==1) {	// основная страница
+	if ($del && strpos($l_i[$loc][$login]["msgt"],"{".$del."}")!==false) $l_i[$loc][$login]["msgt"]=substr($l_i[$loc][$login]["msgt"],legacy_num(strpos($l_i[$loc][$login]["msgt"],"{".$del."}")+strlen("{".$del."}")));
+	if (legacy_cmp($msg)==1) {	// основная страница
 	$l=explode('.',$sid);
 		$stmp="<p><a href=\"http://bigwap.org/game/forum/index.php?login=".$l[0]."&amp;pass=".$l[1]."\">[форум]</a>|<a href=\"http://chat.bigwap.org\">[чат]</a>";
 		$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&msg=add\">[добавить]</a>";
@@ -11,7 +11,7 @@ if ($msg) {
 		// текст
 		$del=0;
 		if ($l_i[$loc][$login]["msgt"]) {
-			$del=substr($l_i[$loc][$login]["msgt"],-11,-1);
+			$del=substr($l_i[$loc][$login]["msgt"],legacy_num(-11),legacy_num(-1));
 			$stmp.=preg_replace("/{[^}]+}/","",$l_i[$loc][$login]["msgt"])."<br/><a href=\"$PHP_SELF?sid=$sid&msg=clear&del=".$del."\">Очистить</a><br/>";
 			} else $stmp.="\n<br/>Сообщений нет";
 		// список онлайн
@@ -21,18 +21,18 @@ if ($msg) {
 		if (!$start) $start=0;
 		if ($keys) foreach ($keys as $i) if ($i) if (file_exists("online/".$i) && filesize("online/".$i)!=1) {
 			$count++;
-			if ($c1>=$start && $c1<$start+$g_list) $stmp.="\n<br/><anchor>".substr($i,2)."<go href=\"#menu\"><setvar name=\"id\" value=\"$i\"/></go></anchor>";
+			if ($c1>=$start && $c1<legacy_num($start)+legacy_num($g_list)) $stmp.="\n<br/><anchor>".substr($i,2)."<go href=\"#menu\"><setvar name=\"id\" value=\"$i\"/></go></anchor>";
 			$c1++;
 			}
-		if ($count==0) $stmp.=" никого нет";
+		if (legacy_cmp($count)==0) $stmp.=" никого нет";
 
 
 if (isset($tmp["m"][$login])) {
 $tmp["m"];
 $count++;}
 		if ($start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&msg=1\">^ </a>";}
-		if ($start+$g_list<$c1) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&msg=1&start=".($start+$g_list)."\">+ (".($c1-$start-$g_list).")</a>";}
-		$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&msg=off\">Оффлайн (".(count((array)($keys))-$count).")</a>";
+		if (legacy_num($start)+legacy_num($g_list)<$c1) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&msg=1&start=".(legacy_num($start)+legacy_num($g_list))."\">+ (".(legacy_num($c1)-legacy_num(legacy_num($start))-legacy_num($g_list)).")</a>";}
+		$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&msg=off\">Оффлайн (".(count((array)($keys))-legacy_num($count)).")</a>";
 
 		$stmp.="\n<br/><br/><a href=\"$PHP_SELF?sid=$sid&msg=help\">Помощь</a>";
 		// карта меню
@@ -55,18 +55,18 @@ $count++;}
 		// список оффлайн
 		$c1=0; $c2=0; $count=0;
 		if ($l_i[$loc][$login]["msg"]) $keys=explode("|",$l_i[$loc][$login]["msg"]);
-		if ($keys) if (count((array)($keys))-$count>0) {
+		if ($keys) if (count((array)($keys))-legacy_num($count)>0) {
 			$stmp.="Оффлайн (выберите, чтобы удалить):";
 			foreach ($keys as $i) if ($i) if (!file_exists("online/".$i) || filesize("online/".$i)==1) {
-				if ($c1>=$start && $c1<$start+$g_list) $stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&msg=del&id=".$i."\">".substr($i,2)."</a>";
+				if ($c1>=$start && $c1<legacy_num($start)+legacy_num($g_list)) $stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&msg=del&id=".$i."\">".substr($i,2)."</a>";
 				$c1++;
 				$count++;
 				}
 			}
 
 		if ($start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&msg=off\">^ </a>";}
-		if ($start+$g_list<$c1) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&msg=off&start=".($start+$g_list)."\">+ (".($c1-$start-$g_list).")</a>";}
-		if ($count==0) $stmp="Список оффлайн пуст";
+		if (legacy_num($start)+legacy_num($g_list)<$c1) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&msg=off&start=".(legacy_num($start)+legacy_num($g_list))."\">+ (".(legacy_num($c1)-legacy_num(legacy_num($start))-legacy_num($g_list)).")</a>";}
+		if (legacy_cmp($count)==0) $stmp="Список оффлайн пуст";
 		}
 	if ($msg=='add') {
 		if (strlen($l_i[$loc][$login]["msg"])>500) msg("В контактах нет места, удалите кого-нибудь","Ошибка");
@@ -89,7 +89,7 @@ $count++;}
   if ($msg=="klan") {
 		$del=0;
 		if ($l_i[$loc][$login]["msgt"]) {
-			$del=substr($l_i[$loc][$login]["msgt"],-11,-1); }
+			$del=substr($l_i[$loc][$login]["msgt"],legacy_num(-11),legacy_num(-1)); }
 		$stmp.="\n<input name=\"text\" emptyok=\"true\" type=\"text\" maxlength=\"140\"/>\n<br/><select name=\"t\" multiple=\"true\" value=\"1\"><option value=\"1\">Транслит</option></select>
 <anchor>Отправить<go href=\"$PHP_SELF?sid=$sid\" method=\"post\">
 <postfield name=\"msg\" value=\"write\"/>
@@ -101,7 +101,7 @@ $count++;}
   }
   if ($klan) {
 	$tc=explode("|",$l_i[$loc][$login]["char"]);
-	if (strpos($tc[0],"*")===false) $clan=""; else $clan=substr($tc[0],strpos($tc[0],"*")+1,strrpos($tc[0],"*")-strpos($tc[0],"*")-1);
+	if (strpos($tc[0],"*")===false) $clan=""; else $clan=substr($tc[0],legacy_num(strpos($tc[0],"*")+1),legacy_num(strrpos($tc[0],"*")-strpos($tc[0],"*")-1));
 	if ($clan && file_exists("../clans/".$clan)) $tmp=unserialize(implode("",(array)(file("../clans/".$clan)))); else $tmp=array();
 
 	   if (!$text) msg("Нет текста для отправки");
@@ -112,8 +112,8 @@ $count++;}
 	$s=$text;
 	$s=str_replace("\xd0\x81","Ё",$s);
 	$s=str_replace("\xd1\x91","ё",$s);
-	$s=preg_replace_callback("/\xd0([\x90-\xbf])/",function ($m) { return chr(ord($m[1])+48); },$s);
-	$s=preg_replace_callback("/\xd1([\x80-\x8f])/",function ($m) { return chr(ord($m[1])+112); },$s);
+	$s=preg_replace_callback("/\xd0([\x90-\xbf])/",function ($m) { return chr(legacy_num(ord($m[1])+48)); },$s);
+	$s=preg_replace_callback("/\xd1([\x80-\x8f])/",function ($m) { return chr(legacy_num(ord($m[1])+112)); },$s);
 
 	$s=str_replace('\\',"",$s);
 	$s=preg_replace('/([^ -}А-я#])|\$|&/',"",$s);
@@ -135,7 +135,7 @@ $count++;}
 			if (!isset($l_i[$tmp[0]][$i])) if ($klan) continue; else msg("В игре нет данных ".substr($i,2),"Ошибка");
 		//	if (strpos($l_i[$tmp[0]][$i]["msg"],$login)===false) if ($mall) continue; else msg("Вы не добавлены в контакты у ".substr($i,2).", попросите его это сделать, иначе не сможете отправлять сообщения.");
 
-			$l_i[$tmp[0]][$i]["msgt"]=substr($l_i[$tmp[0]][$i]["msgt"].="<br/><b>".substr($login,2).":</b> ".strip_tags($text)."{".time()."}",-500);
+			$l_i[$tmp[0]][$i]["msgt"]=substr($l_i[$tmp[0]][$i]["msgt"].="<br/><b>".substr($login,2).":</b> ".strip_tags($text)."{".time()."}",legacy_num(-500));
 			//if (!$klan) {$stmp="Сообщение для ".substr($id,2)." отправлено"; break;}
 
 			}
@@ -152,8 +152,8 @@ $count++;}
 	$s=$text;
 	$s=str_replace("\xd0\x81","Ё",$s);
 	$s=str_replace("\xd1\x91","ё",$s);
-	$s=preg_replace_callback("/\xd0([\x90-\xbf])/",function ($m) { return chr(ord($m[1])+48); },$s);
-	$s=preg_replace_callback("/\xd1([\x80-\x8f])/",function ($m) { return chr(ord($m[1])+112); },$s);
+	$s=preg_replace_callback("/\xd0([\x90-\xbf])/",function ($m) { return chr(legacy_num(ord($m[1])+48)); },$s);
+	$s=preg_replace_callback("/\xd1([\x80-\x8f])/",function ($m) { return chr(legacy_num(ord($m[1])+112)); },$s);
 
 	$s=str_replace('\\',"",$s);
 	$s=preg_replace('/([^ -}А-я#])|\$|&/',"",$s);
@@ -172,7 +172,7 @@ $count++;}
 			if (!isset($l_i[$tmp[0]][$i])) if ($mall) continue; else msg("В игре нет данных ".substr($i,2),"Ошибка");
 			if (strpos($l_i[$tmp[0]][$i]["msg"],$login)===false) if ($mall) continue; else msg("Вы не добавлены в контакты у ".substr($i,2).", попросите его это сделать, иначе не сможете отправлять сообщения.");
 
-			$l_i[$tmp[0]][$i]["msgt"]=substr($l_i[$tmp[0]][$i]["msgt"].="<br/>".substr($login,2).": ".strip_tags($text)."{".time()."}",-500);
+			$l_i[$tmp[0]][$i]["msgt"]=substr($l_i[$tmp[0]][$i]["msgt"].="<br/>".substr($login,2).": ".strip_tags($text)."{".time()."}",legacy_num(-500));
 			if (!$mall) {$stmp="Сообщение для ".substr($id,2)." отправлено"; break;}
 $file = fopen('./x_konti.txt', 'r');
 $source = fread($file, 195000);

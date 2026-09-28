@@ -8,7 +8,7 @@
 	if (!$to && !$start) {
 		$stmp.="<a href=\"#char\">Меню</a>";
 		$war=explode("|",$l_i[$loc][$login]["war"]);
-		$stmp.="<br/>Урон: ".$war[1]."-".$war[2]." [".$war[0]."%]<br/>Броня: ".($war[5]+$war[8]);
+		$stmp.="<br/>Урон: ".$war[1]."-".$war[2]." [".$war[0]."%]<br/>Броня: ".(legacy_num($war[5])+legacy_num($war[8]));
 		} else {
 			$stmp.="Выберите предмет: ";
 			}
@@ -19,17 +19,17 @@
 	if (!$start) $start=0;
 	$keys=array_keys((array)($items));
 
-	for ($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) if ($items[$keys[$i]]) {
+	for ($i=$start;$i<legacy_num($start)+legacy_num($g_list) && $i<count((array)($keys));$i++) if ($items[$keys[$i]]) {
 		$k=explode(":",$items[$keys[$i]]);
 		if (strpos($k[0],"_")!==false) $tk=substr($k[0],0,strpos($k[0],"_")); else
 		if (strpos($k[0],"-")!==false) $tk=substr($k[0],0,strpos($k[0],"-")); else $tk=$k[0];
 		if (substr($k[0],0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$tk)) $item=explode("|",implode("",(array)(file("items/".$tk)))); else die("err: no items/".$k[0]);
 		$item=$item[0];
 		if (strpos($k[0],"..")!==false) $item.=" *";
-		if ($k[1]>1) $item.=" (".$k[1].")";
+		if (legacy_cmp($k[1])>1) $item.=" (".$k[1].")";
 		$tbp=strpos($l_i[$loc][$login]["equip"],$k[0]);
 		if (substr($k[0],0,5)=="i.rr." && $k[0]!="i.rr.empty") { loadloc(substr($k[0],5)); $tt=explode("|",$l_tt[substr($k[0],5)]["d"]); if (strpos($tt[0],"*")!==false) $tt[0]=substr($tt[0],0,strpos($tt[0],"*")); $item.=" [".$tt[0]."]"; }
-		if ($tbp!==false && ($l_i[$loc][$login]["equip"][$tbp+strlen($k[0])]=="|" || $l_i[$loc][$login]["equip"][$tbp+strlen($k[0])]=="")) $item.=" [одето]";
+		if ($tbp!==false && ($l_i[$loc][$login]["equip"][legacy_num($tbp)+strlen($k[0])]=="|" || $l_i[$loc][$login]["equip"][legacy_num($tbp)+strlen($k[0])]=="")) $item.=" [одето]";
 		if ($to) {
 			$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&to=$to&use=".$k[0]."\">".$item."</a>";
 			} else {	// основное меню
@@ -37,7 +37,7 @@
 				}
 		}
 	if ($start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&list=inv\">^ </a>";}
-	if ($start+$g_list<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&list=inv&start=".($start+$g_list)."\">+ (".(count((array)($keys))-$start-$g_list).")</a>";}
+	if (legacy_num($start)+legacy_num($g_list)<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&list=inv&start=".(legacy_num($start)+legacy_num($g_list))."\">+ (".(count((array)($keys))-legacy_num(legacy_num($start))-legacy_num($g_list)).")</a>";}
 
 	// меню
 	$stmp.="\n</p>\n</card>\n<card id=\"menu\" title=\"Меню\">\n<p>\n<a href=\"$PHP_SELF?sid=$sid&use=$(to)\">Использовать</a>\n<br/><a href=\"$PHP_SELF?sid=$sid&drop=$(to)\">Бросить</a>";
@@ -49,7 +49,7 @@
 
 	}// items!=""
 $tc=explode("|",$l_i[$loc][$login]["char"]); 
-     if (strpos($tc[0],"*")===false) $clan=""; else $clan=substr($tc[0],strpos($tc[0],"*")+1,strrpos($tc[0],"*")-strpos($tc[0],"*")-1);
+     if (strpos($tc[0],"*")===false) $clan=""; else $clan=substr($tc[0],legacy_num(strpos($tc[0],"*")+1),legacy_num(strrpos($tc[0],"*")-strpos($tc[0],"*")-1));
 	// персонаж
 	$stmp.="\n</p>\n</card>\n<card id=\"char\" title=\"Меню\">\n<p>";
 	$stmp.="<a href=\"$PHP_SELF?sid=$sid&list=magic\">Магия</a><br/><a href=\"$PHP_SELF?sid=$sid&list=skill\">Навыки</a><br/><a href=\"$PHP_SELF?sid=$sid&list=priem\">Приемы</a><br/><a href=\"$PHP_SELF?sid=$sid&cnick=1\">Настройки</a><br/><a href=\"$PHP_SELF?sid=$sid&look=$login\">О себе</a><br/><a href=\"$PHP_SELF?sid=$sid&cl=par&cj=1\">Параметры</a><br/><a href=\"$PHP_SELF?sid=$sid&cl=e&cj=1\">Одето</a>";

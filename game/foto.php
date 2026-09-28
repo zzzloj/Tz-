@@ -130,7 +130,7 @@ exit;
     }
     }     
         
-        if (mysql_affected_rows() == 0) {
+        if (legacy_cmp(mysql_affected_rows()) == 0) {
 header ("Location: foto.php?error=nick");
 mysql_close ($link);
 exit;
@@ -160,12 +160,12 @@ if($filetype!=="image/gif" && $filetype!=="image/jpeg")
  header ("Location: foto.php?id=$id&ps=$ps&ref=$ref&error=nogif");
  exit;
  }
-if($size>512000)
+if(legacy_cmp($size)>512000)
 {
  header ("Location: foto.php?id=$id&ps=$ps&ref=$ref&error=size");
  exit;
  }
-if(($par[0]>500)||($par[1]>500))
+if((legacy_cmp($par[0])>500)||(legacy_cmp($par[1])>500))
  {
  header ("Location: foto.php?id=$id&ps=$ps&ref=$ref&error=pix");
  exit;

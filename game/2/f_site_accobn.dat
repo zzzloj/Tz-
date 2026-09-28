@@ -44,7 +44,7 @@ if (!$auser) {$data=preg_replace_callback('/s:(?:\d+):"(.*?)";/',function ($m) {
 $tuser=explode("|",$auser["user"]); 
 if ($p!=$tuser[0]) {$tuser[0]=$p; $auser["user"]=implode("|",(array)($tuser));}
 
-$t=time()+$freedays*24*3600;
+$t=time()+legacy_num(legacy_num($freedays))*24*3600;
 $tuser[6]=$t;
 $auser["user"]=implode("|",(array)($tuser));
 
@@ -77,4 +77,4 @@ if ($res) msg("Ошибка при сохранении персонажа: ".$res,"Ошибка",0,'none');
 $res=SetGameTime(substr($login,2), $p, $t);
 if ($res) msg($res,"Ошибка",0,"none");
 
-msg("Ваш аккаунт продлен на три дня, считая с текущего момента, до ".date("d/m Y H:i",$t)." включительно, после чего будет заблокирован до внесения оплаты.<br/><a href=\"$PHP_SELF?site=connect2&login=$login&p=$p\">Начать игру</a>","Продление аккаунта",0,'none');
+msg("Ваш аккаунт продлен на три дня, считая с текущего момента, до ".date("d/m Y H:i",legacy_num($t))." включительно, после чего будет заблокирован до внесения оплаты.<br/><a href=\"$PHP_SELF?site=connect2&login=$login&p=$p\">Начать игру</a>","Продление аккаунта",0,'none');

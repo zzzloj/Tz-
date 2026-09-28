@@ -131,10 +131,10 @@ if ($do=="sum") {
 	$npc="";
 	$tsum=explode(":",$tsum);
 	if (!$tsum[1]) $tnum=1; else $tnum=$tsum[1];
-	if ($tnum>10) $tnum=10;
+	if (legacy_cmp($tnum)>10) $tnum=10;
 	$tsn=""; $tsq="";
-	if (strpos($tsum[0],"_")!==false) {$tsn=substr($tsum[0],strpos($tsum[0],"_")+1);$tsum[0]=substr($tsum[0],0,strpos($tsum[0],"_"));}
-	if (strpos($tsn,"_")!==false) {$tsq=substr($tsn,strpos($tsn,"_")+1);$tsn=substr($tsn,0,strpos($tsn,"_"));}
+	if (strpos($tsum[0],"_")!==false) {$tsn=substr($tsum[0],legacy_num(strpos($tsum[0],"_")+1));$tsum[0]=substr($tsum[0],0,strpos($tsum[0],"_"));}
+	if (strpos($tsn,"_")!==false) {$tsq=substr($tsn,legacy_num(strpos($tsn,"_")+1));$tsn=substr($tsn,0,strpos($tsn,"_"));}
 	$tfollow=$tsum[2];
 	$tsum=$tsum[0];
 	@include("npc/".$tsum);
@@ -283,8 +283,8 @@ function tsrus($s) {
 	// UTF-8 русские буквы
 	$s=str_replace("\xd0\x81","Ё",$s);
 	$s=str_replace("\xd1\x91","ё",$s);
-	$s=preg_replace_callback("/\xd0([\x90-\xbf])/",function ($m) { return chr(ord($m[1])+48); },$s);
-	$s=preg_replace_callback("/\xd1([\x80-\x8f])/",function ($m) { return chr(ord($m[1])+112); },$s);
+	$s=preg_replace_callback("/\xd0([\x90-\xbf])/",function ($m) { return chr(legacy_num(ord($m[1])+48)); },$s);
+	$s=preg_replace_callback("/\xd1([\x80-\x8f])/",function ($m) { return chr(legacy_num(ord($m[1])+112)); },$s);
 	$s=str_replace('\\',"",$s);
 	$s=preg_replace('/([^ -}А-я#])|\$|&/',"",$s);
 	$s=str_replace("|","",$s);

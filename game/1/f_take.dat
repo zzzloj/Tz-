@@ -31,11 +31,11 @@ $tdef=explode("|",$l_i[$loc][$login]["def"]);
 	if (substr($take,0,4)!='i.s.') {
 		$item=explode("|",$l_i[$loc][$take]);
 		// проверим кол-во
-		if ($item[1]>1 && !$num) {		// запросим кол-во
+		if (legacy_cmp($item[1])>1 && !$num) {		// запросим кол-во
 			$stmp="<p>”кажите количество:\n<br/><input name=\"num\" format=\"*N\" maxlength=\"7\" value=\"".$item[1]."\"/>\n<br/><a href=\"$PHP_SELF?sid=$sid&take=$take&num=$(num)\">ќтправить</a>";
 			msg($stmp,"¬з€ть",1,"","num",$item[1]);
 			}
-		if (!$num || $num<1) $num=1;	// если не указано, то 1 предмет
+		if (!$num || legacy_cmp($num)<1) $num=1;	// если не указано, то 1 предмет
 		if ($num>$item[1]) $num=$item[1];	// и максимум берем все что есть
 		additem($loc,"loc",$login,$take,$num,"items","items",1,-1,1);
 		}

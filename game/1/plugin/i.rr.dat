@@ -6,10 +6,10 @@ $words="Tira Ruen";
 			if ($char[3]>=$manacost) {
 			$skills=explode("|",$l_i[$loc][$login]["skills"]);
 			// вероятность кастинга равна заклинанию 2 уровня
-			$cast=($skills[13]*0.5+$skills[2]*1.5)*10-20;
-			if ($cast<25) $cast=10;
-			if ($cast>0 && $skills[13]) {
-				$char[3]-=$manacost;
+			$cast=(legacy_num($skills[13])*0.5+legacy_num(legacy_num($skills[2]))*1.5)*10-20;
+			if (legacy_cmp($cast)<25) $cast=10;
+			if (legacy_cmp($cast)>0 && $skills[13]) {
+				$char[3]= legacy_num($char[3]) - legacy_num($manacost);
 				$char[6]=time()+10; // 10 сек отдыхаем
 				$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 				// произносим заклинание

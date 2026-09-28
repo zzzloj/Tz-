@@ -13,24 +13,24 @@ if (count((array)($l_i[$loc]))>1) {
 $stmp.="ќбъекты:";
 if (!$start) $start=0;
 $keys=array_keys((array)($l_i[$loc]));
-for ($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) if ($keys[$i]!=$login  && $l_i[$loc][$keys[$i]]["god"]!="1") {
+for ($i=$start;$i<legacy_num($start)+legacy_num($g_list) && $i<count((array)($keys));$i++) if ($keys[$i]!=$login  && $l_i[$loc][$keys[$i]]["god"]!="1") {
 	$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&to=".$keys[$i]."&use=$use";
-	if ($glava==1) $stmp.="&glava=1";
+	if (legacy_cmp($glava)==1) $stmp.="&glava=1";
 	$stmp.="\">";
 	if (substr($keys[$i],0,2)=="i.") {
 		$tmp=explode("|",$l_i[$loc][$keys[$i]]); 
-		if (substr($keys[$i],0,4)!="i.s." && $tmp[1]>1) $stmp.=$tmp[0]." (".$tmp[1].")"; else $stmp.=$tmp[0]; 
+		if (substr($keys[$i],0,4)!="i.s." && legacy_cmp($tmp[1])>1) $stmp.=$tmp[0]." (".$tmp[1].")"; else $stmp.=$tmp[0]; 
 		}
 	if (substr($keys[$i],0,2)=="n." || substr($keys[$i],0,2)=="u.") {
 		$tmp=explode("|",$l_i[$loc][$keys[$i]]["char"]);
 		$k=$tmp[0];
 		if (substr($keys[$i],0,2)=="u." && $tmp[12]) $k.=" (всадник)";
 		$st='';
-		if ($tmp[1]!=$tmp[2]) if (round($tmp[1]*100/$tmp[2])<100) $st.=round($tmp[1]*100/$tmp[2])."%";
+		if ($tmp[1]!=$tmp[2]) if (round(legacy_num(legacy_num($tmp[1])*100/legacy_num($tmp[2])))<100) $st.=round(legacy_num(legacy_num($tmp[1])*100/legacy_num($tmp[2])))."%";
 		if ($game["floc"]==$loc && $game["fid"]==$keys[$i]) $st.=" с флагом!";
 		if (substr($keys[$i],0,2)=="u.") {
 			if ($tmp[8]) $st.=" призрак";
-			if ($tmp[9]) {if ($tmp[9]==1) $tmp[9]="преступник"; $st.=" ".$tmp[9];}
+			if ($tmp[9]) {if (legacy_cmp($tmp[9])==1) $tmp[9]="преступник"; $st.=" ".$tmp[9];}
 			}
 		if ($tmp[7] && isset($l_i[$loc][$tmp[7]])) {
 			$tmp1=explode("|",$l_i[$loc][$tmp[7]]["char"]);
@@ -42,7 +42,7 @@ for ($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) if ($keys[$i]
 	$stmp.="</a>";
 	}
 if (count((array)($keys))>1 && $start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&list=all&use=$use\">^ </a>";}
-if ($start+$g_list<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&list=all&use=$use&start=".($start+$g_list)."\">+ (".(count((array)($keys))-$start-$g_list).")</a>";}
+if (legacy_num($start)+legacy_num($g_list)<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&list=all&use=$use&start=".(legacy_num($start)+legacy_num($g_list))."\">+ (".(count((array)($keys))-legacy_num(legacy_num($start))-legacy_num($g_list)).")</a>";}
 }
 
 
@@ -52,20 +52,20 @@ if ($l_i[$loc][$login]["items"]!="") {
 
 	if (!$start) $start=0;
 	$keys=array_keys((array)($items));
-	for ($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) if($items[$keys[$i]]){
+	for ($i=$start;$i<legacy_num($start)+legacy_num($g_list) && $i<count((array)($keys));$i++) if($items[$keys[$i]]){
 		$k=explode(":",$items[$keys[$i]]);
 		if (strpos($k[0],"_")!==false) $tk=substr($k[0],0,strpos($k[0],"_")); else
 		if (strpos($k[0],"-")!==false) $tk=substr($k[0],0,strpos($k[0],"-")); else $tk=$k[0];
 		if (substr($k[0],0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$tk)) $item=explode("|",implode("",(array)(file("items/".$tk)))); else die("err: no items/".$k[0]);
 		$item=$item[0];
 		if (strpos($k[0],"..")!==false) $item.=" *";
-		if ($k[1]>1) $item.=" (".$k[1].")";
+		if (legacy_cmp($k[1])>1) $item.=" (".$k[1].")";
 		$tbp=strpos($l_i[$loc][$login]["equip"],$k[0]);
 	if (substr($k[0],0,5)=="i.rr." && $k[0]!="i.rr.empty") { loadloc(substr($k[0],5)); $tt=explode("|",$l_tt[substr($k[0],5)]["d"]); if (strpos($tt[0],"*")!==false) $tt[0]=substr($tt[0],0,strpos($tt[0],"*")); $item.=" [".$tt[0]."]"; }
-		if ($tbp!==false && ($l_i[$loc][$login]["equip"][$tbp+strlen($k[0])]=="|" || $l_i[$loc][$login]["equip"][$tbp+strlen($k[0])]=="")) $item.=" [одето]";
+		if ($tbp!==false && ($l_i[$loc][$login]["equip"][legacy_num($tbp)+strlen($k[0])]=="|" || $l_i[$loc][$login]["equip"][legacy_num($tbp)+strlen($k[0])]=="")) $item.=" [одето]";
 		$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&to=".$k[0]."&use=$use"."\">".$item."</a>";
 		}
 	if ($start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&list=all\">^ </a>";}
-	if ($start+$g_list<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&list=all&use=$use&start=".($start+$g_list)."\">+ (".(count((array)($keys))-$start-$g_list).")</a>";}
+	if (legacy_num($start)+legacy_num($g_list)<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&list=all&use=$use&start=".(legacy_num($start)+legacy_num($g_list))."\">+ (".(count((array)($keys))-legacy_num(legacy_num($start))-legacy_num($g_list)).")</a>";}
 	}
 	msg($stmp,"”кажите цель");

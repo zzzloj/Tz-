@@ -1,5 +1,5 @@
 <?php
-$chas=date("H")*11; $minuta=date("i")*11; $sek=date("s")*11;
-$time=date("H.i", mktime($chas,$minuta,$sek));
+$chas=legacy_num(date("H"))*11; $minuta=legacy_num(date("i"))*11; $sek=legacy_num(date("s"))*11;
+$time=date("H.i", mktime(legacy_num($chas),legacy_num($minuta),legacy_num($sek)));
 #	require "f_time.dat";
 #	if ($time >= 10.00 and $time < 12.00)

@@ -1,3 +1,3 @@
 <?php
-		if ($add) {$add=explode("|",$add); foreach($add as $i) {$i=explode(":",$i); $tc=additem($loc,$login,"",$i[0],"count","bank"); if ($tc<$i[1]) additem($loc,"",$login,$i[0],$i[1]-$tc,"items","bank");}}
+		if ($add) {$add=explode("|",$add); foreach($add as $i) {$i=explode(":",$i); $tc=additem($loc,$login,"",$i[0],"count","bank"); if ($tc<$i[1]) additem($loc,"",$login,$i[0],legacy_num($i[1])-legacy_num($tc),"items","bank");}}
 		$b=0; if ($skills) {$b=1;$l_i[$loc][$login]["skills"]=$skills;} if ($items) {$b=1;$l_i[$loc][$login]["items"]=$items;} if ($bank) $l_i[$loc][$login]["bank"]=$bank; if ($magic) $l_i[$loc][$login]["magic"]=$magic; if ($msg) $l_i[$loc][$login]["msg"]=$msg; if ($b) calcparam($loc,$login);

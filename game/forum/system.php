@@ -70,7 +70,7 @@ global $ru, $ru_utf8;
 return strtr($str, $ru_utf8);
 }
 /*///////*/
-$sdvig=3600*$poyas;
+$sdvig=3600*legacy_num($poyas);
 
 //       Win-1251   ST
 function win_to_st($str) {

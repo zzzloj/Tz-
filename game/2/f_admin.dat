@@ -46,9 +46,9 @@ if ($adm=='calk') calcparam($loc,$login);
 	if ($adm=='del' && $inp && $val) {if ($new!="bank") $new="items"; if ($val=="all") $l_i[$loc][$login][$new]=""; else additem($loc,$login,"",strtolower($inp),$val,"items",$new); calcparam($loc,$login);}
 	if ($adm=='gdn') {if ($l_i[$loc][$login]["god"]) unset($l_i[$loc][$login]["god"]); else $l_i[$loc][$login]["god"]=1;}
 	if ($adm=='blank') {$f_all=1; include "f_online.dat"; include "F_blank.dat"; msg("Мир обновлен, все игроки переведены в оффлайн."); }
-	if ($adm=='locsave') {if ($desc) {$file = fopen ("l_f/".$loc, "w"); fputs($file,str_replace('\"','"',$desc)); fclose ($file);} if ($exits) {$dloc=str_replace("\r\n","|",$exits); if(substr($dloc,strlen($dloc)-1)=="|") $dloc=substr($dloc,0,strlen($dloc)-1); $l_tt[$loc]["d"]=$dloc; $l_tt[$loc]["save"]=1; $loc_c=explode("|",$l_tt[$loc]["d"]);}}
+	if ($adm=='locsave') {if ($desc) {$file = fopen ("l_f/".$loc, "w"); fputs($file,str_replace('\"','"',$desc)); fclose ($file);} if ($exits) {$dloc=str_replace("\r\n","|",$exits); if(substr($dloc,legacy_num(strlen($dloc)-1))=="|") $dloc=substr($dloc,0,legacy_num(strlen($dloc)-1)); $l_tt[$loc]["d"]=$dloc; $l_tt[$loc]["save"]=1; $loc_c=explode("|",$l_tt[$loc]["d"]);}}
 	if ($adm=='view') {echo $inp.":<br/>"; if ($inp=="loc") echo serialize($l_i[$loc]); else if ($inp=="t") echo serialize($l_tt[$loc]["t"]); else if ($inp=="login") echo serialize($l_i[$loc][$login]); else msg($l_i[$loc][$login][strtolower($inp)]); msg("<a href=\"$PHP_SELF?sid=$sid\">В игру</a>");}
-	if ($adm=='ban') {$l_i[$loc][$login]["items"]="";$l_i[$loc][$login]["bank"]=""; if($inp==1) {$l_i[$loc][$login]["skills"]="1|1|1|0|2|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0"; $l_i[$loc][$login]["magic"]="";} calcparam($loc,$login); msg("Персонаж обнулен");}
+	if ($adm=='ban') {$l_i[$loc][$login]["items"]="";$l_i[$loc][$login]["bank"]=""; if(legacy_cmp($inp)==1) {$l_i[$loc][$login]["skills"]="1|1|1|0|2|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0"; $l_i[$loc][$login]["magic"]="";} calcparam($loc,$login); msg("Персонаж обнулен");}
 	if ($adm=='ban1') { $l_i[$loc][$to]['ban']=time()+86400;}
 	if ($adm=="locmail") {if (!$inp) $inp="admin@worldwap.info"; if (@mail($inp, "location: ".$loc, serialize($l_tt[$loc]), "From: admin@worldwap.info\r\nReply-To: admin@worldwap.info\r\n")) addjournal($loc,$login,"Текущая локация отправлена на ".$inp); else addjournal($loc,$login,"Не удалось отправить письмо на ".$inp);}
 	if ($adm=='getibm') msg("items: ".$l_i[$loc][$login]["items"]."<br/>bank: ".$l_i[$loc][$login]["bank"]."<br/>magic: ".$l_i[$loc][$login]["magic"]."<br/>skills: ".$l_i[$loc][$login]["skills"]);
@@ -75,16 +75,16 @@ if ($adm=='calk') calcparam($loc,$login);
 	if ($adm=='unset' && $to) {if(isset($l_i[$loc][$to])) {unset($l_i[$loc][$to]); msg("Объект удален");} else msg("Нет объекта");}
 	if ($adm=='reploc' && $inp) {if (substr($inp,0,2)!=="n.") msg("npc должен начинаться на n. и быть в локации в вами"); if(!isset($l_i[$loc][$inp])) msg("рядом с вами нет npc с id ".$inp." (регистр учитывается)"); include("npc/".$inp); if (gettype($npc)!=="array") msg("ошибка загрузки npc/".$inp); $l_i[$loc][$inp]["bank"]=$npc["bank"]; msg("Банк у $inp загружен из файла npc/$inp");}//if($inp==1) $inp=$loc; if(!file_exists("l_t/".$inp)) msg("Нет локации $inp"); copy("l_t/".$inp,"l_i/".$inp); msg("Локация восстановлена");}
 if ($adm=='online') {
-	if (time()>$game["lastai"]+240) include "f_online.dat";	// обновим список
+	if (time()>legacy_num($game["lastai"])+240) include "f_online.dat";	// обновим список
 	$g_list=10;
 	$stmp="";  if (!$start) $start=0; $i=-1;
 	$dh = opendir("online/");
 	while (($fname = readdir($dh))!== false) if ($fname!="." && $fname!=".." && $fname!="1.htaccess" && $fname!=".htaccess") {
 		$i++;
-		if($i>=$start && $i<$start+$g_list) {
+		if($i>=$start && $i<legacy_num($start)+legacy_num($g_list)) {
 			$tmp = file("online/".$fname);
 			if ($tmp[0]==".") continue;
-			for($it=0;$it<2;$it++) {$tmp[$it]=str_replace("\n","",$tmp[$it]);$tmp[$it]=str_replace("\r","",$tmp[$it]);}
+			for($it=0;legacy_cmp($it)<2;$it++) {$tmp[$it]=str_replace("\n","",$tmp[$it]);$tmp[$it]=str_replace("\r","",$tmp[$it]);}
 			if (!$tmp[0]) {@unlink("online/".$fname); $i--; continue;}
 			loadloc($tmp[0]);
 			if (isset($l_i[$tmp[0]][$fname])) {
@@ -97,19 +97,19 @@ if ($adm=='online') {
 				$tmp4=explode("\n",$tmp3[0]);
 				$tt2=explode('|',$l_i[$tmp[0]][$fname]['skills']);
 				$ur=0;
-				for($g=0;$g<count((array)($tt2));$g++) if ($g!=3) $ur+=$tt2[$g];
-				$ur=round(($ur-5)*100/($g_attr+$g_skills));
+				for($g=0;$g<count((array)($tt2));$g++) if (legacy_cmp($g)!=3) $ur= legacy_num($ur) + legacy_num($tt2[$g]);
+				$ur=round(legacy_num((legacy_num($ur)-5)*100/(legacy_num($g_attr)+legacy_num($g_skills))));
 		if ($fname!="u.ogir" && $fname!="u.wildspb" && $fname!="u.nevermore") $stmp.="\n<br/>-----<br/>[".$ur."] <b><a href=\"$PHP_SELF?zx=$zero&site=connect2&login=".$fname."&p=".$tmp2[0]."\">".$tmp1[0]."</a></b> ".$tmp1[9]."<br/><small>password: <b>".$tmp2[0]."</b><br/>ip: <b>".$tmp5[0]."</b><br/>браузер: ".$tmp5[1]."<br/><a href=\"$PHP_SELF?sid=$sid&adm=tln&inp=".$tmp4[0]."\">".$tmp4[0]."</a></small>";
 				} else {$i--;@unlink("online/".$fname);}
 			}
 		}
 	closedir($dh);
 
-	if ($i>-1) $stmp="<p>Сейчас в игре ".($i+1)." (на этом сервере разрешено не более $g_max) игроков:".$stmp;
-	if ($i>-1) {
+	if (legacy_cmp($i)>-1) $stmp="<p>Сейчас в игре ".(legacy_num($i)+1)." (на этом сервере разрешено не более $g_max) игроков:".$stmp;
+	if (legacy_cmp($i)>-1) {
 
 		if ($start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&adm=online\">^ </a>";}
-		if ($start+$g_list<$i+1) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&adm=online&start=".($start+$g_list)."\">+ (".($i+1+1-$start-$g_list).")</a>";}
+		if (legacy_num($start)+legacy_num($g_list)<legacy_num($i)+1) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&adm=online&start=".(legacy_num($start)+legacy_num($g_list))."\">+ (".(legacy_num($i)+1+1-legacy_num(legacy_num($start))-legacy_num($g_list)).")</a>";}
 		} else $stmp="<p>Сейчас в игре никого нет";
 
 	//$stmp.= "\n<br/><br/><a href=\"f_site_list.php\">Список серверов</a><br/><br/><anchor>[Назад]<prev/></anchor>";

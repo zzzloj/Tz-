@@ -16,8 +16,8 @@
 				$irnd=explode("|",$npc["itemsrnd"]);
 				foreach(array_keys((array)($irnd)) as $k) if ($irnd[$k]) {
 					$trnd=explode(":",$irnd[$k]);
-					$trndc=round(rand($trnd[2],$trnd[3]));
-					if (rand(0,100)<=$trnd[1] && $trndc>0) {if($npc["items"]) $npc["items"].="|".$trnd[0].":".$trndc; else $npc["items"]=$trnd[0].":".$trndc;}
+					$trndc=round(rand(legacy_num($trnd[2]),legacy_num($trnd[3])));
+					if (rand(0,100)<=$trnd[1] && legacy_cmp($trndc)>0) {if($npc["items"]) $npc["items"].="|".$trnd[0].":".$trndc; else $npc["items"]=$trnd[0].":".$trndc;}
 					}
 				unset($npc["itemsrnd"]);
 				}

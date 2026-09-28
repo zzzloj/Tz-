@@ -5,12 +5,12 @@ if (isset($l_i[$loc][$to]) && substr($to,0,2)=='u.') {
 	$tchar=explode("|",$l_i[$loc][$to]["char"]);
 	$tskills=explode("|",$l_i[$loc][$to]["skills"]);
 	$skills=explode("|",$l_i[$loc][$login]["skills"]);
-	$tchar[4]=10+$tskills[2]*10+$skills[2]*2;
-	if (strpos($l_i[$loc][$to]["equip"],"..ma")!==false) $tchar[4]+=10;
-	if (strpos($l_i[$loc][$to]["equip"],"..ne")!==false) $tchar[4]-=20;
+	$tchar[4]=10+legacy_num(legacy_num($tskills[2]))*10+legacy_num(legacy_num($skills[2]))*2;
+	if (strpos($l_i[$loc][$to]["equip"],"..ma")!==false) $tchar[4]= legacy_num($tchar[4]) + legacy_num(10);
+	if (strpos($l_i[$loc][$to]["equip"],"..ne")!==false) $tchar[4]= legacy_num($tchar[4]) - legacy_num(20);
 
 	$tchar[5]=time();
 	$l_i[$loc][$to]["char"]=implode("|",(array)($tchar));
-	addjournal($loc,$to,"Макс.мана +".($skills[2]*2));
-	if ($to!=$login) addjournal($loc,$login,$tchar[0].": макс.мана +".($skills[2]*2));
+	addjournal($loc,$to,"Макс.мана +".(legacy_num($skills[2])*2));
+	if ($to!=$login) addjournal($loc,$login,$tchar[0].": макс.мана +".(legacy_num($skills[2])*2));
 	} else addjournal($loc,$login,"Действует только на людей");

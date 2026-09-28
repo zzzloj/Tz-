@@ -8,9 +8,9 @@ if ($ctele) {
 
 
 $d=explode("|",$l_tt[$gate]["d"]);
-if (strpos($d[0],"*")===false) $clanc=""; else $clanc=substr($d[0],strpos($d[0],"*")+1,strrpos($d[0],"*")-strpos($d[0],"*")-1);
+if (strpos($d[0],"*")===false) $clanc=""; else $clanc=substr($d[0],legacy_num(strpos($d[0],"*")+1),legacy_num(strrpos($d[0],"*")-strpos($d[0],"*")-1));
 $char = explode("|",$l_i[$loc][$login]["char"]);
-if (strpos($char[0],"*")===false) $clan=""; else $clan=substr($char[0],strpos($char[0],"*")+1,strrpos($char[0],"*")-strpos($char[0],"*")-1);
+if (strpos($char[0],"*")===false) $clan=""; else $clan=substr($char[0],legacy_num(strpos($char[0],"*")+1),legacy_num(strrpos($char[0],"*")-strpos($char[0],"*")-1));
 if (!$ctele && $char[8] && substr($loc,3)!=".in" && $clan!=$clanc && strpos($d[0],":".$login.":")===false) {addnpc($login,$loc,substr($gate,0,4)."in"); msg("ѕризрак не может находитьс€ в не своем замке.");}
 
 $arr=array("main","gate","tron","sklad");
@@ -21,7 +21,7 @@ if ($ctele) {
 			loadloc($tc.$i);
 			if ($l_i[$tc.$i]) foreach(array_keys((array)($l_i[$tc.$i])) as $k) if($k!=$login && substr($k,0,2)=="u.") {
 				$tchar=explode("|",$l_i[$tc.$i][$k]["char"]);
-				if (strpos($tchar[0],"*")===false) $tclan=""; else $tclan=substr($tchar[0],strpos($tchar[0],"*")+1,strrpos($tchar[0],"*")-strpos($tchar[0],"*")-1);
+				if (strpos($tchar[0],"*")===false) $tclan=""; else $tclan=substr($tchar[0],legacy_num(strpos($tchar[0],"*")+1),legacy_num(strrpos($tchar[0],"*")-strpos($tchar[0],"*")-1));
 				if ($tclan!=$clanc && strpos($d[0],":".$k.":")===false) {addnpc($login,$loc,$ctele); return;}
 				}
 			}
@@ -32,11 +32,11 @@ if (substr($loc,3,3)==".in") {include "f_castlein.dat"; return;}
 
 // заперто/открыто
 if (substr($loc,3)!=".in") {
-	if (strpos($d[0],"{")===false) $timez=0; else $timez=substr($d[0],strpos($d[0],"{")+1,strrpos($d[0],"}")-strpos($d[0],"{")-1);
+	if (strpos($d[0],"{")===false) $timez=0; else $timez=substr($d[0],legacy_num(strpos($d[0],"{")+1),legacy_num(strrpos($d[0],"}")-strpos($d[0],"{")-1));
 	if (time()<$timez) {addnpc($login,$loc,substr($gate,0,4)."in"); msg("¬орота замка заперты изнутри, их могут открыть только хоз€ева замка, либо стражники откроют сами, когда истечет максимальный срок.");}
 	else if (strpos($d[0],"#")===false) {	// открываем, врем€ истекло
-		if ($timez!=0) $d[0]=substr($d[0],0,strpos($d[0],"{")).substr($d[0],strpos($d[0],"}")+1);
-		$d[0].="#".($timez+60*60*8)."#";
+		if (legacy_cmp($timez)!=0) $d[0]=substr($d[0],0,strpos($d[0],"{")).substr($d[0],legacy_num(strpos($d[0],"}")+1));
+		$d[0].="#".(legacy_num($timez)+60*60*8)."#";
 		$l_tt[$gate]["d"]=implode("|",(array)($d));
 		$l_tt[$gate]["save"]=1;
 		}
@@ -51,7 +51,7 @@ if (substr($loc,3)==".gate" && $clanc && $clanc!=$clan && strpos($d[0],":".$logi
 			loadloc($tc.$i);
 			if ($l_i[$tc.$i]) foreach(array_keys((array)($l_i[$tc.$i])) as $k) if($k!=$login) {
 				$tchar=explode("|",$l_i[$tc.$i][$k]["char"]);
-				if (strpos($tchar[0],"*")===false) $tclan=""; else $tclan=substr($tchar[0],strpos($tchar[0],"*")+1,strrpos($tchar[0],"*")-strpos($tchar[0],"*")-1);
+				if (strpos($tchar[0],"*")===false) $tclan=""; else $tclan=substr($tchar[0],legacy_num(strpos($tchar[0],"*")+1),legacy_num(strrpos($tchar[0],"*")-strpos($tchar[0],"*")-1));
 				if (substr($k,0,4)=="n.o." || (substr($k,0,2)=="u." && !$tchar[8] && ($tclan==$clanc || strpos($d[0],":".$k.":")!==false))) $b=0;
 				}
 			}

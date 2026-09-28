@@ -3,8 +3,8 @@
 // game code itself runs on PHP 8 without shims except lib/mysql_compat.php.
 
 $legacyGameRoot = getenv('LEGACY_GAME_ROOT') ? getenv('LEGACY_GAME_ROOT') : '/data/game';
-// Transitional mysql_* API on top of mysqli (see the file for details).
-require_once $legacyGameRoot . '/lib/mysql_compat.php';
+// PHP 5/7 numeric semantics and the transitional mysql_* API (see lib/).
+require_once $legacyGameRoot . '/lib/legacy.php';
 
 // The original login script fetches the game page over HTTP. Keep that
 // request on loopback and attach preview authentication only to this call.

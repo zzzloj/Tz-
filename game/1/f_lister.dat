@@ -14,13 +14,13 @@
 	if (!$start) $start=0;
 	$keys=array_keys((array)($items));
 
-	for ($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) if ($items[$keys[$i]]) {
+	for ($i=$start;$i<legacy_num($start)+legacy_num($g_list) && $i<count((array)($keys));$i++) if ($items[$keys[$i]]) {
 		$k=explode(":",$items[$keys[$i]]);
 if(substr($k[0],0,5)=="i.rr.") {
 		if (substr($k[0],0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$tk)) $item=explode("|",implode("",(array)(file("items/".$tk)))); else die("err: no items/".$k[0]);
 		$item=$item[0];
 		if (strpos($k[0],"..")!==false) $item.=" *";
-		if ($k[1]>1) $item.=" (".$k[1].")"; } else { $tk=""; }
+		if (legacy_cmp($k[1])>1) $item.=" (".$k[1].")"; } else { $tk=""; }
 		if ($to) {
 			$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&to=$to&use=".$k[0]."\">".$item."</a>";
 			} else {	// основное меню
@@ -28,7 +28,7 @@ if(substr($k[0],0,5)=="i.rr.") {
 				}
 		}
 	if ($start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&list=inv\">^ </a>";}
-	if ($start+$g_list<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&list=inv&start=".($start+$g_list)."\">+ (".(count((array)($keys))-$start-$g_list).")</a>";}
+	if (legacy_num($start)+legacy_num($g_list)<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&list=inv&start=".(legacy_num($start)+legacy_num($g_list))."\">+ (".(count((array)($keys))-legacy_num(legacy_num($start))-legacy_num($g_list)).")</a>";}
 
 	// меню
 	$stmp.="\n</p>\n</card>\n<card id=\"menu\" title=\"Меню\">\n<p>\n<a href=\"$PHP_SELF?sid=$sid&use=$(to)\">Использовать</a>\n<br/><a href=\"$PHP_SELF?sid=$sid&drop=$(to)\">Бросить</a>";

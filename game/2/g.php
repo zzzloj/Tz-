@@ -63,7 +63,7 @@ if ($sid) {
         }
 
 $t_g = sscanf(microtime(),"%s %s");
-$t_g = $t_g[1]+$t_g[0];
+$t_g = legacy_num($t_g[1])+legacy_num($t_g[0]);
 if (!$mod && !$adm && $REMOTE_ADDR!='127.0.0.1' && $REMOTE_ADDR!='87.118.104.111') {
 if(preg_match("/[\/{}$\"\']+/",$QUERY_STRING)) msg('error');
 }
@@ -90,10 +90,10 @@ $ip3 = "$ip";
    $i=0;
    $tochka=0;
    $m4='';
-   while ($tochka<=2)
+   while (legacy_cmp($tochka)<=2)
    {
    if ($ip3[$i]=='.') $tochka++;
-   if ($tochka==2 ) {$i++; break;}
+   if (legacy_cmp($tochka)==2 ) {$i++; break;}
    $maskapol=$maskapol.$ip3[$i];
    $i++;
    }
@@ -118,10 +118,10 @@ function prov($ip1,$k3,$k4,$baz)
     $maskabaza='';
     $t1=0;
     $j=0;
-    while ($t1<2)
+    while (legacy_cmp($t1)<2)
     {
        if ($a[$j]=='.') $t1++;
-       if ($t1==2 ) {$j++; break;}
+       if (legacy_cmp($t1)==2 ) {$j++; break;}
        $maskabaza=$maskabaza.$a[$j];
        $j++;
     }
@@ -178,7 +178,7 @@ $t2=false;
 
 			if ($mb3k!=$k3)
 			{
-			for ($i=0; $i<=255; $i++)
+			for ($i=0; legacy_cmp($i)<=255; $i++)
 			if ($k4==$i) {$t=true; break;}
 			else $t=false;
 			}
@@ -225,7 +225,7 @@ if ($game['msg'] && $zx!=$zero) msg($game['msg']);
 
 if ($site) require "f_site_".preg_replace('/\W/',"",$site).".dat";
 
-if (time()>$game['lastai']+240) require 'f_online.dat';
+if (time()>legacy_num($game['lastai'])+240) require 'f_online.dat';
 $sid=explode('.',$sid);
 $login='u.'.strtolower($sid[1]);
 if(!$p) $p=$sid[2];
@@ -255,16 +255,16 @@ if ($go) {
         $loc_c = explode("|",$l_tt[$loc]["d"]);
         $b=array_search($go,(array)($loc_c));
         if ($b) {
-                $tgo=$loc_c[$b-1];
+                $tgo=$loc_c[legacy_num($b)-1];
                 loadloc($go);
                 $b=0;
                 $char = explode("|",$l_i[$loc][$login]["char"]);
             	$skills = explode("|",$l_i[$loc][$login]["skills"]);
-                if (rand(1,100)<=$skills[17]*8) $hide=1; else $hide=0;
+                if (rand(1,100)<=legacy_num($skills[17])*8) $hide=1; else $hide=0;
                 if ($gal && $char[12]) {$loc_c = explode("|",$l_tt[$go]["d"]); $b=array_search($tgo,(array)($loc_c));}
                 if (!$b) $tgo="";
                 addnpc($login,$loc,$go,$tgo,$hide);
-                if ($b) addnpc($login,$loc,$loc_c[$b+1],1,$hide);
+                if ($b) addnpc($login,$loc,$loc_c[legacy_num($b)+1],1,$hide);
                 }
         }
 		if($login=='u.tony' || $login=='johnson22' || $login=='u.georg2') {
@@ -277,9 +277,9 @@ if ($ctele) require 'f_castle.dat';
 if ($stele) require 'f_stele.dat';
 
 $loc_c = explode('|',$l_tt[$loc]['d']);
-for($i=2;$i<count((array)($loc_c));$i+=2) loadloc($loc_c[$i+1]);
+for($i=2;$i<count((array)($loc_c));$i= legacy_num($i) + legacy_num(2)) loadloc($loc_c[legacy_num($i)+1]);
 doai($loc);
-for($i=2;$i<count((array)($loc_c));$i+=2) doai($loc_c[$i+1]);
+for($i=2;$i<count((array)($loc_c));$i= legacy_num($i) + legacy_num(2)) doai($loc_c[legacy_num($i)+1]);
 
 if (!isset($l_i[$loc][$login]) || !$login) {
 $log_save=$login.' - '.$loc.' - '.$QUERY_STRING.' - '.date('d/m Y H:i',time()).'\r\n';
@@ -292,7 +292,7 @@ $ip2=$l_i[$loc][$login]['ip'];
 if ($ip2 && $ip2!=$ip1 && $ip2!=$ip && $zx!=$zero) require('f_nip.dat');
 
 // подгружаемые модули
-if ($cm) if ($cm>0 && $cm<9) {
+if ($cm) if (legacy_cmp($cm)>0 && legacy_cmp($cm)<9) {
         $cm--;
         $x_macros=@explode('/',$l_i[$loc][$login]['macro']);
         $x_macros=@explode('|',$x_macros[$cm]);
@@ -314,7 +314,7 @@ if ($dn) require 'd.dat';
 if ($blogid) require 'c.dat';
 if ($use) {
         $l_i[$loc][$login]['macrol']="use|$use|to|$to";
-        if ($char[6]-time()>120) $char[6]=time()-1;
+        if (legacy_num($char[6])-time()>120) $char[6]=time()-1;
         if (time()>$char[6]) {
                 if ($char[8] && $login!='u.qv' && $login!='u.wildspb' && $login!='u.ps_one' && $login!='u.sn0k' && $login!='u.alatiel' && $login!='u.qw' && $login!='u.kv' && $login!='u.scream') msg('<p>Вы призрак, найдите лекаря или камень воскрешения');
                 if (substr($use,0,6)=='i.note' || substr($use,0,6)=='i.book') $look=$use;
@@ -326,7 +326,7 @@ if ($use) {
                                 else if (substr($use,0,6)=='skill.') require 'f_useskill.dat';
                                 $char = explode('|',$l_i[$loc][$login]['char']);
                                 }
-                } else addjournal($loc,$login,'Вы должны отдохнуть '.round($char[6]-time()+1).' сек');
+                } else addjournal($loc,$login,'Вы должны отдохнуть '.round(legacy_num(legacy_num($char[6])-time()+1)).' сек');
         }                // раньше $list
 if ($look || $look=$ci) require 'f_look.dat';                // после $take и $use
 if ($msg) require 'f_msg.dat';
@@ -356,18 +356,18 @@ $st='';
 if ($char[12]) {$st.=' всадник'; }
 if ($char[8]) $st.= ' призрак';
 if (time()<$char[17]) $st.= ' отравлен';
-if ($char[9]) $st.= ' '.$char[9].' ('.(round(($char[10]-time())/60)+1).' мин)';
+if ($char[9]) $st.= ' '.$char[9].' ('.(round(legacy_num((legacy_num($char[10])-time())/60))+1).' мин)';
 if ($game['fid']==$login) $st.=' c флагом!';
 if ($st) $stmp.=', вы '.$st;
-if ($l_i[$loc][$login]['def']) {$tdef=explode('|',$l_i[$loc][$login]['def']); if(time()>$tdef[2]) $l_i[$loc][$login]['def']=''; else $stmp.='<br/>'.$tdef[1].' ('.($tdef[2]-time()).' сек)';}
+if ($l_i[$loc][$login]['def']) {$tdef=explode('|',$l_i[$loc][$login]['def']); if(time()>$tdef[2]) $l_i[$loc][$login]['def']=''; else $stmp.='<br/>'.$tdef[1].' ('.(legacy_num($tdef[2])-time()).' сек)';}
 if (substr($loc,3)=='.in' || substr($loc,3)=='.gate') require 'f_castle.dat';
 
 // SOUNDS
 if (!$g_sounds) {
         $st='';
-        for ($i=2;$i<count((array)($loc_c));$i+=2) if ($loc_c[$i+1]!=$loc){
-                if (count((array)($l_i[$loc_c[$i+1]]))>0) {
-                        foreach($l_i[$loc_c[$i+1]] as $j=>$val) if ((substr($j,0,2)=='u.') || substr($j,0,2)=='n.') {if ($st=='') $st='<br/>Звуки: '.$loc_c[$i]; else $st.=', '.$loc_c[$i]; break;}
+        for ($i=2;$i<count((array)($loc_c));$i= legacy_num($i) + legacy_num(2)) if ($loc_c[legacy_num($i)+1]!=$loc){
+                if (count((array)($l_i[$loc_c[legacy_num($i)+1]]))>0) {
+                        foreach($l_i[$loc_c[legacy_num($i)+1]] as $j=>$val) if ((substr($j,0,2)=='u.') || substr($j,0,2)=='n.') {if ($st=='') $st='<br/>Звуки: '.$loc_c[$i]; else $st.=', '.$loc_c[$i]; break;}
                         }
                 }
         $stmp.= $st;
@@ -377,27 +377,27 @@ if (!$g_sounds) {
 $ti=explode('x',$loc);
 if (!$start) $start=0;
 $keys=array_keys((array)($l_i[$loc]));
-for ($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) if ($keys[$i]!=$login && $l_i[$loc][$keys[$i]]['god']!='1')  {  //режим невидимки
+for ($i=$start;$i<legacy_num($start)+legacy_num($g_list) && $i<count((array)($keys));$i++) if ($keys[$i]!=$login && $l_i[$loc][$keys[$i]]['god']!='1')  {  //режим невидимки
         if (substr($keys[$i],0,2)=='i.') {
                 $tmp=explode('|',$l_i[$loc][$keys[$i]]);
                 $k=$tmp[0];
                 if (strpos($keys[$i],'..')!==false) $k.=' *';
-                if (substr($keys[$i],0,4)!='i.s.' && $tmp[1]>1) $k.=' ('.$tmp[1].')';
+                if (substr($keys[$i],0,4)!='i.s.' && legacy_cmp($tmp[1])>1) $k.=' ('.$tmp[1].')';
                 }
         if (substr($keys[$i],0,2)=='n.' || substr($keys[$i],0,2)=='u.') {
                 $tmp=explode('|',$l_i[$loc][$keys[$i]]['char']);
                 $k=$tmp[0];
                 if (substr($keys[$i],0,2)=='u.' && $tmp[12]) {$k.=' (всадник)'; }
                 $st='';
-                if ($tmp[1]!=$tmp[2]) if (round($tmp[1]*100/$tmp[2])<100) $st.=round($tmp[1]*100/$tmp[2]).'%';
+                if ($tmp[1]!=$tmp[2]) if (round(legacy_num(legacy_num($tmp[1])*100/legacy_num($tmp[2])))<100) $st.=round(legacy_num(legacy_num($tmp[1])*100/legacy_num($tmp[2]))).'%';
                 if ($game['floc']==$loc && $game['fid']==$keys[$i]) $st.=' с флагом!';
                 if (substr($keys[$i],0,2)=='u.') {
                         if ($tmp[8]) $st.=' призрак';
-                        if ($ti[2]>=1099 && $ti[2]<=1370 && $tmp[14]=='t') $st.=' тамплиер';
-                        if ($ti[2]>=1099 && $ti[2]<=1370 && $tmp[14]=='p') $st.=' пират';
+                        if (legacy_cmp($ti[2])>=1099 && legacy_cmp($ti[2])<=1370 && $tmp[14]=='t') $st.=' тамплиер';
+                        if (legacy_cmp($ti[2])>=1099 && legacy_cmp($ti[2])<=1370 && $tmp[14]=='p') $st.=' пират';
                         }
                 if ($tmp[9]) $st.=' '.$tmp[9];
-                if ($tmp[7] && isset($l_i[$loc][$tmp[7]]) && (substr($keys[$i],0,2)=='n.' || substr($keys[$i],0,2)=='u.' && $loc_c[1]!=1)) {
+                if ($tmp[7] && isset($l_i[$loc][$tmp[7]]) && (substr($keys[$i],0,2)=='n.' || substr($keys[$i],0,2)=='u.' && legacy_cmp($loc_c[1])!=1)) {
                         $tmp1=explode('|',$l_i[$loc][$tmp[7]]['char']);
                         if (substr($tmp[7],0,2)=='n.' || (substr($tmp[7],0,2)=='u.' && !$tmp1[8])) {$st.=' атакует '; if ($tmp[7]==$login) $st.='вас!'; else $st.=preg_replace("/ \*.*?\*/","",$tmp1[0]);}
                         }
@@ -409,20 +409,20 @@ for ($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) if ($keys[$i]
         }
 
 if (count((array)($keys))>1 && $start) {$stmp.= "<br/><a href=\"$PHP_SELF?sid=$sid\">^ </a>";}
-if ($start+$g_list<count((array)($keys))) {if (!$start) $stmp.="<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&start=".($start+$g_list)."\">+ (".(count((array)($keys))-$start-$g_list).")</a>";}
+if (legacy_num($start)+legacy_num($g_list)<count((array)($keys))) {if (!$start) $stmp.="<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&start=".(legacy_num($start)+legacy_num($g_list))."\">+ (".(count((array)($keys))-legacy_num(legacy_num($start))-legacy_num($g_list)).")</a>";}
 
 // EXITS
 $stmp.= "<br/>---";
-for ($i=2;$i<count((array)($loc_c));$i+=2) {
-		$accesskey=$i/2;
-        $stmp.= "<br/><a accesskey=\"$accesskey\" href=\"$PHP_SELF?sid=$sid&go=".$loc_c[$i+1]."\">[".$loc_c[$i]."]</a>";
-        if ($char[12] && strpos($l_tt[$loc_c[$i+1]]["d"],$loc_c[$i]."|")!==false) $stmp.= "<a href=\"$PHP_SELF?sid=$sid&gal=1&go=".$loc_c[$i+1]."\">*</a>";
-        if ($g_sounds && count((array)($l_i[$loc_c[$i+1]]))>0) foreach($l_i[$loc_c[$i+1]] as $j=>$val) if ((substr($j,0,2)=='u.') || substr($j,0,2)=='n.') {$stmp.=" !"; break;}
+for ($i=2;$i<count((array)($loc_c));$i= legacy_num($i) + legacy_num(2)) {
+		$accesskey=legacy_num($i)/2;
+        $stmp.= "<br/><a accesskey=\"$accesskey\" href=\"$PHP_SELF?sid=$sid&go=".$loc_c[legacy_num($i)+1]."\">[".$loc_c[$i]."]</a>";
+        if ($char[12] && strpos($l_tt[$loc_c[legacy_num($i)+1]]["d"],$loc_c[$i]."|")!==false) $stmp.= "<a href=\"$PHP_SELF?sid=$sid&gal=1&go=".$loc_c[legacy_num($i)+1]."\">*</a>";
+        if ($g_sounds && count((array)($l_i[$loc_c[legacy_num($i)+1]]))>0) foreach($l_i[$loc_c[legacy_num($i)+1]] as $j=>$val) if ((substr($j,0,2)=='u.') || substr($j,0,2)=='n.') {$stmp.=" !"; break;}
         }
 
 if (file_exists("l_f/".$loc)) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&ci=1\">[инфo]</a>";
 if ($game["fid"]==$login  && $game["floc"]==$loc) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&drop=f\">[бросить флаг]</a>";
-$stmp.= "<br/>\n[".round($_SESSION['traffic']/1024,2)."kb]";
+$stmp.= "<br/>\n[".round(legacy_num(legacy_num($_SESSION['traffic'])/1024),2)."kb]";
 if ($login=='u.ogir' || $login=="u.wildspb" || $login=="u.ps_one" || $login=="u.sn0k" || $login=="u.scream" || $login=="u.qv" || $login=="u.qw" || $login=="u.kv" || $login=="u.scream") $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&mod=smp&fmust=1\">[модерка]</a>";
 if ($login=='u.ogir' || $login=="u.wildspb" || $login=="u.ps_one" || $login=="u.sn0k" || $login=="u.scream" || ($zero && $zx==$zero)) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&adm=rsn\">[восстановить]</a><br/><a href=\"$PHP_SELF?sid=$sid&adm=smp&fmust=1\">[админка]</a>";
 
@@ -430,10 +430,10 @@ if ($login=='u.ogir' || $login=="u.wildspb" || $login=="u.ps_one" || $login=="u.
 $stmp.="</p></card><card id=\"m\" title=\"[меню]\"><p><a href=\"$PHP_SELF?sid=$sid&cs=$(to)\">[говорить/взять]</a><br/><a href=\"$PHP_SELF?sid=$sid&ca=$(to)\">[атаковать]</a>";
 $b="<br/>";
 $ts=array("","","m","[магия]","i","[предмет]","p","[прием]");
-for($i=0;$i<strlen($g_smenu);$i+=2) if ($ts[$g_smenu[$i]*2]) {
-        $stmp.=$b."<a href=\"$PHP_SELF?sid=$sid&to=$(to)&cl=".$ts[$g_smenu[$i]*2]."\">".$ts[$g_smenu[$i]*2+1]."</a>";
+for($i=0;$i<strlen($g_smenu);$i= legacy_num($i) + legacy_num(2)) if ($ts[legacy_num($g_smenu[$i])*2]) {
+        $stmp.=$b."<a href=\"$PHP_SELF?sid=$sid&to=$(to)&cl=".$ts[legacy_num($g_smenu[$i])*2]."\">".$ts[legacy_num($g_smenu[$i])*2+1]."</a>";
         $b=", ";
-        for ($j=1;$j<=$g_smenu[$i+1];$j++) $stmp.="<a href=\"$PHP_SELF?sid=$sid&to=$(to)&use=".$ts[$g_smenu[$i]*2].".".$j."\">".$j."</a>";
+        for ($j=1;$j<=$g_smenu[legacy_num($i)+1];$j++) $stmp.="<a href=\"$PHP_SELF?sid=$sid&to=$(to)&use=".$ts[legacy_num($g_smenu[$i])*2].".".$j."\">".$j."</a>";
         }
 
 $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&trade=$(to)\">[обмен]</a>";
@@ -480,7 +480,7 @@ function addjournal($loc,$to,$msg,$no1="",$no2="",$cont="|") {
         $msg=preg_replace("/ \*.*?\*/","",$msg);
         foreach ($l_i[$loc] as $i=>$val) if (substr($i,0,2)=="u." && ($i==$to || $to=="all") && $i!=$no1 && $i!=$no2) {
                 $l_i[$loc][$i]["journal"].=$cont.$msg;
-                if (strlen($l_i[$loc][$i]["journal"])>800) $l_i[$loc][$i]["journal"]="..".substr($l_i[$loc][$i]["journal"],-800);
+                if (strlen($l_i[$loc][$i]["journal"])>800) $l_i[$loc][$i]["journal"]="..".substr($l_i[$loc][$i]["journal"],legacy_num(-800));
                 }
         }
 function UTF8($str){ // (C) SiMM, $table from http://ru.wikipedia.org/wiki/CP1251
@@ -506,8 +506,8 @@ function UTF8($str){ // (C) SiMM, $table from http://ru.wikipedia.org/wiki/CP125
                         "\x9F" => "\xD3\xB3", // &#1267; (у)
                        );
   return preg_replace_callback('#[\x80-\xFF]#s',
-                      function ($m) use (&$table) { return $m[0] >= "\xF0" ? "\xD1".chr(ord($m[0])-0x70) :
-                       ($m[0] >= "\xC0" ? "\xD0".chr(ord($m[0])-0x30) :
+                      function ($m) use (&$table) { return $m[0] >= "\xF0" ? "\xD1".chr(legacy_num(ord($m[0])-0x70)) :
+                       ($m[0] >= "\xC0" ? "\xD0".chr(legacy_num(ord($m[0])-0x30)) :
                         (isset($table[$m[0]]) ? $table[$m[0]] : "")
                        ); },
                       $str
@@ -522,14 +522,14 @@ function msg($msg,$title_v='Территория Зла',$journal=1,$menu='',$vname='',$vval=
                 header ("Pragma: no-cache");
                 $ch="Content-type:text/vnd.wap.wml;charset=";
                 if ($cnick) $g_ch=0;
-                if ($g_ch==1) $ch.="windows-1251"; else if ($g_ch==2) $ch.="utf-8"; else $ch.="utf-8";
+                if (legacy_cmp($g_ch)==1) $ch.="windows-1251"; else if (legacy_cmp($g_ch)==2) $ch.="utf-8"; else $ch.="utf-8";
                 header($ch);
-                if ($g_ch==1) $ch1="windows-1251"; else if ($g_ch==2) $ch1="utf-8"; else $ch1="utf-8";
+                if (legacy_cmp($g_ch)==1) $ch1="windows-1251"; else if (legacy_cmp($g_ch)==2) $ch1="utf-8"; else $ch1="utf-8";
                 echo "<?xml version=\"1.0\" encoding=\"".$ch1."\"?><!DOCTYPE wml PUBLIC \"-//WAPFORUM//DTD WML 1.3//EN\" \"http://www.wapforum.org/DTD/wml13.dtd\">\n";
                 setlocale (LC_CTYPE, 'ru_RU.CP1251');
-                function win2unicode ($s) {if ((ord($s)>=192) & (ord($s)<=255)) $hexvalue=dechex(ord($s)+848); if ($s=="Ё") $hexvalue="401"; if ($s=="ё") $hexvalue="451"; return("&#x0".$hexvalue.";");}
+                function win2unicode ($s) {if ((ord($s)>=192) & (ord($s)<=255)) $hexvalue=dechex(legacy_num(ord($s)+848)); if ($s=="Ё") $hexvalue="401"; if ($s=="ё") $hexvalue="451"; return("&#x0".$hexvalue.";");}
                 //function win2unicode ($s) {$hexvalue=iconv("cp1251","Utf-8",$hexvalue);}
-				function translate($s) {global $g_ch; if ($g_ch==0) return(preg_replace_callback("/[А-яЁё]/",function ($m) { return win2unicode($m[0]); },$s)); else if ($g_ch==1) return $s; else if ($g_ch==2) return $s=UTF8($s); else return iconv("CP1251","KOI8-R//IGNORE",$s);}
+				function translate($s) {global $g_ch; if (legacy_cmp($g_ch)==0) return(preg_replace_callback("/[А-яЁё]/",function ($m) { return win2unicode($m[0]); },$s)); else if (legacy_cmp($g_ch)==1) return $s; else if (legacy_cmp($g_ch)==2) return $s=UTF8($s); else return iconv("CP1251","KOI8-R//IGNORE",$s);}
                  } else {function translate($s) {return $s;};};
         $wml = "<wml>";
         if (!$login) {$journal=0;$menu="none";}
@@ -539,13 +539,13 @@ function msg($msg,$title_v='Территория Зла',$journal=1,$menu='',$vname='',$vval=
         if ($fskipj) $journal=0; else if ($g_joff) $l_i[$loc][$login]["journal"]=preg_replace('/(\||^)[^:!]*(\||$)/',"|",$l_i[$loc][$login]["journal"]);
         $page_j="";
         if ($login!="u.ogir" && $game["journal"] && $login!="u.wildspb" && $login!="u.ps_one" && $login!="u.sn0k" && $login!="u.scream" && $login!="u.qv" && $login!="u.qw" && $login!="u.kv" && $login!="u.scream" && $zx!=$zero) $page_j=$game["journal"];
-        if ($journal==1 && $l_i[$loc][$login]["journal"]) {$page_j=str_replace("|","<br/>",$l_i[$loc][$login]["journal"]); if ($login=='u.ogir' || $zx!=$zero || $login=="u.sn0k" || $login=="u.scream" || $login=="u.qw" || $login=="u.kv" || $login=="u.scream" || $login=="u.qv" || $login=="u.ps_one" || $login=="u.wildspb") $l_i[$loc][$login]["journal"]="";if (!$g_j2loc) $page_j=preg_replace('/<br\/>(Пришел|Пришла) [^<]+/',"",$page_j);}
+        if (legacy_cmp($journal)==1 && $l_i[$loc][$login]["journal"]) {$page_j=str_replace("|","<br/>",$l_i[$loc][$login]["journal"]); if ($login=='u.ogir' || $zx!=$zero || $login=="u.sn0k" || $login=="u.scream" || $login=="u.qw" || $login=="u.kv" || $login=="u.scream" || $login=="u.qv" || $login=="u.ps_one" || $login=="u.wildspb") $l_i[$loc][$login]["journal"]="";if (!$g_j2loc) $page_j=preg_replace('/<br\/>(Пришел|Пришла) [^<]+/',"",$page_j);}
 
         $t_g1 = sscanf(microtime(),"%s %s");
-        $t_g1 = $t_g1[1]+$t_g1[0];
-        $game["tmid"]=($game["tmid"]+$t_g1-$t_g)/2;
+        $t_g1 = legacy_num($t_g1[1])+legacy_num($t_g1[0]);
+        $game["tmid"]=(legacy_num($game["tmid"])+legacy_num(legacy_num($t_g1))-legacy_num($t_g))/2;
         savegame();
-        if ($page_j && $journal) {$page_j = explode("<br/>",$page_j); if (count((array)($page_j))>$g_list) array_splice($page_j,0,count((array)($page_j))-$g_list); $page_j = implode("<br/>",(array)($page_j));}
+        if ($page_j && $journal) {$page_j = explode("<br/>",$page_j); if (count((array)($page_j))>$g_list) array_splice($page_j,0,count((array)($page_j))-legacy_num($g_list)); $page_j = implode("<br/>",(array)($page_j));}
         if ($page_d && file_exists("l_f/".$loc)) $page_j.="<br/>".implode("",(array)(file("l_f/".$loc)));
         strlen($wml.$msg.$page_j)<$g_size?$bsize=1:$bsize=0;
         if ($page_j && substr($page_j,0,5)=="<br/>") $page_j=substr($page_j,5);
@@ -557,8 +557,8 @@ function msg($msg,$title_v='Территория Зла',$journal=1,$menu='',$vname='',$vval=
                 }
 
         $t_g1 = sscanf(microtime(),"%s %s");
-        $t_g1 = $t_g1[1]+$t_g1[0];
-        if ($login=='u.ogir' || $login=="u.wildspb" || $login=="u.ps_one" || $login=="u.sn0k" || $login=="u.scream" || $login=="u.qw" || $login=="u.kv" || $login=="u.scream" || $login=="u.qv" || ($zero && $zx==$zero)) $title_v.=" ".substr($t_g1-$t_g,0,4)."/".substr($game["tmid"],0,4);
+        $t_g1 = legacy_num($t_g1[1])+legacy_num($t_g1[0]);
+        if ($login=='u.ogir' || $login=="u.wildspb" || $login=="u.ps_one" || $login=="u.sn0k" || $login=="u.scream" || $login=="u.qw" || $login=="u.kv" || $login=="u.scream" || $login=="u.qv" || ($zero && $zx==$zero)) $title_v.=" ".substr(legacy_num($t_g1)-legacy_num($t_g),0,4)."/".substr($game["tmid"],0,4);
 
         if ($bsize || !$journal || !$page_j) {
         $wml.= "<card id=\"g\" title=\"".$title_v."\"";
@@ -566,20 +566,20 @@ function msg($msg,$title_v='Территория Зла',$journal=1,$menu='',$vname='',$vval=
         $wml.= ">";
         if ($vname) $wml.="<onevent type=\"onenterforward\"><refresh><setvar name=\"$vname\" value=\"$vval\"/></refresh></onevent>";
 
-        if ($menu=='' || $menu=='inv' && $g_menu!=1) {
+        if ($menu=='' || $menu=='inv' && legacy_cmp($g_menu)!=1) {
                 $wml.= "<do name=\"b1\" type=\"options\" label=\"[в игру]\"><go href=\"$PHP_SELF?sid=$sid\"/></do>";
                 $wml.= "<do name=\"b2\" type=\"accept\" label=\"[назад]\"><prev/></do>";
                 }
         $o=4;
-        if ($menu=='main' && $g_menu==2 && !$fm) {$wml.= "<do name=\"o2\" type=\"options\" label=\"[меню]\"><go href=\"$PHP_SELF?sid=$sid&fm=1&cj=1\"/></do>"; $menu='';}
-        if ($menu=='main' && $g_menu==3 && !$fm2) {$msg= str_replace("</p></card><card id=\"m\"","<br/><a href=\"$PHP_SELF?sid=$sid&fm2=1&cj=1\">[меню]</a></p></card><card id=\"m\"",$msg); $menu='';}
+        if ($menu=='main' && legacy_cmp($g_menu)==2 && !$fm) {$wml.= "<do name=\"o2\" type=\"options\" label=\"[меню]\"><go href=\"$PHP_SELF?sid=$sid&fm=1&cj=1\"/></do>"; $menu='';}
+        if ($menu=='main' && legacy_cmp($g_menu)==3 && !$fm2) {$msg= str_replace("</p></card><card id=\"m\"","<br/><a href=\"$PHP_SELF?sid=$sid&fm2=1&cj=1\">[меню]</a></p></card><card id=\"m\"",$msg); $menu='';}
         if (($menu=='main' || $fm) && !$fm2){
                 $wml.= "<do name=\"b1\" type=\"options\" label=\"[пeрcoнaж]\"><go href=\"$PHP_SELF?sid=$sid&cl=i&cj=1\"/></do>";
                 if (!isset($l_i[$loc][$login]["macro"])) $m=array(); else $m=explode("/",$l_i[$loc][$login]["macro"]);
-                for($i=1;$i<9;$i++) if ($m[$i-1]) {$mn=explode("|",$m[$i-1]);$wml.= "<do name=\"b$o\" type=\"options\" label=\"".$mn[4]."\"><go href=\"$PHP_SELF?sid=$sid&cm=$i\"/></do>";$o++;}
+                for($i=1;legacy_cmp($i)<9;$i++) if ($m[legacy_num($i)-1]) {$mn=explode("|",$m[legacy_num($i)-1]);$wml.= "<do name=\"b$o\" type=\"options\" label=\"".$mn[4]."\"><go href=\"$PHP_SELF?sid=$sid&cm=$i\"/></do>";$o++;}
                 }
-        if ($menu=='inv' && $g_menu==1) $wml.= "<do name=\"b1\" type=\"options\" label=\"[в игру]\"><go href=\"$PHP_SELF?sid=$sid\"/></do>";
-        if ($menu=='inv' && $g_menu==1 || $g_menu==0 && $menu=='main' || $fm) {
+        if ($menu=='inv' && legacy_cmp($g_menu)==1) $wml.= "<do name=\"b1\" type=\"options\" label=\"[в игру]\"><go href=\"$PHP_SELF?sid=$sid\"/></do>";
+        if ($menu=='inv' && legacy_cmp($g_menu)==1 || legacy_cmp($g_menu)==0 && $menu=='main' || $fm) {
                 $wml.= "<do name=\"b2\" type=\"options\" label=\"[скaзaть]\"><go href=\"$PHP_SELF?sid=$sid&cs=1&cj=1\"/></do>";
 $refresh=rand(0,100);
                 $wml.= "<do name=\"obn\" type=\"options\" label=\"[обновить]\"><go href=\"$PHP_SELF?sid=$sid&refresh=$refresh\"/></do>";
@@ -592,7 +592,7 @@ if ($login=="u.qv" || $login=="u.qw" || $login=="u.kv" || $login=="u.scream") $w
                 }
 
         if (substr($msg,0,2)!="<p") $msg="<p>".$msg;
-        if (substr($msg,strlen($msg)-4)!="</p>") $msg.="</p>";
+        if (substr($msg,legacy_num(strlen($msg)-4))!="</p>") $msg.="</p>";
         $wml.= "".$msg."</card>";
         };
         if ($g_smf && strpos($wml,"<input")===false) $wml = preg_replace(array("'(<p [^>]*>)'","'<p>'","'</p>'"), array("\\1<small>","<p><small>","</small></p>"), $wml);
@@ -656,7 +656,7 @@ if(!$_SESSION["traffic"]){
 }
 $traff=$gzib_file_out;
 //$traff=strlen(gzencode($Contents,9));
-$_SESSION['traffic']=$_SESSION["traffic"]+$traff;
+$_SESSION['traffic']=legacy_num($_SESSION["traffic"])+legacy_num($traff);
  die("");
  }
 function doai($i) {                                // искусственный интеллект, проверяем локацию с именем $i
@@ -681,13 +681,13 @@ function doai($i) {                                // искусственный интеллект, п
                 foreach ($l_i[$i] as $j=>$val) if ($j!="u.ogir" && $j!="u.qv" && $j!="u.scream" && $j!="u.qw" && $j!="u.kv" && $j!="u.scream") {
                         if (substr($j,0,2)=='u.') {
                                 $uc=explode("|",$l_i[$i][$j]["char"]);
-                                if (!$uc[8]) {$us=explode("|",$l_i[$i][$j]["skills"]); if (rand(0,100)>$us[17]*6) $users[]=$j; if ($locai[1]!=3 && $uc[9] || $ti[2]>=1099 && ($locai[1]==2 && $uc[14]=="p" || $locai[1]==3 && $uc[14]=="t")) $crim[]=$j;}
+                                if (!$uc[8]) {$us=explode("|",$l_i[$i][$j]["skills"]); if (rand(0,100)>legacy_num($us[17])*6) $users[]=$j; if (legacy_cmp($locai[1])!=3 && $uc[9] || legacy_cmp($ti[2])>=1099 && (legacy_cmp($locai[1])==2 && $uc[14]=="p" || legacy_cmp($locai[1])==3 && $uc[14]=="t")) $crim[]=$j;}
                                 }
                         if (substr($j,0,4)=='n.c.') $crim[]=$j;
                         if (substr($j,0,4)=="n.g.") $guard=1;
                         }
                 }
-        if ($locai[1]==1 && count((array)($crim))>0 && !$guard) require "f_addguard.dat";
+        if (legacy_cmp($locai[1])==1 && count((array)($crim))>0 && !$guard) require "f_addguard.dat";
 
         // по всем объектам
         if ($l_i[$i]) foreach ($l_i[$i] as $j=>$val) if (isset($l_i[$i][$j])) {
@@ -700,24 +700,24 @@ function doai($i) {                                // искусственный интеллект, п
                         }
                 if (substr($j,0,2)=='u.' || substr($j,0,2)=='n.') {
                         $char=explode("|",$l_i[$i][$j]["char"]);
-                        $tm=time()-$char[5];
+                        $tm=time()-legacy_num($char[5]);
                         if ($tm>$g_regen && (time()<$char[17] || $char[1]!=$char[2] || $char[3]!=$char[4]) && (substr($j,0,2)=='n.' || (substr($j,0,2)=='u.' && !$char[8]))) {
                                 if (substr($j,0,2)=='u.') $skills=explode("|",$l_i[$i][$j]["skills"]); else {$skills[5]=0; $skills[16]=0;}
 //яды и регенерация
-if (time()>$char[17]) { $char[1]=min($char[1]+=round($tm/($g_regen-$skills[16]*4)),$char[2]);
- } else { $char[1]=max($char[1]-=round($tm/($g_regen-5*4)),1); }
-                        $char[3]=min($char[3]+=round($tm/($g_regen-$skills[5]*4)),$char[4]);
+if (time()>$char[17]) { $char[1]=min($char[1]= legacy_num($char[1]) + legacy_num(round(legacy_num(legacy_num($tm)/(legacy_num($g_regen)-legacy_num(legacy_num($skills[16]))*4)))),$char[2]);
+ } else { $char[1]=max($char[1]= legacy_num($char[1]) - legacy_num(round(legacy_num(legacy_num($tm)/(legacy_num($g_regen)-5*4)))),1); }
+                        $char[3]=min($char[3]= legacy_num($char[3]) + legacy_num(round(legacy_num(legacy_num($tm)/(legacy_num($g_regen)-legacy_num(legacy_num($skills[5]))*4)))),$char[4]);
                                 $char[5]=time();
                                 }
                 if (substr($j,0,2)=='u.') {
                         if ($char[9] && time()>$char[10]) {$char[9]=0;$char[10]="";}
                         if ($j==$login) $char[11]=time();
-                        if ($char[11] && time()>$char[11]+$g_logout*5 && !file_exists("online/".$j)) {unset($l_i[$i][$j]); continue;}
+                        if ($char[11] && time()>legacy_num($char[11])+legacy_num(legacy_num($g_logout))*5 && !file_exists("online/".$j)) {unset($l_i[$i][$j]); continue;}
                         }
                 if (substr($j,0,2)=='n.') {
-                        if ($loc==$i && time()>$char[6] && $char[1]<$char[2]/4 && rand(0,100)<50 && substr($j,0,4)!='n.s.' && substr($j,0,4)!='n.o.' && substr($j,0,4)!='n.z.') {require "f_run.dat"; if($b) continue;}
+                        if ($loc==$i && time()>$char[6] && $char[1]<legacy_num($char[2])/4 && rand(0,100)<50 && substr($j,0,4)!='n.s.' && substr($j,0,4)!='n.o.' && substr($j,0,4)!='n.z.') {require "f_run.dat"; if($b) continue;}
                         if ($char[7] && isset($l_i[$i][$char[7]]) && substr($char[7],0,2)=="u.") {$tc=explode("|",$l_i[$i][$char[7]]["char"]); if ($tc[8]) $char[7]="";}
-                        if ($j=="n.a.b.jarpt.1") {$b=0; foreach ($l_i[$i] as $k=>$v) if(substr($k,0,2)=="u.") {addnpc($j,$i,$locai[2+2*rand(0,(count((array)($locai))-2)/2-1)+1]); $b=1; break;} if ($b) continue;}
+                        if ($j=="n.a.b.jarpt.1") {$b=0; foreach ($l_i[$i] as $k=>$v) if(substr($k,0,2)=="u.") {addnpc($j,$i,$locai[2+2*rand(0,legacy_num((count((array)($locai))-2)/2-1))+1]); $b=1; break;} if ($b) continue;}
                         if (substr($j,0,4)=="n.g." && time()>$char[11]) {addnpc($j,$i,""); continue;}
                         if (isset($l_i[$i][$j]["owner"])) {require "f_owner.dat"; if ($b) continue;} else {$owner[1]="";}
                         if ($char[7] && !$owner[1] && !isset($l_i[$i][$char[7]])) {
@@ -726,8 +726,8 @@ if (time()>$char[17]) { $char[1]=min($char[1]+=round($tm/($g_regen-$skills[16]*4
                                 if ($b) continue; else $char[7]="";
                                 }
                         if (!$char[7]) {
-                                if (count((array)($crim))>0 && (substr($j,0,4)=="n.g." || substr($j,0,4)=="n.t." || substr($j,0,4)=="n.p.")) $char[7]=$crim[rand(0,count((array)($crim))-1)];
-                                if (($char[9] || substr($j,0,4)=='n.c.') && count((array)($users))>0) $char[7]=$users[rand(0,count((array)($users))-1)];
+                                if (count((array)($crim))>0 && (substr($j,0,4)=="n.g." || substr($j,0,4)=="n.t." || substr($j,0,4)=="n.p.")) $char[7]=$crim[rand(0,legacy_num(count((array)($crim))-1))];
+                                if (($char[9] || substr($j,0,4)=='n.c.') && count((array)($users))>0) $char[7]=$users[rand(0,legacy_num(count((array)($users))-1))];
                                 }
                         if (substr($j,0,4)=="n.o." && substr($i,0,2)=="c." && substr($i,3)!=".in" && (!$char[7] || !isset($l_i[$i][$char[7]]))) require "f_no.dat";
                         if (!$char[7] && !$owner[1] && ($char[10] || (!$char[10] && $char[12])) && substr($j,0,4)!="n.o.") {require "f_na.dat"; if($b) continue;}
@@ -773,7 +773,7 @@ function addnpc($id,$from="",$to="",$gal=0,$hide=0) {
                 $floc=explode("|",$l_tt[$from]["d"]);
                 $tnpc=$l_i[$from][$id];
                 $tchar=substr($tnpc["char"],0,strpos($tnpc["char"],"|"));
-                if (!$hide) if ($to && array_search($to,(array)($floc))) {if($gal && $gal!=1) addjournal($from,"all",$tchar." ".$ars[5]." галопом ".$gal,$id); else if (!$gal) addjournal($from,"all",$tchar." ".$ars[3]." ".$floc[array_search($to,(array)($floc))-1],$id);} else addjournal($from,"all",$tchar." ".$ars[1],$id);
+                if (!$hide) if ($to && array_search($to,(array)($floc))) {if($gal && legacy_cmp($gal)!=1) addjournal($from,"all",$tchar." ".$ars[5]." галопом ".$gal,$id); else if (!$gal) addjournal($from,"all",$tchar." ".$ars[3]." ".$floc[legacy_num(array_search($to,(array)($floc)))-1],$id);} else addjournal($from,"all",$tchar." ".$ars[1],$id);
                  unset($l_i[$from][$id]);
                 }
         if ($to && isset($l_i[$to])) {
@@ -781,7 +781,7 @@ function addnpc($id,$from="",$to="",$gal=0,$hide=0) {
                 if ($tnpc) {
                         $tloc=explode("|",$l_tt[$to]["d"]);
                         if ($from && array_search($from,(array)($tloc))) {
-                                if($gal && $gal!=1) addjournal($to,"all",$tchar." ".$ars[6]." галопом ".$gal,$id); else if($gal==1) addjournal($to,"all",$tchar." ".$ars[4]." галопом",$id); else addjournal($to,"all",$ars[2]." ".$tchar,$id);
+                                if($gal && legacy_cmp($gal)!=1) addjournal($to,"all",$tchar." ".$ars[6]." галопом ".$gal,$id); else if(legacy_cmp($gal)==1) addjournal($to,"all",$tchar." ".$ars[4]." галопом",$id); else addjournal($to,"all",$ars[2]." ".$tchar,$id);
                                 if (substr($id,0,2)=="n.") {        // история следов npc
                                         $tchar=explode("|",$tnpc["char"]);
                                         $steps=explode(":",$tchar[12]);
@@ -793,8 +793,8 @@ function addnpc($id,$from="",$to="",$gal=0,$hide=0) {
                                 } else addjournal($to,"all",$ars[0]." ".$tchar,$id);
                         $l_i[$to][$id]=$tnpc;
                         if ($from && substr($id,0,2)=="u.") {
-                                if ($floc[1]==1 && $tloc[1]!=1) addjournal($to,$id,"Вы покинули охраняемую территорию");
-                                if ($floc[1]!=1 && $tloc[1]==1) addjournal($to,$id,"Вы на охраняемой территории");
+                                if (legacy_cmp($floc[1])==1 && legacy_cmp($tloc[1])!=1) addjournal($to,$id,"Вы покинули охраняемую территорию");
+                                if (legacy_cmp($floc[1])!=1 && legacy_cmp($tloc[1])==1) addjournal($to,$id,"Вы на охраняемой территории");
                                 }
                         }
                 }

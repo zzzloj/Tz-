@@ -163,23 +163,23 @@ $tmp=$QUERY_STRING;if($tmp=='')$tmp=$_SERVER["QUERY_STRING"];
 $tmp=urldecode($tmp);
 parse_str($tmp, $legacy_qs); extract($legacy_qs);
 
-if ($rep==2) {
-	$from=mktime (0,0,0,$from_month,$from_day,$year);
-	$to=mktime (0,0,0,$to_month,$to_day,$year);
+if (legacy_cmp($rep)==2) {
+	$from=mktime (0,0,0,legacy_num($from_month),legacy_num($from_day),legacy_num($year));
+	$to=mktime (0,0,0,legacy_num($to_month),legacy_num($to_day),legacy_num($year));
 	if ($to<$from) die("Ошибка: Конечная дата раньше начальной");
-	echo "<p><b>MTS Stats</b><br>From: ".date ("d M", $from)."<br/>To &nbsp;&nbsp;&nbsp;: ".date ("d M", $to)."</p>";
+	echo "<p><b>MTS Stats</b><br>From: ".date ("d M", legacy_num($from))."<br/>To &nbsp;&nbsp;&nbsp;: ".date ("d M", legacy_num($to))."</p>";
 	$count=0;
 
 	// по всем датам:
-	for($i=$from;$i<=$to;$i+=60*60*24) {
-		$fname=date ("Y.m.d", $i);
+	for($i=$from;$i<=$to;$i= legacy_num($i) + legacy_num(60*60*24)) {
+		$fname=date ("Y.m.d", legacy_num($i));
 		$num=0;
-		if (@file_exists("1/mts/".$fname)) $num+=@implode("",(array)(file("1/mts/".$fname)));
-		if (@file_exists("2/mts/".$fname)) $num+=@implode("",(array)(file("2/mts/".$fname)));
-		if (@file_exists("3/mts/".$fname)) $num+=@implode("",(array)(file("3/mts/".$fname)));
-		if (@file_exists("4/mts/".$fname)) $num+=@implode("",(array)(file("4/mts/".$fname)));
-		echo date ("d/m", $i).": ".$num."<br/>";
-		$count+=$num;
+		if (@file_exists("1/mts/".$fname)) $num= legacy_num($num) + legacy_num(@implode("",(array)(file("1/mts/".$fname))));
+		if (@file_exists("2/mts/".$fname)) $num= legacy_num($num) + legacy_num(@implode("",(array)(file("2/mts/".$fname))));
+		if (@file_exists("3/mts/".$fname)) $num= legacy_num($num) + legacy_num(@implode("",(array)(file("3/mts/".$fname))));
+		if (@file_exists("4/mts/".$fname)) $num= legacy_num($num) + legacy_num(@implode("",(array)(file("4/mts/".$fname))));
+		echo date ("d/m", legacy_num($i)).": ".$num."<br/>";
+		$count= legacy_num($count) + legacy_num($num);
 		}
 	echo "<br/>Всего: ".$count;
 	}

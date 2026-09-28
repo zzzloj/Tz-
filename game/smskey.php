@@ -37,7 +37,7 @@ $_sInSrv = empty($_GET['s'])?"Пустой номер":$_GET['s'];
  }
 if($_sInMsg) {
  $all = @file ("./playfon/u.".strtolower($_sInMsg));
- $fil=returnkn($_sInSrv)+$all[0];
+ $fil=legacy_num(returnkn($_sInSrv))+legacy_num($all[0]);
  $file = @fopen ("./playfon/u.".strtolower($_sInMsg), "w");
  fwrite($file,$fil);fclose($file);
 } else $_sOutMsg='Error';

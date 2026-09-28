@@ -16,25 +16,25 @@ $arr=array(	// id, name_x, dificalt -%, count, need_tirle_z_z, need_id
 
 $skills=explode("|",$l_i[$loc][$login]["skills"]);
 
-function tsret($s) {if($s>0) return $s; else return 0;}
+function tsret($s) {if(legacy_cmp($s)>0) return $s; else return 0;}
 if (!$to || !isset($arr[$to])) {
 	$sher="Выберите что приготовить:";
-	foreach(array_keys((array)($arr)) as $i) $sher.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&to=$i\">".$arr[$i][1]." (".$arr[$i][3]." ".$arr[$i][4].", шанс: ".tsret($skills[30]*20-$arr[$i][2])."%)</a>";
+	foreach(array_keys((array)($arr)) as $i) $sher.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&to=$i\">".$arr[$i][1]." (".$arr[$i][3]." ".$arr[$i][4].", шанс: ".tsret(legacy_num($skills[30])*20-legacy_num($arr[$i][2]))."%)</a>";
 	msg($sher);
 	}
 
-if ($skills[30]*20-$arr[$to][2]>0) {
-	if (additem($loc,$login,"","i.log","count")==0) msg("Необходима ветка (которую вы можете срезать с любого дерева)");
+if (legacy_num($skills[30])*20-legacy_num($arr[$to][2])>0) {
+	if (legacy_cmp(additem($loc,$login,"","i.log","count"))==0) msg("Необходима ветка (которую вы можете срезать с любого дерева)");
 	$char[6]=time()+15;
 	$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 
 	additem($loc,$login,"",$arr[$to][5],$arr[$to][3],"items","items",1,0,1);	// удаляем ингридиенты
 	additem($loc,$login,"","i.log",1,"items","items",1,0,1);			// удаляем ветку
-	if (rand(0,100)<$skills[30]*20-$arr[$to][2]) {
+	if (rand(0,100)<legacy_num($skills[30])*20-legacy_num($arr[$to][2])) {
 		addjournal($loc,$login,"Вы приготовили ".$arr[$to][1]); 
 		addjournal($loc,"all",$char[0]." приготовил ".$arr[$to][1],$login);
 		additem($loc,"",$login,$arr[$to][0],1);
-		if (round($arr[$to][2]/10)) addexp($loc,$login,round(rand(0,$arr[$to][2]/10)));
+		if (round(legacy_num(legacy_num($arr[$to][2])/10))) addexp($loc,$login,round(rand(0,legacy_num(legacy_num($arr[$to][2])/10))));
 		} else {
 			additem($loc,"",$login,"i.f.b.empty",1);
 			addjournal($loc,$login,"У вас сгорел".$arr[$to][1]); 

@@ -3,12 +3,12 @@
 $gate=substr($loc,0,4)."gate";
 $d=explode("|",$l_tt[$gate]["d"]);
 if (strpos($d[0],"*")===false) msg("Ётот замок никому не принадлежит, € не буду защищать его, пока не определитс€ хоз€ин этой земли!");
-$clanc=substr($d[0],strpos($d[0],"*")+1,strrpos($d[0],"*")-strpos($d[0],"*")-1);
+$clanc=substr($d[0],legacy_num(strpos($d[0],"*")+1),legacy_num(strrpos($d[0],"*")-strpos($d[0],"*")-1));
 
 
 
 // слушаетс€ только клановцев, владеющих замком, гостей нет
-if (strpos($char[0],"*")===false) $clan=""; else $clan=substr($char[0],strpos($char[0],"*")+1,strrpos($char[0],"*")-strpos($char[0],"*")-1);
+if (strpos($char[0],"*")===false) $clan=""; else $clan=substr($char[0],legacy_num(strpos($char[0],"*")+1),legacy_num(strrpos($char[0],"*")-strpos($char[0],"*")-1));
 if ($clanc!=$clan) msg("¬ы не состоите в клане, которому принадлежит этот замок, поэтому мне нечего вам сказать. ");
 
 $dialog=array(

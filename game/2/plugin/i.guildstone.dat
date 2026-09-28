@@ -2,7 +2,7 @@
 // камень гильдии
 
 	$tc=explode("|",$l_i[$loc][$login]["char"]); 
-	if (strpos($tc[0],"*")===false) $clan=""; else $clan=substr($tc[0],strpos($tc[0],"*")+1,strrpos($tc[0],"*")-strpos($tc[0],"*")-1);
+	if (strpos($tc[0],"*")===false) $clan=""; else $clan=substr($tc[0],legacy_num(strpos($tc[0],"*")+1),legacy_num(strrpos($tc[0],"*")-strpos($tc[0],"*")-1));
 	if ($clan && file_exists("../clans/".$clan)) $tmp=unserialize(implode("",(array)(file("../clans/".$clan)))); else $tmp=array();
 
 if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
@@ -10,7 +10,7 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 		if (substr($to,0,2)!="u." || !isset($l_i[$loc][$to])) msg("Приглашать в свой клан можно только игроков");
 		if ($to==$login) msg("Нельзя приглашать в клан самого себя");
 		$tc1=explode("|",$l_i[$loc][$to]["char"]); 
-		if (strpos($tc1[0],"*")===false) $clan1=""; else $clan1=substr($tc1[0],strpos($tc1[0],"*")+1,strrpos($tc1[0],"*")-strpos($tc1[0],"*")-1);
+		if (strpos($tc1[0],"*")===false) $clan1=""; else $clan1=substr($tc1[0],legacy_num(strpos($tc1[0],"*")+1),legacy_num(strrpos($tc1[0],"*")-strpos($tc1[0],"*")-1));
 		if ($clan1==$clan && !$glava) msg($tc1[0]." и так в вашем клане");
 		if ($clan1 && !$glava || $glava && $clan1!=$clan) msg($tc1[0]." состоит в клане ".$clan1.", а приглашать в свой можно только тех, кто не состоит ни в одном клане");
 		// приглашаем...
@@ -72,8 +72,8 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 					$s=$write;
 					$s=str_replace("\xd0\x81","Ё",$s);
 					$s=str_replace("\xd1\x91","ё",$s);
-					$s=preg_replace_callback("/\xd0([\x90-\xbf])/",function ($m) { return chr(ord($m[1])+48); },$s);
-					$s=preg_replace_callback("/\xd1([\x80-\x8f])/",function ($m) { return chr(ord($m[1])+112); },$s);
+					$s=preg_replace_callback("/\xd0([\x90-\xbf])/",function ($m) { return chr(legacy_num(ord($m[1])+48)); },$s);
+					$s=preg_replace_callback("/\xd1([\x80-\x8f])/",function ($m) { return chr(legacy_num(ord($m[1])+112)); },$s);
 
 					$s=str_replace('\\',"",$s);
 					$s=preg_replace('/([^ -}А-я#])|\$|"|\'|&/',"",$s);
@@ -97,32 +97,32 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 				if ($tmp["m"]) {$stmp.="<br/>Неофиты:";
 					if (!$start) $start=0;
 					$keys=array_keys((array)($tmp["m"]));
-					for($i=$start;$i<count((array)($keys)) && $i<$start+$g_list;$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&me=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
-					$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=i.guildstone&start=".($start+$g_list)."\">+</a>"; }
+					for($i=$start;$i<count((array)($keys)) && $i<legacy_num($start)+legacy_num($g_list);$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&me=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
+					$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=i.guildstone&start=".(legacy_num($start)+legacy_num($g_list))."\">+</a>"; }
 				if ($tmp["s"]) {$stmp.="<br/>Сенешали:";
 					if (!$start) $start=0;
 					$keys=array_keys((array)($tmp["s"]));
-					for($i=$start;$i<count((array)($keys)) && $i<$start+$g_list;$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&me=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
-					$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=i.guildstone&start=".($start+$g_list)."\">+</a>"; }
+					for($i=$start;$i<count((array)($keys)) && $i<legacy_num($start)+legacy_num($g_list);$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&me=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
+					$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=i.guildstone&start=".(legacy_num($start)+legacy_num($g_list))."\">+</a>"; }
 				if ($tmp["v"]) {$stmp.="<br/>Вассалы:";
 					if (!$start) $start=0;
 					$keys=array_keys((array)($tmp["v"]));
-					for($i=$start;$i<count((array)($keys)) && $i<$start+$g_list;$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&me=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
-					$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=i.guildstone&start=".($start+$g_list)."\">+</a>"; }
+					for($i=$start;$i<count((array)($keys)) && $i<legacy_num($start)+legacy_num($g_list);$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&me=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
+					$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=i.guildstone&start=".(legacy_num($start)+legacy_num($g_list))."\">+</a>"; }
 					} elseif (isset($tmp["g"][$login])) $stmp.="<br/>В вашем клане, кроме вас, никого нет.";
 				if ($tmp["wg"] && isset($tmp["g"][$login])) {
 					$stmp.="<br/><br/>Ожидают, чтобы стать главой вашего клана:";
 					if (!$start) $start=0;
 					$keys=array_keys((array)($tmp["wg"]));
-					for($i=$start;$i<count((array)($keys)) && $i<$start+$g_list;$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&del=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
-					$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=i.guildstone&start=".($start+$g_list)."\">+</a>";
+					for($i=$start;$i<count((array)($keys)) && $i<legacy_num($start)+legacy_num($g_list);$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&del=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
+					$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=i.guildstone&start=".(legacy_num($start)+legacy_num($g_list))."\">+</a>";
 					}
 				if ($tmp["w"] ) {
 					$stmp.="<br/><br/>Рекруты (ожидают вступления):";
 					if (!$start) $start=0;
 					$keys=array_keys((array)($tmp["w"]));
-					for($i=$start;$i<count((array)($keys)) && $i<$start+$g_list;$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&del=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
-					$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=i.guildstone&start=".($start+$g_list)."\">+</a>";
+					for($i=$start;$i<count((array)($keys)) && $i<legacy_num($start)+legacy_num($g_list);$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&del=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
+					$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=i.guildstone&start=".(legacy_num($start)+legacy_num($g_list))."\">+</a>";
 					} else $stmp.="<br/>Список рекрутов пуст.";
 				$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=i.guildstone\">^</a>";
 				msg($stmp);
@@ -134,7 +134,7 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 			if (substr($to,0,2)==$login) msg("Нельзя выбирать самого себя");
 
 			$tc=explode("|",$l_i[$loc][$to]["char"]); 
-			if (strpos($tc[0],"*")===false) $clan=""; else $clan=substr($tc[0],strpos($tc[0],"*")+1,strrpos($tc[0],"*")-strpos($tc[0],"*")-1);
+			if (strpos($tc[0],"*")===false) $clan=""; else $clan=substr($tc[0],legacy_num(strpos($tc[0],"*")+1),legacy_num(strrpos($tc[0],"*")-strpos($tc[0],"*")-1));
 			if ($clan && file_exists("../clans/".$clan)) $tmp=unserialize(implode("",(array)(file("../clans/".$clan)))); else $tmp=array();
 			if (!isset($tmp["g"][$to]) && !isset($tmp["s"][$to])) {msg("Выбирать можно только главу клана");}
 			if (!isset($tmp["w"][$login]) && !isset($tmp["wg"][$login])) msg("Вы не числитесь в списках рекрутов клана ".$clan.", обратитесь к главе этого клана");
@@ -154,7 +154,7 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 			$file = fopen ("../clans/".$clan, "w"); 
 			if ($file!==false) {fputs($file,serialize($tmp));fclose($file);}
 			$tc=explode("|",$l_i[$loc][$login]["char"]); 
-			if(strpos($tc[0],"*")!==false) $tc[0]=substr($tc[0],0,strpos($tc[0],"*")-1);
+			if(strpos($tc[0],"*")!==false) $tc[0]=substr($tc[0],0,legacy_num(strpos($tc[0],"*")-1));
 			$tc[0].=" *".$clan."*";
 			$l_i[$loc][$login]["char"]=implode("|",(array)($tc));
 			if ($b) addjournal($loc,$to,$tc[0]." теперь глава вашего клана!"); else addjournal($loc,$to,$tc[0]." вступил в ваш клан!");

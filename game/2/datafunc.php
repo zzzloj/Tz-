@@ -113,11 +113,11 @@ global $PassDelay;
   $now = time();
   $sql="select $fields from users where nick='$nick'";
   $result=mysql_query($sql) or die(mysql_error());
-  if (mysql_num_rows($result)!=1) return "Логин не найден";
+  if (legacy_cmp(mysql_num_rows($result))!=1) return "Логин не найден";
 
   $row = mysql_fetch_array($result);
-  $dt = $PassDelay - $now + $row['lastrefr'];
-  if ($dt > 0) return "Повторите через $dt"."sec";
+  $dt = legacy_num($PassDelay) - legacy_num(legacy_num($now)) + legacy_num($row['lastrefr']);
+  if (legacy_cmp($dt) > 0) return "Повторите через $dt"."sec";
 
   if ($row['pass']!=$pass && !$skippass)
   {
@@ -226,7 +226,7 @@ global $RegStatus,$DefRefrInt,$DefMessLim,$CommonMode;
     $sqlSel="select * from users where nick = '$login'";
     $result=mysql_query($sqlSel) or die(mysql_error());
     $Count=mysql_num_rows($result);
-    if ($Count != 0) return "Такой логин уже зарегистирован";
+    if (legacy_cmp($Count) != 0) return "Такой логин уже зарегистирован";
     $now = time();
     $sqllogin ="insert into users (status,sent,regtime,refrint,messlim,mode,nick,pass) values ('$RegStatus','0', '$now', '$DefRefrInt','$DefMessLim', '$CommonMode','$login', '$newpass')";
     mysql_query($sqllogin) or die(mysql_error());
@@ -265,7 +265,7 @@ global $error, $gamedays, $freedays;
   $ok = checkpass($login,$pass,"",$result);
   if ($ok != "") return $ok;
 
-  if ($time > (time() + ($gamedays+$freedays)*24*3600)) return "Период оплаты превышает ".($gamedays+$freedays)." дней";
+  if ($time > (time() + (legacy_num($gamedays)+legacy_num($freedays))*24*3600)) return "Период оплаты превышает ".(legacy_num($gamedays)+legacy_num($freedays))." дней";
   $sqlUpd = "update users set gametime='$time' where nick = '$login' and pass='$pass'";
   mysql_query($sqlUpd) or die(mysql_error());
   mysql_close();

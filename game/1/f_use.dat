@@ -10,5 +10,5 @@ if ($use) {
 			if (substr($use,0,2)=="m.") include "f_usemagic.dat";
 			if (substr($use,0,6)=="skill.") include "f_useskill.dat";
 			}
-		} else addjournal($loc,$login,"Вы должны отдохнуть ".round($char[6]-time()+1)." сек");
+		} else addjournal($loc,$login,"Вы должны отдохнуть ".round(legacy_num(legacy_num($char[6])-time()+1))." сек");
 	}

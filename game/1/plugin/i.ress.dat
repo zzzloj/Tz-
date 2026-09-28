@@ -9,7 +9,7 @@ $l_i[$loc][$login]["char"]=implode("|",(array)($char));
 $tc=explode("|",$l_i[$loc][$to]["char"]);
 if ($tc[8]=="0") msg("$tc[0] - не призрак");
 $skills=explode("|",$l_i[$loc][$login]["skills"]);
-if ($skills[22]>0) {	if (rand(1,200)<40+$skills[22]*10) {
+if (legacy_cmp($skills[22])>0) {	if (rand(1,200)<40+legacy_num(legacy_num($skills[22]))*10) {
 if ( $tc[8]=="1") {
 ressurect($loc,$to);
 additem($loc,$login,"","i.ress",1,"items","items",1,0,1);	

@@ -10,7 +10,7 @@ require_once("datafunc.php");
 		if ($tmp[0]==".") {if (filemtime("online/".$fname)<time()-60) @unlink("online/".$fname); continue;}
 		$tmp[0]=trim($tmp[0]);
 		$tmp[1]=trim($tmp[1]);
-		if (time()>$tmp[1]+$g_logout || $f_all==1 || $f_all==$tmp[0]) {
+		if (time()>legacy_num($tmp[1])+legacy_num($g_logout) || legacy_cmp($f_all)==1 || $f_all==$tmp[0]) {
 			loadloc($tmp[0]);
 			$res="";
 			if (isset($l_i[$tmp[0]][$fname])) {
@@ -37,9 +37,9 @@ require_once("datafunc.php");
 					$res=SetData(substr($fname,2),$tp[0],serialize($auser));
 					if (!$res) addnpc($fname,$tmp[0],"");
 					} 
-				if (!$res || $f_all==1 || $f_all==$tmp[0]) unset($l_i[$tmp[0]][$fname]);
+				if (!$res || legacy_cmp($f_all)==1 || $f_all==$tmp[0]) unset($l_i[$tmp[0]][$fname]);
 				}
-			if (!$res || $f_all==1 || $f_all==$tmp[0]) {@unlink("online/".$fname);$count--;}
+			if (!$res || legacy_cmp($f_all)==1 || $f_all==$tmp[0]) {@unlink("online/".$fname);$count--;}
 			}
 		}
 	closedir($dh);

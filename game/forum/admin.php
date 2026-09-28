@@ -64,7 +64,7 @@ echo '<input type="text" name="nsect" maxlength="100"/><br/>
 		    $nsect=del(substr(trim($nsect),0,200));
 			$tsect=time();
 	        $tposit=mysql_fetch_array(mysql_query("SELECT MAX(position) FROM `fsection`"));
-	        $tposit=$tposit[0]+1;
+	        $tposit=legacy_num($tposit[0])+1;
 	$addsect=mysql_query("INSERT INTO `fsection` VALUES('', '$nsect', '$tsect', '$tposit')");
 		if($addsect){echo "Раздел успешно создан!";} else{echo "Ошибка!";}
 		}
@@ -94,7 +94,7 @@ if($mod=='up')
 	if($pass==$apass)
 	{
 	    $tposit=mysql_fetch_array(mysql_query("SELECT position FROM `fsection` WHERE `id`='$sect'"));
-	    $newposit=$tposit[0]+1;
+	    $newposit=legacy_num($tposit[0])+1;
 		$upsect=mysql_query("UPDATE `fsection` SET `position`='$newposit' WHERE `id`='$sect'");
 		if($upsect){echo "Раздел передвинут!";} else{echo "Ошибка!";}
 		echo "<br/><a href=\"$PHP_SELF?mod=panel&amp;pass=$pass\">админ-панель</a>";
@@ -106,7 +106,7 @@ if($mod=='down')
 	if($pass==$apass)
 	{
 	    $tposit=mysql_fetch_array(mysql_query("SELECT position FROM `fsection` WHERE `id`='$sect'"));
-	    $newposit=$tposit[0]-1;
+	    $newposit=legacy_num($tposit[0])-1;
 		$downsect=mysql_query("UPDATE `fsection` SET `position`='$newposit' WHERE `id`='$sect'");
 		if($downsect){echo "Раздел передвинут!";} else{echo "Ошибка!";}
 		echo "<br/><a href=\"$PHP_SELF?mod=panel&amp;pass=$pass\">админ-панель</a>";

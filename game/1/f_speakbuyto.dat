@@ -4,18 +4,18 @@
 		if (substr($to,0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$ti)) $item=explode("|",implode("",(array)(file("items/".$ti)))); else die("err: no items/".$to);
 		if (strpos($l_i[$loc][$speak]["bank"],$to.":")===false) msg("У меня нет ".$item[0]);
 		$count=intval(preg_replace('/.*'.$to.':(\d+).*/',"\\1",$l_i[$loc][$speak]["bank"]));
-		if ($count==0) msg($item[0]." у меня нет, попробуйте заглянуть в другой раз.",$tchar[0]);
-		if ($count>1 && !$num) {		// кол-во
+		if (legacy_cmp($count)==0) msg($item[0]." у меня нет, попробуйте заглянуть в другой раз.",$tchar[0]);
+		if (legacy_cmp($count)>1 && !$num) {		// кол-во
 			$stmp="<p>Укажите количество:\n<br/><input name=\"num\" format=\"*N\" maxlength=\"7\" value=\"".$count."\"/>\n<br/><a href=\"$PHP_SELF?sid=$sid&speak=$speak&id=$id&to=$to&start=$start&num=$(num)\">Отправить</a>";
 			msg($stmp,$tchar[0],1,"","num",$count);
 			}
-		if (!$num || $num<1) $num=1;
+		if (!$num || legacy_cmp($num)<1) $num=1;
 		if ($num>$count) $num=$count;
 		// стоимость
-		if ($item[1]<=1) $trader[0]=1;
+		if (legacy_cmp($item[1])<=1) $trader[0]=1;
 		//require "f_time.dat";
 		//if ($time >= 08.00 and $time < 20.00) $item[1]=$item[1]; else $item[1]=$item[1]*1.1;
-		$price=round($item[1]*$num*$trader[0]);
+		$price=round(legacy_num(legacy_num($item[1])*legacy_num(legacy_num($num))*legacy_num($trader[0])));
 		$money=intval(preg_replace('/.*i\.money:(\d+).*/',"\\1",$l_i[$loc][$login]["items"]));
 		if ($money<$price) msg("У вас недостаточно денег (надо ".$price." монет)");
 		additem($loc,$login,"","i.money",$price,"items","items",0,-1,1);

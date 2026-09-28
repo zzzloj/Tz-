@@ -8,5 +8,5 @@ $link = @mysql_pconnect ($server, $user, $dbpass)
 
 		  $result = mysql_query ("select * from users order by id desc;");
         while($inf = @mysql_fetch_array($result)) {
-@mysql_query ("Update users set regtime2='".date("d-m-Y", $inf["regtime"])."'");}
+@mysql_query ("Update users set regtime2='".date("d-m-Y", legacy_num($inf["regtime"]))."'");}
 ?>

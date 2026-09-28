@@ -18,7 +18,7 @@ if ($to) {
         $zakladka=time()+60;
 						$sher.="<br/><a href=\"$PHP_SELF?sid=$sid&use=skill.steal&to=".$to."&id=".$k[0]."&vk=".$zakladka."\">";
 						if (strpos($k[0],"..")!==false) $tirle_z_z[0].=" *";
-						if ($k[1]>1) $sher.=$tirle_z_z[0]." (".$k[1].")"; else $sher.=$tirle_z_z[0];
+						if (legacy_cmp($k[1])>1) $sher.=$tirle_z_z[0]." (".$k[1].")"; else $sher.=$tirle_z_z[0];
 						$sher.="</a>";
 						}
 	additem($loc,$login,"","i.q.pervor",1,"items","items",1,0,1);

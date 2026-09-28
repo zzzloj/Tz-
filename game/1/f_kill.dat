@@ -15,7 +15,7 @@
                                         $item="труп (".$tchar[0].")|";
                                          
 					if ($tcrim || substr($to,0,4)=="n.a." || (substr($loc,0,2)=="c." && substr($loc,3)!=".in")) $item.="1|"; else $item.="0|";
-					$item.=time()+$g_destroy."|";
+					$item.=time()+legacy_num($g_destroy)."|";
 					if ((strpos($l_i[$loc][$to]["items"],"i.q.pjpt:")===false || substr($to,0,2)!="u.")  && $loc!='arena') {
 						// предметы
 						if ($l_i[$loc][$to]["items"]) $item.=str_replace("|",",",$l_i[$loc][$to]["items"])."|"; else $item.="|";
@@ -77,8 +77,8 @@
 									$l_i[$loc][$to]["items"]=$npc["items"];
 									$l_i[$loc][$to]["equip"]=$npc["equip"];
 									$l_i[$loc][$to]["osvej"]=$npc["osvej"];
-									addtimer($resp[0],0,rand($resp[1],$resp[2]),$l_i[$loc][$to],0);
-									} else {if ($tchar[10]) $tt="|".$tchar[10]; else $tt=""; addtimer($resp[0],0,rand($resp[1],$resp[2]),$to."|".$resp[1].":".$resp[2].$tt,0);}
+									addtimer($resp[0],0,rand(legacy_num($resp[1]),legacy_num($resp[2])),$l_i[$loc][$to],0);
+									} else {if ($tchar[10]) $tt="|".$tchar[10]; else $tt=""; addtimer($resp[0],0,rand(legacy_num($resp[1]),legacy_num($resp[2])),$to."|".$resp[1].":".$resp[2].$tt,0);}
 								}
 					if ($l_i[$loc][$from]["kvest"]) {
 					$kvest=explode("|",$l_i[$loc][$from]["kvest"]);
@@ -104,11 +104,11 @@
 							}
 						if (substr($to,0,2)!="u.") {	//killedto
 							$skills=explode("|",$l_i[$loc][$from]["skills"]);
-							$skills[3]+=$twar[13];
+							$skills[3]= legacy_num($skills[3]) + legacy_num($twar[13]);
 							addjournal($loc,$from,"Опыт +".intval($twar[13]));
-							if ($skills[3]>$fwar[13]*$g_exp) {$skills[3]=0; $skills[4]+=1; addjournal($loc,$from,"Вы получили 1 очко опыта!");}
+							if ($skills[3]>legacy_num($fwar[13])*legacy_num($g_exp)) {$skills[3]=0; $skills[4]= legacy_num($skills[4]) + legacy_num(1); addjournal($loc,$from,"Вы получили 1 очко опыта!");}
 							$l_i[$loc][$from]["skills"]=implode("|",(array)($skills));
-							if ($skills[3]==0) calcparam($loc,$from); //levelup
+							if (legacy_cmp($skills[3])==0) calcparam($loc,$from); //levelup
 							}
 						
 												} else {
@@ -126,12 +126,12 @@
 						$usr=$us[1];
 							$sk=explode("|",$l_i[$loc][$usr]['skills']);
 							$fw=explode("|",$l_i[$loc][$usr]['war']);
-							$exp=$twar[13]/2;
-							$sk[3]+=$exp;
+							$exp=legacy_num($twar[13])/2;
+							$sk[3]= legacy_num($sk[3]) + legacy_num($exp);
 							addjournal($loc,$usr,'Onыт +'.intval($exp));
-							if ($sk[3]>$fw[13]*$g_exp) {$sk[3]=0; $sk[4]+=1; addjournal($loc,$usr,'Bы noлyчuлu 1 oчko onытa!');}
+							if ($sk[3]>legacy_num($fw[13])*legacy_num($g_exp)) {$sk[3]=0; $sk[4]= legacy_num($sk[4]) + legacy_num(1); addjournal($loc,$usr,'Bы noлyчuлu 1 oчko onытa!');}
 							$l_i[$loc][$usr]['skills']=implode('|',(array)($sk));
-							if ($sk[3]==0) calcparam($loc,$usr); //levelup
+							if (legacy_cmp($sk[3])==0) calcparam($loc,$usr); //levelup
 							}
 						}
 					}

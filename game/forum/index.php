@@ -55,7 +55,7 @@ mysql_select_db($bd_bd);
 	if($check_ban[0] && $check_ban[3]>time())
 	 {
 	 	 $timeban=$check_ban[3];
-	 	 $timeban=date("H.i/d.m.Y",$timeban+$sdvig);
+	 	 $timeban=date("H.i/d.m.Y",legacy_num(legacy_num($timeban)+legacy_num($sdvig)));
 	 	 $timeban="выход на свободу<br/>$timeban<br/>";
 	 echo "$errorban $timeban $exitlog"; exit;
 	 }
@@ -65,7 +65,7 @@ mysql_select_db($bd_bd);
 	{
     $addonline=mysql_query("INSERT INTO `fonline` VALUES('', '$login', '$stt')");
     }
-	$ent=$stt-$tonline;
+	$ent=legacy_num($stt)-legacy_num($tonline);
     $delonline=mysql_query("DELETE FROM `fonline` WHERE `time`<'$ent'");	
 	$online=mysql_num_rows(mysql_query("select * from `fonline`"));
     if(!$act)
@@ -95,17 +95,17 @@ $countp=mysql_num_rows(mysql_query("select * from `fposts` where fs='$datas[0]'"
           else
           {
 if(!$pg) {$pg=1; $ots=0; $dot=$quota_t;}
-else {$ots=$pg*$quota_t-$quota_t; $dot=$quota_t;}
-$yyy=$ots+$quota_t; $whhh=$ots; if($whhh=='0'){$whhh='1';}
+else {$ots=legacy_num($pg)*legacy_num(legacy_num($quota_t))-legacy_num($quota_t); $dot=$quota_t;}
+$yyy=legacy_num($ots)+legacy_num($quota_t); $whhh=$ots; if($whhh=='0'){$whhh='1';}
 $listt=mysql_query("SELECT * FROM `fthemes` WHERE fs='$sect' ORDER BY 'time' DESC LIMIT $ots,$dot");
 //$listt=mysql_query("select * from `fthemes`  where fs='$sect' order by 'time' asc limit $ots,$dot");
          while($datat=mysql_fetch_array($listt))
 {
-     $ta=date("H.i/d.m.y",$datat[4]+$sdvig);
+     $ta=date("H.i/d.m.y",legacy_num(legacy_num($datat[4])+legacy_num($sdvig)));
 $count_t=mysql_num_rows(mysql_query("select * from `fthemes` where fs='$sect'"));
 $pcount=mysql_num_rows(mysql_query("select * from `fposts` where tid='$datat[0]'"));
    $whois=mysql_fetch_array(mysql_query("select `ulogin` from `fposts` where tid='$datat[0]' order by `id` DESC"));
-if($pcount>0) {$posts="$pcount ($whois[0])";}
+if(legacy_cmp($pcount)>0) {$posts="$pcount ($whois[0])";}
    else {$posts="нет";}
    $datat[3]=str_replace("%","",$datat[3]);
    $datat[3]=str_replace("/","",$datat[3]);
@@ -123,17 +123,17 @@ echo "<a href=\"index.php?act=mtem&amp;sect=$sect&amp;tema=$datat[0]&amp;login=$
 }
 }
 }
-     if($count_t>0)
+     if(legacy_cmp($count_t)>0)
      {
 echo "<small>Темы $whhh-$yyy из $count_t</small><br/>";
-$totalp=ceil($count_t/$quota_t);
+$totalp=ceil(legacy_num(legacy_num($count_t)/legacy_num($quota_t)));
 echo "<small>Страница $pg из $totalp</small><br/>";
-$nextp=$pg+1;
-$prevp=$pg-1;
-if($pg==1 and $totalp>1) {echo "<small>[<a href=\"index.php?pg=$nextp&amp;act=sect&amp;sect=$sect&amp;login=$login&amp;pass=$pass\">далее</a>]</small>";} 
-if($pg>1 and $totalp>$pg) {echo "<small>[<a href=\"$PHP_SELF?pg=$prevp&amp;act=sect&amp;sect=$sect&amp;login=$login&amp;pass=$pass\">назад</a>] [<a href=\"$PHP_SELF?pg=$nextp&amp;act=sect&amp;sect=$sect&amp;login=$login&amp;pass=$pass\">далее</a>]</small>";} 
-if($pg==$totalp and $pg!=1) {echo "<small>[<a href=\"$PHP_SELF?pg=$prevp&amp;act=sect&amp;sect=$sect&amp;login=$login&amp;pass=$pass\">назад</a>]</small>";}
-if($totalp>1)
+$nextp=legacy_num($pg)+1;
+$prevp=legacy_num($pg)-1;
+if(legacy_cmp($pg)==1 and legacy_cmp($totalp)>1) {echo "<small>[<a href=\"index.php?pg=$nextp&amp;act=sect&amp;sect=$sect&amp;login=$login&amp;pass=$pass\">далее</a>]</small>";} 
+if(legacy_cmp($pg)>1 and $totalp>$pg) {echo "<small>[<a href=\"$PHP_SELF?pg=$prevp&amp;act=sect&amp;sect=$sect&amp;login=$login&amp;pass=$pass\">назад</a>] [<a href=\"$PHP_SELF?pg=$nextp&amp;act=sect&amp;sect=$sect&amp;login=$login&amp;pass=$pass\">далее</a>]</small>";} 
+if($pg==$totalp and legacy_cmp($pg)!=1) {echo "<small>[<a href=\"$PHP_SELF?pg=$prevp&amp;act=sect&amp;sect=$sect&amp;login=$login&amp;pass=$pass\">назад</a>]</small>";}
+if(legacy_cmp($totalp)>1)
 {
 echo "<br/><small><input type=\"text\" name=\"pg\" size=\"2\" value=\"$totalp\"/>
 <anchor> перейти
@@ -175,7 +175,7 @@ echo "<br/><small><input type=\"text\" name=\"pg\" size=\"2\" value=\"$totalp\"/
             $tname=ChangeSt(substr(trim($tname),0,200));
 			$ttime=time();
 $posit=mysql_fetch_array(mysql_query("SELECT MAX(position) FROM `fthemes` WHERE fs='$sect' and position!='99999999'"));
-$posit=$posit[0]+1;
+$posit=legacy_num($posit[0])+1;
 $checkt=mysql_fetch_array(mysql_query("SELECT name FROM `fthemes` WHERE name='$tname' and fs='$sect'"));
 $checksect=mysql_fetch_array(mysql_query("SELECT * FROM `fsection` where id='$sect'"));
 if($checkt[0] || empty($checksect)) {echo "$errort";}
@@ -272,13 +272,13 @@ $tname=mysql_fetch_array(mysql_query("SELECT name FROM `fthemes`where id='$tema'
 		else
 		{
 if(!$pg) {$pg=1; $ots=0; $dot=$quota_p;}
-else {$ots=$pg*$quota_p-$quota_p; $dot=$quota_p;}
-$yyy=$ots+$quota_p; $whhh=$ots; if($whhh=='0'){$whhh='1';}
+else {$ots=legacy_num($pg)*legacy_num(legacy_num($quota_p))-legacy_num($quota_p); $dot=$quota_p;}
+$yyy=legacy_num($ots)+legacy_num($quota_p); $whhh=$ots; if($whhh=='0'){$whhh='1';}
 $listp=mysql_query("select * from `fposts` where tid='$tema' order by 'time' asc LIMIT $ots,$dot");
 //$listp=mysql_query("select * from `fthemes` where fs='$sect' order by 'time' DESC LIMIT $ots,$dot");
     while($datap=mysql_fetch_array($listp))
 {
-	$ta=date("H.i/d.m.y",$datap[5]+$sdvig);
+	$ta=date("H.i/d.m.y",legacy_num(legacy_num($datap[5])+legacy_num($sdvig)));
 $count_p=mysql_num_rows(mysql_query("select * from `fposts` where tid='$tema'"));
 echo "<a href=\"index.php?act=post&amp;tema=$tema&amp;sect=$sect&amp;login=$login&amp;pass=$pass&amp;touser=$datap[3]\">$datap[3]</a><small>: $ta</small><br/><small>$datap[4]</small><br/>---<br/>\n";
 
@@ -291,17 +291,17 @@ echo "<a href=\"index.php?act=mpost&amp;post=$datap[0]&amp;tema=$tema&amp;sect=$
 }
 }
 }
-	if($count_p>0)
+	if(legacy_cmp($count_p)>0)
 	{
 echo "<small>Сообщения $whhh-$yyy из $count_p</small><br/>";
-$totalp=ceil($count_p/$quota_p);
+$totalp=ceil(legacy_num(legacy_num($count_p)/legacy_num($quota_p)));
 echo "<small>Страница $pg из $totalp</small><br/>";
-$nextp=$pg+1;
-$prevp=$pg-1;
-if($pg==1 and $totalp>1) {echo "<small>[<a href=\"index.php?pg=$nextp&amp;act=tema&amp;tema=$tema&amp;sect=$sect&amp;login=$login&amp;pass=$pass\">далее</a>]</small>";} 
-if($pg>1 and $totalp>$pg) {echo "<small>[<a href=\"$PHP_SELF?pg=$prevp&amp;act=tema&amp;tema=$tema&amp;sect=$sect&amp;login=$login&amp;pass=$pass\">назад</a>] [<a href=\"$PHP_SELF?pg=$nextp&amp;act=tema&amp;tema=$tema&amp;sect=$sect&amp;login=$login&amp;pass=$pass\">далее</a>]</small>";} 
-if($pg==$totalp and $pg!=1) {echo "<small>[<a href=\"$PHP_SELF?pg=$prevp&amp;act=tema&amp;tema=$tema&amp;sect=$sect&amp;login=$login&amp;pass=$pass\">назад</a>]</small>";}
-if($totalp>1)
+$nextp=legacy_num($pg)+1;
+$prevp=legacy_num($pg)-1;
+if(legacy_cmp($pg)==1 and legacy_cmp($totalp)>1) {echo "<small>[<a href=\"index.php?pg=$nextp&amp;act=tema&amp;tema=$tema&amp;sect=$sect&amp;login=$login&amp;pass=$pass\">далее</a>]</small>";} 
+if(legacy_cmp($pg)>1 and $totalp>$pg) {echo "<small>[<a href=\"$PHP_SELF?pg=$prevp&amp;act=tema&amp;tema=$tema&amp;sect=$sect&amp;login=$login&amp;pass=$pass\">назад</a>] [<a href=\"$PHP_SELF?pg=$nextp&amp;act=tema&amp;tema=$tema&amp;sect=$sect&amp;login=$login&amp;pass=$pass\">далее</a>]</small>";} 
+if($pg==$totalp and legacy_cmp($pg)!=1) {echo "<small>[<a href=\"$PHP_SELF?pg=$prevp&amp;act=tema&amp;tema=$tema&amp;sect=$sect&amp;login=$login&amp;pass=$pass\">назад</a>]</small>";}
+if(legacy_cmp($totalp)>1)
 {
 echo "<br/><small><input type=\"text\" name=\"pg\" size=\"2\" value=\"".$totalp."\"/>
 <anchor> перейти
@@ -415,7 +415,7 @@ $delp=mysql_query("DELETE FROM `fposts` WHERE `id`='$post'");
 		if($mod=='ban')
 	{
 		$rtime=time();
-		$tban=$rtime+$bant*86400;
+		$tban=legacy_num($rtime)+legacy_num(legacy_num($bant))*86400;
 $addban=mysql_query("INSERT INTO `fban` VALUES ('', '$userban', '$rtime','$tban')");	
 		if($addban){echo "Юзер забанен!";} else{echo "Ошибка!";}
 	}
@@ -429,7 +429,7 @@ $listo=mysql_query("select * from `fonline` order by `time` DESC");
 echo "онлайн на форуме<br/>";
 while($datao=mysql_fetch_array($listo))
         {
-        	$tin=date("H.i",$datao[2]+$sdvig);
+        	$tin=date("H.i",legacy_num(legacy_num($datao[2])+legacy_num($sdvig)));
 	echo "$datao[1] ($tin)<br/>";
 	    }
 	    echo "<br/><a href=\"index.php?login=$login&amp;pass=$pass\">разделы</a><br/>---<br/>";

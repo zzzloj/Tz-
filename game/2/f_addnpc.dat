@@ -11,7 +11,7 @@ if ($from && $from!=$to) {
 		$floc=explode('|',$l_tt[$from]['d']);
 		$tnpc=$l_i[$from][$id];
 		$tchar=explode('|',$tnpc['char']);
-		if ($to && array_search($to,(array)($floc))) addjournal($from,'all',$tchar[0].' ушел '.$floc[array_search($to,(array)($floc))-1],$id); else addjournal($from,'all',$tchar[0].' исчез',$id);
+		if ($to && array_search($to,(array)($floc))) addjournal($from,'all',$tchar[0].' ушел '.$floc[legacy_num(array_search($to,(array)($floc)))-1],$id); else addjournal($from,'all',$tchar[0].' исчез',$id);
  		unset($l_i[$from][$id]);
 		}
 	}

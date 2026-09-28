@@ -11,9 +11,9 @@ if ($to) {
 	$za=explode('-',$to);
 	$m=explode('..',$to);
 	$v=explode('-',$m[0]);
-	if (!$za[1]) { $zx='1';  } else { $zx=$za[1]+1; }
+	if (!$za[1]) { $zx='1';  } else { $zx=legacy_num($za[1])+1; }
 
-	if (rand(1,$zx*$zx+22)<12) {
+	if (rand(1,legacy_num(legacy_num($zx)*legacy_num(legacy_num($zx))+22))<12) {
 		additem($loc,$login,"",$to,1);
 		additem($loc,$login,"",$use,1);
 		if ($m[1]) {

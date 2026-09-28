@@ -5,8 +5,8 @@ $char=explode("|",$l_i[$loc][$login]["char"]);
 
 if ($newp=="1") {
 	$stmp="<p>Новый пароль: <br/><input name=\"newp\" value=\"".$char[1]."\"/>
-	<br/><a href=\"$PHP_SELF?sid=$sid&newp=$(new)">[сохранить]</a>
-	<br/><a href=\"http://wap.topsat.ru/game/f_faq.php?id=err\">Помощь</a>";
+	<br/><a href=\"$PHP_SELF?sid=$sid&newp=$(new)">[сохранить]</legacy_num(a)>
+	<legacy_num(br)/><a href=\"http://wap.topsat.ru/game/f_faq.php?id=err\">Помощь</a>";
 
 } else  {
 if(preg_match("/[^\da-zA-Z_]+/",$newp)) msg("Недопустимые символы в пароле! Пароль должен быть на латинице!<br/><anchor>назад<prev/></anchor>",$game_title,0,'none');

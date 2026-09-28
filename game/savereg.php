@@ -48,7 +48,7 @@ else
     $sqlSel="select * from users where nick = '$newnn'"; 
     $result=mysql_query($sqlSel) or die(mysql_error()); 
     $Count=mysql_num_rows($result);
-    if ($Count != 0)
+    if (legacy_cmp($Count) != 0)
     {
       LogResult(utf(4),utf(27),"index.php?p=$r");
     }
@@ -74,7 +74,7 @@ if (trim($email) != "" and !validEmail($email))
   LogResult(utf(4),utf(37),"index.php?p=$r");
 }
 
-if (!($subjectlen >= 1 and $subjectlen <= 255))
+if (!(legacy_cmp($subjectlen) >= 1 and legacy_cmp($subjectlen) <= 255))
 {
   LogResult(utf(4),utf(38),"index.php?p=$r");
 }

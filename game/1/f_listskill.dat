@@ -76,22 +76,22 @@ $arr_title_v=array(
 	// в $to цель, если есть
 	$skills=explode("|",$l_i[$loc][$login]["skills"]);
 	$war=explode("|",$l_i[$loc][$login]["war"]);
-	if ($macro==1) $m="&macros=list&num=$num&name=$name&act=$act#add"; else $m='';
+	if (legacy_cmp($macro)==1) $m="&macros=list&num=$num&name=$name&act=$act#add"; else $m='';
 	$stmp="<p>";
-	if (!$macro) $stmp="<a href=\"$PHP_SELF?sid=$sid&look=skill.str\">Сила</a>: ".$skills[0]."<br/><a href=\"$PHP_SELF?sid=$sid&look=skill.dex\">Ловкость</a>: ".$skills[1]."<br/><a href=\"$PHP_SELF?sid=$sid&look=skill.int\">Интеллект</a>: ".$skills[2]."<br/>Опыт: ".$skills[3]."/".$war[13]*$g_exp."<br/>Очки опыта: ".$skills[4];
+	if (!$macro) $stmp="<a href=\"$PHP_SELF?sid=$sid&look=skill.str\">Сила</a>: ".$skills[0]."<br/><a href=\"$PHP_SELF?sid=$sid&look=skill.dex\">Ловкость</a>: ".$skills[1]."<br/><a href=\"$PHP_SELF?sid=$sid&look=skill.int\">Интеллект</a>: ".$skills[2]."<br/>Опыт: ".$skills[3]."/".legacy_num($war[13])*legacy_num($g_exp)."<br/>Очки опыта: ".$skills[4];
 	unset($arr_skills["str"]);unset($arr_skills["dex"]);unset($arr_skills["int"]);
 
 	if (!$start) $start=0;
 
 	$keys=array_keys((array)($arr_skills));
-	for ($i=$start;$i<$start+99 && $i<count((array)($keys));$i++) { //вместо 99 было $g_list
+	for ($i=$start;$i<legacy_num($start)+99 && $i<count((array)($keys));$i++) { //вместо 99 было $g_list
 		if ($to) {
 			if ($keys[$i]=="meditation" ||$keys[$i]=="animaltaming" || $keys[$i]=="steal")
 			$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&to=$to&use=skill.".$keys[$i].$m."\">".$arr_title_v[$keys[$i]]."</a>";
 			} else {	// в след. экране all выберем цель $to для использования
 
 $sk=array_sum((array)($skills));
-$sk1=$sk-$skills[3]-$skills[4]-$skills[2]-$skills[1]-$skills[0];
+$sk1=legacy_num($sk)-legacy_num(legacy_num($skills[3]))-legacy_num(legacy_num($skills[4]))-legacy_num(legacy_num($skills[2]))-legacy_num(legacy_num($skills[1]))-legacy_num($skills[0]);
 if ($sk1>"0") {
 if ($skills[$arr_skills[$keys[$i]]]>"0") { $stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&look=skill.".$keys[$i]."\">".$arr_title_v[$keys[$i]]."</a>: ".intval($skills[$arr_skills[$keys[$i]]]); }
 				if ($keys[$i]=="meditation" || $keys[$i]=="animaltaming" || $keys[$i]=="steal" || $keys[$i]=="necro") if ($skills[$arr_skills[$keys[$i]]]>"0") $stmp.=" <a href=\"$PHP_SELF?sid=$sid&use=skill.".$keys[$i]."\">[+]</a>";

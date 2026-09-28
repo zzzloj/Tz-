@@ -52,7 +52,7 @@ else
     $sqlSel="select * from users where nick = '$nn'";
     $result=mysql_query($sqlSel) or die(mysql_error()); 
     $Count=mysql_num_rows($result);
-    if ($Count != 0)
+    if (legacy_cmp($Count) != 0)
     {
       LogResult($ErrorMess,$NNRegMess,"prev");
     }

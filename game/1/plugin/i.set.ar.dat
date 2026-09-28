@@ -6,13 +6,13 @@ if (strpos($to,"..")===false) msg("в ".$item[0]." нет вставленых камней");
 $keys=explode("|",$to);
 $rF=explode("..",$to);
 $skills=explode("|",$l_i[$loc][$login]["skills"]);
-if ($skills[28]>0) {
+if (legacy_cmp($skills[28])>0) {
 	$char[6]=time()+5;
 	$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 if ($k && ($k==$rF[1] || $k==$rF[2] || $k==$rF[3] || $k==$rF[4])) {
-if ($rF[1]) $shans=$skills[28]*10-5;
-if ($rF[2]) $shans=$skills[28]*10+15;
-if ($rF[3]) $shans=$skills[28]*10+35;
+if ($rF[1]) $shans=legacy_num($skills[28])*10-5;
+if ($rF[2]) $shans=legacy_num($skills[28])*10+15;
+if ($rF[3]) $shans=legacy_num($skills[28])*10+35;
 if ($shans>rand(0,100)) { $k="i.i.".$k;
 addjournal($loc,$login,"Вы извлекли самоцвет");
 additem($loc,"",$login,$k,1);

@@ -14,24 +14,24 @@ $arr=array(	// id, name_x, dificalt -%, count_logs,
 );
 
 $skills=explode("|",$l_i[$loc][$login]["skills"]);
-function tsret($s) {if($s>0) return $s; else return 0;}
+function tsret($s) {if(legacy_cmp($s)>0) return $s; else return 0;}
 if (!$to || !isset($arr[$to])) {
 	$sher="¬ыберите что сделать:";
-	foreach(array_keys((array)($arr)) as $i) $sher.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&to=$i\">".$arr[$i][1]." (".$arr[$i][3]." веток, шанс: ".tsret($skills[27]*20-$arr[$i][2])."%)</a>";
+	foreach(array_keys((array)($arr)) as $i) $sher.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&to=$i\">".$arr[$i][1]." (".$arr[$i][3]." веток, шанс: ".tsret(legacy_num($skills[27])*20-legacy_num($arr[$i][2]))."%)</a>";
 	msg($sher);
 	}
 
-if ($skills[27]*20-$arr[$to][2]>0) {
+if (legacy_num($skills[27])*20-legacy_num($arr[$to][2])>0) {
 	$char[6]=time()+10;
 	$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 
 	additem($loc,$login,"","i.log",$arr[$to][3],"items","items",1,0,1);	// удал€ем ветки
 
-	if (rand(0,100)<$skills[27]*20-$arr[$to][2]) {
+	if (rand(0,100)<legacy_num($skills[27])*20-legacy_num($arr[$to][2])) {
 		addjournal($loc,$login,"¬ы сделали ".$arr[$to][1]); 
 		addjournal($loc,"all",$char[0]." сделал ".$arr[$to][1],$login);
 		additem($loc,"",$login,$arr[$to][0]."_".substr($login,2)."_",1);
-		if (round($arr[$to][2]/10)) addexp($loc,$login,round($arr[$to][2]/10));
+		if (round(legacy_num(legacy_num($arr[$to][2])/10))) addexp($loc,$login,round(legacy_num(legacy_num($arr[$to][2])/10)));
 		} else {
 			addjournal($loc,$login,"¬ы не смогли сделать ".$arr[$to][1]); 
 			addjournal($loc,"all",$char[0]." не смог сделать ".$arr[$to][1],$login);

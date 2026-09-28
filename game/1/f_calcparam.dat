@@ -7,18 +7,18 @@
 	$char=explode('|',$auser['char']);
 	$skills=explode('|',$auser['skills']);
 
-	$char[2]=10+$skills[0]*10;
-	if ($game['fid']==$login && $game['floc']==$loc) $char[2]+=10;
-	$char[4]=10+$skills[2]*10;
+	$char[2]=10+legacy_num(legacy_num($skills[0]))*10;
+	if ($game['fid']==$login && $game['floc']==$loc) $char[2]= legacy_num($char[2]) + legacy_num(10);
+	$char[4]=10+legacy_num(legacy_num($skills[2]))*10;
 
 	$twar=array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
-	$twar[6]=$skills[1]+$skills[12]+($skills[0]-1)*2;
-	$twar[7]=2*($skills[1]+$skills[11]+($skills[0]-1)*2);
-	$twar[9]=5*($skills[2]+$skills[15]-$skills[0]);
-	$twar[10]=10*($skills[2]+$skills[14]-$skills[0]);
-	$twar[11]=15*($skills[14]+$skills[2]-$skills[0]);
+	$twar[6]=legacy_num($skills[1])+legacy_num(legacy_num($skills[12]))+(legacy_num($skills[0])-1)*2;
+	$twar[7]=2*(legacy_num($skills[1])+legacy_num(legacy_num($skills[11]))+(legacy_num($skills[0])-1)*2);
+	$twar[9]=5*(legacy_num($skills[2])+legacy_num(legacy_num($skills[15]))-legacy_num($skills[0]));
+	$twar[10]=10*(legacy_num($skills[2])+legacy_num(legacy_num($skills[14]))-legacy_num($skills[0]));
+	$twar[11]=15*(legacy_num($skills[14])+legacy_num(legacy_num($skills[2]))-legacy_num($skills[0]));
 	// считаем крутость exp
-	for($i=0;$i<count((array)($skills));$i++) if ($i!=3) $twar[13]+=$skills[$i];	// кроме level
+	for($i=0;$i<count((array)($skills));$i++) if (legacy_cmp($i)!=3) $twar[13]= legacy_num($twar[13]) + legacy_num($skills[$i]);	// кроме level
 
 // что одето
 $b=0;
@@ -37,38 +37,38 @@ if ($auser['equip']) {
 		if (substr($equip[$i],0,4)=='i.w.' && $item[4]) $str=$item[4];
 		$str=explode(':',$str);
 
-		if ($skills[1]<$str[1]) $dex = $str[1]-$skills[1]; else $dex=0;
-		if ($skills[2]<$str[2]) $int = $str[2]-$skills[2]; else $int=0;
-		if ($skills[0]<$str[0]) $str = $str[0]-$skills[0]; else $str=0;// обязат. последним!
-		$hits+=$dex*10;
+		if ($skills[1]<$str[1]) $dex = legacy_num($str[1])-legacy_num($skills[1]); else $dex=0;
+		if ($skills[2]<$str[2]) $int = legacy_num($str[2])-legacy_num($skills[2]); else $int=0;
+		if ($skills[0]<$str[0]) $str = legacy_num($str[0])-legacy_num($skills[0]); else $str=0;// обязат. последним!
+		$hits= legacy_num($hits) + legacy_num(legacy_num($dex)*10);
 
-		if (substr($equip[$i],0,4)=='i.a.' && substr($equip[$i],0,6)!='i.a.s.') {$tarm=$item[2]-$str*2-$int*2; if ($tarm>0) $twar[5]+=$tarm;}
-		if (substr($equip[$i],0,6)=='i.a.s.') {$tarm=$item[2]-$str*2-$int*2; if ($tarm>0) $twar[8]=$tarm;}
+		if (substr($equip[$i],0,4)=='i.a.' && substr($equip[$i],0,6)!='i.a.s.') {$tarm=legacy_num($item[2])-legacy_num(legacy_num($str))*2-legacy_num(legacy_num($int))*2; if (legacy_cmp($tarm)>0) $twar[5]= legacy_num($twar[5]) + legacy_num($tarm);}
+		if (substr($equip[$i],0,6)=='i.a.s.') {$tarm=legacy_num($item[2])-legacy_num(legacy_num($str))*2-legacy_num(legacy_num($int))*2; if (legacy_cmp($tarm)>0) $twar[8]=$tarm;}
 
 		if (substr($equip[$i],0,4)=='i.w.') {	//weapon
 			$b=1;
-			$twar[3]=$item[5]-round($skills[1]/2);
+			$twar[3]=legacy_num($item[5])-round(legacy_num(legacy_num($skills[1])/2));
 			if (substr($equip[$i],0,6)=='i.w.r.') $twar[4]=1;
 			$twar[12]=$item[6];
 			if ($twar[4]) {		    // стрельба
 				$twar[14]=$item[7];	// патроны
-				$twar[0]+=10*($skills[1]+$skills[10]-1);
-				if ($char[12]) $twar[0]-=10;
+				$twar[0]= legacy_num($twar[0]) + legacy_num(10*(legacy_num($skills[1])+legacy_num(legacy_num($skills[10]))-1));
+				if ($char[12]) $twar[0]= legacy_num($twar[0]) - legacy_num(10);
 				} else {            // холодное оружие
 					$twar[14]=$item[7]; 
-					$twar[0]+=10*($skills[1]+$skills[9]);					
+					$twar[0]= legacy_num($twar[0]) + legacy_num(10*(legacy_num($skills[1])+legacy_num($skills[9])));					
 			}
 			if ($item[6]=='магией') {//посохи
-			$twar[1]+=$item[2]-$str*2-$int*4;
-			$twar[2]+=$item[3]-$str*2-$int*5;
+			$twar[1]= legacy_num($twar[1]) + legacy_num(legacy_num($item[2])-legacy_num(legacy_num($str))*2-legacy_num(legacy_num($int))*4);
+			$twar[2]= legacy_num($twar[2]) + legacy_num(legacy_num($item[3])-legacy_num(legacy_num($str))*2-legacy_num(legacy_num($int))*5);
 			}else{
-			$twar[1]+=$item[2]-$str*2-$int*2;
-			$twar[2]+=$item[3]-$str*2-$int*2;
+			$twar[1]= legacy_num($twar[1]) + legacy_num(legacy_num($item[2])-legacy_num(legacy_num($str))*2-legacy_num(legacy_num($int))*2);
+			$twar[2]= legacy_num($twar[2]) + legacy_num(legacy_num($item[3])-legacy_num(legacy_num($str))*2-legacy_num(legacy_num($int))*2);
 			}
 			/////////////////////////////////////////////////////////////
 			if(strpos($auser['items'],$equip[$i].'-')===false) $za=explode('-',$equip[$i]);
-			if ($za) { if($za[1]>6) { $za[1]=6; } $twar[2]+=$za[1];  $twar[1]+=$za[1];}
-			if (substr($equip[$i],0,8)!='i.w.r.c.') {$twar[1]+=$skills[0];$twar[2]+=$skills[0];}
+			if ($za) { if(legacy_cmp($za[1])>6) { $za[1]=6; } $twar[2]= legacy_num($twar[2]) + legacy_num($za[1]);  $twar[1]= legacy_num($twar[1]) + legacy_num($za[1]);}
+			if (substr($equip[$i],0,8)!='i.w.r.c.') {$twar[1]= legacy_num($twar[1]) + legacy_num($skills[0]);$twar[2]= legacy_num($twar[2]) + legacy_num($skills[0]);}
 			}
 		// артефакт
 		if ($tid!=$equip[$i] || strpos($equip[$i],'..')!==false) {
@@ -79,7 +79,7 @@ if ($auser['equip']) {
 				for($k=0;$k<count((array)($ti));$k++) {
 					$tir=explode(':',$ti[$k]);
 					if (strpos($art,'|'.$regF[1][$j])===false) {
-						if($tir[0]>50) $char[$tir[0]-50]+=$tir[1]; else $twar[$tir[0]]+=$tir[1];
+						if(legacy_cmp($tir[0])>50) $char[legacy_num($tir[0])-50]= legacy_num($char[$tir[0]-50]) + legacy_num($tir[1]); else $twar[$tir[0]]= legacy_num($twar[$tir[0]]) + legacy_num($tir[1]);
 						}
 					}
 				$art.='|'.$regF[1][$j];
@@ -89,17 +89,17 @@ if ($auser['equip']) {
 	}
 
 if (!$b) {					// рукопашная
-	$twar[1]+=$skills[0]+$skills[8]-1;
-	$twar[2]+=$skills[0]+$skills[8]+1;
-	$twar[0]+=10*($skills[1]+$skills[8]+2);
-	if ($twar[0]>=100) $twar[0]=95;
-	if ($char[12]) $twar[0]-=20;
-	$twar[3] = 5-round($skills[1]/2);
+	$twar[1]= legacy_num($twar[1]) + legacy_num(legacy_num($skills[0])+legacy_num(legacy_num($skills[8]))-1);
+	$twar[2]= legacy_num($twar[2]) + legacy_num(legacy_num($skills[0])+legacy_num(legacy_num($skills[8]))+1);
+	$twar[0]= legacy_num($twar[0]) + legacy_num(10*(legacy_num($skills[1])+legacy_num(legacy_num($skills[8]))+2));
+	if (legacy_cmp($twar[0])>=100) $twar[0]=95;
+	if ($char[12]) $twar[0]= legacy_num($twar[0]) - legacy_num(20);
+	$twar[3] = 5-round(legacy_num(legacy_num($skills[1])/2));
 	$twar[12] = 'кулаками';
 	}
-if (strpos($auser['equip'],'i.a.h.ms')!==false && strpos($auser['equip'],'i.a.b.sborn')!==false && strpos($auser['equip'],'i.a.p.ms')!==false && strpos($auser['equip'],'i.a.l.ms')!==false && strpos($auser['equip'],'i.w.s.master')!==false) {$char[2]+=5; $char[4]+=5; $twar[0]+=5; $twar[5]+=5; $twar[1]+=4; $twar[2]+=3;}
+if (strpos($auser['equip'],'i.a.h.ms')!==false && strpos($auser['equip'],'i.a.b.sborn')!==false && strpos($auser['equip'],'i.a.p.ms')!==false && strpos($auser['equip'],'i.a.l.ms')!==false && strpos($auser['equip'],'i.w.s.master')!==false) {$char[2]= legacy_num($char[2]) + legacy_num(5); $char[4]= legacy_num($char[4]) + legacy_num(5); $twar[0]= legacy_num($twar[0]) + legacy_num(5); $twar[5]= legacy_num($twar[5]) + legacy_num(5); $twar[1]= legacy_num($twar[1]) + legacy_num(4); $twar[2]= legacy_num($twar[2]) + legacy_num(3);}
 
-if (strpos($auser['equip'],'i.a.l.ogr')!==false && strpos($auser['equip'],'i.a.p.ogr')!==false && strpos($auser['equip'],'i.a.b.troll')!==false && (strpos($auser['equip'],'i.a.h.whitewolf')!==false || strpos($auser['equip'],'i.a.h.wolf')!==false)) {$char[2]+=5; $char[4]+=5; $twar[5]+=4;}
+if (strpos($auser['equip'],'i.a.l.ogr')!==false && strpos($auser['equip'],'i.a.p.ogr')!==false && strpos($auser['equip'],'i.a.b.troll')!==false && (strpos($auser['equip'],'i.a.h.whitewolf')!==false || strpos($auser['equip'],'i.a.h.wolf')!==false)) {$char[2]= legacy_num($char[2]) + legacy_num(5); $char[4]= legacy_num($char[4]) + legacy_num(5); $twar[5]= legacy_num($twar[5]) + legacy_num(4);}
 
 
 //if (strpos($auser['items'],$equip[$i].'-')===false && strpos($auser['equip'],'i.a.b.')!==false) $za=explode('-',$equip[$i]);
@@ -107,20 +107,20 @@ if (strpos($auser['equip'],'i.a.l.ogr')!==false && strpos($auser['equip'],'i.a.p
 	
 	
 	// штраф
-	if (strpos($auser['equip'],'..do')!==false) $hits+=20; 
-	$twar[0]-=$hits;
+	if (strpos($auser['equip'],'..do')!==false) $hits= legacy_num($hits) + legacy_num(20); 
+	$twar[0]= legacy_num($twar[0]) - legacy_num($hits);
 
 	// проверки
-	if($twar[0]<=0) $twar[0]=5;
-	if($twar[0]>95) $twar[0]=95;
-	if($twar[1]<0) $twar[1]=0;
-	if($twar[2]<0) $twar[2]=0;
-	if($twar[3]<3) $twar[3]=3;
-	if($twar[5]<0) $twar[5]=0;
-	if($twar[6]<0) $twar[6]=0;
-	if($twar[7]<0) $twar[7]=0;
-	if($twar[9]<0) $twar[9]=0;
-	if($twar[10]<0) $twar[10]=0;
+	if(legacy_cmp($twar[0])<=0) $twar[0]=5;
+	if(legacy_cmp($twar[0])>95) $twar[0]=95;
+	if(legacy_cmp($twar[1])<0) $twar[1]=0;
+	if(legacy_cmp($twar[2])<0) $twar[2]=0;
+	if(legacy_cmp($twar[3])<3) $twar[3]=3;
+	if(legacy_cmp($twar[5])<0) $twar[5]=0;
+	if(legacy_cmp($twar[6])<0) $twar[6]=0;
+	if(legacy_cmp($twar[7])<0) $twar[7]=0;
+	if(legacy_cmp($twar[9])<0) $twar[9]=0;
+	if(legacy_cmp($twar[10])<0) $twar[10]=0;
 	if ($twar[7] && strpos($auser['equip'],'i.a.s.')===false) $twar[7]=0; 
 	if ($char[1]>$char[2]) $char[1]=$char[2];
 	if ($char[3]>$char[4]) $char[3]=$char[4];

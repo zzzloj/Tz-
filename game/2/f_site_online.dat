@@ -1,14 +1,14 @@
 <?php
-	if (time()>$game["lastai"]+240) include "f_online.dat";	// обновим список
+	if (time()>legacy_num($game["lastai"])+240) include "f_online.dat";	// обновим список
 	$g_list=10;
 	$stmp="";  if (!$start) $start=0; $i=-1;
 	$dh = opendir("online/"); 
 	while (($fname = readdir($dh))!== false) if ($fname!="." && $fname!=".." && $fname!="1.htaccess" && $fname!=".htaccess") {
 		$i++;
-		if($i>=$start && $i<$start+$g_list) {
+		if($i>=$start && $i<legacy_num($start)+legacy_num($g_list)) {
 			$tmp = file("online/".$fname);
 			if ($tmp[0]==".") continue;
-			for($it=0;$it<2;$it++) {$tmp[$it]=str_replace("\n","",$tmp[$it]);$tmp[$it]=str_replace("\r","",$tmp[$it]);}
+			for($it=0;legacy_cmp($it)<2;$it++) {$tmp[$it]=str_replace("\n","",$tmp[$it]);$tmp[$it]=str_replace("\r","",$tmp[$it]);}
 			if (!$tmp[0]) {@unlink("online/".$fname); $i--; continue;}
 			loadloc($tmp[0]);
 			if (isset($l_i[$tmp[0]][$fname])) {
@@ -16,8 +16,8 @@
 				if ($tmp1[9]=="0") $tmp1[9]=""; else $tmp1[9]='<small>('.$tmp1[9].')</small>';
 				$tt2=explode('|',$l_i[$tmp[0]][$fname]['skills']);
 				$ur=0;
-				for($g=0;$g<count((array)($tt2));$g++) if ($g!=3) $ur+=$tt2[$g];
-				$ur=round(($ur-5)*100/($g_attr+$g_skills));
+				for($g=0;$g<count((array)($tt2));$g++) if (legacy_cmp($g)!=3) $ur= legacy_num($ur) + legacy_num($tt2[$g]);
+				$ur=round(legacy_num((legacy_num($ur)-5)*100/(legacy_num($g_attr)+legacy_num($g_skills))));
 				$stmp.="\n<br/>[".$ur.'] '.$tmp1[0].' '.$tmp1[9];
 				} else {$i--;@unlink("online/".$fname);}
 			}
@@ -31,19 +31,19 @@
    $onn=fread($ons, filesize("on.dat"));
            $on=explode("|", $onn);
           fclose($ons); 
-     if (($i+1)>$on[0]) {
-$onli="".($i+1)."|".$gmtDate."|".$gmtTime."|";
+     if ((legacy_num($i)+1)>$on[0]) {
+$onli="".(legacy_num($i)+1)."|".$gmtDate."|".$gmtTime."|";
      $onl=fopen("on.dat", "w+");
         chmod("on.dat", 0777);
         fwrite($onl, $onli);
           fclose($onl); 
  }
 
-	if ($i>-1) $stmp="<p>Сейчас в игре ".($i+1)." (на этом сервере разрешено не более $g_max) игроков:".$stmp;
-	if ($i>-1) {
+	if (legacy_cmp($i)>-1) $stmp="<p>Сейчас в игре ".(legacy_num($i)+1)." (на этом сервере разрешено не более $g_max) игроков:".$stmp;
+	if (legacy_cmp($i)>-1) {
 
 		if ($start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&site=online\">^ </a>";}
-		if ($start+$g_list<$i+1) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&site=online&start=".($start+$g_list)."\">+ (".($i+1+1-$start-$g_list).")</a>";
+		if (legacy_num($start)+legacy_num($g_list)<legacy_num($i)+1) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&site=online&start=".(legacy_num($start)+legacy_num($g_list))."\">+ (".(legacy_num($i)+1+1-legacy_num(legacy_num($start))-legacy_num($g_list)).")</a>";
 }
  $stmp.="</p><p align=\"center\"><small><u>Максимум OnLine играло [<b>".$on[0]."</b>] (<b>".$on[1]."</b> в <b>".$on[2]."</b>)</u></small></p><p>";
 		} else $stmp="<p>Сейчас в игре никого нет"; 

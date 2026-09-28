@@ -1,6 +1,6 @@
 <?php 
 
- if(0=="asd") echo 1;
+ if(0==legacy_cmp("asd")) echo 1;
  else echo 0;
 
 ?>

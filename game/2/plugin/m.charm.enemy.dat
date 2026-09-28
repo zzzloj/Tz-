@@ -7,6 +7,6 @@ if (isset($l_i[$loc][$to]) && substr($to,0,2)=='n.' && !substr($to,0,4)=='n.g.')
 	if ($tchar[7]) {
 		$tchar[7]="";
 		$l_i[$loc][$to]["char"]=implode("|",(array)($tchar));
-		$l_i[$loc][$to]["owner"]=$login."|0|".$login."|".(time()+rand(20,1*60))."|0";
+		$l_i[$loc][$to]["owner"]=$login."|0|".$login."|".(time()+rand(20,legacy_num(1*60)))."|0";
 		} else addjournal($loc,$login,"Заклинание действует только на дерущихся");
 	} addjournal($loc,$login,"Заклинание на него не подействует");

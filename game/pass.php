@@ -29,7 +29,7 @@ if ($log=="old") // зарегистрированный пользователь
   //$email = mysql_result($result,0, "email");
   //$profile = mysql_result($result,0, "profile");
   //$subjectlen = mysql_result($result,0, "subjectlen");
-  if (!($subjectlen >= 0 and $subjectlen <= 255)) { $subjectlen = $DefSubjectLen;}
+  if (!(legacy_cmp($subjectlen) >= 0 and legacy_cmp($subjectlen) <= 255)) { $subjectlen = $DefSubjectLen;}
 }
 else
 {
@@ -38,7 +38,7 @@ else
     $sqlSel="select * from users where nick = '$nn'";
     $result=mysql_query($sqlSel) or die(mysql_error());
     $Count=mysql_num_rows($result);
-    if ($Count != 0)
+    if (legacy_cmp($Count) != 0)
     {
       LogResult(utf(4),utf(27),"index.php?p=$r&amp;login=$nn&amp;pass=$pass");
     }

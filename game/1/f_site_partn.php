@@ -86,7 +86,7 @@ if ($id=="stat") {			// статистика $nn, $pass
 	$stat=explode(":",$data["stat"]);
 	$stmp="<p>Вам было переведено:";
 	$sum=0;
-	for($i=0;$i<count((array)($stat));$i+=2) {$stmp.="<br/><b>".date("d/m Y H:i",$stat[$i])."</b>: ".$stat[$i+1]."$$"; $sum+=$stat[$i+1];} 
+	for($i=0;$i<count((array)($stat));$i= legacy_num($i) + legacy_num(2)) {$stmp.="<br/><b>".date("d/m Y H:i",legacy_num($stat[$i]))."</b>: ".$stat[legacy_num($i)+1]."$$"; $sum= legacy_num($sum) + legacy_num($stat[legacy_num($i)+1]);} 
 	$stmp.="<br/>***<br/>Итого: ".$sum."$$";
 	msg($stmp);
 	}
@@ -122,7 +122,7 @@ function msg($s) {
 	header("Content-type:text/vnd.wap.wml;charset=utf-8"); 
 
 	setlocale (LC_CTYPE, 'ru_RU.CP1251'); 
-	function win2unicode ( $s ) { if ( (ord($s)>=192) & (ord($s)<=255) ) $hexvalue=dechex(ord($s)+848); if ($s=="Ё") $hexvalue="401"; if ($s=="ё") $hexvalue="451"; return("&#x0".$hexvalue.";");} 
+	function win2unicode ( $s ) { if ( (ord($s)>=192) & (ord($s)<=255) ) $hexvalue=dechex(legacy_num(ord($s)+848)); if ($s=="Ё") $hexvalue="401"; if ($s=="ё") $hexvalue="451"; return("&#x0".$hexvalue.";");} 
 	function translate($s) {return(preg_replace_callback("/[А-яЁё]/",function ($m) { return win2unicode($m[0]); },$s));} 
 
 	ob_start("translate");

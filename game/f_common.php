@@ -10,7 +10,7 @@ extract($_GET);
 $tmp=$QUERY_STRING;if($tmp=='') $tmp=$_SERVER["QUERY_STRING"];
 $tmp=urldecode($tmp);
 parse_str($tmp, $legacy_qs); extract($legacy_qs);
-if ($newstime) die(@date("d/m",@filemtime("story/news.htm")));
+if ($newstime) die(@date("d/m",legacy_num(@filemtime("story/news.htm"))));
 
 // список у Санчеса
 if ($gwanted) die(@implode("",(array)(@file("wanted.dat"))));

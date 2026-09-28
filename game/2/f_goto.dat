@@ -2,14 +2,14 @@
 // преследуем цель
 
 			$tfound=0;
-			for ($k=3;$k<count((array)($locai));$k+=2) if (isset($l_i[$locai[$k]][$char[7]])) {
+			for ($k=3;$k<count((array)($locai));$k= legacy_num($k) + legacy_num(2)) if (isset($l_i[$locai[$k]][$char[7]])) {
 				$tfound=1;
 				$loc1=explode("|",$l_tt[$locai[$k]]["d"]);
 				if ($locai[1]==$loc1[1] || substr($j,0,4)=="n.g.") $b=1;
 				// hiding от гардов не действует
 				if (substr($char[7],0,2)=='u.' && substr($j,0,4)!="n.g.") {
 					$skills=explode("|",$l_i[$locai[$k]][$char[7]]["skills"]);
-					if (rand(0,100)<=($skills[17]*4+$skills[1])) {$b=0;addjournal($locai[$k],$char[7],"Вы скрылись от погони");}
+					if (rand(0,100)<=(legacy_num($skills[17])*4+legacy_num($skills[1]))) {$b=0;addjournal($locai[$k],$char[7],"Вы скрылись от погони");}
 					}
 				// призраков не преследуем
 				if (substr($char[7],0,2)=="u.") {

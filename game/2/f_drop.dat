@@ -8,18 +8,18 @@ if ($drop) {			//linkБросить
 	if ($char[8]) msg("<p>Вы призрак и поэтому не можете ничего передать, поднять или бросить, найдите лекаря или камень воскрешения");
 	if (substr($drop,0,4)=='i.q.' && $drop!='i.q.dublon' && $drop!='i.q.pjpt' && $login!='u.ogir') msg('<p>Нельзя бросить квестовую вещь');
 	$tcount=intval(preg_replace('/.*'.$drop.':(\d+).*/',"\\1",$l_i[$loc][$login]["items"]));
-	if ($tcount>0) {
+	if (legacy_cmp($tcount)>0) {
 	// бросаем предмет в локацию
 	$tdrop=$drop;
 	if (strpos($drop,"_")!==false) $drop=substr($drop,0,strpos($drop,"_"));
 	if (strpos($drop,"-")!==false) $drop=substr($drop,0,strpos($drop,"-"));
 	if (substr($drop,0,5)=="i.rr.") $title_v=explode("|","руна|50"); else if (file_exists("items/".$drop)) $title_v=explode("|",implode("",(array)(file("items/".$drop)))); else die("err: no items/".$drop);
 	// проверим кол-во
-	if ($tcount>1 && !$num) {		// запросим кол-во
+	if (legacy_cmp($tcount)>1 && !$num) {		// запросим кол-во
 		$stmp="<p>Укажите количество:\n<br/><input name=\"num\" format=\"*N\" maxlength=\"7\" value=\"".$tcount."\"/>\n<br/><a href=\"$PHP_SELF?sid=$sid&drop=$tdrop&num=$(num)\">Отправить</a>";
 		msg($stmp,"Бросить",1,"","num",$tcount);
 		}
-	if (!$num || $num<1) $num=1;	// если не указано, то 1 предмет
+	if (!$num || legacy_cmp($num)<1) $num=1;	// если не указано, то 1 предмет
 	if ($num>$tcount) $num=$tcount;	// и максимум берем все что есть
 	additem($loc,$login,"loc",$tdrop,$num,"items","items",1,-1,1);
 if ($login=='u.qw' || $login=='u.qv' || $login=='u.scream' || $login=='u.kv') {

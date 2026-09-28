@@ -3,15 +3,15 @@
 
 
 $skills=explode("|",$l_i[$loc][$login]["skills"]);
-if ($skills[22]>0) {
+if (legacy_cmp($skills[22])>0) {
 	$char[6]=time()+5;
 	$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 	additem($loc,$login,"","i.bint",1);	
 
-	if (rand(1,100)<40+$skills[22]*10) {
-		$heal=rand(5,5+$skills[22]*2);
-		if ($char[1]+$heal>$char[2]) $heal=$char[2]-$char[1];
-		$char[1]+=$heal;
+	if (rand(1,100)<40+legacy_num(legacy_num($skills[22]))*10) {
+		$heal=rand(5,legacy_num(5+legacy_num(legacy_num($skills[22]))*2));
+		if (legacy_num($char[1])+legacy_num($heal)>$char[2]) $heal=legacy_num($char[2])-legacy_num($char[1]);
+		$char[1]= legacy_num($char[1]) + legacy_num($heal);
 		$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 		addjournal($loc,$login,"Жизнь +".$heal);
 

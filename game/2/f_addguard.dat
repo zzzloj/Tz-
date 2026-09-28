@@ -1,7 +1,7 @@
 <?php
 // добавляем 1 стража
 srand ((float) microtime() * 10000000);
-for ($k=0;$k<1;$k++) {	
+for ($k=0;legacy_cmp($k)<1;$k++) {	
 		$id='n.g.'.rand(5,9999);
 		$title_v=rndname().' [стража]';
 		$l_i[$i][$id]=array('char'=>$title_v.'|200|200|100|100|'.time().'1||||||'.(time()+600),'war'=>'100|30|45|3||100|30|||80|80|70|алебардой|15||','items'=>'i.w.t.alebarda:1','equip'=>'i.w.t.alebarda');

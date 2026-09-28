@@ -22,7 +22,7 @@ if ($pi) {
          //   echo "1";
 
 $srv=implode("",(array)(file("server.dat")));
-if($srv==1 && $pi=="001") {
+if(legacy_cmp($srv)==1 && $pi=="001") {
 $stmp.="
 
 </p>";

@@ -14,14 +14,14 @@ if ($use=="i.f.b.empty") {
 				$char[6]=time()+4;
 				$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 				if ($item[2]) {
-					if($char[1]+$item[2]>$char[2]) $item[2]=$char[2]-$char[1];
-					$char[1]+=$item[2];
+					if(legacy_num($char[1])+legacy_num($item[2])>$char[2]) $item[2]=legacy_num($char[2])-legacy_num($char[1]);
+					$char[1]= legacy_num($char[1]) + legacy_num($item[2]);
 					$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 					addjournal($loc,$login,'Жизнь +'.$item[2]);
 					}
 				if ($item[3]) {
-					if($char[3]+$item[3]>$char[4]) $item[3]=$char[4]-$char[3];
-					$char[3]+=$item[3];
+					if(legacy_num($char[3])+legacy_num($item[3])>$char[4]) $item[3]=legacy_num($char[4])-legacy_num($char[3]);
+					$char[3]= legacy_num($char[3]) + legacy_num($item[3]);
 					$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 					addjournal($loc,$login,'Мана +'.$item[3]);
 					}

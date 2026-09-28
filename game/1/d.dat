@@ -5,7 +5,7 @@ header ("Content-type:text/vnd.wap.wml; charset=utf-8");
 $mes_id= (int) $mes_id;
 $blog_text=htmlspecialchars($blog_text, ENT_QUOTES); 
 $tc=explode("|",$l_i[$loc][$login]["char"]); 
-     if (strpos($tc[0],"*")===false) $clan=""; else $clan=substr($tc[0],strpos($tc[0],"*")+1,strrpos($tc[0],"*")-strpos($tc[0],"*")-1);
+     if (strpos($tc[0],"*")===false) $clan=""; else $clan=substr($tc[0],legacy_num(strpos($tc[0],"*")+1),legacy_num(strrpos($tc[0],"*")-strpos($tc[0],"*")-1));
 $stmp="<b>Клан: ";
 if(!$clan) {$stmp.='Вы не в клане ;)';} else{
 $stmp.="<u>".$clan."</u></b><br/>";
@@ -30,7 +30,7 @@ $rq=mysql_query("select text,time,id from blogs where userid='".$clan."' order b
 	{
 $count=@mysql_query("select count(*) from blogs_com where messid='".$messid."';",$link);
 $dcount = @mysql_fetch_array($count);
-		$stmp.='<small><b>('.date("d.m.Y-H:i",$time).')</b><br/>'.$text.'<br/><b>[<a href="'.$PHP_SELF.'?sid='.$sid.'&blogid='.$messid.'">обсуждение</a>-'.$dcount['count(*)'].']</b><br/>';
+		$stmp.='<small><b>('.date("d.m.Y-H:i",legacy_num($time)).')</b><br/>'.$text.'<br/><b>[<a href="'.$PHP_SELF.'?sid='.$sid.'&blogid='.$messid.'">обсуждение</a>-'.$dcount['count(*)'].']</b><br/>';
 		$stmp.="</small>";
 	}
 $stmp.= pages($base_url, $num_items, $onpage, $start);
@@ -45,8 +45,8 @@ $s=$blog_text;
 	// UTF-8 русские буквы
 	$s=str_replace("\xd0\x81","Ё",$s);
 	$s=str_replace("\xd1\x91","ё",$s);
-	$s=preg_replace_callback("/\xd0([\x90-\xbf])/",function ($m) { return chr(ord($m[1])+48); },$s);
-	$s=preg_replace_callback("/\xd1([\x80-\x8f])/",function ($m) { return chr(ord($m[1])+112); },$s);
+	$s=preg_replace_callback("/\xd0([\x90-\xbf])/",function ($m) { return chr(legacy_num(ord($m[1])+48)); },$s);
+	$s=preg_replace_callback("/\xd1([\x80-\x8f])/",function ($m) { return chr(legacy_num(ord($m[1])+112)); },$s);
 
 	$s=str_replace('\\',"",$s);
 	$s=str_replace('"',"",$s);
@@ -64,12 +64,12 @@ $s=$blog_text;
 	$s=str_replace(">","",$s);
 $blog_text=substr($s,0,350);
 list($prevblog_text)=mysql_fetch_array(mysql_query("select text from blogs where userid='".$clan."';",$link));
-if(!empty($blog_text) && $blog_text!=$prevblog_text  && mysql_num_rows(mysql_query("select id from blogs where userid='".$clan."' and text='$blog_text' and time>".(time()-300).";"))<1)
+if(!empty($blog_text) && $blog_text!=$prevblog_text  && legacy_cmp(mysql_num_rows(mysql_query("select id from blogs where userid='".$clan."' and text='$blog_text' and time>".(time()-300).";")))<1)
 {
 $time1=time();
 $count=@mysql_query("select count(*) from blogs where userid='".$clan."';",$link);
 $dcount = @mysql_fetch_array($count);
-if($dcount['count(*)']>30){
+if(legacy_cmp($dcount['count(*)'])>30){
 $stmp.="Вы привысили максимальное число записей! Максимальное число записей должно быть не больше <b>30</b>!<br/>";
 } else {
 session_start();
@@ -121,7 +121,7 @@ $rq=mysql_query("select text,time,id from blogs where userid='".$clan."' order b
 	while(list($text,$time,$mesid)=mysql_fetch_array($rq))
 	{
 
-		$stmp.= ' <br/><b>('.date("d.m.Y-H:i",$time).')</b>-<a href="'.$PHP_SELF.'?sid='.$sid.'&amp;dn=1&amp;del=true&amp;mes_id='.$mesid.'">[удалить]</a><br/>'.$text.'<br/>';
+		$stmp.= ' <br/><b>('.date("d.m.Y-H:i",legacy_num($time)).')</b>-<a href="'.$PHP_SELF.'?sid='.$sid.'&amp;dn=1&amp;del=true&amp;mes_id='.$mesid.'">[удалить]</a><br/>'.$text.'<br/>';
 		
 	}
 $stmp.= pages2($base_url2, $num_items, $onpage, $start);

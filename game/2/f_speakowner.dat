@@ -53,7 +53,7 @@
 					$tow=explode("|",$l_i[$loc][$i]["owner"]); 
 					if ($tow[0]==$tt || $tow[1]==$tt || $tow[2]==$tt) $tn++;
 					}
-				if ($tn>2) msg("Ќаемникам слишком тесно (можно не более 3 в одном месте)");
+				if (legacy_cmp($tn)>2) msg("Ќаемникам слишком тесно (можно не более 3 в одном месте)");
 
 				$owner[2]=$who;
 				$stmp.=$tchar[0]." с этого момента будет защищать кого вы указали.";
@@ -77,7 +77,7 @@
 				$fchar=explode("|",$l_i[$loc][$login]["char"]);
 				$fcrim = $fchar[9];
 				$tcrim = $tc[9] || substr($who,0,4)=="n.c.";
-				if (!$fcrim && $tc[7]!=$login && ((!$tcrim && substr($who,0,4)!="n.a.") || ($loc_c[1]==1 && substr($who,0,4)=="n.a."))) {docrim($loc,$login); if ($loc_c[1]==1) {$tchar[9]="преступник"; $tchar[10]=time()+$g_crim;}}
+				if (!$fcrim && $tc[7]!=$login && ((!$tcrim && substr($who,0,4)!="n.a.") || (legacy_cmp($loc_c[1])==1 && substr($who,0,4)=="n.a."))) {docrim($loc,$login); if (legacy_cmp($loc_c[1])==1) {$tchar[9]="преступник"; $tchar[10]=time()+legacy_num($g_crim);}}
 				$l_i[$loc][$speak]["char"]=implode("|",(array)($tchar));
 				}
 			if ($id=='followme') {	// следуй за мной
@@ -104,7 +104,7 @@
 					$tow=explode("|",$l_i[$loc][$i]["owner"]); 
 					if ($tow[0]==$tt || $tow[1]==$tt || $tow[2]==$tt) $tn++;
 					}
-				if ($tn>2) msg("Ќаемникам слишком тесно (можно не более 3 в одном месте)");
+				if (legacy_cmp($tn)>2) msg("Ќаемникам слишком тесно (можно не более 3 в одном месте)");
 
 				$owner[1]=$who;
                         $owner[2]=$who;
@@ -119,14 +119,14 @@
 	// UTF-8 русские буквы
 	$s=str_replace("\xd0\x81","®",$s);
 	$s=str_replace("\xd1\x91","Є",$s);
-	$s=preg_replace_callback("/\xd0([\x90-\xbf])/",function ($m) { return chr(ord($m[1])+48); },$s);
-	$s=preg_replace_callback("/\xd1([\x80-\x8f])/",function ($m) { return chr(ord($m[1])+112); },$s);
+	$s=preg_replace_callback("/\xd0([\x90-\xbf])/",function ($m) { return chr(legacy_num(ord($m[1])+48)); },$s);
+	$s=preg_replace_callback("/\xd1([\x80-\x8f])/",function ($m) { return chr(legacy_num(ord($m[1])+112)); },$s);
 	$s=preg_replace('/[^A-zј-€0-9]/',"",$s);
 
 					$new=$s;
 					if (!$s) msg("Ќе указано им€");
 				
-					if (isset($l_i[$loc][$speak]["name"])) $tchar[0]=substr($tchar[0],0,-strlen($l_i[$loc][$speak]["name"])-1);
+					if (isset($l_i[$loc][$speak]["name"])) $tchar[0]=substr($tchar[0],0,legacy_num(-strlen($l_i[$loc][$speak]["name"])-1));
 					$tchar[0].=" ".$new;
 					$l_i[$loc][$speak]["name"]=$new;
 					$l_i[$loc][$speak]["char"]=implode("|",(array)($tchar));
@@ -139,9 +139,9 @@
 				if ($owner[3]>time()+240) msg($tchar[0]." не собираетс€ покидать вас в ближайшие несколько минут, нет смысла уговаривать его остатьс€ еще (попробуйте повторить когда срок службы будет на исходе)."); 
 				$char[6]=time()+10;
 				$l_i[$loc][$login]["char"]=implode("|",(array)($char));
-				if (rand(0,100)<$skills[7]*10) {
+				if (rand(0,100)<legacy_num($skills[7])*10) {
 					if ($owner[3]) {
-						$owner[3]+=rand(60,60+$skills[20]*60);
+						$owner[3]= legacy_num($owner[3]) + legacy_num(rand(60,legacy_num(60+legacy_num(legacy_num($skills[20]))*60)));
 						$stmp.=" ажетс€, вы стали ".$tchar[0]." нравитьс€ немного больше";
 						}else $stmp.=$tchar[0]." будет вам предан всегда, нет нужды в поощрении";
 					}else $stmp.="¬аша попытка не произвела на ".$tchar[0]." впечатлени€";
@@ -151,12 +151,12 @@
 				if (!$owner[3]) $stmp.=$tchar[0]." никогда вас не покинет";
 				else {
 					$skills=explode("|",$l_i[$loc][$login]["skills"]);
-					$timeleft = ($owner[3]-time())/60;
+					$timeleft = (legacy_num($owner[3])-time())/60;
 					if ($timeleft<60*6) {
-						$pogr = rand(0,10*(10-$skills[20]*2));
-						$pogr = $pogr*$timeleft/100;
-						$tc=round($timeleft-$pogr)." - ".round($timeleft+$pogr)." минут";
-						} else $tc="примерно ".round($timeleft/60)." часа";
+						$pogr = rand(0,legacy_num(10*(10-legacy_num(legacy_num($skills[20]))*2)));
+						$pogr = legacy_num($pogr)*legacy_num(legacy_num($timeleft))/100;
+						$tc=round(legacy_num(legacy_num($timeleft)-legacy_num($pogr)))." - ".round(legacy_num(legacy_num($timeleft)+legacy_num($pogr)))." минут";
+						} else $tc="примерно ".round(legacy_num(legacy_num($timeleft)/60))." часа";
 					$stmp.=$tchar[0]." покинет вас через ".$tc;
 					}
 				}

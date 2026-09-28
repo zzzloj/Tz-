@@ -5,14 +5,14 @@ if ($macro) {						//macro=obj|objz|to|toz|name/..., macrol=obj|objz|to|toz
 	if ($macro=="save") {	// сохраняем
 	include("f_blok.dat");
 		if (!$name) msg("Не указано имя макроса, используйте англ. буквы.","Макросы",0);
-		if ($num<1 || $num>8) msg("Диапазон номера от 1 до 8","Макросы",0);
+		if (legacy_cmp($num)<1 || legacy_cmp($num)>8) msg("Диапазон номера от 1 до 8","Макросы",0);
 		if (!isset($l_i[$loc][$login]["macro"])) $m=array("","","","","","","",""); else $m=explode("/",$l_i[$loc][$login]["macro"]);
 		if (!isset($l_i[$loc][$login]["macrol"])) $ml=array(); else $ml=explode("|",$l_i[$loc][$login]["macrol"]);
 		if ($obj=="curr") {$obj=$ml[0];$objz=$ml[1];}
 		if ($to=="curr") {$to=$ml[2];$toz=$ml[3];}
 		if ($to=="none") {$to="";$toz="";}
 		$name=substr(preg_replace('/\W/',"",$name),0,9);
-		$m[$num-1]="$obj|$objz|$to|$toz|$name";
+		$m[legacy_num($num)-1]="$obj|$objz|$to|$toz|$name";
             if(strlen($l_i[$loc][$login]["macro"])>300) msg("Слишком много или слишком длинные макросы");
 		$l_i[$loc][$login]["macro"]=implode("/",(array)($m));
 		msg("Макрос с именем $name сохранен.","Макросы",0);
@@ -20,9 +20,9 @@ if ($macro) {						//macro=obj|objz|to|toz|name/..., macrol=obj|objz|to|toz
 		}
 
 	if ($macro=="del") {	// удаляем
-		if ($num<1 || $num>8) msg("Диапазон номера от 1 до 8");
+		if (legacy_cmp($num)<1 || legacy_cmp($num)>8) msg("Диапазон номера от 1 до 8");
 		if (!isset($l_i[$loc][$login]["macro"])) $m=array("","","","","","","",""); else $m=explode("/",$l_i[$loc][$login]["macro"]);
-		unset($m[$num-1]);
+		unset($m[legacy_num($num)-1]);
 		$l_i[$loc][$login]["macro"]=implode("/",(array)($m));
 		msg("Макрос с номером $num удален.","Макросы",0);
 		}
@@ -38,8 +38,8 @@ if ($macro) {						//macro=obj|objz|to|toz|name/..., macrol=obj|objz|to|toz
 		<select name=\"num\" value=\"1\">
 		";
 		if (!isset($l_i[$loc][$login]["macro"])) $m=array("","","","","","","",""); else $m=explode("/",$l_i[$loc][$login]["macro"]);
-		for($i=1;$i<9;$i++) {
-			if ($m[$i-1]) {$mn=explode("|",$m[$i-1]); $mn=$mn[4];} else $mn="Пусто";
+		for($i=1;legacy_cmp($i)<9;$i++) {
+			if ($m[legacy_num($i)-1]) {$mn=explode("|",$m[legacy_num($i)-1]); $mn=$mn[4];} else $mn="Пусто";
 			$stmp.="\n<option value=\"$i\">$i: $mn</option>";
 			}
 		$stmp.="</select>
@@ -56,5 +56,5 @@ if ($macro) {						//macro=obj|objz|to|toz|name/..., macrol=obj|objz|to|toz
 
 	if ($macro=="help") msg("Чтобы записать новый макрос, совершите любое действие, например, используйте навык или заклинание и выберите в меню \"макросы\".<br/>\"Текущее\" - это совершенное действие и текущая цель.<br/>\"Последнее\" - последнее действие или цель перед вызовом макроса.<br/>\"Вручную\" - при вызове макроса надо будет вручную указать на кого применить.","Макросы",0);
 
-	if ($macro<1 || $macro>8) msg("Макрос может быть от 1 до 8","Макросы",0);
+	if (legacy_cmp($macro)<1 || legacy_cmp($macro)>8) msg("Макрос может быть от 1 до 8","Макросы",0);
 	}

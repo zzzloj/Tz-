@@ -56,7 +56,7 @@ header ("Location: http://download.l2db.ru/original%20clients/L2_C5_Installer.zi
 
         if ($p!=$tp) require("f_npass.dat");
 
-        if ($tfound==2) {
+        if (legacy_cmp($tfound)==2) {
                 $loc=$auser["loc"];
                 if ($loc=="arena") $loc="x1229x582";
                 if (substr($loc,0,2)=="c.") $loc=substr($loc,0,4)."in";
@@ -94,17 +94,17 @@ $auser["items"]=str_replace("_zzz_..do..by..kr..","_zzz_..do..dy..kp..",$auser["
 	if (!$st[11]) $st[11]=0; $auser["st"]=implode("|",(array)($st));
                    $auser["magic"]=str_replace("m.n","m.roj",$auser["magic"]);
                 $char=explode("|",$auser["char"]);
-                if (count((array)($char))<16) for($i=count((array)($char));$i<16;$i++) $char[$i]="";
+                if (count((array)($char))<16) for($i=count((array)($char));legacy_cmp($i)<16;$i++) $char[$i]="";
                 $tuser=explode("|",$auser["user"]);
                 $tuser[3]=intval($tuser[3]);        // bug fix!!!
-                if ($tuser[3]==0) $tuser[3]=16;
+                if (legacy_cmp($tuser[3])==0) $tuser[3]=16;
                 $auser["user"]=implode("|",(array)($tuser));
                 $char[5]=time();        // регенерация
                 $char[6]=time()-1;
                 $char[11]=time();
                 $char[15]=time()-10;
                 $char[16]=time()-10;
-                if ($char[9]) $char[10]=time()+$char[10]-$auser["time"];        //time_crim
+                if ($char[9]) $char[10]=time()+legacy_num(legacy_num($char[10]))-legacy_num($auser["time"]);        //time_crim
                 unset($auser["time"]);
                 unset($auser["loc"]);
                 unset($auser["def"]);
@@ -143,6 +143,6 @@ $auser["items"]=str_replace("_zzz_..do..by..kr..","_zzz_..do..dy..kp..",$auser["
 
         $srvmain=implode("",(array)(file("srvmain.dat")));
  $t=filemtime("../story/news.htm");
-$t=date("d/m",$t);
+$t=date("d/m",legacy_num($t));
         msg("Добро пожаловать, ".$char[0]."!<br/><a href=\"http://bigwap.org/game/f_story.php?id=news\">[новости [".$t."]</a><br/><a href=\"$PHP_SELF?sid=$sid&cnick=1\">[настройки]</a><br/><a href=\"".$srvmain."f_faq.php\">[помощь]</a><br/>Если в игре большие задержки, выберите <a href=\"f_site_list.php?r=".chr(rand(97,122))."\">другой сервер</a>.<br/><a href=\"/f_faq.php?id=dgprs\">Дешевый GPRS</a><br/><a href=\"http://bigwap.org/game/java.php\">WapBrouser 1.0</a><br/>Чтобы не вводить логин и пароль, сделайте в телефоне закладку на эту страницу.<br/>Для выхода используйте пункт меню \"Сохранить\", чтобы не потерять накопленные вещи и опыт.\n<br/><a href=\"$PHP_SELF?sid=$sid\">[в игру]</a>","Территория Зла",0);
 

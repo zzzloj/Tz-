@@ -6,11 +6,11 @@
 			if ($tcount) {
 			// проверим кол-во
 			if ($all) $num=$tcount;
-			if ($tcount>1 && !$num) {
+			if (legacy_cmp($tcount)>1 && !$num) {
 				$stmp="<p>Укажите количество:\n<br/><input name=\"num\" format=\"*N\" maxlength=\"7\" value=\"".$tcount."\"/>\n<br/><a href=\"$PHP_SELF?sid=$sid&take=$take&id=$id&num=$(num)\">Отправить</a>";
 				msg($stmp,"Взять",1,"","num",$tcount);
 				}
-			if (!$num || $num<1) $num=1;
+			if (!$num || legacy_cmp($num)<1) $num=1;
 			if ($num>$tcount) $num=$tcount;
 			additem($loc,$take,$login,$id,$num,"items","items",1,-1,1);
 			$char = explode("|",$l_i[$loc][$login]["char"]);

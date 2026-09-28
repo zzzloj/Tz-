@@ -7,7 +7,7 @@ if ($to) {
 	$c=0;
 	if ($to=='i.polotno') $c=6;  else if (substr($to,0,6)=='i.a.w.') $c=2; else if (substr($to,0,6)=='i.a.r.') $c=3; else if (substr($to,0,6)=='i.a.e.') $c=3; else if (substr($to,0,6)=='i.a.b.') $c=3;
 
-	if ($c>0) {
+	if (legacy_cmp($c)>0) {
 		addjournal($loc,$login,"¬ы разрезали ".$item[0]." на $c бинта"); 
 		addjournal($loc,"all",$char[0]." разрезал ".$item[0]." на $c бинта",$login);
 		additem($loc,$login,"",$to,1);

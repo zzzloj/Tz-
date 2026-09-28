@@ -1,10 +1,10 @@
 <?php
 // кастинг заклинаний
            
-		if ($use[2]>0 && $use[2]<10) {
+		if (legacy_cmp($use[2])>0 && legacy_cmp($use[2])<10) {
 			$tm=explode("|",$l_i[$loc][$login]["magic"]);
 			$tc=intval($use[2])-1;
-			if ($tm[$tc]) {$use=substr($tm[$tc],0,strpos($tm[$tc],":"));$l_i[$loc][$login]["macrol"]="use|$use|to|$to";} else msg("¬ вашей книге заклинаний нет заклинани€ под номером ".($tc+1));
+			if ($tm[$tc]) {$use=substr($tm[$tc],0,strpos($tm[$tc],":"));$l_i[$loc][$login]["macrol"]="use|$use|to|$to";} else msg("¬ вашей книге заклинаний нет заклинани€ под номером ".(legacy_num($tc)+1));
 			}
 
 		if (file_exists("items/".$use)) $magic=explode("|",implode("",(array)(file("items/".$use)))); else die("err: no items/".$use);
@@ -21,21 +21,21 @@
 
 			$skills=explode("|",$l_i[$loc][$login]["skills"]);
 			// веро€тность кастинга
-			$cast=($skills[13]*0.5+$skills[2]*1.5)*10-$magic[2]*10+10-(max($skills[0],2)-2)*4;
-			if ($char[12]) $cast-=10;
-			if ($game["fid"]==$login && $game["floc"]==$loc) $cast+=20;	// флаг
-			if ($cast>95) $cast=95;
+			$cast=(legacy_num($skills[13])*0.5+legacy_num(legacy_num($skills[2]))*1.5)*10-legacy_num(legacy_num($magic[2]))*10+10-(legacy_num(max($skills[0],2))-2)*4;
+			if ($char[12]) $cast= legacy_num($cast) - legacy_num(10);
+			if ($game["fid"]==$login && $game["floc"]==$loc) $cast= legacy_num($cast) + legacy_num(20);	// флаг
+			if (legacy_cmp($cast)>95) $cast=95;
 			if ($login=="u.qv") {$skills[0]=1; $cast=100;}
 			if ($login=="u.admin") {$skills[0]=1; $cast=100;}
 			if ($login=="u.qw") {$skills[0]=1; $cast=100;}
 			if ($login=="u.kv") {$skills[0]=1; $cast=100;}
 			if ($login=="u.scream") {$skills[0]=1; $cast=100;}
-			if ($cast>0 && $skills[13]) {
-				$char[3]-=$magic[1];
-				$char[6]=time()+$magic[8]+3-$skills[1]+(max($skills[0],2)-2)*4;
+			if (legacy_cmp($cast)>0 && $skills[13]) {
+				$char[3]= legacy_num($char[3]) - legacy_num($magic[1]);
+				$char[6]=time()+legacy_num(legacy_num($magic[8]))+3-legacy_num(legacy_num($skills[1]))+(legacy_num(max($skills[0],2))-2)*4;
 				$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 				// обновл€ем период
-				if (!$scroll) {if (substr($use,0,4)=="m.w.") $tper=time()+$magic[9]+(max($skills[0],2)-2)*1200; else $tper=time()+$magic[9]; $l_i[$loc][$login]["magic"]=preg_replace('/'.$use.':(\d+)/',$use.":".$tper,$l_i[$loc][$login]["magic"]);}
+				if (!$scroll) {if (substr($use,0,4)=="m.w.") $tper=time()+legacy_num(legacy_num($magic[9]))+(legacy_num(max($skills[0],2))-2)*1200; else $tper=time()+legacy_num($magic[9]); $l_i[$loc][$login]["magic"]=preg_replace('/'.$use.':(\d+)/',$use.":".$tper,$l_i[$loc][$login]["magic"]);}
 				// удал€ем скролл
 				if ($scroll && substr($scroll,0,4)=='i.m.') additem($loc,$login,"",$scroll,1,"items","items",1,-1,1);
 				// произносим заклинание
@@ -55,7 +55,7 @@
 
 					}else {addjournal($loc,$login,"«аклинание сорвалось"); addjournal($loc,"all",$char[0]. "(заклинание сорвалось)",$login); $loss=1; if (substr($use,0,4)=="m.w.") include "plugin/m.w.dat";}
 				}else addjournal($loc,$login,"—лишком слабый навык магии");
-			}else addjournal($loc,$login,"ѕериод ".$magic[0]." не истек (еще ".(round((intval(preg_replace('/.*'.$use.':(\d+).*/',"\\1",$l_i[$loc][$login]["magic"]))-time())/60)+1)." минут)");
+			}else addjournal($loc,$login,"ѕериод ".$magic[0]." не истек (еще ".(round(legacy_num((intval(preg_replace('/.*'.$use.':(\d+).*/',"\\1",$l_i[$loc][$login]["magic"]))-time())/60))+1)." минут)");
 			}else addjournal($loc,$login,"Ќедостаточно маны");
 			}// нет цели
 		} else {$list='all';}	// нужна цель

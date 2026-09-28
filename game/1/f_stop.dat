@@ -1,7 +1,7 @@
 <?php
 // обновляем таймер до остановки игры
 if ($game["stop"] && !$game["msg"]) {
-	if (time()<$game["stop"]) $game["journal"]="Внимание! Сервер будет остановлен через ".round(($game["stop"]-time())/60)." минуты. Сохраните персонажа и покиньте игру.";
+	if (time()<$game["stop"]) $game["journal"]="Внимание! Сервер будет остановлен через ".round(legacy_num((legacy_num($game["stop"])-time())/60))." минуты. Сохраните персонажа и покиньте игру.";
 	else {	// останов
 		$f_all=1;
 		include "f_online.dat";

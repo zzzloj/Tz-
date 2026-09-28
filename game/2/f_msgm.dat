@@ -4,12 +4,12 @@
 	if ($msg=="up") {
 		for($i=0;$i<count((array)($items));$i++) if ($items[$i]==$id) break;
 		if ($i==count((array)($items))) msg("Нет такого");
-		if($i==0) {
+		if(legacy_cmp($i)==0) {
 			array_push($items, $items[$i]);
 			array_shift($items);
 			}else {
-				$tc=$items[$i-1];
-				$items[$i-1]=$items[$i];
+				$tc=$items[legacy_num($i)-1];
+				$items[legacy_num($i)-1]=$items[$i];
 				$items[$i]=$tc;
 				}
 		$l_i[$loc][$login]["msg"]=implode("|",(array)($items));
@@ -22,8 +22,8 @@
 			array_unshift($items, $items[$i]);
 			array_pop($items);
 			}else {
-				$tc=$items[$i+1];
-				$items[$i+1]=$items[$i];
+				$tc=$items[legacy_num($i)+1];
+				$items[legacy_num($i)+1]=$items[$i];
 				$items[$i]=$tc;
 				}
 

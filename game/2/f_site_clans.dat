@@ -17,7 +17,7 @@ $clan=str_replace('.','',$clan);
 	//if (count($arTemplates)>0) {
 	if (!$start) $start=0;
 	$keys=array_keys((array)($arTemplates));
-	for($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) {
+	for($i=$start;$i<legacy_num($start)+legacy_num($g_list) && $i<count((array)($keys));$i++) {
 			$stmp.="<br/><b>".substr($keys[$i],2)."</b>";
 			if (isset($tmp["m"][$keys[$i]]) && !isset($tmp["g"][$keys[$i]])) $stmp.=" [неофит]";
 			if (isset($tmp["v"][$keys[$i]]) && !isset($tmp["g"][$keys[$i]])) $stmp.=" [вассал]";
@@ -27,7 +27,7 @@ $clan=str_replace('.','',$clan);
 	
 
 		if ($start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&site=clans&clan=$clan\">^ </a>";}
-		if ($start+$g_list<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&site=clans&clan=$clan&start=".($start+$g_list)."\">+ (".(count((array)($keys))+1-$start-$g_list).")</a>";}
+		if (legacy_num($start)+legacy_num($g_list)<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&site=clans&clan=$clan&start=".(legacy_num($start)+legacy_num($g_list))."\">+ (".(count((array)($keys))+1-legacy_num(legacy_num($start))-legacy_num($g_list)).")</a>";}
 		//} else $stmp.="<br/>Больше никого в клане нет."; 
 
 	msg($stmp,"Клан *".$clan."*",0,"none");
@@ -48,11 +48,11 @@ $clan=str_replace('.','',$clan);
 		arsort($arr);
 		if (!$start) $start=0;
 		$keys=array_keys((array)($arr));
-		for($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) {
+		for($i=$start;$i<legacy_num($start)+legacy_num($g_list) && $i<count((array)($keys));$i++) {
 			$stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&site=clans&clan=".$keys[$i]."\">".$keys[$i]."</a> (".$arr[$keys[$i]]." чел.)";
 			}
 		if ($start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&site=clans\">^ </a>";}
-		if ($start+$g_list<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&site=clans&start=".($start+$g_list)."\">+ (".(count((array)($keys))+1-$start-$g_list).")</a>";}
+		if (legacy_num($start)+legacy_num($g_list)<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&site=clans&start=".(legacy_num($start)+legacy_num($g_list))."\">+ (".(count((array)($keys))+1-legacy_num(legacy_num($start))-legacy_num($g_list)).")</a>";}
 		} else $stmp="<p>Нет ни одного клана"; 
 
 	msg($stmp,"Онлайн (Cервер ".implode("",(array)(file("server.dat"))).")",0,'none');

@@ -6,6 +6,6 @@
 	if (isset($l_i[$loc][$login]) && substr($login,0,2)=="u." && $loc!="arena") {
 		$char=explode("|",$l_i[$loc][$login]["char"]);
 		$char[9]=$title_v;
-		$char[10]=time()+$g_crim-$crim;
+		$char[10]=time()+legacy_num(legacy_num($g_crim))-legacy_num($crim);
 		$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 		}

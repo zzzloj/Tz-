@@ -17,7 +17,7 @@ $zero = "no_admin";
 $PHP_SELF = "g.php";
 
         setlocale (LC_CTYPE, 'ru_RU.CP1251');
-        function win2unicode ( $s ) { if ( (ord($s)>=192) & (ord($s)<=255) ) $hexvalue=dechex(ord($s)+848); if ($s=="¨") $hexvalue="401"; if ($s=="¸") $hexvalue="451"; return("&#x0".$hexvalue.";");}
+        function win2unicode ( $s ) { if ( (ord($s)>=192) & (ord($s)<=255) ) $hexvalue=dechex(legacy_num(ord($s)+848)); if ($s=="¨") $hexvalue="401"; if ($s=="¸") $hexvalue="451"; return("&#x0".$hexvalue.";");}
         function translate($s) {return(preg_replace_callback("/[À-ÿ¨¸]/",function ($m) { return win2unicode($m[0]); },$s));}
 
         if (substr($login,0,2)!="u.") $login="u.".$login;
@@ -77,7 +77,7 @@ $PHP_SELF = "g.php";
 
         // ïðîâåðèì êëàí
 	//print_r($auser);
-        if (strpos($auser["char"],"*")===false) $clan=""; else $clan=substr($auser["char"],strpos($auser["char"],"*")+1,strrpos($auser["char"],"*")-strpos($auser["char"],"*")-1);
+        if (strpos($auser["char"],"*")===false) $clan=""; else $clan=substr($auser["char"],legacy_num(strpos($auser["char"],"*")+1),legacy_num(strrpos($auser["char"],"*")-strpos($auser["char"],"*")-1));
 	//echo $clan;
 	if ($clan && @implode("",(array)(@file($srvmain."f_common.php?inclan=$clan&login=$login")))=="no") $clan="no"; else $clan="yes";
                                  //  echo 1;

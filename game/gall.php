@@ -74,14 +74,14 @@ $ret .= '<wml><card title="'.$title.'"><p>';
 
         if(!$array) $ret_games = 'извините, у нас пока нет фоток';
 
-        $FIN =  ($p1+1) *   $five_games;
-        $BEG =  $FIN - $five_games;
+        $FIN =  (legacy_num($p1)+1) *   legacy_num($five_games);
+        $BEG =  legacy_num($FIN) - legacy_num($five_games);
 
         for($i = $BEG; $i < $FIN; $i++)
         {
         if(!empty($array[$i]))
         {
-        $name_file = substr($array[$i],0,-4);
+        $name_file = substr($array[$i],0,legacy_num(-4));
 		  $result = mysql_query ("select * from users where id = '".$name_file."'");
     $inf=mysql_fetch_array ($result);
         $ret_games .= '<a href="'.$dir_games.'/'.$array[$i].'">'.$inf['nick'].'</a><br/>';
@@ -91,9 +91,9 @@ $ret .= '<wml><card title="'.$title.'"><p>';
 
         if($NEMO)
         {
-        if($p1 > 0)                         $ret_games .='<br/><a href="'.$URL.'?d='.$DIR.'&amp;p1='.($p1-1).'">[назад]</a>';
+        if(legacy_cmp($p1) > 0)                         $ret_games .='<br/><a href="'.$URL.'?d='.$DIR.'&amp;p1='.(legacy_num($p1)-1).'">[назад]</a>';
                                            $ret_games .='<br/>';
-        if(($p1+1)*$five_games <= $count-1) $ret_games .='<a href="'.$URL.'?d='.$DIR.'&amp;p1='.($p1+1).'">[далее]</a><br/>';
+        if((legacy_num($p1)+1)*legacy_num($five_games) <= legacy_num($count)-1) $ret_games .='<a href="'.$URL.'?d='.$DIR.'&amp;p1='.(legacy_num($p1)+1).'">[далее]</a><br/>';
                                            $ret_games .='<a href="http://bigwap.org">[на главную]</a>';
         }
         else    $ret_games = 'извините, этого пользователя у нас нет';
@@ -112,7 +112,7 @@ $string = str_replace('ё','&#1105;',$string);
 for($i=0; $i<count((array)($rus)); $i++)
    {
    $s=1040;
-   $d = '&#'.($s+$i).';';
+   $d = '&#'.(legacy_num($s)+legacy_num($i)).';';
    $string = str_replace($rus[$i],$d,$string);
    }
 return $string;

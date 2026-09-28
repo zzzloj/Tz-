@@ -12,7 +12,7 @@ $stmp="<p>
 <br/>Новый пароль: <br/><input name=\"newpass\" emptyok=\"true\" type=\"password\"  maxlength=\"10\" size=\"10\"/>
 <br/><a href=\"g.php?site=main2&amp;pass=".$pass."&amp;newpass=$(newpass)&amp;nn=".$nn."&amp;ent=1\">[сохранить]</a>
 ";
-if($ent==1) {
+if(legacy_cmp($ent)==1) {
 if(preg_match("/[^\da-zA-Z_]+/",$newpass)) msg("Недопустимые символы в пароле! Пароль должен быть на латинице!<br/><anchor>назад<prev/></anchor>",$game_title,0,'none');
 	if ( strlen($newpass)>10 ) msg("Длина нового пароля не должна превышать 10 символов","Смена пароля");
 @mysql_query ("Update users set pass='".$newpass."' where nick ='".$nn."'");

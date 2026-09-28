@@ -24,7 +24,7 @@ if(strpos($s,"<card")===false) $s="<card>".$s."</card>";
 die(w2w($s));
 
 // переводит часть "43d" из "&#x043d;" в windows-1251
-function unicode2win($s) {if($s=="401") return "Ё"; else if($s=="451") return "ё"; else return(chr(hexdec($s)-848));} 
+function unicode2win($s) {if($s=="401") return "Ё"; else if($s=="451") return "ё"; else return(chr(legacy_num(legacy_num(hexdec($s))-848)));} 
 function w2w($s) {
 	$vars=array();
 	$pages=array();
@@ -51,7 +51,7 @@ function w2w($s) {
 			$data.=$label."\n";
 			}
 		}
-	if ($xF>0) {$pages[]=array("id"=>"m123d","title"=>"Меню","links"=>$links,"data"=>$data);}
+	if (legacy_cmp($xF)>0) {$pages[]=array("id"=>"m123d","title"=>"Меню","links"=>$links,"data"=>$data);}
 
 	// все тэги
 	$xF = preg_match_all("/<(\/?[^>]*)>([^<]*)/",$s,$regF);
@@ -87,7 +87,7 @@ function w2w($s) {
 			preg_replace_callback("/href=\"(.*?)\"/",function ($m) use (&$href) { return $href=$m[1]; },$st);
 			// заменяем POST на GET
 			$xV = preg_match_all("/postfield\s*name=\"(.*?)\"\s*value=\"(.*?)\"/",$st,$regV);
-			if ($xV>0 && strpos($href,"?")!==false) $href.="?";
+			if (legacy_cmp($xV)>0 && strpos($href,"?")!==false) $href.="?";
 			for ($j=0;$j<$xV;$j++) {
 				$href.="&".$regV[1][$j]."=".$regV[2][$j];
 				}

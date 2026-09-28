@@ -20,13 +20,13 @@
                 foreach ($l_i[$i] as $j=>$val) if ($j!="u.qv" && $j!="u.ogir" && $j!="u.qw" && $j!="u.kv" && $j!="u.scream") {
                         if (substr($j,0,2)=='u.') {
                                 $uc=explode("|",$l_i[$i][$j]["char"]);
-                                if (!$uc[8]) {$us=explode("|",$l_i[$i][$j]["skills"]); if (rand(0,100)>$us[17]*6) $users[]=$j; if ($locai[1]!=3 && $uc[9] || $ti[2]>=1099 && ($locai[1]==2 && $uc[14]=="p" || $locai[1]==3 && $uc[14]=="t")) $crim[]=$j;}
+                                if (!$uc[8]) {$us=explode("|",$l_i[$i][$j]["skills"]); if (rand(0,100)>legacy_num($us[17])*6) $users[]=$j; if (legacy_cmp($locai[1])!=3 && $uc[9] || legacy_cmp($ti[2])>=1099 && (legacy_cmp($locai[1])==2 && $uc[14]=="p" || legacy_cmp($locai[1])==3 && $uc[14]=="t")) $crim[]=$j;}
                                 }
                         if (substr($j,0,4)=='n.c.') $crim[]=$j;
                         if (substr($j,0,4)=="n.g.") $guard=1;
                         }
                 }
-        if ($locai[1]==1 && count((array)($crim))>0 && !$guard) require "f_addguard.dat";
+        if (legacy_cmp($locai[1])==1 && count((array)($crim))>0 && !$guard) require "f_addguard.dat";
 
         // по всем объектам
         if ($l_i[$i]) foreach ($l_i[$i] as $j=>$val) if (isset($l_i[$i][$j])) {
@@ -39,24 +39,24 @@
                         }
                 if (substr($j,0,2)=='u.' || substr($j,0,2)=='n.') {
                         $char=explode("|",$l_i[$i][$j]["char"]);
-                        $tm=time()-$char[5];
+                        $tm=time()-legacy_num($char[5]);
                         if ($tm>$g_regen && (time()<$char[17] || $char[1]!=$char[2] || $char[3]!=$char[4]) && (substr($j,0,2)=='n.' || (substr($j,0,2)=='u.' && !$char[8]))) {
                                 if (substr($j,0,2)=='u.') $skills=explode("|",$l_i[$i][$j]["skills"]); else {$skills[5]=0; $skills[16]=0;}
 //яды и регенерация
-if (time()>$char[17]) { $char[1]=min($char[1]+=round($tm/($g_regen-$skills[16]*4)),$char[2]);
- } else { $char[1]=max($char[1]-=round($tm/($g_regen-5*4)),1); }
-                        $char[3]=min($char[3]+=round($tm/($g_regen-$skills[5]*4)),$char[4]);
+if (time()>$char[17]) { $char[1]=min($char[1]= legacy_num($char[1]) + legacy_num(round(legacy_num(legacy_num($tm)/(legacy_num($g_regen)-legacy_num(legacy_num($skills[16]))*4)))),$char[2]);
+ } else { $char[1]=max($char[1]= legacy_num($char[1]) - legacy_num(round(legacy_num(legacy_num($tm)/(legacy_num($g_regen)-5*4)))),1); }
+                        $char[3]=min($char[3]= legacy_num($char[3]) + legacy_num(round(legacy_num(legacy_num($tm)/(legacy_num($g_regen)-legacy_num(legacy_num($skills[5]))*4)))),$char[4]);
                                 $char[5]=time();
                                 }
                 if (substr($j,0,2)=='u.') {
                         if ($char[9] && time()>$char[10]) {$char[9]=0;$char[10]="";}
                         if ($j==$login) $char[11]=time();
-                        if ($char[11] && time()>$char[11]+$g_logout*5 && !file_exists("online/".$j)) {unset($l_i[$i][$j]); continue;}
+                        if ($char[11] && time()>legacy_num($char[11])+legacy_num(legacy_num($g_logout))*5 && !file_exists("online/".$j)) {unset($l_i[$i][$j]); continue;}
                         }
                 if (substr($j,0,2)=='n.') {
-                        if ($loc==$i && time()>$char[6] && $char[1]<$char[2]/4 && rand(0,100)<50 && substr($j,0,4)!='n.s.' && substr($j,0,4)!='n.o.' && substr($j,0,4)!='n.z.') {require "f_run.dat"; if($b) continue;}
+                        if ($loc==$i && time()>$char[6] && $char[1]<legacy_num($char[2])/4 && rand(0,100)<50 && substr($j,0,4)!='n.s.' && substr($j,0,4)!='n.o.' && substr($j,0,4)!='n.z.') {require "f_run.dat"; if($b) continue;}
                         if ($char[7] && isset($l_i[$i][$char[7]]) && substr($char[7],0,2)=="u.") {$tc=explode("|",$l_i[$i][$char[7]]["char"]); if ($tc[8]) $char[7]="";}
-                        if ($j=="n.a.b.jarpt.1") {$b=0; foreach ($l_i[$i] as $k=>$v) if(substr($k,0,2)=="u.") {addnpc($j,$i,$locai[2+2*rand(0,(count((array)($locai))-2)/2-1)+1]); $b=1; break;} if ($b) continue;}
+                        if ($j=="n.a.b.jarpt.1") {$b=0; foreach ($l_i[$i] as $k=>$v) if(substr($k,0,2)=="u.") {addnpc($j,$i,$locai[2+2*rand(0,legacy_num((count((array)($locai))-2)/2-1))+1]); $b=1; break;} if ($b) continue;}
                         if (substr($j,0,4)=="n.g." && time()>$char[11]) {addnpc($j,$i,""); continue;}
                         if (isset($l_i[$i][$j]["owner"])) {require "f_owner.dat"; if ($b) continue;} else {$owner[1]="";}
                         if ($char[7] && !$owner[1] && !isset($l_i[$i][$char[7]])) {
@@ -65,8 +65,8 @@ if (time()>$char[17]) { $char[1]=min($char[1]+=round($tm/($g_regen-$skills[16]*4
                                 if ($b) continue; else $char[7]="";
                                 }
                         if (!$char[7]) {
-                                if (count((array)($crim))>0 && (substr($j,0,4)=="n.g." || substr($j,0,4)=="n.t." || substr($j,0,4)=="n.p.")) $char[7]=$crim[rand(0,count((array)($crim))-1)];
-                                if (($char[9] || substr($j,0,4)=='n.c.') && count((array)($users))>0) $char[7]=$users[rand(0,count((array)($users))-1)];
+                                if (count((array)($crim))>0 && (substr($j,0,4)=="n.g." || substr($j,0,4)=="n.t." || substr($j,0,4)=="n.p.")) $char[7]=$crim[rand(0,legacy_num(count((array)($crim))-1))];
+                                if (($char[9] || substr($j,0,4)=='n.c.') && count((array)($users))>0) $char[7]=$users[rand(0,legacy_num(count((array)($users))-1))];
                                 }
                         if (substr($j,0,4)=="n.o." && substr($i,0,2)=="c." && substr($i,3)!=".in" && (!$char[7] || !isset($l_i[$i][$char[7]]))) require "f_no.dat";
                         if (!$char[7] && !$owner[1] && ($char[10] || (!$char[10] && $char[12])) && substr($j,0,4)!="n.o.") {require "f_na.dat"; if($b) continue;}

@@ -4,7 +4,7 @@
 	$tmp=unserialize(implode("",(array)(file("l_i/c.3.gate"))));
 	if ($tmp["d"]) {
 		$d=explode("|",$tmp["d"]);
-		if (strpos($d[0],"*")===false) $clanc=""; else $clanc=substr($d[0],strpos($d[0],"*")+1,strrpos($d[0],"*")-strpos($d[0],"*")-1);
+		if (strpos($d[0],"*")===false) $clanc=""; else $clanc=substr($d[0],legacy_num(strpos($d[0],"*")+1),legacy_num(strrpos($d[0],"*")-strpos($d[0],"*")-1));
 		if ($clanc) $stmp.=" принадлежит клану ".$clanc; else $stmp.=" никому не принадлежит";
 		} else $stmp.=" [ошибка загрузки]";
 
@@ -12,7 +12,7 @@
 	$tmp=unserialize(implode("",(array)(file("l_i/c.2.gate"))));
 	if ($tmp["d"]) {
 		$d=explode("|",$tmp["d"]);
-		if (strpos($d[0],"*")===false) $clanc=""; else $clanc=substr($d[0],strpos($d[0],"*")+1,strrpos($d[0],"*")-strpos($d[0],"*")-1);
+		if (strpos($d[0],"*")===false) $clanc=""; else $clanc=substr($d[0],legacy_num(strpos($d[0],"*")+1),legacy_num(strrpos($d[0],"*")-strpos($d[0],"*")-1));
 		if ($clanc) $stmp.=" принадлежит клану ".$clanc; else $stmp.=" никому не принадлежит";
 		} else $stmp.=" [ошибка загрузки]";
 
@@ -20,7 +20,7 @@
 	$tmp=unserialize(implode("",(array)(file("l_i/c.1.gate"))));
 	if ($tmp["d"]) {
 		$d=explode("|",$tmp["d"]);
-		if (strpos($d[0],"*")===false) $clanc=""; else $clanc=substr($d[0],strpos($d[0],"*")+1,strrpos($d[0],"*")-strpos($d[0],"*")-1);
+		if (strpos($d[0],"*")===false) $clanc=""; else $clanc=substr($d[0],legacy_num(strpos($d[0],"*")+1),legacy_num(strrpos($d[0],"*")-strpos($d[0],"*")-1));
 		if ($clanc) $stmp.=" принадлежит клану ".$clanc; else $stmp.=" никому не принадлежит";
 		} else $stmp.=" [ошибка загрузки]";
 
@@ -28,7 +28,7 @@
 	$tmp=unserialize(implode("",(array)(file("l_i/c.4.gate"))));
 	if ($tmp["d"]) {
 		$d=explode("|",$tmp["d"]);
-		if (strpos($d[0],"*")===false) $clanc=""; else $clanc=substr($d[0],strpos($d[0],"*")+1,strrpos($d[0],"*")-strpos($d[0],"*")-1);
+		if (strpos($d[0],"*")===false) $clanc=""; else $clanc=substr($d[0],legacy_num(strpos($d[0],"*")+1),legacy_num(strrpos($d[0],"*")-strpos($d[0],"*")-1));
 		if ($clanc) $stmp.=" принадлежит клану ".$clanc; else $stmp.=" никому не принадлежит";
 		} else $stmp.=" [ошибка загрузки]";
 
@@ -36,7 +36,7 @@
 	$tmp=unserialize(implode("",(array)(file("l_i/c.5.gate"))));
 	if ($tmp["d"]) {
 		$d=explode("|",$tmp["d"]);
-		if (strpos($d[0],"*")===false) $clanc=""; else $clanc=substr($d[0],strpos($d[0],"*")+1,strrpos($d[0],"*")-strpos($d[0],"*")-1);
+		if (strpos($d[0],"*")===false) $clanc=""; else $clanc=substr($d[0],legacy_num(strpos($d[0],"*")+1),legacy_num(strrpos($d[0],"*")-strpos($d[0],"*")-1));
 		if ($clanc) $stmp.=" принадлежит клану ".$clanc; else $stmp.=" никому не принадлежит";
 		} else $stmp.=" [ошибка загрузки]";
 

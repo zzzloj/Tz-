@@ -15,7 +15,7 @@ $a = array(
 
 
 );
-$r = rand(0,count((array)($a))-1);
+$r = rand(0,legacy_num(count((array)($a))-1));
 $tchar=explode("|",$l_i[$loc][$to]["char"]);
 $a[$r]=str_replace("<from>",$char[0],$a[$r]);
 $a[$r]=str_replace("<to>",$tchar[0],$a[$r]);

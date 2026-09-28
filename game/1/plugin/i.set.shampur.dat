@@ -4,12 +4,12 @@
 if (intval(preg_replace('/.*'."i.f.meat".':(\d+).*/',"\\1",$l_i[$loc][$login]["items"]))>0) {
 if (isset($l_i[$loc]["i.s.fire"])) {
 $skills=explode("|",$l_i[$loc][$login]["skills"]);
-if ($skills[30]>0) {
+if (legacy_cmp($skills[30])>0) {
 	$char[6]=time()+7;
 	$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 
 	additem($loc,$login,"","i.f.meat",1);
-	if (rand(1,100)<$skills[30]*20) {
+	if (rand(1,100)<legacy_num($skills[30])*20) {
 		additem($loc,"",$login,"i.f.meat.fried",1);
 		addjournal($loc,$login,"Вы поджарили мясо на костре"); 
 		addjournal($loc,"all",$char[0]." поджарил мясо на костре",$login);

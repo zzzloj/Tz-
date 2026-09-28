@@ -9,8 +9,8 @@
 	// UTF-8 русские буквы
 	$s=str_replace("\xd0\x81","Ё",$s);
 	$s=str_replace("\xd1\x91","ё",$s);
-	$s=preg_replace_callback("/\xd0([\x90-\xbf])/",function ($m) { return chr(ord($m[1])+48); },$s);
-	$s=preg_replace_callback("/\xd1([\x80-\x8f])/",function ($m) { return chr(ord($m[1])+112); },$s);
+	$s=preg_replace_callback("/\xd0([\x90-\xbf])/",function ($m) { return chr(legacy_num(ord($m[1])+48)); },$s);
+	$s=preg_replace_callback("/\xd1([\x80-\x8f])/",function ($m) { return chr(legacy_num(ord($m[1])+112)); },$s);
 
 	$s=str_replace('\\',"",$s);
 	$s=str_replace('"',"",$s);
@@ -66,13 +66,13 @@ if ($l_i[$loc][$login]['ban']>time()) {addjournal($loc,$login,"Бан!"); return;}
 	$l_i[$loc][$login]["macrol"]="say|$say||";
 	// добавим всем, включая себя, в журнал что сказали
 	$b=0;
-	if ($char[8]) {$ts=explode("|",$l_i[$loc][$login]["skills"]); if (rand(0,100)<=$ts[21]*10) $b=1;}
+	if ($char[8]) {$ts=explode("|",$l_i[$loc][$login]["skills"]); if (rand(0,100)<=legacy_num($ts[21])*10) $b=1;}
 	if (!$char[8]) {addjournal($loc,"all",$char[0]." говорит: ".$say); 
 	$l_i[$loc][$login]["lsay1"]=crc32($say);
 }
 		else foreach (array_keys((array)($l_i[$loc])) as $i) if (substr($i,0,2)=='u.'){
 		$skills=explode("|",$l_i[$loc][$i]["skills"]);
-		if ($b || rand(0,100)<=$skills[21]*20){ addjournal($loc,$i,$char[0]." говорит: ".$say);
+		if ($b || rand(0,100)<=legacy_num($skills[21])*20){ addjournal($loc,$i,$char[0]." говорит: ".$say);
 	$l_i[$loc][$login]["lsay1"]=crc32($say);
  }
 			else {

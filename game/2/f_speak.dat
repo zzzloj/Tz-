@@ -1,10 +1,10 @@
 <?php
 if ($speak) {
-	if ($speak==1 || ((substr($speak,0,2)=='u.' || substr($speak,0,2)=='n.') && isset($l_i[$loc][$speak]))) {
+	if (legacy_cmp($speak)==1 || ((substr($speak,0,2)=='u.' || substr($speak,0,2)=='n.') && isset($l_i[$loc][$speak]))) {
 	if (substr($speak,0,2)=='u.') {$to=$speak; $speak=1;}	// чат
-	if ($speak!=1) $tchar=explode("|",$l_i[$loc][$speak]["char"]);
+	if (legacy_cmp($speak)!=1) $tchar=explode("|",$l_i[$loc][$speak]["char"]);
 	if ($char[8] && substr($speak,0,2)=="n." && substr($speak,0,4)!="n.h." && substr($speak,0,5)!="n.cap") msg("<p>¬ы призрак и поэтому не можете ни с кем говорить, найдите лекар€ или камень воскрешени€");
-	if ($speak==1) {
+	if (legacy_cmp($speak)==1) {
 			include "f_speak1.dat";
 		} else		// с квестовым NPC
 		if (substr($speak,0,4)=="n.q.") include "f_speakq.dat";
@@ -46,9 +46,9 @@ if ($speak) {
 			if (substr($title_v,0,6)=="eval: ") eval(substr($title_v,6));
 			if (substr($title_v,0,5)=="skill") include "f_speakskillup.dat";
 			$stmp="<p>".$title_v;
-			for($i=1;$i<count((array)($dialog));$i+=2) {
+			for($i=1;$i<count((array)($dialog));$i= legacy_num($i) + legacy_num(2)) {
 				$title_v=$dialog[$i];
-				$id=$dialog[$i+1];
+				$id=$dialog[legacy_num($i)+1];
 				if (substr($title_v,0,6)=="eval: ") eval(substr($title_v,6));
 				if ($title_v)	$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&speak=$speak&id=".$id."\">".$title_v."</a>";
 				}

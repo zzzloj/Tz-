@@ -22,7 +22,7 @@ for suffix in ('', '/1', '/2'):
 for server in ('1', '2'):
     path = destination / 'game' / server / 'f_connect.php'
     contents = path.read_bytes()
-    old = b'@implode("",@file(@implode("",@file("serverurl.dat")).$srv."/g.php?site=connect2&sid=$login&login=$login&p=$p&f_c=$f_c&clan=$clan&tacc=$tacc&tnews=$tnews&ip=".$_SERVER["REMOTE_ADDR"]."&data=".urlencode($data)))'
+    old = b'@implode("",(array)(@file(@implode("",(array)(@file("serverurl.dat"))).$srv."/g.php?site=connect2&sid=$login&login=$login&p=$p&f_c=$f_c&clan=$clan&tacc=$tacc&tnews=$tnews&ip=".$_SERVER["REMOTE_ADDR"]."&data=".urlencode($data))))'
     new = b'legacy_internal_request($srv."/g.php?site=connect2&sid=$login&login=$login&p=$p&f_c=$f_c&clan=$clan&tacc=$tacc&tnews=$tnews&ip=".$_SERVER["REMOTE_ADDR"]."&data=".urlencode($data))'
     assert contents.count(old) == 1, str(path)
     path.write_bytes(contents.replace(old, new))

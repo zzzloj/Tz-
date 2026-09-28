@@ -5,11 +5,11 @@
 				$b=0;
 				if (!$char[10] && $char[12]) {$l_i[$i][$j]["char"]=implode("|",(array)($char)); $lt=$steps[count((array)($steps))-1]; $blt=1; if ($j=="n.a.b.jarpt.1") {loadloc($lt); if(count((array)($l_i[$lt]))!=0) $blt=0;} if ($blt) {addnpc($j,$i,$lt); $b=1;}}
 				else if (time()>$move[3]) {
-					if ($char[12] && count((array)($steps))>=$move[0]) {$b=1; $k=$steps[count((array)($steps))-1];} else {$b=0; $k=$locai[2+2*rand(0,(count((array)($locai))-2)/2-1)+1];}
+					if ($char[12] && count((array)($steps))>=$move[0]) {$b=1; $k=$steps[count((array)($steps))-1];} else {$b=0; $k=$locai[2+2*rand(0,legacy_num((count((array)($locai))-2)/2-1))+1];}
 					if (!isset($l_tt[$k]["d"])) loadloc($k);
 					$loc1=explode("|",$l_tt[$k]["d"]);
 					if ($locai[1]==$loc1[1] || $b) {
-						$move[3]=time()+rand($move[1],$move[2]);	// след. ход
+						$move[3]=time()+rand(legacy_num($move[1]),legacy_num($move[2]));	// след. ход
 						$char[10]=implode(":",(array)($move));
 						$l_i[$i][$j]["char"]=implode("|",(array)($char));
 						$blt=1; 

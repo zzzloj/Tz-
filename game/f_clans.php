@@ -18,11 +18,11 @@ if ($clan) {
 	if (count((array)($tmp["m"]))>0) {
 	if (!$start) $start=0;
 	$keys=array_keys((array)($tmp["m"]));
-	for($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) {
+	for($i=$start;$i<legacy_num($start)+legacy_num($g_list) && $i<count((array)($keys));$i++) {
 			$stmp.="<br/>".substr($keys[$i],2);
 			}
 		if ($start) {$stmp.= "\n<br/><a href=\"f_clans.php?clan=$clan\">^ </a>";}
-		if ($start+$g_list<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"f_clans.php?clan=$clan&start=".($start+$g_list)."\">+ (".(count((array)($keys))+1-$start-$g_list).")</a>";}
+		if (legacy_num($start)+legacy_num($g_list)<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"f_clans.php?clan=$clan&start=".(legacy_num($start)+legacy_num($g_list))."\">+ (".(count((array)($keys))+1-legacy_num(legacy_num($start))-legacy_num($g_list)).")</a>";}
 		} else $stmp.="<br/>Больше никого в клане нет."; 
 
 	msg($stmp,"Клан *".$clan."*",0,"none");
@@ -43,11 +43,11 @@ if ($clan) {
 		arsort($arr);
 		if (!$start) $start=0;
 		$keys=array_keys((array)($arr));
-		for($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) {
+		for($i=$start;$i<legacy_num($start)+legacy_num($g_list) && $i<count((array)($keys));$i++) {
 			$stmp.="<br/><a href=\"f_clans.php?clan=".$keys[$i]."\">".$keys[$i]."</a> (".$arr[$keys[$i]]." чел.)";
 			}
 		if ($start) {$stmp.= "\n<br/><a href=\"f_clans.php?\">^ </a>";}
-		if ($start+$g_list<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"f_clans.php?start=".($start+$g_list)."\">+ (".(count((array)($keys))+1-$start-$g_list).")</a>";}
+		if (legacy_num($start)+legacy_num($g_list)<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"f_clans.php?start=".(legacy_num($start)+legacy_num($g_list))."\">+ (".(count((array)($keys))+1-legacy_num(legacy_num($start))-legacy_num($g_list)).")</a>";}
 		} else $stmp="<p>Нет ни одного клана"; 
 
 	msg($stmp,"Список кланов",0,'none');
@@ -56,7 +56,7 @@ function msg($s,$tirle_z="Амулет Дракона",$journal=0,$menu="") {
 	header("Content-type:text/vnd.wap.wml;charset=utf-8"); 
 
 	setlocale (LC_CTYPE, 'ru_RU.CP1251'); 
-	function win2unicode ( $s ) { if ( (ord($s)>=192) & (ord($s)<=255) ) $hexvalue=dechex(ord($s)+848); if ($s=="Ё") $hexvalue="401"; if ($s=="ё") $hexvalue="451"; return("&#x0".$hexvalue.";");} 
+	function win2unicode ( $s ) { if ( (ord($s)>=192) & (ord($s)<=255) ) $hexvalue=dechex(legacy_num(ord($s)+848)); if ($s=="Ё") $hexvalue="401"; if ($s=="ё") $hexvalue="451"; return("&#x0".$hexvalue.";");} 
 	function translate($s) {return(preg_replace_callback("/[А-яЁё]/",function ($m) { return win2unicode($m[0]); },$s));} 
 
 	ob_start("translate");

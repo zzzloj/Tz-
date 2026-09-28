@@ -2,7 +2,7 @@
 	if (!$login || !$p || !$sex || !$age) msg("Заполните все поля.<br/><anchor>Назад<prev/></anchor>","Ошибка",0,'none');
 	$sex=strip_tags($sex);
 	$age=intval(strip_tags($age));
-	if (intval($age)!=$age || $age<5 || $age>99) msg("Неправдоподобный возраст, укажите более реальный.<br/><anchor>Назад<prev/></anchor>","Ошибка",0,'none');
+	if (intval($age)!=$age || legacy_cmp($age)<5 || legacy_cmp($age)>99) msg("Неправдоподобный возраст, укажите более реальный.<br/><anchor>Назад<prev/></anchor>","Ошибка",0,'none');
 	if (strlen($sex)>1) msg("Неправильный пол<br/><anchor>Назад<prev/></anchor>","Ошибка",0,'none');
 	if (substr($login,0,2)!="u.") $login='u.'.$login;
 	$title_v=substr($login,2);
@@ -39,7 +39,7 @@
 	if ($res) {unset($l_i[$loc][$login]); msg($res,"Ошибка",0,'none');}
 
 	// ознакомительный период три дня
-	$t=time()+$freedays*24*3600;
+	$t=time()+legacy_num(legacy_num($freedays))*24*3600;
 	$res=SetGameTime(substr($login,2), $p, $t);
 	if ($res) msg($res,"Ошибка",0,"none");
 

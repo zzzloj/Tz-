@@ -1,12 +1,12 @@
 <?php
 // переводит все здоровье мага в ману с коэффициентом 0.7
 
-	$heal=$char[1]-1;
-	$heal=round($heal*0.7);
-	if($heal<0) $heal=0;
-	if ($char[3]+$heal>$char[4]) $heal=$char[4]-$char[3];
+	$heal=legacy_num($char[1])-1;
+	$heal=round(legacy_num(legacy_num($heal)*0.7));
+	if(legacy_cmp($heal)<0) $heal=0;
+	if (legacy_num($char[3])+legacy_num($heal)>$char[4]) $heal=legacy_num($char[4])-legacy_num($char[3]);
 	$char[1]=1;
-	$char[3]+=$heal;
+	$char[3]= legacy_num($char[3]) + legacy_num($heal);
 	$char[5]=time();
 	$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 	addjournal($loc,$login,"Мана +".$heal);

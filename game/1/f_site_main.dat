@@ -2,7 +2,7 @@
 $srvmain=implode("",(array)(file("srvmain.dat")));
 $stmp="<p align=\"center\"><a href=\"../f_story.php?id=news&amp;pi=$pi\">Новости ";
 $t=filemtime("../story/news.htm");
-if ($t) $stmp.=date("d/m",$t);
+if ($t) $stmp.=date("d/m",legacy_num($t));
 if(!$pi) $pi="001";        // mag.su по умолчанию
 $stmp.="</a></p><p>
 <br/>Ваше имя:
@@ -25,7 +25,7 @@ $stmp.="</a></p><p>
 
 
 $srv=implode("",(array)(file("server.dat")));
-if($srv==1 && $pi=="001") {
+if(legacy_cmp($srv)==1 && $pi=="001") {
 $stmp.="
 
 </p>";

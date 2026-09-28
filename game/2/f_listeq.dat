@@ -11,14 +11,14 @@
 	if (!$start) $start=0;
 	$keys=array_keys((array)($equip));
 
-	for ($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) if ($equip[$keys[$i]]) {
+	for ($i=$start;$i<legacy_num($start)+legacy_num($g_list) && $i<count((array)($keys));$i++) if ($equip[$keys[$i]]) {
 		$k=explode(":",$equip[$keys[$i]]);
 		if (strpos($k[0],"_")!==false) $tk=substr($k[0],0,strpos($k[0],"_")); else
 		if (strpos($k[0],"-")!==false) $tk=substr($k[0],0,strpos($k[0],"-")); else $tk=$k[0];
 		if (substr($k[0],0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$tk)) $item=explode("|",implode("",(array)(file("items/".$tk)))); else die("err: no items/".$k[0]);
 		$item=$item[0];
 		if (strpos($k[0],"..")!==false) $item.=" *";
-		if ($k[1]>1) $item.=" (".$k[1].")";
+		if (legacy_cmp($k[1])>1) $item.=" (".$k[1].")";
 		if ($to) {
 			$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&to=$to&use=".$k[0]."\">".$item."</a>";
 			} else {	// основное меню
@@ -26,7 +26,7 @@
 				}
 		}
 	if ($start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&list=eq\">^ </a>";}
-	if ($start+$g_list<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&list=eq&start=".($start+$g_list)."\">+ (".(count((array)($keys))-$start-$g_list).")</a>";}
+	if (legacy_num($start)+legacy_num($g_list)<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&list=eq&start=".(legacy_num($start)+legacy_num($g_list))."\">+ (".(count((array)($keys))-legacy_num(legacy_num($start))-legacy_num($g_list)).")</a>";}
 	$stmp.="<br/>-<br/><a href=\"$PHP_SELF?sid=$sid\">В игру</a>";
 
 	// меню
