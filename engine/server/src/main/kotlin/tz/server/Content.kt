@@ -43,6 +43,9 @@ class Content(
     companion object {
         private val json = Json { ignoreUnknownKeys = true }
 
+        /** Dialog topics handled by the engine itself (f_speak.dat): trade and bank. */
+        val ENGINE_TOPICS = setOf("buy", "buy2", "sell", "tobank", "frombank")
+
         fun load(dir: File): Content {
             require(dir.isDirectory) { "content directory not found: $dir" }
             val problems = mutableListOf<String>()
@@ -65,7 +68,7 @@ class Content(
                     val options = (value as? JsonObject)?.get("options") as? JsonArray ?: continue
                     for (option in options) {
                         val goto = (option as? JsonObject)?.get("goto")?.jsonPrimitive?.contentOrNull ?: continue
-                        if (goto.isNotEmpty() && goto !in topics) problems += "dialog $id/$topic: goto missing topic \"$goto\""
+                        if (goto.isNotEmpty() && goto !in topics && goto !in ENGINE_TOPICS) problems += "dialog $id/$topic: goto missing topic \"$goto\""
                     }
                 }
             }
