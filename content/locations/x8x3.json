@@ -1,0 +1,62 @@
+{
+    "id": "x8x3",
+    "name": "овраг",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на юг по оврагу",
+            "target": "x7x3"
+        },
+        {
+            "label": "на запад по оврагу",
+            "target": "x8x2"
+        }
+    ],
+    "objects": {
+        "n.c.zemlerojka.2": {
+            "char": {
+                "name": "землеройка",
+                "hp": 200,
+                "hp_max": 200,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198674816,
+                "busy_until": 1198674488,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":x8x2"
+            },
+            "war": {
+                "hit_chance": 100,
+                "dmg_min": 16,
+                "dmg_max": 30,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 30,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "зубами",
+                "exp_value": 45,
+                "ammo": "",
+                "respawn": "x8x2:300:600"
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 100
+                }
+            ]
+        }
+    },
+    "timers": {
+        "1198719728": "n.c.zemkor.1|43200:86400|6:60:120:1198671896"
+    },
+    "description": "Овраг идет на юг и запад."
+}

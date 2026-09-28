@@ -1,0 +1,64 @@
+{
+    "id": "x876x264",
+    "name": "Замок",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "выйти",
+            "target": "x888x253"
+        }
+    ],
+    "objects": {
+        "n.Ditrih": {
+            "char": {
+                "name": "Барон Дитрих",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 6,
+                "dmg_max": 12,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 20,
+                "dodge": 10,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулаками",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x876x264:60:120"
+            },
+            "items": [
+                {
+                    "id": "i.a.r.s",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.c.sp1",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.r.s",
+                "i.a.c.sp1"
+            ],
+            "qv": 1198690850
+        }
+    },
+    "description": "Просторный зал, у дальней стены стоит двухместная кровать с ажурным балдахоном. Напротив нее на стене растянута шкура медведя. Шторы на окнах отсутствуют, но между окнами от потолка до пола висят гобелены с изображением рыцарей и битв.\n\n\n\n"
+}

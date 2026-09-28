@@ -1,0 +1,7 @@
+{
+    "id": "p.d.u",
+    "kind": "technique",
+    "name": "уклон от стрел",
+    "cooldown": 90,
+    "description": "Уклон от стрел: +30%"
+}

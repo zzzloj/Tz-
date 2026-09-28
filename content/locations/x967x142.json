@@ -1,0 +1,26 @@
+{
+    "id": "x967x142",
+    "name": "Северный лес",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x963x114"
+        },
+        {
+            "label": "на восток",
+            "target": "x1004x142"
+        },
+        {
+            "label": "на юг",
+            "target": "x967x170"
+        },
+        {
+            "label": "на запад",
+            "target": "x927x142"
+        }
+    ],
+    "objects": {
+        "i.s.d.n.c.wolf.sl6.10": "труп (вoлк)|1|1198677515|,i.h.k.wolf:1,i.h.kog.wolf:1,i.f.meat:1|"
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "id": "i.w.r.b.ivov",
+    "kind": "weapon",
+    "name": "ивовый лук",
+    "price": 80,
+    "dmg_min": 2,
+    "dmg_max": 8,
+    "req": [
+        2,
+        3
+    ],
+    "speed": 5,
+    "verb": "из лука",
+    "ammo": "i.arrow"
+}

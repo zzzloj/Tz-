@@ -1,0 +1,15 @@
+{
+    "id": "z.5.sklad",
+    "name": "Кладовая",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "в хранилище",
+            "target": "z.5.hran"
+        },
+        {
+            "label": "к воротам",
+            "target": "c.5.gate"
+        }
+    ]
+}

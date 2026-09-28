@@ -1,0 +1,10 @@
+{
+    "id": "i.a.l.wood",
+    "kind": "armor",
+    "name": "деревянные поножи",
+    "price": 32,
+    "armor": 1,
+    "req": [
+        2
+    ]
+}

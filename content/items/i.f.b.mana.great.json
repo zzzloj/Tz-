@@ -1,0 +1,8 @@
+{
+    "id": "i.f.b.mana.great",
+    "kind": "food",
+    "name": "элексир маны",
+    "price": 160,
+    "heal_hp": "",
+    "heal_mana": 25
+}

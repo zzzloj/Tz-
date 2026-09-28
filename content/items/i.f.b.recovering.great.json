@@ -1,0 +1,8 @@
+{
+    "id": "i.f.b.recovering.great",
+    "kind": "food",
+    "name": "элексир востановления",
+    "price": 300,
+    "heal_hp": 25,
+    "heal_mana": 30
+}

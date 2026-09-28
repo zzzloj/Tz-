@@ -1,0 +1,59 @@
+{
+    "id": "x6x2",
+    "name": "овраг",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на восток",
+            "target": "x6x3"
+        },
+        {
+            "label": "на запад",
+            "target": "x6x1"
+        }
+    ],
+    "objects": {
+        "n.c.zemlerojka.5": {
+            "char": {
+                "name": "землеройка",
+                "hp": 200,
+                "hp_max": 200,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 100,
+                "dmg_min": 16,
+                "dmg_max": 30,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 30,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "зубами",
+                "exp_value": 45,
+                "ammo": "",
+                "respawn": "x6x2:300:600"
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 100
+                }
+            ]
+        }
+    },
+    "description": "Овраг идет с востока на запад."
+}

@@ -1,0 +1,57 @@
+{
+    "id": "x8x6",
+    "name": "дом старейшины",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "в восточную дверь",
+            "target": "x8x7"
+        },
+        {
+            "label": "в западную дверь",
+            "target": "x8x5"
+        },
+        {
+            "label": "выйти на площадь",
+            "target": "x7x6"
+        }
+    ],
+    "objects": {
+        "n.Star": {
+            "char": {
+                "name": "Cтарейшина",
+                "hp": 60,
+                "hp_max": 60,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 10,
+                "dmg_max": 30,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "посохом",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x8x6:1:2"
+            }
+        }
+    },
+    "description": "Дом старейшины наполнен мягким. голубым светом. Котрый исходит откуда-то с потолка. На востоке и западе еще два помещения."
+}

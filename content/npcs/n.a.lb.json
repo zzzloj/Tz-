@@ -1,0 +1,42 @@
+{
+    "id": "n.a.lb",
+    "char": {
+        "name": "лесной буйвол",
+        "hp": 70,
+        "hp_max": 70,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": 4,
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 90,
+        "dmg_min": 15,
+        "dmg_max": 30,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "рогами",
+        "exp_value": 12,
+        "ammo": "",
+        "respawn": ""
+    },
+    "osvej": [
+        {
+            "id": "i.q.shbu",
+            "count": 1
+        }
+    ]
+}

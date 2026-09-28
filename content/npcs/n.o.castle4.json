@@ -1,0 +1,36 @@
+{
+    "id": "n.o.castle4",
+    "char": {
+        "name": "Lastar [маг-наемник]",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 95,
+        "dmg_min": 15,
+        "dmg_max": 25,
+        "attack_delay": 6,
+        "is_ranged": "",
+        "armor": 15,
+        "dodge": 15,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": 25,
+        "magic_parry": 50,
+        "magic_resist": 70,
+        "verb": "магией",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": ""
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "id": "i.w.r.b.long",
+    "kind": "weapon",
+    "name": "длинный лук",
+    "price": 60,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "req": [
+        2,
+        2
+    ],
+    "speed": 4,
+    "verb": "из лука",
+    "ammo": "i.arrow"
+}

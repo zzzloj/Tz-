@@ -1,0 +1,66 @@
+{
+    "id": "n.c.Slejter",
+    "char": {
+        "name": "Слейтер-зомби",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 24,
+        "dmg_max": 39,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "из самострела",
+        "exp_value": 50,
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.a.e.j",
+            "count": 1
+        },
+        {
+            "id": "i.a.o.s1",
+            "count": 1
+        },
+        {
+            "id": "i.a.d.zsl1",
+            "count": 1
+        },
+        {
+            "id": "i.a.c.tuf1",
+            "count": 1
+        },
+        {
+            "id": "i.a.h.b1",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.e.j",
+        "i.a.o.s1",
+        "i.a.d.zsl1",
+        "i.a.c.tuf1",
+        "i.a.h.b1"
+    ],
+    "itemsrnd": "i.money:90:30:70|i.w.r.c.gazov2:0,3:0:1"
+}

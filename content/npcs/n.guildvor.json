@@ -1,0 +1,53 @@
+{
+    "id": "n.guildvor",
+    "char": {
+        "name": "Вор-охранник",
+        "hp": 300,
+        "hp_max": 300,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 95,
+        "dmg_min": 20,
+        "dmg_max": 45,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": 20,
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "шпaгoй",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": "x2168x297:1:2"
+    },
+    "items": [
+        {
+            "id": "i.w.s.shpaga",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.w.s.shpaga"
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.q.sv",
+            "chance": 15,
+            "min": 1,
+            "max": 1
+        }
+    ]
+}

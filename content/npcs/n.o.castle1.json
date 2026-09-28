@@ -1,0 +1,36 @@
+{
+    "id": "n.o.castle1",
+    "char": {
+        "name": "Garsl [наемник]",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 95,
+        "dmg_min": 15,
+        "dmg_max": 25,
+        "attack_delay": 6,
+        "is_ranged": "",
+        "armor": 19,
+        "dodge": 14,
+        "parry": 40,
+        "shield_armor": 10,
+        "magic_dodge": "",
+        "magic_parry": 30,
+        "magic_resist": 30,
+        "verb": "мeчoм",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": ""
+    }
+}

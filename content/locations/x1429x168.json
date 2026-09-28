@@ -1,0 +1,67 @@
+{
+    "id": "x1429x168",
+    "name": "Горы",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "подойти к замку",
+            "target": "c.1.in"
+        },
+        {
+            "label": "на юг вдоль гор",
+            "target": "x1431x197"
+        },
+        {
+            "label": "на запад вдоль гор",
+            "target": "x1390x169"
+        }
+    ],
+    "objects": {
+        "n.a.b.kor.gory1": {
+            "char": {
+                "name": "кopшун",
+                "hp": 14,
+                "hp_max": 14,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 3,
+                "crime_title": "",
+                "wander": "1:20:60:1198678095",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 90,
+                "dmg_min": 0,
+                "dmg_max": 6,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "клювoм",
+                "exp_value": 2,
+                "ammo": "",
+                "respawn": "x1429x168:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.p.perya",
+                    "count": 18
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "description": "В это месте горы образуют естественную нишу, в которой стоит темный замок, защищенный с трех сторон неприступными скалами. Единственный путь к воротам усыпан острым гравием и осколками побелевших от времени костей."
+}

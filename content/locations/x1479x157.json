@@ -1,0 +1,61 @@
+{
+    "id": "x1479x157",
+    "name": "Пещера",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на восток",
+            "target": "x1520x156"
+        },
+        {
+            "label": "на юг",
+            "target": "x1482x185"
+        }
+    ],
+    "objects": {
+        "i.s.rudnik": "рудная жила|0|0|300|3|1198670012",
+        "n.a.losh.8644": {
+            "char": {
+                "name": "лoшaдь",
+                "hp": 26,
+                "hp_max": 26,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198670130,
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 2,
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 1,
+                "dmg_max": 7,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кoпытaми",
+                "exp_value": 4,
+                "ammo": "",
+                "respawn": ""
+            },
+            "osvej": [
+                {
+                    "id": "i.f.meat",
+                    "count": 3
+                }
+            ],
+            "owner": "u.lim|u.lim|0|0|0"
+        }
+    },
+    "description": "Прямо на юге выход из пещеры, а на восток тянется почти такая же просторная выработка.\n"
+}

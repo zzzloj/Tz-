@@ -1,0 +1,100 @@
+{
+    "id": "x879x297",
+    "name": "Загон для лошадей",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "спустьться в подземный ход",
+            "target": "x890x281"
+        },
+        {
+            "label": "на юг по дороге",
+            "target": "x858x321"
+        }
+    ],
+    "objects": {
+        "n.a.losh.zam2": {
+            "char": {
+                "name": "лoшaдь",
+                "hp": 26,
+                "hp_max": 26,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 2,
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 1,
+                "dmg_max": 7,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кoпытaми",
+                "exp_value": 4,
+                "ammo": "",
+                "respawn": "x879x297:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.f.meat",
+                    "count": 3
+                }
+            ]
+        },
+        "n.a.losh.zam1": {
+            "char": {
+                "name": "лoшaдь",
+                "hp": 26,
+                "hp_max": 26,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 2,
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 1,
+                "dmg_max": 7,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кoпытaми",
+                "exp_value": 4,
+                "ammo": "",
+                "respawn": "x879x297:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.f.meat",
+                    "count": 3
+                }
+            ]
+        }
+    },
+    "description": "Вы на поляне с мелкой травой, огороженной решеткой с высокими острыми прутьями. Обычно здесь выпасают лошадей из замка. Около рва с водой растет кучка кустарника. Раздвинув ветви, вы обнаруживаете потайной проход.\n"
+}

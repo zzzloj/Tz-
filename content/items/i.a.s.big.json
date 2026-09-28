@@ -1,0 +1,11 @@
+{
+    "id": "i.a.s.big",
+    "kind": "armor",
+    "name": "большой щит",
+    "price": 350,
+    "armor": 4,
+    "req": [
+        5,
+        4
+    ]
+}

@@ -1,0 +1,75 @@
+{
+    "id": "x776x141",
+    "name": "Аванпост стражи",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "на север по дороге",
+            "target": "x772x113"
+        },
+        {
+            "label": "на юг по дороге",
+            "target": "x776x170"
+        },
+        {
+            "label": "на восток",
+            "target": "x813x141"
+        },
+        {
+            "label": "на запад ",
+            "target": "x735x141"
+        }
+    ],
+    "objects": {
+        "n.goutpost": {
+            "char": {
+                "name": "Стpaжник",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 90,
+                "dmg_min": 11,
+                "dmg_max": 28,
+                "attack_delay": 8,
+                "is_ranged": 1,
+                "armor": 4,
+                "dodge": 10,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "из apбaлeтa",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x776x141:30:60"
+            },
+            "items": [
+                {
+                    "id": "i.a.b.spanc",
+                    "count": 1
+                },
+                {
+                    "id": "i.w.r.c.heavy",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.b.spanc",
+                "i.w.r.c.heavy"
+            ]
+        }
+    },
+    "description": "По обе стороны от дороги стоят две каменные башенки в 5 человеческих роста, соединенные каменным переходом, который образует над дорогой что-то вроде моста. У одной из башен пристроена небольшое строение на двух человек.\n\n\n\n"
+}

@@ -1,0 +1,13 @@
+{
+    "id": "i.a.e.sh",
+    "kind": "armor",
+    "name": "шелковый плащ",
+    "price": 2000,
+    "armor": 2,
+    "req": [
+        2,
+        5,
+        2
+    ],
+    "unknown_4": 0
+}

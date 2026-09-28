@@ -1,0 +1,55 @@
+{
+    "id": "n.Varvar",
+    "char": {
+        "name": "Вapвap",
+        "hp": 140,
+        "hp_max": 140,
+        "mana": 100,
+        "mana_max": 100,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 95,
+        "dmg_min": 32,
+        "dmg_max": 80,
+        "attack_delay": 6,
+        "is_ranged": "",
+        "armor": 0,
+        "dodge": 25,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": 80,
+        "magic_resist": 40,
+        "verb": "кoпьeм",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": "x1162x57:120:300"
+    },
+    "items": [
+        {
+            "id": "i.a.b.meh",
+            "count": 1
+        },
+        {
+            "id": "i.a.c.t1",
+            "count": 1
+        },
+        {
+            "id": "i.w.spear.long",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.b.meh",
+        "i.a.c.t1",
+        "i.w.spear.long"
+    ]
+}

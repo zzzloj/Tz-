@@ -1,0 +1,74 @@
+{
+    "id": "n.a.edinorog",
+    "char": {
+        "name": "белый единорог",
+        "hp": 70,
+        "hp_max": 70,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": 4,
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 90,
+        "dmg_min": 4,
+        "dmg_max": 14,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "кoпытaми",
+        "exp_value": 12,
+        "ammo": "",
+        "respawn": ""
+    },
+    "osvej": [
+        {
+            "id": "i.f.medin",
+            "count": 1
+        }
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.ring.a",
+            "chance": 5,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.c.emerald.good",
+            "chance": 5,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.f.b.health.great",
+            "chance": 50,
+            "min": 0,
+            "max": 3
+        },
+        {
+            "id": "i.m.heal.great",
+            "chance": 10,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.m.ressurect",
+            "chance": 10,
+            "min": 0,
+            "max": 1
+        }
+    ]
+}

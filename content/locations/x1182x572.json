@@ -1,0 +1,61 @@
+{
+    "id": "x1182x572",
+    "name": "Портовый район",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "дом на севере",
+            "target": "x1185x560"
+        },
+        {
+            "label": "склад на юге",
+            "target": "x1186x582"
+        },
+        {
+            "label": "на восток",
+            "target": "x1202x570"
+        },
+        {
+            "label": "на запад",
+            "target": "x1155x567"
+        }
+    ],
+    "objects": {
+        "n.Djon": {
+            "char": {
+                "name": "Джoн",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 40,
+                "dmg_min": 1,
+                "dmg_max": 3,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1182x572:30:60"
+            }
+        }
+    },
+    "description": "Вы находитесь в центре портовой площади. На севере покосившийся от времени, но еще довольно крепкий дом со стершейся от дождя вывеской, а на юге стоит здание портового склада, из двери доносится запах гниющей рыбы и отсыревших досок."
+}

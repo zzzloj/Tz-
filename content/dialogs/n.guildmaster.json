@@ -1,0 +1,247 @@
+{
+    "id": "n.guildmaster",
+    "topics": {
+        "begin": {
+            "text": "eval: \r\n\t$title_v=\"Здравствуй, <imja>. Меня зовут Мирандер, я заношу в королевский реестр создаваемые кланы. Так-с... [заглядывает в журнал] Ты сейчас \"; \r\n\t$tc=explode(\"|\",$l_i[$loc][$login][\"char\"]); \r\n\tif (strpos($tc[0],\"*\")===false) $clan=\"\"; else $clan=substr($tc[0],legacy_num(strpos($tc[0],\"*\")+1),legacy_num(strrpos($tc[0],\"*\")-strpos($tc[0],\"*\")-1));\r\n\tif ($clan && file_exists(\"../clans/\".$clan)) $tmp=unserialize(implode(\"\",(array)(file(\"../clans/\".$clan)))); else $tmp=array(); \r\n\tif (isset($tmp[\"m\"][$login]) || isset($tmp[\"v\"][$login]) || isset($tmp[\"s\"][$login])) $title_v.=\"состоишь в клане \".$clan.\".\"; \r\n\telse if (isset($tmp[\"g\"][$login])) $title_v.=\"являешься главой клана \".$clan.\".\"; \r\n\telse if ($clan){\r\n\t\t$title_v.=\"... Упс, сожалею, но ты выгнан из клана \".$clan.\".\"; \r\n\t\t$tc[0]=str_replace(\" *\".$clan.\"*\",\"\",$tc[0]); \r\n\t\t$l_i[$loc][$login][\"char\"]=implode(\"|\",(array)($tc));\r\n\t\t} else $title_v.=\"не состоишь ни в одном клане.\";",
+            "options": [
+                {
+                    "label": "Расскажи о кланах",
+                    "goto": "info"
+                },
+                {
+                    "label": "eval: if (!$clan) $title_v=\"Я хочу создать свой клан\"; else if (isset($tmp[\"g\"][$login])) $title_v=\"Я хочу расформировать свой клан \".$clan; else $title_v=\"Я хочу покинуть клан  \".$clan;",
+                    "goto": "new"
+                },
+                {
+                    "label": "Я хочу купить камень гильдии",
+                    "goto": "buystone"
+                },
+                {
+                    "label": "У меня проблема с кланом",
+                    "goto": "problem"
+                },
+                {
+                    "label": "Все в порядке, мне пора.",
+                    "goto": "end"
+                }
+            ]
+        },
+        "end": "Счастливо, я буду здесь, на центральной площади.",
+        "info": {
+            "text": "У тех, кто состоит в каком-нибудь клане, рядом с именем выводится название клана, заключенное в символы *. Любой игрок может создать свой собственный клан или вступить в существующий. Нападение или подбирание предметов с трупа соклановца не считается преступлением.",
+            "options": [
+                {
+                    "label": "Как мне создать свой клан?",
+                    "goto": "infonew"
+                },
+                {
+                    "label": "Как вступить в другой клан?",
+                    "goto": "infojoin"
+                },
+                {
+                    "label": "Как мне выйти из своего клана?",
+                    "goto": "infoout"
+                },
+                {
+                    "label": "А сейчас я в каком клане?",
+                    "goto": "begin"
+                }
+            ]
+        },
+        "infonew": {
+            "text": "Для этого ты должен заплатить вступительный взнос и сказать мне имя твоего будущего клана, после чего получишь камень гильдии, с помощью которого сможешь управлять своим кланом - смотреть списки его состава,  приглашать в него других игроков и выгонять из клана недостойных, а также сделать главой своего клана кого-нибудь другого (передать все полномочия, при этом сам становишься рядовым клановцем).",
+            "options": [
+                {
+                    "label": "Как мне пригласить кого-нибудь в свой клан?",
+                    "goto": "infoget"
+                },
+                {
+                    "label": "Как мне посмотреть состав своего клана или выгнать кого-нибудь?",
+                    "goto": "infolist"
+                },
+                {
+                    "label": "Что если я потеряю свой камень гильдии?",
+                    "goto": "infolost"
+                },
+                {
+                    "label": "Как мне расформировать свой клан?",
+                    "goto": "infodel"
+                },
+                {
+                    "label": "У меня есть еще вопросы",
+                    "goto": "begin"
+                }
+            ]
+        },
+        "infojoin": {
+            "text": "Для этого ты должен поговорить с главой того клана, в который хочешь вступить. Если он согласится, то внесет тебя в списки рекрутов клана и даст тебе камень гильдии. Возьми его в руки и используй на главу клана, тем самым ты подтвердишь свой желание быть в этом клане. Не забудь после этого вернуть камень гильдии владельцу :-)",
+            "options": [
+                {
+                    "label": "Понятно",
+                    "goto": "info"
+                },
+                {
+                    "label": "Ок, я пошел",
+                    "goto": "end"
+                }
+            ]
+        },
+        "infoout": {
+            "text": "Для этого поговори со мной и если ты состоишь в каком-нибудь клане, увидишь вариант ответа, где хочешь покинуть свой клан.",
+            "options": [
+                {
+                    "label": "Ясно",
+                    "goto": "info"
+                },
+                {
+                    "label": "Хорошо, пока",
+                    "goto": "end"
+                }
+            ]
+        },
+        "infoget": {
+            "text": "Для этого используй свой камень гильдии на того, кого хочешь пригласить. После этого он будет зачислен в списки ожидающих. Передай ему свой камень гильдии и пусть он использует его на тебя. И только после этого он станет полноценным участником клана. Камень гильдии, кстати, забери потом обратно себе.",
+            "options": [
+                {
+                    "label": "А что если он не отдаст мой камень гильдии?",
+                    "goto": "infongive"
+                },
+                {
+                    "label": "Ясно, у меня еще вопросы",
+                    "goto": "infonew"
+                }
+            ]
+        },
+        "infongive": {
+            "text": "Ну что ж, это проверка на верность, сразу станет ясно, на чьей он стороне, [подмигивает] ты меня понимаешь? Не волнуйся, только ты являешься главой клана и твой камень в чужих руках бесполезная игрушка.",
+            "options": [
+                {
+                    "label": "Так как мне вернуть камень гильдии?",
+                    "goto": "infolost"
+                },
+                {
+                    "label": "Гм...буду осторожен",
+                    "goto": "infonew"
+                }
+            ]
+        },
+        "infodel": {
+            "text": "Для этого поговори со мной и если ты глава клана, увидишь вариант ответа, где хочешь удалить свой клан.",
+            "options": [
+                {
+                    "label": "Ясно",
+                    "goto": "infonew"
+                }
+            ]
+        },
+        "infolist": {
+            "text": "Для этого используй камень гильдии и увидишь меню, где можешь пригласить кого-нибудь в свой клан, а также список текущего состава и список ожидающих вступления.",
+            "options": [
+                {
+                    "label": "А если у меня нет камня гильдии?",
+                    "goto": "infolost"
+                },
+                {
+                    "label": "Ок, это действительно просто",
+                    "goto": "infonew"
+                },
+                {
+                    "label": "Это все что я хотел узнать",
+                    "goto": "end"
+                }
+            ]
+        },
+        "infolost": {
+            "text": "Ты можешь в любой момент купить у меня камень гильдии или взять на время у кого-нибудь у знакомых. Своим кланом можешь управлять только ты, причем с помощью любого камня гильдии. И все же постарайся не терять свой камень, потому что он довольно дорогой, храни его в банке или другом надежном месте.",
+            "options": [
+                {
+                    "label": "Хорошо, вернемся к началу разговора",
+                    "goto": "begin"
+                },
+                {
+                    "label": "Расскажи, как создать свой клан",
+                    "goto": "infonew"
+                },
+                {
+                    "label": "Ясно, мне пора",
+                    "goto": "end"
+                }
+            ]
+        },
+        "buystone": {
+            "text": "Камень гильдии стоит 500 монет. Впрочем, ты можешь взять на время камень гильдии у кого-нибудь из своих знакомых.",
+            "options": [
+                {
+                    "label": "Нет, я хочу купить камень гильдии, вот деньги",
+                    "goto": "buystonenow"
+                },
+                {
+                    "label": "А, значит подходит любой камень? Тогда сделка отменяется",
+                    "goto": "end"
+                }
+            ]
+        },
+        "buystonenow": {
+            "text": "eval: additem($loc,$login,\"\",\"i.money\",500,\"items\",\"items\",1,0,1); additem($loc,\"\",$login,\"i.guildstone\",1); $title_v=\"Держи и не теряй больше.\";",
+            "options": [
+                {
+                    "label": "Спасибо, у меня еще есть вопросы",
+                    "goto": "begin"
+                },
+                {
+                    "label": "Мне пора",
+                    "goto": "end"
+                }
+            ]
+        },
+        "new": {
+            "text": "eval: \r\n\t$tc=explode(\"|\",$l_i[$loc][$login][\"char\"]);\r\n\tif (strpos($tc[0],\"*\")===false) $clan=\"\"; else $clan=substr($tc[0],legacy_num(strpos($tc[0],\"*\")+1),legacy_num(strrpos($tc[0],\"*\")-strpos($tc[0],\"*\")-1));\r\n\tif ($clan && file_exists(\"../clans/\".$clan)) $tmp=unserialize(implode(\"\",(array)(file(\"../clans/\".$clan)))); else $tmp=array();\r\n\tif (isset($tmp[\"m\"][$login]) || isset($tmp[\"v\"][$login]) || isset($tmp[\"s\"][$login])) {\r\n\tif (isset($tmp[\"m\"][$login])) unset($tmp[\"m\"][$login]);\r\n\tif (isset($tmp[\"v\"][$login])) unset($tmp[\"v\"][$login]);\r\n\tif (isset($tmp[\"s\"][$login])) unset($tmp[\"s\"][$login]);\r\n\t\t$file = legacy_fopen_w (\"../clans/\".$clan, \"w\"); \r\n\t\tif ($file!==false) {legacy_fputs($file,serialize($tmp));legacy_fclose($file);} \r\n\t\t$tc[0]=str_replace(\" *\".$clan.\"*\",\"\",$tc[0]); \r\n\t\t$l_i[$loc][$login][\"char\"]=implode(\"|\",(array)($tc)); \r\n\t\t$title_v=\"Ты больше не состоишь в клане \".$clan.\".\";\r\n\t\t} else if (isset($tmp[\"g\"][$login])) {\r\n\t\t\t$tc[0]=str_replace(\" *\".$clan.\"*\",\"\",$tc[0]);\r\n\t\t\t$l_i[$loc][$login][\"char\"]=implode(\"|\",(array)($tc)); \r\n\t\t\t@unlink(\"../clans/\".$clan);\r\n\t\t\t$title_v=\"Клан \".$clan.\" расформирован, при очередном логине все твои бывшие соклановцы лишатся надписи, что состоят в клане \".$clan;\r\n\t\t\t}else $title_v=\"Стоимость регистрации нового клана 50000 монет\"; ",
+            "options": [
+                {
+                    "label": "eval: if (!isset($tmp[\"m\"][$login]) && !isset($tmp[\"g\"][$login])) {$title_v=\"Я согласен\"; $id=\"newnow\";} else {$title_v=\"У меня еще вопросы\"; $id=\"begin\";}",
+                    "goto": "begin"
+                },
+                {
+                    "label": "Хех, может в другой раз...",
+                    "goto": "end"
+                }
+            ]
+        },
+        "newnow": {
+            "text": "eval: $title_v=\"Напиши имя своего будущего клана<br/><input name=\\\"cname\\\" maxlength=\\\"20\\\"/><br/><a href=\\\"$PHP_SELF?sid=$sid&p=$p&speak=$speak&id=newnow2&cname=$(cname)\\\">Продолжить</a>\";",
+            "options": [
+                {
+                    "label": "Я передумал",
+                    "goto": "begin"
+                }
+            ]
+        },
+        "newnow2": {
+            "text": "eval: \r\n\t$cname=preg_replace(\"/\\W/\",\"\",$cname);\r\n\t$b=0; \r\n\t$tc=explode(\"|\",$l_i[$loc][$login][\"char\"]); \r\n\tif (strpos($tc[0],\"*\")===false) $clan=\"\"; else $clan=substr($tc[0],legacy_num(strpos($tc[0],\"*\")+1),legacy_num(strrpos($tc[0],\"*\")-strpos($tc[0],\"*\")-1));\r\n\tif ($clan) $title_v=\"Ты и так состоишь в клане \".$clan.\", вначале надо из него выйти.\"; \r\n\telse if (!$cname || strlen($cname)>20 || preg_match(\"/\\W/\",$cname)) $title_v=\"Неправильное имя клана, можно исп. только англ. буквы, не более 20 символов\"; \r\n\telse {\r\n\t\t$dh = opendir(\"../clans\"); \r\n\t\twhile (($fname = readdir($dh))!== false) if ($fname!=\".\" && $fname!=\"..\" && $fname!=\"1.htaccess\" && $fname!=\".htaccess\") {\r\n\t\t\tif(strtolower($fname)==strtolower($cname)) {closedir($dh);msg(\"Клан \".$cname.\" уже зарегистрирован, выбери другое название\");}\r\n\t\t\t}\r\n\t\tclosedir($dh);\r\n\t\tadditem($loc,$login,\"\",\"i.money\",50000,\"items\",\"items\",1,0,1);\r\n\t\t$tmp=array(\"m\"=>array(),\"g\"=>array($login=>$p)); \r\n\t\t$file = legacy_fopen_w (\"../clans/\".$cname, \"w\"); \r\n\t\tif ($file!==false) {legacy_fputs($file,serialize($tmp));legacy_fclose($file);chmod (\"../clans/\".$cname, 0777);} \r\n\t\t$tc[0].=\" *\".$cname.\"*\"; \r\n\t\t$l_i[$loc][$login][\"char\"]=implode(\"|\",(array)($tc)); \r\n\t\tadditem($loc,\"\",$login,\"i.guildstone\",1); \r\n\t\t$title_v=\"Поздравляю, ты теперь глава клана \".$cname.\", используй камень гильдии для управления им. Советую тебе прямо сейчас <a href=\\\"$PHP_SELF?sid=$sid&logout=1\\\">сохранить персонажа</a>.\";\r\n\t\t$b=1;\r\n\t\t}",
+            "options": [
+                {
+                    "label": "eval: if ($b) {$title_v=\"Спасибо, до свидания\"; $id=\"end\";} else {$title_v=\"Назад\"; $id=\"newnow\";}",
+                    "goto": "newnow"
+                }
+            ]
+        },
+        "problem": {
+            "text": "eval: $title_v=\"Напиши имя своего клана<br/><input name=\\\"cname\\\" maxlength=\\\"20\\\"/><br/><a href=\\\"$PHP_SELF?sid=$sid&p=$p&speak=$speak&id=problem2&cname=$(cname)\\\">Продолжить</a>\";",
+            "options": [
+                {
+                    "label": "Я передумал",
+                    "goto": "begin"
+                }
+            ]
+        },
+        "problem2": {
+            "text": "eval: \r\n\t$tc=explode(\"|\",$l_i[$loc][$login][\"char\"]);\r\n\tif (strpos($tc[0],\"*\")===false) $clan=\"\"; else $clan=substr($tc[0],legacy_num(strpos($tc[0],\"*\")+1),legacy_num(strrpos($tc[0],\"*\")-strpos($tc[0],\"*\")-1));\r\n\tif (!$clan) {\r\n\t\tif ($cname && file_exists(\"../clans/\".$cname)) $tmp=unserialize(implode(\"\",(array)(file(\"../clans/\".$cname)))); else $tmp=array(); \r\n\t\tif (isset($tmp[\"g\"][$login])) {$title_v=\"[читает записи] Ага, да ты являешься главой этого клана! [делает пометки в бумагах] Ок, все готово.\"; $tc[0].=\" *\".$cname.\"*\"; $l_i[$loc][$login][\"char\"]=implode(\"|\",(array)($tc));}\r\n\t\telse if (isset($tmp[\"m\"][$login]) || isset($tmp[\"s\"][$login]) || isset($tmp[\"v\"][$login])) {$title_v=\"[читает записи] Да, действительно, ты состоишь в списках этого клана... [делает пометки в бумагах] Ок, все готово.\"; $tc[0].=\" *\".$cname.\"*\"; $l_i[$loc][$login][\"char\"]=implode(\"|\",(array)($tc));}\r\n\t\telse $title_v=\"Извини, но ты не числишься в списках клана \".$cname;\r\n\t\t} else $title_v=\"Ты состоишь в клане $clan, какие могут быть проблемы?\";",
+            "options": [
+                {
+                    "label": "Гм... Понятно",
+                    "goto": "begin"
+                }
+            ]
+        }
+    }
+}

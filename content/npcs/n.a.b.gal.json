@@ -1,0 +1,68 @@
+{
+    "id": "n.a.b.gal",
+    "char": {
+        "name": "гaлкa",
+        "hp": 3,
+        "hp_max": 3,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 60,
+        "dmg_min": 0,
+        "dmg_max": 1,
+        "attack_delay": 3,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 15,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "клювoм",
+        "exp_value": 1,
+        "ammo": "",
+        "respawn": ""
+    },
+    "osvej": [
+        {
+            "id": "i.h.p.perya",
+            "count": 6
+        }
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.med.m",
+            "chance": 10,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.ring.b",
+            "chance": 10,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.ring.m",
+            "chance": 10,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.ring.l",
+            "chance": 10,
+            "min": 0,
+            "max": 1
+        }
+    ]
+}

@@ -1,0 +1,12 @@
+{
+    "id": "i.a.e.mage",
+    "kind": "armor",
+    "name": "плащ мага",
+    "price": 400,
+    "armor": 2,
+    "req": [
+        0,
+        3,
+        4
+    ]
+}

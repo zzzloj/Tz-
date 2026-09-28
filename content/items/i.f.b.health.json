@@ -1,0 +1,8 @@
+{
+    "id": "i.f.b.health",
+    "kind": "food",
+    "name": "напиток исцеления",
+    "price": 200,
+    "heal_hp": 15,
+    "heal_mana": 10
+}

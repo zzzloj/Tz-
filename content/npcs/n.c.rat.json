@@ -1,0 +1,50 @@
+{
+    "id": "n.c.rat",
+    "char": {
+        "name": "кpыca",
+        "hp": 6,
+        "hp_max": 6,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 70,
+        "dmg_min": 1,
+        "dmg_max": 4,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "зубaми",
+        "exp_value": 2,
+        "ammo": "",
+        "respawn": ""
+    },
+    "osvej": [
+        {
+            "id": "i.f.meat",
+            "count": 1
+        }
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 100,
+            "min": 0,
+            "max": 3
+        }
+    ]
+}

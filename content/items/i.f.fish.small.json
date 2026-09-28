@@ -1,0 +1,8 @@
+{
+    "id": "i.f.fish.small",
+    "kind": "food",
+    "name": "маленькая рыба",
+    "price": 4,
+    "heal_hp": 2,
+    "heal_mana": 1
+}

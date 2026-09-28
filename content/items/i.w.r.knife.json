@@ -1,0 +1,15 @@
+{
+    "id": "i.w.r.knife",
+    "kind": "weapon",
+    "name": "метательный нож",
+    "price": 3,
+    "dmg_min": 2,
+    "dmg_max": 5,
+    "req": [
+        2,
+        4
+    ],
+    "speed": 4,
+    "verb": "метательным ножом",
+    "ammo": "i.w.r.knife"
+}

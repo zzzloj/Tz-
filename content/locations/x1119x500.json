@@ -1,0 +1,71 @@
+{
+    "id": "x1119x500",
+    "name": "Центральная улица",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x1128x475"
+        },
+        {
+            "label": "на восток",
+            "target": "x1141x506"
+        },
+        {
+            "label": "на юг",
+            "target": "x1119x522"
+        },
+        {
+            "label": "на запад",
+            "target": "x1086x501"
+        }
+    ],
+    "objects": {
+        "n.a.dog.walk": {
+            "char": {
+                "name": "coбaкa",
+                "hp": 22,
+                "hp_max": 22,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 3,
+                "crime_title": "",
+                "wander": "10:10:30:1198677830",
+                "aux_ts": "",
+                "trail": ":x1086x501:x1077x507:x1065x506:x1056x520:x1069x520:x1065x506:x1077x507:x1086x501"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 3,
+                "dmg_max": 8,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "зубaми",
+                "exp_value": 5,
+                "ammo": "",
+                "respawn": "x1086x501:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.k.klyki",
+                    "count": 1
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "description": "Улица идет с севера на юг, на западе раскинулась центральная площадь, на востоке утопает в зелени дворик лекаря.\n\n"
+}

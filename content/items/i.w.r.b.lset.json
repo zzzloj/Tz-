@@ -1,0 +1,15 @@
+{
+    "id": "i.w.r.b.lset",
+    "kind": "weapon",
+    "name": "лук сэта",
+    "price": 300,
+    "dmg_min": 8,
+    "dmg_max": 21,
+    "req": [
+        3,
+        5
+    ],
+    "speed": 5,
+    "verb": "из лука",
+    "ammo": "i.arrow"
+}

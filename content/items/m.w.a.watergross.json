@@ -1,0 +1,15 @@
+{
+    "id": "m.w.a.watergross",
+    "kind": "spell",
+    "name": "Водяной вал",
+    "mana_cost": 24,
+    "level": 4,
+    "words": "Vlinta Suento Borta",
+    "power_min": 8,
+    "power_max": 22,
+    "needs_target": 0,
+    "criminals_only": 0,
+    "cast_time": 11,
+    "cooldown": 3600,
+    "description": "Обрушивает на всех водяной вал, кроме читающего заклинание"
+}

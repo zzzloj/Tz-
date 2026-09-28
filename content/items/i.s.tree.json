@@ -1,0 +1,12 @@
+{
+    "id": "i.s.tree",
+    "kind": "fixture",
+    "name": "деревья",
+    "description": "5",
+    "extra": [
+        "0",
+        "300",
+        "5",
+        "1"
+    ]
+}

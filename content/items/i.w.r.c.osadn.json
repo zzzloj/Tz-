@@ -1,0 +1,14 @@
+{
+    "id": "i.w.r.c.osadn",
+    "kind": "weapon",
+    "name": "осадный арбалет",
+    "price": 200,
+    "dmg_min": 8,
+    "dmg_max": 16,
+    "req": [
+        4
+    ],
+    "speed": 8,
+    "verb": "из арбалета",
+    "ammo": "i.bolt"
+}

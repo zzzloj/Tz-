@@ -1,0 +1,8 @@
+{
+    "id": "i.f.fish.big",
+    "kind": "food",
+    "name": "большая рыба",
+    "price": 50,
+    "heal_hp": 10,
+    "heal_mana": 12
+}

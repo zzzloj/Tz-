@@ -1,0 +1,56 @@
+{
+    "id": "n.c.Fernand",
+    "char": {
+        "name": "Фepнaнд-зомби",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 90,
+        "dmg_min": 10,
+        "dmg_max": 20,
+        "attack_delay": 6,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "бутылкой",
+        "exp_value": 20,
+        "ammo": "",
+        "respawn": ""
+    },
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 90,
+            "min": 12,
+            "max": 24
+        },
+        {
+            "id": "i.f.b.empty",
+            "chance": 100,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.w.k.tesak",
+            "chance": 40,
+            "min": 0,
+            "max": 1
+        }
+    ]
+}

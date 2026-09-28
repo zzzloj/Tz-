@@ -1,0 +1,82 @@
+{
+    "id": "n.c.Milton",
+    "char": {
+        "name": "Милтон-зомби",
+        "hp": 140,
+        "hp_max": 140,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 180,
+        "dmg_min": 10,
+        "dmg_max": 20,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": 10,
+        "magic_parry": 20,
+        "magic_resist": 30,
+        "verb": "магией",
+        "exp_value": 30,
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.a.b.s",
+            "count": 1
+        },
+        {
+            "id": "i.a.e.c",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.b.s",
+        "i.a.e.c"
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 80,
+            "min": 20,
+            "max": 90
+        },
+        {
+            "id": "i.m.ressurect",
+            "chance": 50,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.r.w.lighting",
+            "chance": 50,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.r.s.golem",
+            "chance": 50,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.z.w",
+            "chance": 3,
+            "min": 0,
+            "max": 1
+        }
+    ]
+}

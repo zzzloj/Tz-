@@ -1,0 +1,11 @@
+{
+    "id": "i.a.l.bone",
+    "kind": "armor",
+    "name": "костяные поножи",
+    "price": 40,
+    "armor": 2,
+    "req": [
+        0,
+        4
+    ]
+}

@@ -1,0 +1,50 @@
+{
+    "id": "x214x2140",
+    "name": "магазин элексиров",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "выйти",
+            "target": "x213x2130"
+        }
+    ],
+    "objects": {
+        "n.m.Born": {
+            "char": {
+                "name": "Борн",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": 1198673650,
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 8,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 5,
+                "magic_parry": 20,
+                "magic_resist": 20,
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x214x2140:1:2"
+            },
+            "bank": "95:24:40=i.f.b.empty:30|90:4:12=i.f.b.heal:12|90:4:10=i.f.b.mana:6|70:1:8=i.f.b.heal.great:1|70:1:6=i.f.b.mana.great:0|90:1:8=i.f.b.health:7|60:1:4=i.f.b.health.great:0|90:1:8=i.f.b.recovering:4|70:1:6=i.f.b.recovering.great:2"
+        }
+    },
+    "description": "В нутри много колбачек, бутылок и минзурок за столом сидит интелигентный гном в круглых очках."
+}

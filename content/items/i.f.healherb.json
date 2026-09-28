@@ -1,0 +1,8 @@
+{
+    "id": "i.f.healherb",
+    "kind": "food",
+    "name": "лечебная трава",
+    "price": 15,
+    "heal_hp": 10,
+    "heal_mana": ""
+}

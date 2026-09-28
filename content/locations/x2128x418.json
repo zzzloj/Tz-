@@ -1,0 +1,50 @@
+{
+    "id": "x2128x418",
+    "name": "Гильдия магов",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на первый этаж",
+            "target": "x2127x395"
+        }
+    ],
+    "objects": {
+        "n.Auron": {
+            "char": {
+                "name": "Аурон",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 100,
+                "dmg_min": 12,
+                "dmg_max": 24,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 10,
+                "magic_parry": 60,
+                "magic_resist": 50,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x2128x418:20:120:1"
+            },
+            "bank": "90:1:2=i.m.heal.all:1|60:1:1=i.r.heal.all:1|90:1:3=i.m.w.hit:1|40:1:1=i.r.w.hit:1|90:1:2=i.m.kon:1"
+        }
+    },
+    "description": "На втором этаже зал без особых украшений, если не считать огромного черепа, напоминающего конский, на всю южную стену. Окон в зале нет, но с потолка льется ровный магический свет"
+}

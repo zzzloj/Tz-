@@ -1,0 +1,24 @@
+{
+    "id": "x2x6",
+    "name": "лес",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на дорогу",
+            "target": "x3x6"
+        },
+        {
+            "label": "на юг",
+            "target": "x1x6"
+        },
+        {
+            "label": "на восток",
+            "target": "x2x7"
+        },
+        {
+            "label": "на запад",
+            "target": "x2x5"
+        }
+    ],
+    "description": "На севере видна дорога."
+}

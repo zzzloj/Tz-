@@ -1,0 +1,15 @@
+{
+    "id": "m.w.a.qv",
+    "kind": "spell",
+    "name": "Гнев квестовода",
+    "mana_cost": 1,
+    "level": 1,
+    "words": "Fenito Lja Komedia",
+    "power_min": 260,
+    "power_max": 490,
+    "needs_target": 0,
+    "criminals_only": 1,
+    "cast_time": 1,
+    "cooldown": 1,
+    "description": "Вызывает гнев богов на всех преступников в округе"
+}

@@ -1,0 +1,15 @@
+{
+    "id": "m.w.dead",
+    "kind": "spell",
+    "name": "Шаровая молния",
+    "mana_cost": 21,
+    "level": 4,
+    "words": "Dead Ka Sant",
+    "power_min": 0,
+    "power_max": 40,
+    "needs_target": 1,
+    "criminals_only": 0,
+    "cast_time": 6,
+    "cooldown": 240,
+    "description": "Наносит урон мощным разрядом молнии"
+}

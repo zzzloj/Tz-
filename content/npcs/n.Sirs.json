@@ -1,0 +1,55 @@
+{
+    "id": "n.Sirs",
+    "char": {
+        "name": "Сиpc",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 100,
+        "mana_max": 100,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 5000,
+        "dmg_min": 50,
+        "dmg_max": 110,
+        "attack_delay": 2,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 40,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "кулaкaми",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": "x1019x566:1:2"
+    },
+    "items": [
+        {
+            "id": "i.a.w.c",
+            "count": 1
+        },
+        {
+            "id": "i.a.r.c",
+            "count": 1
+        },
+        {
+            "id": "i.a.d.zsl1",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.w.c",
+        "i.a.r.c",
+        "i.a.d.zsl1"
+    ]
+}

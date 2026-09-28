@@ -1,0 +1,8 @@
+{
+    "id": "i.f.b.heal.great",
+    "kind": "food",
+    "name": "элексир жизни",
+    "price": 130,
+    "heal_hp": 25,
+    "heal_mana": ""
+}

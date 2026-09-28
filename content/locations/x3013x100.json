@@ -1,0 +1,59 @@
+{
+    "id": "x3013x100",
+    "name": "пески",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x3010x100"
+        }
+    ],
+    "objects": {
+        "n.c.varan.3": {
+            "char": {
+                "name": "варан",
+                "hp": 9,
+                "hp_max": 30,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198676884,
+                "busy_until": 1198676860,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 90,
+                "dmg_min": 5,
+                "dmg_max": 14,
+                "attack_delay": 14,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "ядoм",
+                "exp_value": 5,
+                "ammo": "",
+                "respawn": "x3013x100:300:600"
+            },
+            "items": [
+                {
+                    "id": "i.f.fileroot",
+                    "count": 2
+                },
+                {
+                    "id": "i.h.jalo",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "description": "Дальше путь преграждает полноводная река."
+}

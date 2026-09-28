@@ -1,0 +1,76 @@
+{
+    "id": "n.c.ogrwar",
+    "char": {
+        "name": "oгp-вoин",
+        "hp": 75,
+        "hp_max": 75,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 14,
+        "dmg_max": 20,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": 4,
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "дубинoй",
+        "exp_value": 32,
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.a.b.mpanc",
+            "count": 1
+        },
+        {
+            "id": "i.w.u.dubinabig",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.b.mpanc",
+        "i.w.u.dubinabig"
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 70,
+            "min": 4,
+            "max": 16
+        },
+        {
+            "id": "i.w.r.molot",
+            "chance": 30,
+            "min": 1,
+            "max": 2
+        },
+        {
+            "id": "i.w.s.kriv",
+            "chance": 40,
+            "min": 0,
+            "max": 1
+        }
+    ],
+    "osvej": [
+        {
+            "id": "i.h.s.ogr",
+            "count": 1
+        }
+    ]
+}

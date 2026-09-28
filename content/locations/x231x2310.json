@@ -1,0 +1,48 @@
+{
+    "id": "x231x2310",
+    "name": "комната",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "выйти в зал",
+            "target": "x200x2000"
+        }
+    ],
+    "objects": {
+        "n.m.Grimli": {
+            "char": {
+                "name": "Гримли[магистр]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 100,
+                "dmg_min": 0,
+                "dmg_max": 45,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "молнией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x231x2310:30:60"
+            }
+        }
+    }
+}

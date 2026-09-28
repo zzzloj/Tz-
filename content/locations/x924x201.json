@@ -1,0 +1,71 @@
+{
+    "id": "x924x201",
+    "name": "Северная дорога",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на юг по дороге",
+            "target": "x930x229"
+        },
+        {
+            "label": "на запад по дороге",
+            "target": "x889x199"
+        },
+        {
+            "label": "на север",
+            "target": "x927x170"
+        },
+        {
+            "label": "на восток",
+            "target": "x967x201"
+        }
+    ],
+    "objects": {
+        "n.a.b.vor.zam": {
+            "char": {
+                "name": "вopoнa",
+                "hp": 5,
+                "hp_max": 5,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 2,
+                "crime_title": "",
+                "wander": "1:20:60:1198677529",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 70,
+                "dmg_min": 0,
+                "dmg_max": 3,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "клювoм",
+                "exp_value": 2,
+                "ammo": "",
+                "respawn": "x924x201:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.p.vorona",
+                    "count": 8
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "description": "Дорога поворачивает на запад и юг, огибая угол старинного замка."
+}

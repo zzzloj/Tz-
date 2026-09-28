@@ -1,0 +1,69 @@
+{
+    "id": "x1053x339",
+    "name": "Дом у дороги",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "выйти из дома",
+            "target": "x1011x345"
+        }
+    ],
+    "objects": {
+        "n.Leksli": {
+            "char": {
+                "name": "Лeкcли",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 11,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1053x339:20:40"
+            },
+            "items": [
+                {
+                    "id": "i.a.e.z",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.w.s",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.c.k1",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.e.z",
+                "i.a.w.s",
+                "i.a.c.k1"
+            ],
+            "bank": "90:1:4=i.f.meat.fried:1|80:1:4=i.f.sausage:1|90:1:2=i.f.vetchina:1|60:1:2=i.f.ham:1|90:1:3=i.set.shampur:1|90:1:2=i.w.k.razd:1|90:10:20=i.spichka:1"
+        }
+    },
+    "description": "Вы внутри просторного дома, по стенам развешаны шкуры животных, в воздухе пахнет жареным мясом и дубленой кожей."
+}

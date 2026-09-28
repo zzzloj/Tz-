@@ -1,0 +1,237 @@
+{
+    "id": "c.2.sklad",
+    "name": "Замок Мирра",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти к воротам",
+            "target": "c.2.gate"
+        }
+    ],
+    "objects": {
+        "i.a.m.oj_wital_": "ожерелье|2|1197740861",
+        "n.a.losh.u.maxx": {
+            "char": {
+                "name": "лoшaдь",
+                "hp": 26,
+                "hp_max": 26,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 2,
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 1,
+                "dmg_max": 7,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кoпытaми",
+                "exp_value": 4,
+                "ammo": "",
+                "respawn": ""
+            },
+            "osvej": [
+                {
+                    "id": "i.f.meat",
+                    "count": 3
+                }
+            ],
+            "owner": "u.maxx|||||1197759007"
+        },
+        "n.o.castle4.755": {
+            "char": {
+                "name": "Binsru [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "u.dj_kot",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.2.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.strah_feon|u.strah_feon||1199041478|1|1198525051"
+        },
+        "n.o.castle4.98": {
+            "char": {
+                "name": "Daldo [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "u.dj_kot",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.2.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.strah_feon|u.strah_feon||1199041479|1|1198525051"
+        },
+        "n.o.castle4.287": {
+            "char": {
+                "name": "Dlonel [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "u.dj_kot",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.2.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.strah_feon|u.strah_feon||1199041480|1|1198525051"
+        },
+        "n.o.castle4.821": {
+            "char": {
+                "name": "Gimna [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "u.dj_kot",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.2.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.strah_feon|u.strah_feon||1199041481|1|1198525051"
+        },
+        "n.o.castle3.843": {
+            "char": {
+                "name": "Gimraf [стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "u.dj_kot",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.2.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 24,
+                "dmg_max": 35,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 35,
+                "dodge": 35,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": 30,
+                "magic_resist": 60,
+                "verb": "копьем",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.strah_feon|u.strah_feon||1199041483|1|1198525067"
+        }
+    },
+    "description": "В кладовой множество разных предметов, назначение большинства которых остается загадкой. Тускло поблескивают латунные и медные ручки, циферблаты, какие-то рычаги и шестеренки."
+}

@@ -1,0 +1,64 @@
+{
+    "id": "x2168x297",
+    "name": "Переулок",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "к храму",
+            "target": "x2169x273"
+        },
+        {
+            "label": "на юг",
+            "target": "x2167x327"
+        }
+    ],
+    "objects": {
+        "i.s.d.n.guildvor.92": "труп (Вор-охранник)|0|1198670295|i.w.s.shpaga:1|",
+        "i.s.d.n.guildvor.66": "труп (Вор-охранник)|0|1198670713|i.w.s.shpaga:1|",
+        "n.guildvor": {
+            "char": {
+                "name": "Вор-охранник",
+                "hp": 300,
+                "hp_max": 300,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 20,
+                "dmg_max": 45,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": 20,
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "шпaгoй",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x2168x297:1:2"
+            },
+            "items": [
+                {
+                    "id": "i.w.s.shpaga",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.w.s.shpaga"
+            ]
+        }
+    },
+    "description": "На востоке вход в одноэтажное здание с зашторенными окнами, у входа стоит мускулистый мужчина в неприметной куртке. На севере здание храма"
+}

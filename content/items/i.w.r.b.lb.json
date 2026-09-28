@@ -1,0 +1,16 @@
+{
+    "id": "i.w.r.b.lb",
+    "kind": "weapon",
+    "name": "лук боли",
+    "price": 350,
+    "dmg_min": 6,
+    "dmg_max": 25,
+    "req": [
+        2,
+        5,
+        2
+    ],
+    "speed": 6,
+    "verb": "из лука",
+    "ammo": "i.arrow"
+}

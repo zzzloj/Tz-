@@ -1,0 +1,66 @@
+{
+    "id": "x465x112",
+    "name": "Побережье",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север вдоль побережья",
+            "target": "x461x83"
+        },
+        {
+            "label": "на юг вдоль побережья",
+            "target": "x465x140"
+        },
+        {
+            "label": "на восток ",
+            "target": "x504x113"
+        }
+    ],
+    "objects": {
+        "n.a.b.sok.dl": {
+            "char": {
+                "name": "coкoл",
+                "hp": 8,
+                "hp_max": 8,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 2,
+                "crime_title": "",
+                "wander": "2:20:60:1198677060",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 90,
+                "dmg_min": 0,
+                "dmg_max": 4,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "клювoм",
+                "exp_value": 2,
+                "ammo": "",
+                "respawn": "x465x112:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.p.perya",
+                    "count": 12
+                }
+            ]
+        }
+    },
+    "timers": {
+        "1198678351": "i.c.amber|0|1|1800|3600"
+    },
+    "description": "На западе плещется море, богатое рыбой. Иногда можно разглядеть довольно крупные рыбешки прямо с берега.\n"
+}

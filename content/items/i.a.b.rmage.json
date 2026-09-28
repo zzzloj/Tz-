@@ -1,0 +1,12 @@
+{
+    "id": "i.a.b.rmage",
+    "kind": "armor",
+    "name": "роба мага",
+    "price": 600,
+    "armor": 5,
+    "req": [
+        0,
+        4,
+        5
+    ]
+}

@@ -1,0 +1,79 @@
+{
+    "id": "x1086x314",
+    "name": "Северный лес",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x1086x286"
+        },
+        {
+            "label": "на восток",
+            "target": "x1124x314"
+        },
+        {
+            "label": "на юг",
+            "target": "x1089x341"
+        },
+        {
+            "label": "на запад",
+            "target": "x1045x314"
+        }
+    ],
+    "objects": {
+        "n.a.deer.oz": {
+            "char": {
+                "name": "oлeнь",
+                "hp": 26,
+                "hp_max": 26,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 3,
+                "crime_title": "",
+                "wander": "3:20:60:1198675321",
+                "aux_ts": "",
+                "trail": ":x1128x341:x1124x314"
+            },
+            "war": {
+                "hit_chance": 70,
+                "dmg_min": 1,
+                "dmg_max": 8,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "poгaми",
+                "exp_value": 4,
+                "ammo": "",
+                "respawn": "x1128x341:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.s.deer",
+                    "count": 1
+                },
+                {
+                    "id": "i.h.kop.deer",
+                    "count": 1
+                },
+                {
+                    "id": "i.h.r.deer",
+                    "count": 1
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 2
+                }
+            ]
+        }
+    },
+    "description": "На юго-западе видна стена каменного здания."
+}

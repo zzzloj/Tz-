@@ -1,0 +1,15 @@
+{
+    "id": "i.w.s.samur",
+    "kind": "weapon",
+    "name": "самурайский меч",
+    "price": 120,
+    "dmg_min": 2,
+    "dmg_max": 9,
+    "req": [
+        2,
+        4
+    ],
+    "speed": 3,
+    "verb": "мечом",
+    "ammo": ""
+}

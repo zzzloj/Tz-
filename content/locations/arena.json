@@ -1,0 +1,54 @@
+{
+    "id": "arena",
+    "name": "Арена",
+    "zone": 0,
+    "exits": [],
+    "objects": {
+        "i.s.arena": "камень выхода|0|",
+        "n.a.losh.4190": {
+            "char": {
+                "name": "лoшaдь",
+                "hp": 26,
+                "hp_max": 26,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198621990,
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 2,
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 1,
+                "dmg_max": 7,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кoпытaми",
+                "exp_value": 4,
+                "ammo": "",
+                "respawn": ""
+            },
+            "osvej": [
+                {
+                    "id": "i.f.meat",
+                    "count": 3
+                }
+            ],
+            "owner": "u.bigyrl|u.bigyrl|0|0|0"
+        },
+        "i.s.d.u.volodja.34": "труп (volodja *Quid_pro_Quo*)|0|1198666464|",
+        "i.s.portal_x2200x220": "портал телепортации|0|1198666070"
+    },
+    "description": "Земляной пол утоптан множеством ног и покрыт бурыми пятнами. Чтобы покинуть арену, дотроньтесь до камня выхода."
+}

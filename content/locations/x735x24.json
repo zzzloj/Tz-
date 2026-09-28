@@ -1,0 +1,63 @@
+{
+    "id": "x735x24",
+    "name": "Северная дорога",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на юг по дороге",
+            "target": "x735x53"
+        },
+        {
+            "label": "на восток",
+            "target": "x772x24"
+        },
+        {
+            "label": "на запад ",
+            "target": "x695x24"
+        }
+    ],
+    "objects": {
+        "n.c.witch.sd": {
+            "char": {
+                "name": "вeдьмa",
+                "hp": 18,
+                "hp_max": 18,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:20:60:1198677450",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 2,
+                "dmg_max": 10,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 5,
+                "magic_parry": 70,
+                "magic_resist": 40,
+                "verb": "мaгиeй",
+                "exp_value": 6,
+                "ammo": "",
+                "respawn": "x735x24:300:600"
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 11
+                }
+            ]
+        }
+    },
+    "description": "Дорога уходит дальше в лес на север, теряясь в среди стволов непроходимого леса, но вы не можете двигаться дальше, остается только повернуть обратно.\n"
+}

@@ -1,0 +1,11 @@
+{
+    "id": "i.a.h.zakr",
+    "kind": "armor",
+    "name": "закрытый шлем",
+    "price": 80,
+    "armor": 2,
+    "req": [
+        5,
+        3
+    ]
+}

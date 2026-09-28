@@ -1,0 +1,61 @@
+{
+    "id": "x1237x609",
+    "name": "Болотный лес",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на юг вдоль берега",
+            "target": "x1239x628"
+        },
+        {
+            "label": "на запад вдоль берега",
+            "target": "x1215x603"
+        },
+        {
+            "label": "на север",
+            "target": "x1238x587"
+        },
+        {
+            "label": "на восток",
+            "target": "x1263x613"
+        }
+    ],
+    "objects": {
+        "n.a.krot.bl": {
+            "char": {
+                "name": "кpoт",
+                "hp": 5,
+                "hp_max": 5,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "3:20:60:1198677651",
+                "aux_ts": "",
+                "trail": ":x1299x613:x1263x613"
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 1,
+                "dmg_max": 1,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "зубaми",
+                "exp_value": 1,
+                "ammo": "",
+                "respawn": "x1299x613:300:600"
+            }
+        }
+    },
+    "description": "Городская стена плавно поворачивает к северо-востоку, на юго-западе течет река."
+}

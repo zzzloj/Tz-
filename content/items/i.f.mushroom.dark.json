@@ -1,0 +1,8 @@
+{
+    "id": "i.f.mushroom.dark",
+    "kind": "food",
+    "name": "темный гриб",
+    "price": 15,
+    "heal_hp": 5,
+    "heal_mana": 5
+}

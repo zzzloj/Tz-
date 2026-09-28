@@ -1,0 +1,15 @@
+{
+    "id": "i.w.r.surriken",
+    "kind": "weapon",
+    "name": "сюррикен",
+    "price": 2,
+    "dmg_min": 1,
+    "dmg_max": 3,
+    "req": [
+        0,
+        3
+    ],
+    "speed": 2,
+    "verb": "сюррикеном",
+    "ammo": "i.w.r.surriken"
+}

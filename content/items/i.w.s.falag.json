@@ -1,0 +1,14 @@
+{
+    "id": "i.w.s.falag",
+    "kind": "weapon",
+    "name": "флаг россии",
+    "price": 10000,
+    "dmg_min": 10,
+    "dmg_max": 18,
+    "req": [
+        5,
+        3
+    ],
+    "speed": 7,
+    "verb": "флагом"
+}

@@ -1,0 +1,65 @@
+{
+    "id": "n.c.Serpent",
+    "char": {
+        "name": "Сepпeнт-зомби",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 4,
+        "dmg_max": 11,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": 5,
+        "magic_parry": 40,
+        "magic_resist": 20,
+        "verb": "магией",
+        "exp_value": 20,
+        "ammo": "",
+        "respawn": "x1161x456:1:2"
+    },
+    "items": [
+        {
+            "id": "i.a.e.b",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.e.b"
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 90,
+            "min": 12,
+            "max": 24
+        },
+        {
+            "id": "i.r.s.golem",
+            "chance": 20,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.r.s.skeleton",
+            "chance": 40,
+            "min": 0,
+            "max": 1
+        }
+    ]
+}

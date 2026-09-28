@@ -1,0 +1,8 @@
+{
+    "id": "i.f.sorozh",
+    "kind": "food",
+    "name": "сорожка",
+    "price": 25,
+    "heal_hp": 3,
+    "heal_mana": 5
+}

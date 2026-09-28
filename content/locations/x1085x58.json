@@ -1,0 +1,68 @@
+{
+    "id": "x1085x58",
+    "name": "Магазин для лучников",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x1082x56"
+        }
+    ],
+    "objects": {
+        "n.c.Arant.a1": {
+            "char": {
+                "name": "Аpaнт-зомби",
+                "hp": 180,
+                "hp_max": 180,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 11,
+                "dmg_max": 26,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": 26,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 20,
+                "magic_parry": 80,
+                "magic_resist": 40,
+                "verb": "из арболета",
+                "exp_value": 50,
+                "ammo": "",
+                "respawn": "x1085x58:300:600"
+            },
+            "items": [
+                {
+                    "id": "i.a.b.leather",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.w.c",
+                    "count": 1
+                },
+                {
+                    "id": "i.w.r.c.impersk",
+                    "count": 1
+                },
+                {
+                    "id": "i.money",
+                    "count": 55
+                }
+            ],
+            "equip": "i.a.b.leather|i.a.w.c|i.w.r.c.impersk:1"
+        }
+    },
+    "description": "Прямо на стене висит мишень для стрельбы из лука, вдоль стен лежат пучки прутьев, в комнате царит запах лака и свежего можжевельника."
+}

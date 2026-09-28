@@ -1,0 +1,50 @@
+{
+    "id": "n.c.peslev",
+    "char": {
+        "name": "песчаный лев",
+        "hp": 110,
+        "hp_max": 110,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": 5,
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 90,
+        "dmg_min": 14,
+        "dmg_max": 22,
+        "attack_delay": 6,
+        "is_ranged": "",
+        "armor": 1,
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "клыками",
+        "exp_value": 0,
+        "ammo": "",
+        "respawn": ""
+    },
+    "osvej": [
+        {
+            "id": "i.h.s.peslev",
+            "count": 1
+        },
+        {
+            "id": "i.f.meat",
+            "count": 8
+        },
+        {
+            "id": "i.h.kog.kogti",
+            "count": 20
+        }
+    ]
+}

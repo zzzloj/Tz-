@@ -1,0 +1,50 @@
+{
+    "id": "n.c.lich",
+    "char": {
+        "name": "лич",
+        "hp": 80,
+        "hp_max": 80,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 90,
+        "dmg_min": 8,
+        "dmg_max": 32,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": 10,
+        "magic_parry": 90,
+        "magic_resist": 60,
+        "verb": "мaгиeй",
+        "exp_value": 45,
+        "ammo": "",
+        "respawn": ""
+    },
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 90,
+            "min": 30,
+            "max": 70
+        },
+        {
+            "id": "i.m.w.arrow",
+            "chance": 100,
+            "min": 0,
+            "max": 1
+        }
+    ]
+}

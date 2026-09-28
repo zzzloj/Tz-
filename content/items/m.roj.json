@@ -1,0 +1,15 @@
+{
+    "id": "m.roj",
+    "kind": "spell",
+    "name": "рой мошек",
+    "mana_cost": 12,
+    "level": 4,
+    "words": "Ger Ruse Joo",
+    "power_min": 0,
+    "power_max": 0,
+    "needs_target": 1,
+    "criminals_only": 0,
+    "cast_time": 6,
+    "cooldown": 300,
+    "description": "Рой мошки облипляет жертву не давая возможности использовать ему предметы или атаковать, в течении 20 секунд."
+}

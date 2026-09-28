@@ -1,0 +1,12 @@
+{
+    "id": "i.a.s.osadn",
+    "kind": "armor",
+    "name": "осадный щит",
+    "price": 550,
+    "armor": 5,
+    "req": [
+        5,
+        5
+    ],
+    "unknown_4": 1
+}

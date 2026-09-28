@@ -1,0 +1,11 @@
+{
+    "id": "i.a.b.heavykol",
+    "kind": "armor",
+    "name": "тяжелая кольчуга",
+    "price": 135,
+    "armor": 3,
+    "req": [
+        4,
+        2
+    ]
+}

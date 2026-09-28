@@ -1,0 +1,71 @@
+{
+    "id": "x1239x285",
+    "name": "Северный лес",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на восток вдоль кладбища",
+            "target": "x1280x284"
+        },
+        {
+            "label": "на юг вдоль кладбища",
+            "target": "x1239x313"
+        },
+        {
+            "label": "на север",
+            "target": "x1239x256"
+        },
+        {
+            "label": "на запад",
+            "target": "x1199x286"
+        }
+    ],
+    "objects": {
+        "n.a.b.vor.kls": {
+            "char": {
+                "name": "вopoнa",
+                "hp": 5,
+                "hp_max": 5,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 2,
+                "crime_title": "",
+                "wander": "2:20:60:1198676019",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 70,
+                "dmg_min": 0,
+                "dmg_max": 3,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "клювoм",
+                "exp_value": 2,
+                "ammo": "",
+                "respawn": "x1239x285:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.p.vorona",
+                    "count": 8
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "description": "Вы в северо-западном углу кладбища с внешней стороны ограды.\n\n"
+}

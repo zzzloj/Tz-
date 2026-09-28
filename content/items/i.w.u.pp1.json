@@ -1,0 +1,15 @@
+{
+    "id": "i.w.u.pp1",
+    "kind": "weapon",
+    "name": "кнут вейзевула",
+    "price": 1000,
+    "dmg_min": 2,
+    "dmg_max": 8,
+    "req": [
+        2,
+        5,
+        5
+    ],
+    "speed": 6,
+    "verb": "магией"
+}

@@ -1,0 +1,13 @@
+{
+    "id": "i.i.ma",
+    "kind": "gem",
+    "name": "малахит",
+    "price": 10,
+    "effects": [
+        [
+            54,
+            10
+        ]
+    ],
+    "description": "Мана +10"
+}

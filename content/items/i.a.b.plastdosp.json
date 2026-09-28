@@ -1,0 +1,11 @@
+{
+    "id": "i.a.b.plastdosp",
+    "kind": "armor",
+    "name": "пластинчатый доспех",
+    "price": 1200,
+    "armor": 7,
+    "req": [
+        5,
+        4
+    ]
+}

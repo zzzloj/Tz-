@@ -1,0 +1,11 @@
+{
+    "id": "i.a.l.leater",
+    "kind": "armor",
+    "name": "кожаные поножи",
+    "price": 25,
+    "armor": 1,
+    "req": [
+        0,
+        2
+    ]
+}

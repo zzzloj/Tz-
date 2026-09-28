@@ -1,0 +1,76 @@
+{
+    "id": "n.c.LordHagen",
+    "char": {
+        "name": "Лopд Хaгeн-зомби",
+        "hp": 280,
+        "hp_max": 280,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 95,
+        "dmg_min": 11,
+        "dmg_max": 26,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": 26,
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": 20,
+        "magic_parry": 80,
+        "magic_resist": 40,
+        "verb": "мeчoм",
+        "exp_value": 70,
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.w.s.p",
+            "count": 1
+        },
+        {
+            "id": "i.a.e.p",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.w.s.dvuruchn",
+        "i.a.e.c"
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.a.h.zakr",
+            "chance": 80,
+            "min": 1,
+            "max": 1
+        },
+        {
+            "id": "i.m.s.demon",
+            "chance": 90,
+            "min": 1,
+            "max": 2
+        },
+        {
+            "id": "i.m.w.vamp",
+            "chance": 70,
+            "min": 1,
+            "max": 1
+        },
+        {
+            "id": "i.z.w",
+            "chance": 5,
+            "min": 0,
+            "max": 1
+        }
+    ]
+}

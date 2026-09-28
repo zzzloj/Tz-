@@ -1,0 +1,65 @@
+{
+    "id": "n.c.Sloven",
+    "char": {
+        "name": "Слoвeн-зомби",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 10,
+        "dmg_max": 14,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "кулaкaми",
+        "exp_value": 15,
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.a.b.meh",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.b.meh"
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 90,
+            "min": 12,
+            "max": 24
+        },
+        {
+            "id": "i.q.zamok.good",
+            "chance": 2,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.w.k.tesak",
+            "chance": 40,
+            "min": 0,
+            "max": 1
+        }
+    ]
+}

@@ -1,0 +1,12 @@
+{
+    "id": "i.a.e.dempl",
+    "kind": "armor",
+    "name": "плащ демона",
+    "price": 42,
+    "armor": 2,
+    "req": [
+        2,
+        4,
+        2
+    ]
+}

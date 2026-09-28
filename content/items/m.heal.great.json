@@ -1,0 +1,15 @@
+{
+    "id": "m.heal.great",
+    "kind": "spell",
+    "name": "Исцеление",
+    "mana_cost": 12,
+    "level": 3,
+    "words": "Suelt Mas Valla",
+    "power_min": 15,
+    "power_max": 20,
+    "needs_target": 1,
+    "criminals_only": 0,
+    "cast_time": 10,
+    "cooldown": 600,
+    "description": "Восстанавливает у цели здоровье"
+}

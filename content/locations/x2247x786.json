@@ -1,0 +1,78 @@
+{
+    "id": "x2247x786",
+    "name": "Лагерь орков",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "войти в подземелье",
+            "target": "x2257x841"
+        },
+        {
+            "label": "на север",
+            "target": "x2244x742"
+        },
+        {
+            "label": "на восток",
+            "target": "x2363x803"
+        },
+        {
+            "label": "на запад",
+            "target": "x2192x787"
+        }
+    ],
+    "objects": {
+        "n.c.darkpal.2": {
+            "char": {
+                "name": "темный палладин",
+                "hp": 105,
+                "hp_max": 180,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198674150,
+                "busy_until": 1198674155,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":x2257x841"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 11,
+                "dmg_max": 26,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": 26,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 20,
+                "magic_parry": 80,
+                "magic_resist": 40,
+                "verb": "мeчoм",
+                "exp_value": 50,
+                "ammo": "",
+                "respawn": "x2257x841:1800:2400"
+            },
+            "items": [
+                {
+                    "id": "i.w.s.dvuruchn",
+                    "count": 1
+                },
+                {
+                    "id": "i.money",
+                    "count": 78
+                },
+                {
+                    "id": "i.m.s.demon",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.w.s.dvuruchn"
+            ]
+        }
+    },
+    "description": "На юге ворота из цельных стволов корабельных сосен, за которыми виден вход в подземелье"
+}

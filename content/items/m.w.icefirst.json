@@ -1,0 +1,15 @@
+{
+    "id": "m.w.icefirst",
+    "kind": "spell",
+    "name": "Ледяной кулак",
+    "mana_cost": 10,
+    "level": 2,
+    "words": "Mar Irn Las",
+    "power_min": 10,
+    "power_max": 16,
+    "needs_target": 1,
+    "criminals_only": 0,
+    "cast_time": 7,
+    "cooldown": 180,
+    "description": "Наносит урон льдом"
+}

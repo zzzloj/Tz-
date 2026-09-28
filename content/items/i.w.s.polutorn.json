@@ -1,0 +1,14 @@
+{
+    "id": "i.w.s.polutorn",
+    "kind": "weapon",
+    "name": "полуторный меч",
+    "price": 40,
+    "dmg_min": 1,
+    "dmg_max": 4,
+    "req": [
+        2
+    ],
+    "speed": 4,
+    "verb": "мечом",
+    "ammo": ""
+}

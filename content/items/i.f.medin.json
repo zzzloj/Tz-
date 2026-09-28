@@ -1,0 +1,8 @@
+{
+    "id": "i.f.medin",
+    "kind": "food",
+    "name": "мясо единорога",
+    "price": 6,
+    "heal_hp": 6,
+    "heal_mana": ""
+}

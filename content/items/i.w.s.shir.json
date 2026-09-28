@@ -1,0 +1,13 @@
+{
+    "id": "i.w.s.shir",
+    "kind": "weapon",
+    "name": "широкий меч",
+    "price": 50,
+    "dmg_min": 2,
+    "dmg_max": 4,
+    "req": [
+        3
+    ],
+    "speed": 4,
+    "verb": "мечом"
+}

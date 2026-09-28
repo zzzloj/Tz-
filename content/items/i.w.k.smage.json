@@ -1,0 +1,16 @@
+{
+    "id": "i.w.k.smage",
+    "kind": "weapon",
+    "name": "кинжал мага",
+    "price": 25,
+    "dmg_min": 1,
+    "dmg_max": 8,
+    "req": [
+        0,
+        5,
+        3
+    ],
+    "speed": 4,
+    "verb": "кинжалом",
+    "ammo": ""
+}

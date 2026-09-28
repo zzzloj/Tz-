@@ -1,0 +1,14 @@
+{
+    "id": "i.w.r.c.gazov1",
+    "kind": "weapon",
+    "name": "складной арбалет",
+    "price": 100,
+    "dmg_min": 6,
+    "dmg_max": 13,
+    "req": [
+        2
+    ],
+    "speed": 6,
+    "verb": "из арбалета",
+    "ammo": "i.bolt"
+}

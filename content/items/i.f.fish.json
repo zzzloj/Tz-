@@ -1,0 +1,8 @@
+{
+    "id": "i.f.fish",
+    "kind": "food",
+    "name": "рыба",
+    "price": 5,
+    "heal_hp": 4,
+    "heal_mana": 2
+}

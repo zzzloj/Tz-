@@ -1,0 +1,58 @@
+{
+    "id": "x11x8",
+    "name": "дорога к болотам",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на запад",
+            "target": "x11x7"
+        },
+        {
+            "label": "на юг по дороге",
+            "target": "x10x8"
+        },
+        {
+            "label": "на восток",
+            "target": "x11x9"
+        }
+    ],
+    "objects": {
+        "i.s.d.n.kimozh.88": "труп (Кимож)|0|1198677754||",
+        "n.kimozh": {
+            "char": {
+                "name": "Кимож",
+                "hp": 1000,
+                "hp_max": 1000,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 1000,
+                "dmg_min": 1000,
+                "dmg_max": 1000,
+                "attack_delay": "",
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "мечем эльфов",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x11x8::2"
+            }
+        }
+    },
+    "description": "Дорога в плотную подходит к болотам. На севере практически полностью разрушенный мост. По которому не возможно пройти."
+}

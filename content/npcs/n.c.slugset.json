@@ -1,0 +1,71 @@
+{
+    "id": "n.c.slugset",
+    "char": {
+        "name": "слуга сэта",
+        "hp": 90,
+        "hp_max": 90,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 95,
+        "dmg_min": 6,
+        "dmg_max": 28,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 45,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "копьём",
+        "exp_value": 16,
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.w.r.spear",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.w.r.spear"
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.oj.z",
+            "chance": 80,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.ring.b",
+            "chance": 50,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.ring.m",
+            "chance": 90,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.f.b.health",
+            "chance": 40,
+            "min": 1,
+            "max": 2
+        }
+    ]
+}

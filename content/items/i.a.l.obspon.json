@@ -1,0 +1,11 @@
+{
+    "id": "i.a.l.obspon",
+    "kind": "armor",
+    "name": "обсидиановые поножи",
+    "price": 270,
+    "armor": 5,
+    "req": [
+        5,
+        5
+    ]
+}

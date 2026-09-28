@@ -1,0 +1,80 @@
+{
+    "id": "n.c.zombie",
+    "char": {
+        "name": "зoмби",
+        "hp": 18,
+        "hp_max": 18,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 2,
+        "dmg_max": 6,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": 10,
+        "magic_parry": 20,
+        "magic_resist": 40,
+        "verb": "pукaми",
+        "exp_value": 8,
+        "ammo": "",
+        "respawn": ""
+    },
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 90,
+            "min": 2,
+            "max": 8
+        },
+        {
+            "id": "i.med.w",
+            "chance": 10,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.c.amber",
+            "chance": 10,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.a.b.leather",
+            "chance": 10,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.a.h.wood",
+            "chance": 10,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.w.k.shir",
+            "chance": 10,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.z.w",
+            "chance": 1,
+            "min": 0,
+            "max": 1
+        }
+    ]
+}

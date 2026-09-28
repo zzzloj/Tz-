@@ -1,0 +1,37 @@
+{
+    "id": "n.Prosper",
+    "char": {
+        "name": "Проспер [друид]",
+        "hp": 400,
+        "hp_max": 400,
+        "mana": 100,
+        "mana_max": 100,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 100,
+        "dmg_min": 40,
+        "dmg_max": 80,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": 5,
+        "magic_parry": 20,
+        "magic_resist": 20,
+        "verb": "магией",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": "x1191x467:1:2"
+    },
+    "bank": "95:1:1=i.acid:1|95:1:1=i.set.currier:1"
+}

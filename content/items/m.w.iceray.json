@@ -1,0 +1,15 @@
+{
+    "id": "m.w.iceray",
+    "kind": "spell",
+    "name": "Ледяной луч",
+    "mana_cost": 16,
+    "level": 4,
+    "words": "Mista Blast",
+    "power_min": 18,
+    "power_max": 25,
+    "needs_target": 1,
+    "criminals_only": 0,
+    "cast_time": 7,
+    "cooldown": 420,
+    "description": "Наносит урон льдом"
+}

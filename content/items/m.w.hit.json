@@ -1,0 +1,15 @@
+{
+    "id": "m.w.hit",
+    "kind": "spell",
+    "name": "Удар",
+    "mana_cost": 15,
+    "level": 3,
+    "words": "Ten Ti Ord",
+    "power_min": 12,
+    "power_max": 20,
+    "needs_target": 1,
+    "criminals_only": 0,
+    "cast_time": 7,
+    "cooldown": 300,
+    "description": "Наносит урон, а также лишает цель маны"
+}

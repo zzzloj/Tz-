@@ -1,0 +1,128 @@
+{
+    "id": "x1063x497",
+    "name": "Северное здание",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "выйти во двор",
+            "target": "x1065x506"
+        }
+    ],
+    "objects": {
+        "n.Silvestr": {
+            "char": {
+                "name": "Сильвecтp",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 40,
+                "dmg_min": 2,
+                "dmg_max": 6,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1063x497:1:2"
+            },
+            "items": [
+                {
+                    "id": "i.a.w.b",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.r.j",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.h.b1",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.c.tuf1",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.o.z1",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.w.b",
+                "i.a.r.j",
+                "i.a.h.b1",
+                "i.a.c.tuf1",
+                "i.a.o.z1"
+            ]
+        },
+        "n.Stouns": {
+            "char": {
+                "name": "Стoунc",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": 1198651714,
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 11,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 30,
+                "magic_parry": 80,
+                "magic_resist": 50,
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1063x497:1:2"
+            },
+            "items": [
+                {
+                    "id": "i.a.b.rdosp",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.e.b",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.b.rdosp",
+                "i.a.e.b"
+            ],
+            "bank": "90:1:12=i.m.w.holyarrow:11|20:1:4=i.m.w.a.godanger:4|60:1:4=i.m.heal:4|30:1:3=i.m.heal.great:0|30:1:2=i.r.w.holyarrow:0|5:1:1=i.r.w.a.godanger:0|60:1:2=i.r.heal:0|10:1:1=i.r.heal.great:0"
+        }
+    },
+    "description": "Просторное деревянное здание, ближе к противоположной стене стоит прямоугольный деревянный стол с кипой бумаг и пожелтевших свитков."
+}

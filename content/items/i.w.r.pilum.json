@@ -1,0 +1,15 @@
+{
+    "id": "i.w.r.pilum",
+    "kind": "weapon",
+    "name": "пилум",
+    "price": 12,
+    "dmg_min": 6,
+    "dmg_max": 8,
+    "req": [
+        4,
+        2
+    ],
+    "speed": 5,
+    "verb": "пилумом",
+    "ammo": "i.w.r.pilum"
+}

@@ -1,0 +1,15 @@
+{
+    "id": "i.w.u.moon",
+    "kind": "weapon",
+    "name": "посох раздора",
+    "price": 85,
+    "dmg_min": 4,
+    "dmg_max": 8,
+    "req": [
+        0,
+        3,
+        3
+    ],
+    "speed": 5,
+    "verb": "магией"
+}

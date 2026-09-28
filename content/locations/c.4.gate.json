@@ -1,0 +1,209 @@
+{
+    "id": "c.4.gate",
+    "name": "Замок Танатос*Elsion_Lakar*()[1198489061]:u.pion_e_r::u.rud::u.der::u.third::u.veter::u.lord_samec::u.roun::u.malqchisha::u.vit_gor::u.degvello::u.smert::u.phobos::u.ar3stantka::u.vetlav::u.st_trief::u.talik::u.first::u.po_derevu::u.civil::u.kurd::u.diz::u.po_metallu:#1198603791#",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти из замка",
+            "target": "c.4.in"
+        },
+        {
+            "label": "тронный зал",
+            "target": "c.4.tron"
+        },
+        {
+            "label": "общий зал",
+            "target": "c.4.main"
+        },
+        {
+            "label": "кладовая",
+            "target": "c.4.sklad"
+        }
+    ],
+    "objects": {
+        "n.o.castle3.43": {
+            "char": {
+                "name": "Shel [стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198515956,
+                "busy_until": 1198515962,
+                "target": "u._nefor_",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 24,
+                "dmg_max": 35,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 35,
+                "dodge": 35,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": 30,
+                "magic_resist": 60,
+                "verb": "копьем",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.vetlav|u.vetlav||1199014427|1|1197806744",
+            "st": "|1"
+        },
+        "n.o.castle4.744": {
+            "char": {
+                "name": "Vangard [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198398679,
+                "busy_until": 1198515962,
+                "target": "u._nefor_",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.vetlav|u.vetlav||1199016250|1|1197808562",
+            "st": "|2"
+        },
+        "n.o.castle4.608": {
+            "char": {
+                "name": "Emgedjai [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198398679,
+                "busy_until": 1198398685,
+                "target": "u._nefor_",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.vetlav|u.vetlav||1199016253|1|1197808562",
+            "st": "|1"
+        },
+        "n.o.castle4.150": {
+            "char": {
+                "name": "Uraf [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198398679,
+                "busy_until": 1198398685,
+                "target": "u._nefor_",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.vetlav|u.vetlav||1199016260|1|1197808562"
+        },
+        "n.o.castle4.700": {
+            "char": {
+                "name": "Dloeva [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198398679,
+                "busy_until": 1198398685,
+                "target": "u._nefor_",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.vetlav|u.vetlav||1199013256|1|1198064783"
+        }
+    },
+    "description": "Во внутреннем дворе несколько бытовых построек, у одной из стен лежат ряды обструганных досок."
+}

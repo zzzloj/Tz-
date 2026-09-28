@@ -1,0 +1,15 @@
+{
+    "id": "i.w.k.shtyk",
+    "kind": "weapon",
+    "name": "штык-нож",
+    "price": 150,
+    "dmg_min": 3,
+    "dmg_max": 8,
+    "req": [
+        3,
+        2
+    ],
+    "speed": 4,
+    "verb": "ножом",
+    "ammo": ""
+}

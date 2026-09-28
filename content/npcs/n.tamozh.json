@@ -1,0 +1,37 @@
+{
+    "id": "n.tamozh",
+    "char": {
+        "name": "Продавец счастья",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 100,
+        "mana_max": 100,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 4,
+        "dmg_max": 11,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": 2,
+        "dodge": "",
+        "parry": 80,
+        "shield_armor": 6,
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "посохом",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": "x1094x474"
+    },
+    "bank": "90:10:10=i.a.b.moroz:5000|90:10:10=i.a.h.belka:5000|90:10:10=i.a.h.medved:5000|90:10:10=i.a.h.poros:5000|90:10:10=i.a.h.volk:5000|90:10:10=i.a.h.zajac:5000|90:10:10=i.a.h.zhaba:5000|90:10:10=i.a.p.vb:5000|90:10:10=i.a.p.vk:5000|90:10:10=i.a.p.vs:5000|90:10:10=i.a.p.vz:5000|90:10:10=i.a.r.belochka:5000|90:10:10=i.a.r.feja:5000|90:10:10=i.a.r.mishka:5000|90:10:10=i.a.r.mysh:5000|90:10:10=i.a.r.pauk:5000|90:10:10=i.a.r.snegur:5000|90:10:10=i.a.r.snezh:5000|90:10:10=i.a.r.zaec:5000|90:1000:1000=i.b.bomb:5000|90:10000:10000=i.b.hlop:5000|90:10000:10000=i.b.pit:5000|90:10:10=i.f.b.ir:5000|90:10:10=i.f.b.pmol:5000|90:10:10=i.f.b.shamp:5000|90:10:10=:5000|"
+}

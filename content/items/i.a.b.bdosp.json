@@ -1,0 +1,11 @@
+{
+    "id": "i.a.b.bdosp",
+    "kind": "armor",
+    "name": "бронзовый доспех",
+    "price": 290,
+    "armor": 4,
+    "req": [
+        4,
+        3
+    ]
+}

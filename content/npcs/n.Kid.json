@@ -1,0 +1,36 @@
+{
+    "id": "n.Kid",
+    "char": {
+        "name": "Кид",
+        "hp": 60,
+        "hp_max": 60,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 10,
+        "dmg_max": 30,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "посохом",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": "x8x7:1:2"
+    }
+}

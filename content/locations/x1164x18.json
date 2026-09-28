@@ -1,0 +1,49 @@
+{
+    "id": "x1164x18",
+    "name": "Стоянка варваров",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти",
+            "target": "x1164x39"
+        }
+    ],
+    "objects": {
+        "n.shaman": {
+            "char": {
+                "name": "Шаман",
+                "hp": 40,
+                "hp_max": 40,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 1,
+                "dmg_max": 5,
+                "attack_delay": "",
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулаками",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1164x18:60:300"
+            }
+        }
+    },
+    "description": "Хижина напоминает шатер, в центре угли от костра, в верхней части отверстие для дыма. По углам разложен шкуры и меха."
+}

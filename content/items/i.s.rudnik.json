@@ -1,0 +1,12 @@
+{
+    "id": "i.s.rudnik",
+    "kind": "fixture",
+    "name": "рудная жила",
+    "description": "3",
+    "extra": [
+        "0",
+        "300",
+        "3",
+        "1"
+    ]
+}

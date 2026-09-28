@@ -1,0 +1,54 @@
+{
+    "id": "n.c.darkwolf",
+    "char": {
+        "name": "темный волк",
+        "hp": 192,
+        "hp_max": 192,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 90,
+        "dmg_min": 14,
+        "dmg_max": 30,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": 8,
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "клыками",
+        "exp_value": 40,
+        "ammo": "",
+        "respawn": ""
+    },
+    "osvej": [
+        {
+            "id": "i.h.s.wolf",
+            "count": 1
+        },
+        {
+            "id": "i.h.k.wolf",
+            "count": 1
+        },
+        {
+            "id": "i.h.kog.wolf",
+            "count": 1
+        },
+        {
+            "id": "i.f.meat",
+            "count": 1
+        }
+    ]
+}

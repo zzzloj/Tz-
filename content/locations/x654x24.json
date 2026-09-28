@@ -1,0 +1,67 @@
+{
+    "id": "x654x24",
+    "name": "Дальний лес",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на восток ",
+            "target": "x695x24"
+        },
+        {
+            "label": "на юг ",
+            "target": "x655x51"
+        },
+        {
+            "label": "на запад ",
+            "target": "x615x24"
+        }
+    ],
+    "objects": {
+        "n.a.bear.dl2": {
+            "char": {
+                "name": "мeдвeдь",
+                "hp": 44,
+                "hp_max": 44,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 4,
+                "crime_title": "",
+                "wander": "5:20:60:1198677386",
+                "aux_ts": "",
+                "trail": ":x618x53:x655x51"
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 6,
+                "dmg_max": 14,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 1,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "зубaми",
+                "exp_value": 8,
+                "ammo": "",
+                "respawn": "x618x53:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.s.bear",
+                    "count": 1
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 2
+                }
+            ]
+        }
+    },
+    "description": "На севере непроходимый лес.\n"
+}

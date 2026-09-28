@@ -1,0 +1,63 @@
+{
+    "id": "x894x429",
+    "name": "Берег",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на запад вдоль берега",
+            "target": "x857x429"
+        },
+        {
+            "label": "на восток вдоль берега",
+            "target": "x934x428"
+        },
+        {
+            "label": "на север",
+            "target": "x894x399"
+        }
+    ],
+    "objects": {
+        "n.a.b.sin.ber": {
+            "char": {
+                "name": "cиницa",
+                "hp": 1,
+                "hp_max": 1,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 1,
+                "crime_title": "",
+                "wander": "1:20:60:1198676712",
+                "aux_ts": "",
+                "trail": ":x857x429"
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 0,
+                "dmg_max": 1,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "клювoм",
+                "exp_value": 1,
+                "ammo": "",
+                "respawn": "x857x429:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.p.perya",
+                    "count": 4
+                }
+            ]
+        }
+    },
+    "description": "Река несет свои воды на запад, близости моря еще не ощущается, поэтому в этой части обычный ландшафт среднеевропейской полосы.\n\n"
+}

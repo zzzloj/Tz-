@@ -1,0 +1,72 @@
+{
+    "id": "x1284x393",
+    "name": "Восточная дорога",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "войти в калитку",
+            "target": "x1321x367"
+        },
+        {
+            "label": "на восток по дороге",
+            "target": "x1325x390"
+        },
+        {
+            "label": "на юг по дороге",
+            "target": "x1288x423"
+        },
+        {
+            "label": "на запад",
+            "target": "x1249x393"
+        }
+    ],
+    "objects": {
+        "n.Silvio": {
+            "char": {
+                "name": "Сильвиo",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 90,
+                "dmg_min": 14,
+                "dmg_max": 18,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 30,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": 80,
+                "magic_resist": 80,
+                "verb": "кoпьeм",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1284x393:40:120"
+            },
+            "items": [
+                {
+                    "id": "i.w.spear.short",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.w.spear.short"
+            ],
+            "bank": "80:1:4=i.m.s.wolf:1|95:4:12=i.m.s.skeleton:1|50:1:3=i.m.s.golem:1|40:1:2=i.m.s.demon:1|90:1:2=i.h.bone:1"
+        },
+        "i.s.portal_x516x56": "портал телепортации|0|1198677918"
+    },
+    "description": "Вы находитесь около калитки для входа на территорию кладбища. Из-за калитки доносятся какие-то завывания, вздохи и подозрительный скрежет. Дорога идет на юг и восток вдоль ограды."
+}

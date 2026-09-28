@@ -1,0 +1,8 @@
+{
+    "id": "i.f.k.wjuka",
+    "kind": "food",
+    "name": "копченая щука",
+    "price": 50,
+    "heal_hp": 15,
+    "heal_mana": 20
+}

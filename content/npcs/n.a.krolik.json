@@ -1,0 +1,46 @@
+{
+    "id": "n.a.krolik",
+    "char": {
+        "name": "кpoлик",
+        "hp": 8,
+        "hp_max": 8,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": 1,
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 50,
+        "dmg_min": 1,
+        "dmg_max": 3,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "лaпaми",
+        "exp_value": 2,
+        "ammo": "",
+        "respawn": ""
+    },
+    "osvej": [
+        {
+            "id": "i.h.s.skin",
+            "count": 1
+        },
+        {
+            "id": "i.f.meat",
+            "count": 1
+        }
+    ]
+}

@@ -1,0 +1,8 @@
+{
+    "id": "i.f.wjuka",
+    "kind": "food",
+    "name": "щука",
+    "price": 40,
+    "heal_hp": 6,
+    "heal_mana": 8
+}

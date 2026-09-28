@@ -1,0 +1,8 @@
+{
+    "id": "i.f.sandwich",
+    "kind": "food",
+    "name": "бутерброд",
+    "price": 4,
+    "heal_hp": 3,
+    "heal_mana": ""
+}

@@ -1,0 +1,14 @@
+{
+    "id": "i.w.s.kach",
+    "kind": "weapon",
+    "name": "качественный меч",
+    "price": 45,
+    "dmg_min": 4,
+    "dmg_max": 13,
+    "req": [
+        4,
+        3
+    ],
+    "speed": 6,
+    "verb": "мечом"
+}

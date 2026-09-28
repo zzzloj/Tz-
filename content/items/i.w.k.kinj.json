@@ -1,0 +1,14 @@
+{
+    "id": "i.w.k.kinj",
+    "kind": "weapon",
+    "name": "кинжал",
+    "price": 65,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "req": [
+        2
+    ],
+    "speed": 4,
+    "verb": "кинжалом",
+    "ammo": ""
+}

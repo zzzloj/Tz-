@@ -1,0 +1,59 @@
+{
+    "id": "x226x2260",
+    "name": "двор",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "здание на западе",
+            "target": "x208x2080"
+        },
+        {
+            "label": "магазин на востоке",
+            "target": "x199x1990"
+        },
+        {
+            "label": "выйти на дорогу",
+            "target": "x197x1970"
+        }
+    ],
+    "objects": {
+        "n.m.Gred": {
+            "char": {
+                "name": "Гред",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": 1198638460,
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 100,
+                "dmg_min": 100,
+                "dmg_max": 20,
+                "attack_delay": 30,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "ножницами садовника",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x226x2260:1:2"
+            },
+            "bank": "50:1:4=i.bc.a:1|50:1:4=i.bc.b:0|50:1:4=i.bc.d:0|50:1:4=i.bc.e:4|50:1:4=i.bc.f:4|50:1:4=i.bc.g:3|50:1:4=i.bc.h:0|50:1:4=i.bc.i:0|50:1:4=i.bc.j:0|50:1:4=i.bc.k:0|50:1:4=i.bc.l:0|50:1:4=i.bc.m:1|50:1:4=i.bc.n:0|50:1:4=i.bc.o:0|50:1:4=i.bc.p:4|50:1:4=i.bc.r:0|50:1:4=i.bc.t:0|50:1:4=i.bc.v:0|50:1:4=i.bc.x:0|50:1:4=i.bc.s:1",
+            "qv": 1198705608
+        }
+    },
+    "description": "Ухоженный двор не  смотря на то что вокруг все из камня тут растут цветы и за ними ухаживает садовник. На востоке и западе есть два здания."
+}

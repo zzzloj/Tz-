@@ -1,0 +1,15 @@
+{
+    "id": "m.w.firebolt",
+    "kind": "spell",
+    "name": "Огненный столб",
+    "mana_cost": 13,
+    "level": 3,
+    "words": "Ort Fa Las",
+    "power_min": 14,
+    "power_max": 20,
+    "needs_target": 1,
+    "criminals_only": 0,
+    "cast_time": 7,
+    "cooldown": 300,
+    "description": "Наносит урон огнем"
+}

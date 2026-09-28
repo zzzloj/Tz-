@@ -1,0 +1,75 @@
+{
+    "id": "x618x141",
+    "name": "Дальний лес",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север ",
+            "target": "x618x113"
+        },
+        {
+            "label": "на восток ",
+            "target": "x658x141"
+        },
+        {
+            "label": "на запад ",
+            "target": "x580x141"
+        }
+    ],
+    "objects": {
+        "n.c.wolf.dl2": {
+            "char": {
+                "name": "вoлк",
+                "hp": 26,
+                "hp_max": 26,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "3:20:60:1198676979",
+                "aux_ts": "",
+                "trail": ":x580x141"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 4,
+                "dmg_max": 8,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "клыкaми",
+                "exp_value": 12,
+                "ammo": "",
+                "respawn": "x580x141:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.s.wolf",
+                    "count": 1
+                },
+                {
+                    "id": "i.h.k.wolf",
+                    "count": 1
+                },
+                {
+                    "id": "i.h.kog.wolf",
+                    "count": 1
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "description": "На юге сквозь листву проступает какое-то каменное строение, но ближе подобраться не получается. Придется идти в обход.\n"
+}

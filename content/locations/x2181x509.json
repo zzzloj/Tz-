@@ -1,0 +1,79 @@
+{
+    "id": "x2181x509",
+    "name": "Дорога",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на мост",
+            "target": "x2197x569"
+        },
+        {
+            "label": "на запад по дороге",
+            "target": "x2124x513"
+        },
+        {
+            "label": "на север",
+            "target": "x2181x471"
+        },
+        {
+            "label": "на восток",
+            "target": "x2235x509"
+        }
+    ],
+    "objects": {
+        "n.c.orcchem.a3": {
+            "char": {
+                "name": "opк-чeмпиoн",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": 1198674165,
+                "target": "u.strah_feon",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "1:60:120:1198674232",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 85,
+                "dmg_min": 6,
+                "dmg_max": 16,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": 6,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "мeчoм",
+                "exp_value": 26,
+                "ammo": "",
+                "respawn": "x2181x509:1200:1800"
+            },
+            "items": [
+                {
+                    "id": "i.w.s.long",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.b.mkol",
+                    "count": 1
+                },
+                {
+                    "id": "i.money",
+                    "count": 10
+                }
+            ],
+            "equip": [
+                "i.a.b.mkol",
+                "i.w.s.long"
+            ]
+        }
+    },
+    "description": "Дорога идет на запад, на юге виден широкий каменный мост, перекинувшися аркой через все озеро"
+}

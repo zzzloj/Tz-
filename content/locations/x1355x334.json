@@ -1,0 +1,71 @@
+{
+    "id": "x1355x334",
+    "name": "Кладбище",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "войти в здание",
+            "target": "x1369x333"
+        },
+        {
+            "label": "на север",
+            "target": "x1354x324"
+        },
+        {
+            "label": "на юг",
+            "target": "x1356x347"
+        },
+        {
+            "label": "на запад",
+            "target": "x1343x335"
+        }
+    ],
+    "objects": {
+        "n.c.zombie.kl4": {
+            "char": {
+                "name": "зoмби",
+                "hp": 18,
+                "hp_max": 18,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "1:20:60:1198678032",
+                "aux_ts": "",
+                "trail": ":x1343x335"
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 2,
+                "dmg_max": 6,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 10,
+                "magic_parry": 20,
+                "magic_resist": 40,
+                "verb": "pукaми",
+                "exp_value": 8,
+                "ammo": "",
+                "respawn": "x1343x335:300:600"
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 4
+                },
+                {
+                    "id": "i.w.k.shir",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "description": "Вы у входа в одноэтажную усыпальницу на востоке, на земле видны отпечатки множества ног.\n\n"
+}

@@ -1,0 +1,15 @@
+{
+    "id": "i.w.r.b.sport",
+    "kind": "weapon",
+    "name": "спортивный лук",
+    "price": 170,
+    "dmg_min": 2,
+    "dmg_max": 11,
+    "req": [
+        2,
+        4
+    ],
+    "speed": 3,
+    "verb": "из лука",
+    "ammo": "i.arrow"
+}

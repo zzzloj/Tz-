@@ -1,0 +1,15 @@
+{
+    "id": "i.w.u.jmage",
+    "kind": "weapon",
+    "name": "жезл мага",
+    "price": 55,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "req": [
+        0,
+        3,
+        4
+    ],
+    "speed": 5,
+    "verb": "магией"
+}

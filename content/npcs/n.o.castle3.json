@@ -1,0 +1,36 @@
+{
+    "id": "n.o.castle3",
+    "char": {
+        "name": "Lastar [наемник]",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 95,
+        "dmg_min": 24,
+        "dmg_max": 35,
+        "attack_delay": 6,
+        "is_ranged": "",
+        "armor": 35,
+        "dodge": 35,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": 30,
+        "magic_resist": 60,
+        "verb": "копьем",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": ""
+    }
+}

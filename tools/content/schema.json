@@ -1,0 +1,20 @@
+{
+  "_comment": "Field names of the engine's pipe-separated strings, shared by export.php and build.py. Meanings: docs/data-fields.md. Types: int (canonical integer becomes a JSON number), ints (a:b:c integers become a list), effects (stat:delta,stat:delta becomes a list of pairs), str. A value that does not match its type stays a string; parts beyond the listed fields go to 'extra'. Item kinds are matched by id prefix, first match wins.",
+  "item_kinds": [
+    {"prefix": "i.s.book", "kind": "book", "fields": [["name", "str"], ["price", "int"], ["text", "str"]]},
+    {"prefix": "i.s.note", "kind": "book", "fields": [["name", "str"], ["price", "int"], ["text", "str"]]},
+    {"prefix": "i.book.", "kind": "book", "fields": [["name", "str"], ["price", "int"], ["text", "str"]]},
+    {"prefix": "i.note.", "kind": "book", "fields": [["name", "str"], ["price", "int"], ["text", "str"]]},
+    {"prefix": "i.s.", "kind": "fixture", "fields": [["name", "str"], ["description", "str"]]},
+    {"prefix": "i.a.", "kind": "armor", "fields": [["name", "str"], ["price", "int"], ["armor", "int"], ["req", "ints"], ["unknown_4", "int"]]},
+    {"prefix": "i.w.", "kind": "weapon", "fields": [["name", "str"], ["price", "int"], ["dmg_min", "int"], ["dmg_max", "int"], ["req", "ints"], ["speed", "int"], ["verb", "str"], ["ammo", "str"]]},
+    {"prefix": "i.f.", "kind": "food", "fields": [["name", "str"], ["price", "int"], ["heal_hp", "int"], ["heal_mana", "int"]]},
+    {"prefix": "i.i.", "kind": "gem", "fields": [["name", "str"], ["price", "int"], ["effects", "effects"], ["description", "str"]]},
+    {"prefix": "m.", "kind": "spell", "fields": [["name", "str"], ["mana_cost", "int"], ["level", "int"], ["words", "str"], ["power_min", "int"], ["power_max", "int"], ["needs_target", "int"], ["criminals_only", "int"], ["cast_time", "int"], ["cooldown", "int"], ["description", "str"]]},
+    {"prefix": "p.", "kind": "technique", "fields": [["name", "str"], ["cooldown", "int"], ["description", "str"]]},
+    {"prefix": "", "kind": "item", "fields": [["name", "str"], ["price", "int"]]}
+  ],
+  "char": [["name", "str"], ["hp", "int"], ["hp_max", "int"], ["mana", "int"], ["mana_max", "int"], ["regen_ts", "int"], ["busy_until", "int"], ["target", "str"], ["tame_difficulty", "int"], ["crime_title", "str"], ["wander", "str"], ["aux_ts", "int"], ["trail", "str"]],
+  "war": [["hit_chance", "int"], ["dmg_min", "int"], ["dmg_max", "int"], ["attack_delay", "int"], ["is_ranged", "int"], ["armor", "int"], ["dodge", "int"], ["parry", "int"], ["shield_armor", "int"], ["magic_dodge", "int"], ["magic_parry", "int"], ["magic_resist", "int"], ["verb", "str"], ["exp_value", "int"], ["ammo", "str"], ["respawn", "str"]],
+  "entity_lists": {"items": "counted", "osvej": "counted", "equip": "ids", "itemsrnd": "random"}
+}

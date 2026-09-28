@@ -1,0 +1,15 @@
+{
+    "id": "m.recall",
+    "kind": "spell",
+    "name": "Возвращение",
+    "mana_cost": 6,
+    "level": 1,
+    "words": "Ir As",
+    "power_min": 0,
+    "power_max": 0,
+    "needs_target": 1,
+    "criminals_only": 0,
+    "cast_time": 6,
+    "cooldown": 120,
+    "description": "Если использовать это заклинание на помеченную руну телепортации, то персонаж мгновенно переносится в том место, где была помечена руна"
+}

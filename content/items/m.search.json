@@ -1,0 +1,15 @@
+{
+    "id": "m.search",
+    "kind": "spell",
+    "name": "Поиск",
+    "mana_cost": 6,
+    "level": 1,
+    "words": "Ten Atn",
+    "power_min": 0,
+    "power_max": 0,
+    "needs_target": 0,
+    "criminals_only": 0,
+    "cast_time": 6,
+    "cooldown": 20,
+    "description": "Маг с помощью этого заклинания может узнать, кто находится в соседних локациях. А также есть ли там на земле какие-нибудь предметы."
+}

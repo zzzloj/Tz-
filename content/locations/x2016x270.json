@@ -1,0 +1,67 @@
+{
+    "id": "x2016x270",
+    "name": "Площадь",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на главную улицу",
+            "target": "x2017x245"
+        },
+        {
+            "label": "в переулок",
+            "target": "x2027x300"
+        },
+        {
+            "label": "на запад",
+            "target": "x1976x273"
+        }
+    ],
+    "objects": {
+        "n.c.zombie.a2": {
+            "char": {
+                "name": "зoмби",
+                "hp": 18,
+                "hp_max": 18,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "1:60:120:1198670263",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 2,
+                "dmg_max": 6,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 10,
+                "magic_parry": 20,
+                "magic_resist": 40,
+                "verb": "pукaми",
+                "exp_value": 8,
+                "ammo": "",
+                "respawn": "x2016x270:1200:1800"
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 5
+                },
+                {
+                    "id": "i.a.b.leather",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "description": "Площадь тянется на западе, на севере главная улица, на юге переулок"
+}

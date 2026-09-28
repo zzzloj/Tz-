@@ -1,0 +1,24 @@
+{
+    "id": "x9x10",
+    "name": "восточный лес",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на дорогу на западе",
+            "target": "x9x9"
+        },
+        {
+            "label": "на север",
+            "target": "x10x10"
+        },
+        {
+            "label": "на юг",
+            "target": "x8x10"
+        },
+        {
+            "label": "на восток",
+            "target": "x9x11"
+        }
+    ],
+    "description": ""
+}

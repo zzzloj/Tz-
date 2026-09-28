@@ -7,6 +7,12 @@ source = pathlib.Path(sys.argv[1])
 destination = pathlib.Path(sys.argv[2])
 shutil.copytree(source / "game", destination / "game")
 
+# World data (items, NPCs, dialogs, locations) lives in content/ as UTF-8 JSON
+# and is built into the engine's cp1251 files (tools/content/build.py).
+sys.path.insert(0, str(source / 'tools' / 'content'))
+import build as content_build  # noqa: E402
+content_build.build(source / 'content', destination / 'game' / '1')
+
 for suffix in ('', '/1', '/2'):
     path = destination / ('game' + suffix) / 'datafunc.php'
     contents = path.read_bytes()

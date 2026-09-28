@@ -1,0 +1,13 @@
+{
+    "id": "i.i.ob",
+    "kind": "gem",
+    "name": "обсидиан",
+    "price": 40,
+    "effects": [
+        [
+            5,
+            5
+        ]
+    ],
+    "description": "Броня +5"
+}

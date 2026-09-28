@@ -1,0 +1,8 @@
+<?php 
+$npc=array( 
+'char'=>'мумия фараона|220|220|1|1||||||||', 
+'war'=>'95|19|37|3||28|15|||20|80|40|мечом|30||', 
+'items'=>'i.w.s.shir:1', 
+'equip'=>'i.w.s.shir', 
+'itemsrnd'=>'i.m.s.demon:90:1:2|i.w.s.farmech:20:1:1|i.q.telemag:40:1:2|i.q.kse:30:1:1', 
+);

@@ -1,0 +1,50 @@
+{
+    "id": "x1194x454",
+    "name": "Библиотека",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "выйти в парадный зал",
+            "target": "x1175x454"
+        }
+    ],
+    "objects": {
+        "i.s.book.story": "книжная полка|0|",
+        "n.Klavdius": {
+            "char": {
+                "name": "Клaвдиуc",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 3,
+                "dmg_max": 6,
+                "attack_delay": 7,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1194x454:20:40"
+            }
+        }
+    },
+    "description": "Библиотека Академии не зря славится на весь мир: тысячи книг на сотнях полок в тесно заставленных рядах шкафов. Здесь есть как новейшие, только что из-под пера, так и древние тома, готовые рассыпаться прахом при одном прикосновении."
+}

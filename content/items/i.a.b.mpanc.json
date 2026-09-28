@@ -1,0 +1,11 @@
+{
+    "id": "i.a.b.mpanc",
+    "kind": "armor",
+    "name": "медный панцирь",
+    "price": 155,
+    "armor": 3,
+    "req": [
+        3,
+        3
+    ]
+}

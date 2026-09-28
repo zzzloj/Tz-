@@ -1,0 +1,198 @@
+{
+    "id": "c.5.main",
+    "name": "Замок Вилло",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти к воротам",
+            "target": "c.5.gate"
+        }
+    ],
+    "objects": {
+        "i.s.rudnik": "рудная жила|0|0|300|4|1198460685",
+        "i.s.nakov": "наковальня|1|0",
+        "n.o.castle4.124": {
+            "char": {
+                "name": "Tirta [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198435533,
+                "busy_until": 1198432616,
+                "target": "u.telhar",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.5.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.revenant|u.revenant||1198809153|1|1198379072"
+        },
+        "n.o.castle4.525": {
+            "char": {
+                "name": "Naidag [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198435795,
+                "busy_until": 1198432636,
+                "target": "u.telhar",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.5.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.revenant|u.revenant||1198809157|1|1198379072"
+        },
+        "n.o.castle4.188": {
+            "char": {
+                "name": "Nolkay [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "u.telhar",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.5.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.telhar|u.telhar||1198695076|1|1198437741"
+        },
+        "n.o.castle4.744": {
+            "char": {
+                "name": "Nulvan [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "u.telhar",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.5.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.telhar|u.telhar||1198695077|1|1198437749"
+        },
+        "n.o.castle4.407": {
+            "char": {
+                "name": "Sidaldesh [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "u.telhar",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.5.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.telhar|u.telhar||1198695082|1|1198437754"
+        }
+    },
+    "timers": {
+        "1198667058": "i.s.nakov|1|0"
+    }
+}

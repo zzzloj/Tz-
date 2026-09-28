@@ -1,0 +1,36 @@
+{
+    "id": "n.Gregg",
+    "char": {
+        "name": "Гpeгг",
+        "hp": 10000,
+        "hp_max": 10000,
+        "mana": 10000,
+        "mana_max": 10000,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 25,
+        "dmg_max": 40,
+        "attack_delay": 40,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "кулaкaми",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": "x1240x533:20:60"
+    }
+}

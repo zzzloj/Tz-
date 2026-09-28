@@ -1,0 +1,50 @@
+{
+    "id": "n.c.varan",
+    "char": {
+        "name": "варан",
+        "hp": 30,
+        "hp_max": 30,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 90,
+        "dmg_min": 5,
+        "dmg_max": 14,
+        "attack_delay": 14,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "ядoм",
+        "exp_value": 5,
+        "ammo": "",
+        "respawn": ""
+    },
+    "itemsrnd": [
+        {
+            "id": "i.f.fileroot",
+            "chance": 30,
+            "min": 0,
+            "max": 2
+        },
+        {
+            "id": "i.h.jalo",
+            "chance": 25,
+            "min": 0,
+            "max": 1
+        }
+    ]
+}

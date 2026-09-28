@@ -1,0 +1,7 @@
+{
+    "id": "i.s.book.news",
+    "kind": "book",
+    "name": "доска объявлений",
+    "price": "",
+    "text": "<b>Новости города</b><br/><a href=\"http://bigwap.org/game/f_story.php?id=news\">Читать новости</a>"
+}

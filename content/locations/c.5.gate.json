@@ -1,0 +1,205 @@
+{
+    "id": "c.5.gate",
+    "name": "Замок Вилло[1198536567]:u.dismember::u._::u.endless::u.pino4et::u.ebhyx:#1198689554#*Blackarrow*()#1198671376#",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти из замка",
+            "target": "c.5.in"
+        },
+        {
+            "label": "тронный зал",
+            "target": "c.5.tron"
+        },
+        {
+            "label": "общий зал",
+            "target": "c.5.main"
+        },
+        {
+            "label": "кладовая",
+            "target": "c.5.sklad"
+        }
+    ],
+    "objects": {
+        "n.o.castle4.310": {
+            "char": {
+                "name": "Camlan [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": 1198667064,
+                "target": "u.telhar",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.telhar|u.telhar||1198695083|1|1198437759"
+        },
+        "n.o.castle4.767": {
+            "char": {
+                "name": "Sicgan [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": 1198667064,
+                "target": "u.telhar",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.telhar|u.telhar||1198695086|1|1198437763"
+        },
+        "n.o.castle4.624": {
+            "char": {
+                "name": "Turobi [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": 1198667064,
+                "target": "u.telhar",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.telhar|u.telhar||1198695340|1|1198438066"
+        },
+        "n.o.castle4.946": {
+            "char": {
+                "name": "Vanmor [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": 1198667064,
+                "target": "u.telhar",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.telhar|u.telhar||1198695341|1|1198438066"
+        },
+        "n.o.castle4.963": {
+            "char": {
+                "name": "Lornson [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198569659,
+                "busy_until": 1198667064,
+                "target": "u.telhar",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.telhar|u.telhar||1198695345|1|1198438066"
+        }
+    }
+}

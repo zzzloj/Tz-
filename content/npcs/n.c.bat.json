@@ -1,0 +1,44 @@
+{
+    "id": "n.c.bat",
+    "char": {
+        "name": "нeтoпыpь",
+        "hp": 14,
+        "hp_max": 14,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 2,
+        "dmg_max": 6,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 10,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "кoгтями",
+        "exp_value": 4,
+        "ammo": "",
+        "respawn": ""
+    },
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 100,
+            "min": 0,
+            "max": 3
+        }
+    ]
+}

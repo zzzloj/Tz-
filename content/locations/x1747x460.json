@@ -1,0 +1,54 @@
+{
+    "id": "x1747x460",
+    "name": "Крепость",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x1747x432"
+        },
+        {
+            "label": "на восток",
+            "target": "x1780x464"
+        }
+    ],
+    "objects": {
+        "n.Natan": {
+            "char": {
+                "name": "Натан [кузнец]",
+                "hp": 120,
+                "hp_max": 120,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": 1198677207,
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 8,
+                "dmg_max": 14,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1747x460:300:600:1"
+            },
+            "bank": "60:1:1=i.w.s.p:0|40:1:1=i.a.b.pdosp:0|60:1:1=i.a.h.p:0|90:1:1=i.a.e.p:0|80:1:1=i.a.l.p:0|70:1:1=i.a.p.p:0"
+        }
+    },
+    "description": "На свободной площадке стоит наковальня, рядом стойка для оружия."
+}

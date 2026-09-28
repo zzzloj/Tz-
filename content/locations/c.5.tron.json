@@ -1,0 +1,198 @@
+{
+    "id": "c.5.tron",
+    "name": "Замок Вилло",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти к воротам",
+            "target": "c.5.gate"
+        }
+    ],
+    "objects": {
+        "i.f.mushroom.dark": "темный гриб|4|1197388023",
+        "i.arrow": "стрелы|10|1197388154",
+        "i.a.k.ring_ali_": "кольцо|1|1197388180",
+        "i.kirka": "кирка|1|1198171109",
+        "i.a.k.ring_qw__": "кольцо|2|1198278812",
+        "n.o.castle3.852": {
+            "char": {
+                "name": "Camkok [стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198433331,
+                "busy_until": 1198432722,
+                "target": "u.telhar",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.5.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 24,
+                "dmg_max": 35,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 35,
+                "dodge": 35,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": 30,
+                "magic_resist": 60,
+                "verb": "копьем",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.tytahxamoh|u.tytahxamoh||1199241126|1|1198379055"
+        },
+        "n.o.castle3.210": {
+            "char": {
+                "name": "Ladgob [стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198436026,
+                "busy_until": 1198432722,
+                "target": "u.telhar",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.5.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 24,
+                "dmg_max": 35,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 35,
+                "dodge": 35,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": 30,
+                "magic_resist": 60,
+                "verb": "копьем",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.revenant|u.revenant||1198809144|1|1198379072"
+        },
+        "n.o.castle4.324": {
+            "char": {
+                "name": "Trudal [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198436026,
+                "busy_until": 1198432722,
+                "target": "u.telhar",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.5.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.revenant|u.revenant||1198809148|1|1198379072"
+        },
+        "n.o.castle4.979": {
+            "char": {
+                "name": "Vanogt [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198433192,
+                "busy_until": 1198432722,
+                "target": "u.telhar",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.5.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.revenant|u.revenant||1198809160|1|1198379077"
+        },
+        "n.o.castle4.445": {
+            "char": {
+                "name": "Nelgec [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198436026,
+                "busy_until": 1198432722,
+                "target": "u.telhar",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.5.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.tytahxamoh|u.tytahxamoh||1199241130|1|1198379055"
+        }
+    }
+}

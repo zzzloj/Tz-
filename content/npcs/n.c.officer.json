@@ -1,0 +1,74 @@
+{
+    "id": "n.c.officer",
+    "char": {
+        "name": "Сaнчec [oфицep]-зомби",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 100,
+        "mana_max": 100,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 100,
+        "dmg_min": 10,
+        "dmg_max": 50,
+        "attack_delay": 3,
+        "is_ranged": "",
+        "armor": 100,
+        "dodge": 30,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": 80,
+        "magic_parry": 80,
+        "magic_resist": 70,
+        "verb": "шпaгoй",
+        "exp_value": 50,
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.w.s.shpaga",
+            "count": 1
+        },
+        {
+            "id": "i.a.r.b",
+            "count": 1
+        },
+        {
+            "id": "i.a.e.k",
+            "count": 1
+        },
+        {
+            "id": "i.a.a.lp1",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.w.s.shpaga",
+        "i.a.r.b",
+        "i.a.e.k",
+        "i.a.a.lp1"
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 90,
+            "min": 40,
+            "max": 100
+        },
+        {
+            "id": "i.q.chasha",
+            "chance": 3,
+            "min": 1,
+            "max": 1
+        }
+    ]
+}

@@ -1,0 +1,59 @@
+{
+    "id": "n.c.guildmaster",
+    "char": {
+        "name": "Мирандер [гилдмастер]-зомби",
+        "hp": 400,
+        "hp_max": 400,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 95,
+        "dmg_min": 11,
+        "dmg_max": 46,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": 26,
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": 20,
+        "magic_parry": 80,
+        "magic_resist": 40,
+        "verb": "утренней звездой",
+        "exp_value": 50,
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.w.u.moon",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.w.u.moon"
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 90,
+            "min": 40,
+            "max": 100
+        },
+        {
+            "id": "i.guildstone",
+            "chance": 5,
+            "min": 1,
+            "max": 1
+        }
+    ]
+}

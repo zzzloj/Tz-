@@ -1,0 +1,15 @@
+{
+    "id": "i.w.u.dubina",
+    "kind": "weapon",
+    "name": "посох ученика",
+    "price": 8,
+    "dmg_min": 2,
+    "dmg_max": 3,
+    "req": [
+        0,
+        0,
+        2
+    ],
+    "speed": 5,
+    "verb": "магией"
+}

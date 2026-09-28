@@ -1,0 +1,8 @@
+{
+    "id": "i.f.b.recovering",
+    "kind": "food",
+    "name": "напиток востановления",
+    "price": 200,
+    "heal_hp": 15,
+    "heal_mana": 20
+}

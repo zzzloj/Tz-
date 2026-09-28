@@ -1,0 +1,10 @@
+{
+    "id": "i.q.zamok.good",
+    "kind": "item",
+    "name": "исправный замок",
+    "price": 0,
+    "extra": [
+        "",
+        ""
+    ]
+}

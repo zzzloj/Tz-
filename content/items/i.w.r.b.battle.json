@@ -1,0 +1,15 @@
+{
+    "id": "i.w.r.b.battle",
+    "kind": "weapon",
+    "name": "боевой лук",
+    "price": 190,
+    "dmg_min": 6,
+    "dmg_max": 14,
+    "req": [
+        4,
+        4
+    ],
+    "speed": 6,
+    "verb": "из лука",
+    "ammo": "i.arrow"
+}

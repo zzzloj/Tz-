@@ -1,0 +1,61 @@
+<?php
+
+$gate=substr($loc,0,4)."gate";
+$d=explode("|",$l_tt[$gate]["d"]);
+if (strpos($d[0],"*")===false) msg("Этот замок никому не принадлежит, я не буду защищать его, пока не определится хозяин этой земли!");
+$clanc=substr($d[0],legacy_num(strpos($d[0],"*")+1),legacy_num(strrpos($d[0],"*")-strpos($d[0],"*")-1));
+
+// слушается только клановцев, владеющих замком, гостей нет
+if (strpos($char[0],"*")===false) $clan=""; else $clan=substr($char[0],legacy_num(strpos($char[0],"*")+1),legacy_num(strrpos($char[0],"*")-strpos($char[0],"*")-1));
+if ($clanc!=$clan) msg("Вы не состоите в клане, которому принадлежит этот замок, поэтому мне нечего вам сказать. ");
+$tmp=unserialize(implode("",(array)(file("../clans/".$clan))));
+$keys=array_keys((array)($tmp["g"]));
+$a=substr($keys[0],2);
+	$l=explode("|", $l_i[$loc][$speak]["qv"]);
+	if (time()>$l[1]) unset($l_i[$loc][$speak]["qv"]);
+
+$dialog=array(
+'begin'=>'Здравствуй. Тебя зовут <imja>, верно?#Верно, кто ты?#who#Я должен идти#end',
+'who'=>'eval: $title_v="Я могу за небольшую сумму (500 монет) в течении недели телепортировать Вас и Ваш клан в место указанное главой.";
+	$tc=explode("|",$l_i[$loc][$login]["char"]); 
+	if (strpos($tc[0],"*")===false) $clan=""; else $clan=substr($tc[0],legacy_num(strpos($tc[0],"*")+1),legacy_num(strrpos($tc[0],"*")-strpos($tc[0],"*")-1));
+	if ($clan && file_exists("../clans/".$clan)) $tmp=unserialize(implode("",(array)(file("../clans/".$clan)))); else $tmp=array(); 
+#eval: if (isset($tmp["g"][$login])) $title_v="Заключить контракт"; else $title_v="";#new#eval: if($l_i[$loc][$speak]["qv"]) { $title_v="Телепортироватса"; $l=explode("|", $l_i[$loc][$speak]["qv"]); loadloc($l[0]); $tt=explode("|",$l_tt[$l[0]]["d"]); if (strpos($tt[0],"*")!==false) $tt[0]=substr($tt[0],0,strpos($tt[0],"*")); $title_v.=" [".$tt[0]."]"; } else  $title_v="";#tel#Все в порядке, мне пора.#end',
+'tel'=>'eval: if(!$l_i[$loc][$speak]["qv"]) { $title_v="Глава клана не подписывал со мной контракта"; } else { $title_v="До встречи <imja>!"; $l=explode("|", $l_i[$loc][$speak]["qv"]); addnpc($login,$loc,$l[0]); }',
+'new'=>'eval: if (isset($tmp["g"][$login])) {
+	if(legacy_cmp(additem($loc,$login,"","i.money","count"))>499) {
+	$items=explode("|",$l_i[$loc][$login]["items"]);
+	$title_v="Выберите руну: ";
+	if ($l_i[$loc][$login]["items"]=="") $title_v.="<br/>У вас нет ни одной руны"; else {
+	$items=explode("|",$l_i[$loc][$login]["items"]);
+	$keys=array_keys((array)($items));
+		for ($i=0;$i<count((array)($keys));$i++) if ($items[$keys[$i]]) {
+			$k=explode(":",$items[$keys[$i]]);
+			if(substr($k[0],0,5)=="i.rr.") {
+			if (substr($k[0],0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$tk)) $item=explode("|",implode("",(array)(file("items/".$tk)))); else die("err: no items/".$k[0]);
+			$item=$item[0];
+			if (legacy_cmp($k[1])>1) $item.=" (".$k[1].")"; } else { $tk=""; }
+			if (substr($k[0],0,5)=="i.rr." && $k[0]!="i.rr.empty")	$title_v.="\\n<br/><a href=\\"$PHP_SELF?sid=$sid&speak=$speak&id=tele&use=".$k[0]."\\">".$item."</a>";
+			if (substr($k[0],0,5)=="i.rr." && $k[0]!="i.rr.empty") { loadloc(substr($k[0],5)); $tt=explode("|",$l_tt[substr($k[0],5)]["d"]); if (strpos($tt[0],"*")!==false) $tt[0]=substr($tt[0],0,strpos($tt[0],"*")); $title_v.=" [".$tt[0]."]"; }
+		}
+	}	
+} else $title_v="У вас не достаточно денег";
+} else $title_v="Вы не являетесь главой клана ".$clan;
+',
+
+
+'tele'=>'eval: if (isset($tmp["g"][$login])) {
+if(legacy_cmp(additem($loc,$login,"","i.money","count"))>499) {
+if (strpos($l_i[$loc][$login]["items"],$use.":")===false) msg("<p>Использовать можно только те руны, что у вас в рюкзаке");
+$r=substr($use, 5);
+$t=time()+604800;
+$l_i[$loc][$speak]["qv"]=$r."|".$t;
+additem($loc,$login,"","i.money",500,"items","items",1,0,1);
+$title_v="Контракт заключен";
+} else $title_v="У вас не достаточно денег";
+} else $title_v="Вы не являетесь главой клана ".$clan;
+',
+
+
+'end'=>'Пока, приходи еще'
+);

@@ -1,0 +1,15 @@
+{
+    "id": "m.silence",
+    "kind": "spell",
+    "name": "Тишина",
+    "mana_cost": 22,
+    "level": 4,
+    "words": "Maer Dis Wu An",
+    "power_min": 0,
+    "power_max": 0,
+    "needs_target": 0,
+    "criminals_only": 0,
+    "cast_time": 12,
+    "cooldown": 1200,
+    "description": "Все в округе перестают кого бы то ни было атаковать (но если существо агрессивно, то через какое-то время может напасть снова)"
+}

@@ -1,0 +1,14 @@
+{
+    "id": "i.w.k.tesak",
+    "kind": "weapon",
+    "name": "тесак",
+    "price": 60,
+    "dmg_min": 3,
+    "dmg_max": 4,
+    "req": [
+        2
+    ],
+    "speed": 5,
+    "verb": "тесаком",
+    "ammo": ""
+}

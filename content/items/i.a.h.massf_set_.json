@@ -1,0 +1,12 @@
+{
+    "id": "i.a.h.massf_set_",
+    "kind": "armor",
+    "name": "маска сфинкса",
+    "price": 40,
+    "armor": 7,
+    "req": [
+        4,
+        5,
+        2
+    ]
+}

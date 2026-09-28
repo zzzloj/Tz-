@@ -1,0 +1,57 @@
+{
+    "id": "x999x50",
+    "name": "Березовая роща",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x999x49"
+        },
+        {
+            "label": "на восток",
+            "target": "x1011x50"
+        },
+        {
+            "label": "на юг",
+            "target": "x1000x51"
+        }
+    ],
+    "objects": {
+        "n.Prosper": {
+            "char": {
+                "name": "Проспер [друид]",
+                "hp": 400,
+                "hp_max": 400,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": 1198666344,
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 100,
+                "dmg_min": 40,
+                "dmg_max": 80,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 5,
+                "magic_parry": 20,
+                "magic_resist": 20,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x999x50:1:2"
+            },
+            "bank": "95:1:1=i.acid:0|95:1:1=i.set.currier:1"
+        }
+    }
+}

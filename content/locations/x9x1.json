@@ -1,0 +1,13 @@
+{
+    "id": "x9x1",
+    "name": "Западный лес",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север вдоль скал",
+            "target": "x10x1"
+        }
+    ],
+    "objects": [],
+    "description": ""
+}

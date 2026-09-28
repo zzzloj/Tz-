@@ -1,0 +1,62 @@
+{
+    "id": "x1017x45",
+    "name": "Магазин снаряжения",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x1017x47"
+        }
+    ],
+    "objects": {
+        "n.c.Sloven.a1": {
+            "char": {
+                "name": "Слoвeн-зомби",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 10,
+                "dmg_max": 14,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": 15,
+                "ammo": "",
+                "respawn": "x1017x45:100:200"
+            },
+            "items": [
+                {
+                    "id": "i.a.b.meh",
+                    "count": 1
+                },
+                {
+                    "id": "i.money",
+                    "count": 12
+                }
+            ],
+            "equip": [
+                "i.a.b.meh"
+            ]
+        }
+    },
+    "description": "Внутри очень свободно, здесь в случае необходимости может укрыться масса народу. На каменных стенах висят выцветшие гобелены, а вдоль стен стоят несколько грубых деревянных табуретов. Лестница на второй этаж закрыта чугунной решеткой с массивным висячим замком."
+}

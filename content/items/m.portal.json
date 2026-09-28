@@ -1,0 +1,15 @@
+{
+    "id": "m.portal",
+    "kind": "spell",
+    "name": "Портал",
+    "mana_cost": 18,
+    "level": 3,
+    "words": "Port Ma As",
+    "power_min": 0,
+    "power_max": 0,
+    "needs_target": 1,
+    "criminals_only": 0,
+    "cast_time": 10,
+    "cooldown": 120,
+    "description": "Если использовать это заклинание на помеченную руну телепортации, то рядом появится портал в том место, где была помечена руна"
+}

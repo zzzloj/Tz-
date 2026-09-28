@@ -1,0 +1,11 @@
+{
+    "id": "i.a.b.sdosp",
+    "kind": "armor",
+    "name": "стальной доспех",
+    "price": 600,
+    "armor": 6,
+    "req": [
+        5,
+        4
+    ]
+}

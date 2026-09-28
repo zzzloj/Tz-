@@ -1,0 +1,71 @@
+{
+    "id": "x2093x745",
+    "name": "Лагерь орков",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "к обелиску",
+            "target": "x2145x737"
+        },
+        {
+            "label": "на север",
+            "target": "x2091x702"
+        },
+        {
+            "label": "на запад",
+            "target": "x2039x744"
+        }
+    ],
+    "objects": {
+        "i.s.d.n.c.orcsh.10.49": "труп (орк шаман)|1|1198674241|,i.m.w.icefirst:1|",
+        "n.c.orcbron.8": {
+            "char": {
+                "name": "орк элита",
+                "hp": 161,
+                "hp_max": 200,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198673753,
+                "busy_until": 1198673759,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "4:60:120:1198673777",
+                "aux_ts": "",
+                "trail": ":x2145x737"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 12,
+                "dmg_max": 24,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 30,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кувалдой",
+                "exp_value": 35,
+                "ammo": "",
+                "respawn": "x2145x737:1800:2400"
+            },
+            "items": [
+                {
+                    "id": "i.w.u.kuvalda",
+                    "count": 1
+                },
+                {
+                    "id": "i.money",
+                    "count": 66
+                }
+            ],
+            "equip": [
+                "i.w.u.kuvalda"
+            ]
+        }
+    },
+    "description": "На востоке виден обелиск из черного камня, на юге гора потухшего вулкана"
+}

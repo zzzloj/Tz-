@@ -1,0 +1,11 @@
+{
+    "id": "i.a.s.krugl",
+    "kind": "armor",
+    "name": "круглый щит",
+    "price": 60,
+    "armor": 2,
+    "req": [
+        3,
+        2
+    ]
+}

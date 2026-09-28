@@ -1,0 +1,60 @@
+{
+    "id": "x2074x477",
+    "name": "Дорога",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на восток по дороге",
+            "target": "x2125x476"
+        },
+        {
+            "label": "на запад по дороге",
+            "target": "x2018x476"
+        },
+        {
+            "label": "на север",
+            "target": "x2075x441"
+        },
+        {
+            "label": "на юг",
+            "target": "x2073x515"
+        }
+    ],
+    "objects": {
+        "n.c.ognfan.3": {
+            "char": {
+                "name": "огненный фантом",
+                "hp": 70,
+                "hp_max": 70,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "3:60:120:1198673865",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 20,
+                "dmg_max": 28,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": 25,
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 20,
+                "magic_parry": 70,
+                "magic_resist": 50,
+                "verb": "мaгиeй",
+                "exp_value": 45,
+                "ammo": "",
+                "respawn": "x2074x477:1200:1800"
+            }
+        }
+    }
+}

@@ -1,0 +1,59 @@
+{
+    "id": "x1214x58",
+    "name": "Портовое здание",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x1216x57"
+        }
+    ],
+    "objects": {
+        "n.c.Fernand.a1": {
+            "char": {
+                "name": "Фepнaнд-зомби",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 90,
+                "dmg_min": 10,
+                "dmg_max": 20,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "бутылкой",
+                "exp_value": 20,
+                "ammo": "",
+                "respawn": "x1214x58:200:600"
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 15
+                },
+                {
+                    "id": "i.f.b.empty",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "description": "Маленькая комната с низким потолком, в центре стоит массивный стол с лежащими на нем остатками еды, морскими картами и корабельными приборами. В  углу громоздкая тумбочка с золотыми ручками на выдвижных полках."
+}

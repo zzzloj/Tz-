@@ -1,0 +1,57 @@
+{
+    "id": "x140x1305",
+    "name": "Форт пиратов",
+    "zone": 3,
+    "exits": [
+        {
+            "label": "на юг",
+            "target": "x142x1329"
+        },
+        {
+            "label": "на восток",
+            "target": "x174x1305"
+        },
+        {
+            "label": "на север",
+            "target": "x141x1278"
+        }
+    ],
+    "objects": {
+        "n.p.5": {
+            "char": {
+                "name": "пират",
+                "hp": 75,
+                "hp_max": 75,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:30:60:1198675568",
+                "aux_ts": "",
+                "trail": ":x174x1305"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 14,
+                "dmg_max": 20,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": 2,
+                "dodge": 10,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "шпагой",
+                "exp_value": 15,
+                "ammo": "",
+                "respawn": "x174x1305:60:180"
+            }
+        }
+    },
+    "description": "На юге виден какой-то обелиск"
+}

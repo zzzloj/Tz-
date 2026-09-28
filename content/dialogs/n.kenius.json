@@ -1,0 +1,42 @@
+{
+    "id": "n.kenius",
+    "topics": {
+        "begin": {
+            "text": "Приветствую тебя, <imja>,я единственный кто может продать тебе те вещи которые очень необходимы жителю нашего мира,но продаю я их только за золотые дублоны!",
+            "options": [
+                {
+                    "label": "Покажи свои товары",
+                    "goto": "buy2"
+                },
+                {
+                    "label": "eval: \r\nrequire(\"../config.ssp\");\r\n$link = @mysql_pconnect ($server, $user, $dbpass)\r\n                or die (\"Can not connect to MySQL\");\r\n     \r\n     @mysql_select_db($dbname) or die (\"error select the database...\");\r\n\t $l=substr($login,2);\r\n\t$result = mysql_query (\"select * from users where nick='$l'\");\r\n    $inf=mysql_fetch_array ($result); \r\nif(legacy_cmp($inf[\"messlim\"])>0) {\r\n$title_v=\"\"; $title_v=\"У тебя есть \".$inf[\"messlim\"].\" дублонов, забрать?\";$id=\"qvok\";}else$title_v=\"\"; @mysql_close();",
+                    "goto": "zabr"
+                },
+                {
+                    "label": "А где ж эти дублоны достать?",
+                    "goto": "inf"
+                },
+                {
+                    "label": "Хм.. не спасибо",
+                    "goto": "end"
+                }
+            ]
+        },
+        "qvok": "eval: \r\n\r\nrequire(\"../config.ssp\");\r\n$link = @mysql_pconnect ($server, $user, $dbpass)\r\n                or die (\"Can not connect to MySQL\");\r\n     \r\n     @mysql_select_db($dbname) or die (\"error select the database...\");\r\n\t $l=substr($login,2);\r\n\t$result = mysql_query (\"select * from users where nick='$l'\");\r\n    $inf=mysql_fetch_array ($result); \r\nif(legacy_cmp($inf[\"messlim\"])>0) {\r\n$z=mysql_query(\"UPDATE users SET messlim=0 WHERE nick='$l'\");\r\n@mysql_close();\r\nif ($z) additem($loc,\"\",$login,\"i.q.dublon\",$inf[\"messlim\"]);\r\n$title_v=\"Держи <imja> свои дублоны\";} else {$title_v=\"<imja> у тебя нет дублонов!\";}\r\n",
+        "buy2": "1|1200",
+        "inf": {
+            "text": "eval: $title_v=\"Золотые дублоны ты можешь получить отправив:<br/><b>sys \".substr($login,2).\"</b><br/>на один из номеров:<br/>4447-1,30 у.е(100 дублонов)<br/>4449-3.00 у.е(300 дублонов)<br/>4161-4,75 у.е(550 дублонов)<br/>Поддерживаютса операторы России, Украины и Казахстана\";",
+            "options": [
+                {
+                    "label": "Ясно",
+                    "goto": "begin"
+                },
+                {
+                    "label": "Все понял удачи",
+                    "goto": "end"
+                }
+            ]
+        },
+        "end": "Удачи надумаешь, приходи."
+    }
+}

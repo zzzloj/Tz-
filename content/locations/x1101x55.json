@@ -1,0 +1,55 @@
+{
+    "id": "x1101x55",
+    "name": "Магазин припасов",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x1099x57"
+        }
+    ],
+    "objects": {
+        "n.c.Goston.a1": {
+            "char": {
+                "name": "Гocтoн",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 75,
+                "dmg_min": 4,
+                "dmg_max": 16,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": 16,
+                "ammo": "",
+                "respawn": "x1101x55:1000:2000"
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 13
+                }
+            ]
+        }
+    },
+    "description": "В этом магазине есть все что нужно для путешествия - одежда, факелы, продовольствие и тому подобное."
+}

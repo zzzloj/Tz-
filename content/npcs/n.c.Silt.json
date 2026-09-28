@@ -1,0 +1,70 @@
+{
+    "id": "n.c.Silt",
+    "char": {
+        "name": "Силт-зомби",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 14,
+        "dmg_max": 21,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "кулaкaми",
+        "exp_value": 15,
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.a.b.heavykol",
+            "count": 1
+        },
+        {
+            "id": "i.a.c.sp1",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.b.heavykol",
+        "i.a.c.sp1"
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 90,
+            "min": 12,
+            "max": 24
+        },
+        {
+            "id": "i.a.s.dub_silt_..ob..ku",
+            "chance": 2,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.a.b.plastdosp",
+            "chance": 10,
+            "min": 0,
+            "max": 1
+        }
+    ]
+}

@@ -1,0 +1,65 @@
+{
+    "id": "n.c.Plant",
+    "char": {
+        "name": "Плaнт-зомби",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 15,
+        "dmg_max": 21,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": 2,
+        "dodge": "",
+        "parry": 80,
+        "shield_armor": 6,
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "утpeннeй звeздoй",
+        "exp_value": 20,
+        "ammo": "",
+        "respawn": "x1140x543:1:2"
+    },
+    "items": [
+        {
+            "id": "i.a.b.skol",
+            "count": 1
+        },
+        {
+            "id": "i.a.e.c",
+            "count": 1
+        },
+        {
+            "id": "i.a.p.s",
+            "count": 1
+        },
+        {
+            "id": "i.a.s.b",
+            "count": 1
+        },
+        {
+            "id": "i.w.u.moon",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.b.skol",
+        "i.a.e.c",
+        "i.a.p.s",
+        "i.a.s.b",
+        "i.w.u.moon"
+    ]
+}

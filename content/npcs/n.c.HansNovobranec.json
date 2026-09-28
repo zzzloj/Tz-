@@ -1,0 +1,50 @@
+{
+    "id": "n.c.HansNovobranec",
+    "char": {
+        "name": "Нoвoбpaнeц-зомби",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 75,
+        "dmg_min": 4,
+        "dmg_max": 16,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "из лука",
+        "exp_value": 16,
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.w.r.b.short",
+            "count": 1
+        },
+        {
+            "id": "i.a.e.z",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.w.r.b.short",
+        "i.a.e.z"
+    ]
+}

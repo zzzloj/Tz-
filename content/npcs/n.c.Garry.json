@@ -1,0 +1,36 @@
+{
+    "id": "n.c.Garry",
+    "char": {
+        "name": "Гарри-зомби",
+        "hp": 180,
+        "hp_max": 180,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 12,
+        "dmg_max": 15,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "кулaкaми",
+        "exp_value": 15,
+        "ammo": "",
+        "respawn": ""
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "id": "i.w.r.b.berezov",
+    "kind": "weapon",
+    "name": "березовый лук",
+    "price": 100,
+    "dmg_min": 3,
+    "dmg_max": 9,
+    "req": [
+        3,
+        2
+    ],
+    "speed": 5,
+    "verb": "из лука",
+    "ammo": "i.arrow"
+}

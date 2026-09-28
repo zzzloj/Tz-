@@ -1,0 +1,259 @@
+{
+    "id": "x2061x216",
+    "name": "Магазин",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x2061x244"
+        }
+    ],
+    "objects": {
+        "n.c.gholl.1": {
+            "char": {
+                "name": "гхолл",
+                "hp": 80,
+                "hp_max": 80,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 4,
+                "dmg_max": 26,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 35,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "когтями",
+                "exp_value": 18,
+                "ammo": "",
+                "respawn": "x2061x216:1200:1800"
+            },
+            "items": [
+                {
+                    "id": "i.med.b",
+                    "count": 2
+                },
+                {
+                    "id": "i.oj.z",
+                    "count": 1
+                },
+                {
+                    "id": "i.q.bdv",
+                    "count": 1
+                }
+            ]
+        },
+        "n.c.gholl.3": {
+            "char": {
+                "name": "гхолл",
+                "hp": 80,
+                "hp_max": 80,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 4,
+                "dmg_max": 26,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 35,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "когтями",
+                "exp_value": 18,
+                "ammo": "",
+                "respawn": "x2061x216:1200:1800"
+            },
+            "items": [
+                {
+                    "id": "i.med.b",
+                    "count": 1
+                },
+                {
+                    "id": "i.ring.b",
+                    "count": 1
+                }
+            ]
+        },
+        "n.c.gholl.2": {
+            "char": {
+                "name": "гхолл",
+                "hp": 80,
+                "hp_max": 80,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 4,
+                "dmg_max": 26,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 35,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "когтями",
+                "exp_value": 18,
+                "ammo": "",
+                "respawn": "x2061x216:1200:1800"
+            },
+            "items": [
+                {
+                    "id": "i.ring.b",
+                    "count": 1
+                },
+                {
+                    "id": "i.ring.m",
+                    "count": 1
+                },
+                {
+                    "id": "i.q.bdv",
+                    "count": 1
+                }
+            ]
+        },
+        "n.c.gholl.4": {
+            "char": {
+                "name": "гхолл",
+                "hp": 80,
+                "hp_max": 80,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 4,
+                "dmg_max": 26,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 35,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "когтями",
+                "exp_value": 18,
+                "ammo": "",
+                "respawn": "x2061x216:1200:1800"
+            },
+            "items": [
+                {
+                    "id": "i.med.b",
+                    "count": 2
+                },
+                {
+                    "id": "i.oj.z",
+                    "count": 1
+                },
+                {
+                    "id": "i.q.bdv",
+                    "count": 1
+                }
+            ]
+        },
+        "n.c.gholl.5": {
+            "char": {
+                "name": "гхолл",
+                "hp": 80,
+                "hp_max": 80,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 4,
+                "dmg_max": 26,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 35,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "когтями",
+                "exp_value": 18,
+                "ammo": "",
+                "respawn": "x2061x216:1200:1800"
+            },
+            "items": [
+                {
+                    "id": "i.med.b",
+                    "count": 2
+                },
+                {
+                    "id": "i.oj.z",
+                    "count": 1
+                },
+                {
+                    "id": "i.ring.m",
+                    "count": 1
+                },
+                {
+                    "id": "i.q.bdv",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "description": "Вся мебель поломана, на полу грязь и щепки. Это место определенно покидали в большой спешке"
+}

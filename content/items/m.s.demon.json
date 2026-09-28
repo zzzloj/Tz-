@@ -1,0 +1,15 @@
+{
+    "id": "m.s.demon",
+    "kind": "spell",
+    "name": "Призвать демона",
+    "mana_cost": 16,
+    "level": 3,
+    "words": "Suent Dal Tano",
+    "power_min": 0,
+    "power_max": 0,
+    "needs_target": 0,
+    "criminals_only": 0,
+    "cast_time": 10,
+    "cooldown": 3600,
+    "description": "Вызов демона, который первое время будет охранять заклинателя, но потом может напасть на него. Вызвавший демона становится преступником!"
+}

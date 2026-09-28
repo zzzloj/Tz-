@@ -1,0 +1,56 @@
+{
+    "id": "n.c.ciklop",
+    "char": {
+        "name": "циклоп",
+        "hp": 170,
+        "hp_max": 170,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 95,
+        "dmg_min": 6,
+        "dmg_max": 28,
+        "attack_delay": 7,
+        "is_ranged": 1,
+        "armor": 20,
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "камнями",
+        "exp_value": 25,
+        "ammo": "",
+        "respawn": ""
+    },
+    "itemsrnd": [
+        {
+            "id": "i.w.r.stone",
+            "chance": 80,
+            "min": 10,
+            "max": 30
+        },
+        {
+            "id": "i.money",
+            "chance": 90,
+            "min": 10,
+            "max": 20
+        },
+        {
+            "id": "i.c.adamant",
+            "chance": 30,
+            "min": 1,
+            "max": 1
+        }
+    ]
+}

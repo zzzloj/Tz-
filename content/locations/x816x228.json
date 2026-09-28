@@ -1,0 +1,62 @@
+{
+    "id": "x816x228",
+    "name": "Западный лес",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x813x201"
+        },
+        {
+            "label": "на юг",
+            "target": "x816x255"
+        },
+        {
+            "label": "на запад",
+            "target": "x777x228"
+        }
+    ],
+    "objects": {
+        "n.a.b.sin.zam": {
+            "char": {
+                "name": "cиницa",
+                "hp": 1,
+                "hp_max": 1,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 1,
+                "crime_title": "",
+                "wander": "2:20:60:1198673000",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 0,
+                "dmg_max": 1,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "клювoм",
+                "exp_value": 1,
+                "ammo": "",
+                "respawn": "x816x228:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.p.perya",
+                    "count": 4
+                }
+            ]
+        }
+    }
+}

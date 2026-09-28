@@ -1,0 +1,13 @@
+{
+    "id": "i.a.c.shch",
+    "kind": "armor",
+    "name": "шелковые черевички",
+    "price": 2000,
+    "armor": 2,
+    "req": [
+        0,
+        5,
+        5
+    ],
+    "unknown_4": 0
+}

@@ -1,0 +1,12 @@
+{
+    "id": "i.a.s.obschit",
+    "kind": "armor",
+    "name": "обсидиановый щит",
+    "price": 380,
+    "armor": 7,
+    "req": [
+        4,
+        5,
+        2
+    ]
+}

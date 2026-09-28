@@ -1,0 +1,14 @@
+{
+    "id": "i.w.s.flamberg",
+    "kind": "weapon",
+    "name": "фламберг",
+    "price": 230,
+    "dmg_min": 8,
+    "dmg_max": 14,
+    "req": [
+        5,
+        4
+    ],
+    "speed": 8,
+    "verb": "фламбергом"
+}

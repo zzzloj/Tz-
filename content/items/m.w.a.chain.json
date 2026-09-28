@@ -1,0 +1,15 @@
+{
+    "id": "m.w.a.chain",
+    "kind": "spell",
+    "name": "Цепь молний",
+    "mana_cost": 24,
+    "level": 4,
+    "words": "Suento Ka Sant",
+    "power_min": 0,
+    "power_max": 35,
+    "needs_target": 0,
+    "criminals_only": 0,
+    "cast_time": 11,
+    "cooldown": 3600,
+    "description": "Испускает цепь молний проницывающих всех, кроме читающего закленание "
+}

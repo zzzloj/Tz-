@@ -1,0 +1,15 @@
+{
+    "id": "i.w.r.b.prochn",
+    "kind": "weapon",
+    "name": "прочный лук",
+    "price": 35,
+    "dmg_min": 4,
+    "dmg_max": 9,
+    "req": [
+        3,
+        4
+    ],
+    "speed": 4,
+    "verb": "из лука",
+    "ammo": "i.arrow"
+}

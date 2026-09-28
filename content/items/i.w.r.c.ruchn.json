@@ -1,0 +1,14 @@
+{
+    "id": "i.w.r.c.ruchn",
+    "kind": "weapon",
+    "name": "ручной арбалет",
+    "price": 50,
+    "dmg_min": 5,
+    "dmg_max": 9,
+    "req": [
+        2
+    ],
+    "speed": 5,
+    "verb": "из арбалета",
+    "ammo": "i.bolt"
+}

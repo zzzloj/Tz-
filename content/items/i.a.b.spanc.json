@@ -1,0 +1,11 @@
+{
+    "id": "i.a.b.spanc",
+    "kind": "armor",
+    "name": "стальной панцирь",
+    "price": 200,
+    "armor": 4,
+    "req": [
+        4,
+        4
+    ]
+}

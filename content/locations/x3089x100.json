@@ -1,0 +1,50 @@
+{
+    "id": "x3089x100",
+    "name": "сокровищница",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "в зал бога",
+            "target": "x3088x100"
+        }
+    ],
+    "objects": {
+        "n.Navzil": {
+            "char": {
+                "name": "Навзил [оружейник]",
+                "hp": 120,
+                "hp_max": 120,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": 1198642708,
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 8,
+                "dmg_max": 24,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "палицей",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x3089x100:1:2"
+            },
+            "bank": "60:1:1=i.w.s.p:0|40:1:1=i.a.b.pdosp:0|60:1:1=i.a.h.p:0|90:1:1=i.a.e.p:0|80:1:1=i.a.l.p:0|70:1:1=i.a.p.p:0"
+        }
+    },
+    "description": "Сокровищница больше похожа на оружейную комнату по стенам висят дорогие мечи щиты и доспехи украшенные самоцветами, видимо остались от богатых рыцарей,у стены, за точильным станком стоит человек довольно крепкого телосложения."
+}

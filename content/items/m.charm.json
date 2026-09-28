@@ -1,0 +1,15 @@
+{
+    "id": "m.charm",
+    "kind": "spell",
+    "name": "Зачаровать",
+    "mana_cost": 8,
+    "level": 2,
+    "words": "Silwa Ruun",
+    "power_min": 0,
+    "power_max": 0,
+    "needs_target": 1,
+    "criminals_only": 0,
+    "cast_time": 7,
+    "cooldown": 600,
+    "description": "Подчиняет на время животное, которое будет следовать за читающим заклинание и охранять его"
+}

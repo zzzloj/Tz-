@@ -1,0 +1,15 @@
+{
+    "id": "i.w.k.hunter",
+    "kind": "weapon",
+    "name": "охотничий нож",
+    "price": 75,
+    "dmg_min": 2,
+    "dmg_max": 7,
+    "req": [
+        2,
+        2
+    ],
+    "speed": 4,
+    "verb": "ножом",
+    "ammo": ""
+}

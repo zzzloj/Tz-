@@ -1,0 +1,146 @@
+{
+    "id": "x1098x542",
+    "name": "Таверна",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "к выходу",
+            "target": "x1107x535"
+        },
+        {
+            "label": "на второй этаж",
+            "target": "x1095x532"
+        },
+        {
+            "label": "в дальний угол",
+            "target": "x1098x530"
+        }
+    ],
+    "objects": {
+        "n.Frederik": {
+            "char": {
+                "name": "Фpeдepик",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": 1198668954,
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 70,
+                "dmg_min": 3,
+                "dmg_max": 7,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 1000,
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": 100,
+                "magic_resist": 100,
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1098x542:10:20:1"
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 12
+                },
+                {
+                    "id": "i.a.b.leather",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.h.s1",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.b.leather",
+                "i.a.h.s1"
+            ],
+            "bank": "90:0:12=i.f.apple:10|90:1:6=i.f.bread:1|90:1:6=i.f.meat.fried:4|90:0:8=i.f.sandwich:6|90:0:3=i.f.sausage:1|80:0:4=i.f.fish:4|70:1:3=i.f.wine:0"
+        },
+        "n.telemage": {
+            "char": {
+                "name": "Картеран[пьяный маг]",
+                "hp": 120,
+                "hp_max": 120,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 100,
+                "dmg_min": 8,
+                "dmg_max": 38,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1098x542:1:2"
+            }
+        },
+        "n.a.cat.tav": {
+            "char": {
+                "name": "кoшкa",
+                "hp": 6,
+                "hp_max": 6,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 2,
+                "crime_title": "",
+                "wander": "1:20:60:1198676169",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 90,
+                "dmg_min": 1,
+                "dmg_max": 3,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кoгтями",
+                "exp_value": 2,
+                "ammo": "",
+                "respawn": "x1098x542:300:600"
+            }
+        }
+    },
+    "description": "Барная стойка из дорогого темно-красного дерева отполирована до блеска, за стойкой в серванте искрятся в неверном свете камина графины и бутылки с различными напитками. Рядом лестница с резными белясинами на второй этаж."
+}

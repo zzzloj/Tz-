@@ -1,0 +1,8 @@
+{
+    "id": "i.f.wine",
+    "kind": "food",
+    "name": "вино",
+    "price": 25,
+    "heal_hp": 7,
+    "heal_mana": 5
+}

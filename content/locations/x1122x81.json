@@ -1,0 +1,112 @@
+{
+    "id": "x1122x81",
+    "name": "Северный лес",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на восток",
+            "target": "x1159x81"
+        },
+        {
+            "label": "на юг",
+            "target": "x1119x112"
+        },
+        {
+            "label": "на запад",
+            "target": "x1082x81"
+        }
+    ],
+    "objects": {
+        "n.c.bear.sev.1": {
+            "char": {
+                "name": "северный мeдвeдь",
+                "hp": 24,
+                "hp_max": 90,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198675707,
+                "busy_until": 1198675713,
+                "target": "u.dieselpowr",
+                "tame_difficulty": 5,
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":x1134x15:x1131x33:x1164x39:x1162x57:x1159x81"
+            },
+            "war": {
+                "hit_chance": 90,
+                "dmg_min": 9,
+                "dmg_max": 16,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 1,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "зубaми",
+                "exp_value": 0,
+                "ammo": "",
+                "respawn": "x1134x15:1800:3600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.s.bear",
+                    "count": 1
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 2
+                }
+            ]
+        },
+        "n.c.bear.sev.2": {
+            "char": {
+                "name": "северный мeдвeдь",
+                "hp": 90,
+                "hp_max": 90,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": 1198675713,
+                "target": "u.dieselpowr",
+                "tame_difficulty": 5,
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":x1134x15:x1131x33:x1164x39:x1162x57:x1159x81"
+            },
+            "war": {
+                "hit_chance": 90,
+                "dmg_min": 9,
+                "dmg_max": 16,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 1,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "зубaми",
+                "exp_value": 0,
+                "ammo": "",
+                "respawn": "x1134x15:1800:3600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.s.bear",
+                    "count": 1
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 2
+                }
+            ]
+        }
+    },
+    "description": "На севере высокий деревянный забор, а на востоке что-то вроде входа в поселение.\n"
+}

@@ -1,0 +1,13 @@
+{
+    "id": "i.i.zm",
+    "kind": "gem",
+    "name": "змеевик",
+    "price": 10,
+    "effects": [
+        [
+            6,
+            5
+        ]
+    ],
+    "description": "Уклон +5%"
+}

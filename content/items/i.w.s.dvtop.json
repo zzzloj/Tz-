@@ -1,0 +1,14 @@
+{
+    "id": "i.w.s.dvtop",
+    "kind": "weapon",
+    "name": "двухсторонний топор",
+    "price": 1000,
+    "dmg_min": 9,
+    "dmg_max": 14,
+    "req": [
+        5,
+        5
+    ],
+    "speed": 12,
+    "verb": "топором"
+}

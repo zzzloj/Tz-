@@ -1,0 +1,79 @@
+{
+    "id": "x5x7",
+    "name": "магазин посохов",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "выйти",
+            "target": "x5x6"
+        }
+    ],
+    "objects": {
+        "n.ageres": {
+            "char": {
+                "name": "Агерес",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": 1198671108,
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 11,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": 2,
+                "dodge": "",
+                "parry": 80,
+                "shield_armor": 6,
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "посохом",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x5x7:1:2"
+            },
+            "items": [
+                {
+                    "id": "i.a.b.skol",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.e.c",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.p.s",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.s.b",
+                    "count": 1
+                },
+                {
+                    "id": "i.w.u.moon",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.b.skol",
+                "i.a.e.c",
+                "i.a.p.s",
+                "i.a.s.b",
+                "i.w.u.moon"
+            ],
+            "bank": "90:1:4=i.w.u.palka:1|80:1:4=i.w.u.dubina:3|70:1:4=i.w.u.dubinabig:1|90:1:4=i.w.u.palica:3|80:1:2=i.w.u.kuvalda:0|70:1:2=i.w.u.molot:0|60:1:1=i.w.u.bulava:1|50:1:1=i.w.u.moon:1|50:1:2=i.w.u.pmage:2|50:1:2=i.w.u.smage:1|50:1:2=i.w.u.grom:0|50:1:2=i.w.u.shtyk:1|50:1:2=i.w.u.jmage:2"
+        }
+    },
+    "description": "На стенах висят всевозможные посохи. И прочая магическая утварь."
+}

@@ -1,0 +1,72 @@
+{
+    "id": "c.3.hran",
+    "name": "Хранилище",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "в кладовую",
+            "target": "c.3.sklad"
+        },
+        {
+            "label": "дверь в хранилище 1",
+            "target": "c.3.x1087x543"
+        },
+        {
+            "label": "дверь в хранилище 2",
+            "target": "c.3.x1080x539"
+        },
+        {
+            "label": "дверь в хранилище 3",
+            "target": "c.3.x1080x532"
+        },
+        {
+            "label": "дверь в хранилище 4",
+            "target": "c.3.x1087x528"
+        }
+    ],
+    "objects": {
+        "i.s.d.u.xeon.21": "труп (Xeon *MECTb*)|1|1193550075||",
+        "n.a.losh.6032": {
+            "char": {
+                "name": "лoшaдь",
+                "hp": 26,
+                "hp_max": 26,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1193549475,
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 2,
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 1,
+                "dmg_max": 7,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кoпытaми",
+                "exp_value": 4,
+                "ammo": "",
+                "respawn": ""
+            },
+            "osvej": [
+                {
+                    "id": "i.f.meat",
+                    "count": 3
+                }
+            ],
+            "owner": "u.xeon|u.xeon|0|0|0"
+        }
+    }
+}

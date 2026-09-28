@@ -1,0 +1,42 @@
+{
+    "id": "n.a.b.jarpt",
+    "char": {
+        "name": "жар-птица",
+        "hp": 130,
+        "hp_max": 130,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": 4,
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 1,
+        "dmg_max": 28,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 25,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": 10,
+        "magic_parry": 60,
+        "magic_resist": 60,
+        "verb": "клювом",
+        "exp_value": 60,
+        "ammo": "",
+        "respawn": ""
+    },
+    "osvej": [
+        {
+            "id": "i.q.pjpt",
+            "count": 1
+        }
+    ]
+}

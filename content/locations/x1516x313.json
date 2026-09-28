@@ -1,0 +1,71 @@
+{
+    "id": "x1516x313",
+    "name": "Около дома",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "войти в дом у пещеры",
+            "target": "x1520x280"
+        },
+        {
+            "label": "в проход в кустарнике",
+            "target": "x1551x280"
+        },
+        {
+            "label": "на дорогу",
+            "target": "x1476x305"
+        },
+        {
+            "label": "на юг",
+            "target": "x1516x333"
+        }
+    ],
+    "objects": {
+        "n.a.krolik.1": {
+            "char": {
+                "name": "кpoлик",
+                "hp": 8,
+                "hp_max": 8,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 1,
+                "crime_title": "",
+                "wander": "1:20:60:1198677776",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 50,
+                "dmg_min": 1,
+                "dmg_max": 3,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "лaпaми",
+                "exp_value": 2,
+                "ammo": "",
+                "respawn": "x1516x313:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.s.skin",
+                    "count": 1
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "description": "Только лежащие в неровной траве почерневшие колья и скрепляющие их куски ржавого железа показывают, что здесь раньше был забор. От дома практически ничего не осталось, кроме обвалившихся стен и покосившихся опор. Между домом и скалой есть узкий проход, заросший бурьяном. На западе широкая дорога.\n\n"
+}

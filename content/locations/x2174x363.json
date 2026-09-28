@@ -1,0 +1,136 @@
+{
+    "id": "x2174x363",
+    "name": "Главная улица",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "к воротам",
+            "target": "x2226x357"
+        },
+        {
+            "label": "в сад",
+            "target": "x2175x395"
+        },
+        {
+            "label": "в переулок",
+            "target": "x2167x327"
+        },
+        {
+            "label": "на запад",
+            "target": "x2124x367"
+        }
+    ],
+    "objects": {
+        "n.c.skeletbow.a1": {
+            "char": {
+                "name": "cкeлeт-лучник",
+                "hp": 24,
+                "hp_max": 24,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:60:120:1198672820",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 90,
+                "dmg_min": 1,
+                "dmg_max": 10,
+                "attack_delay": 4,
+                "is_ranged": 1,
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 20,
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "из лукa",
+                "exp_value": 10,
+                "ammo": "",
+                "respawn": "x2174x363:1200:1800"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.bone",
+                    "count": 1
+                }
+            ],
+            "items": [
+                {
+                    "id": "i.arrow",
+                    "count": 8
+                },
+                {
+                    "id": "i.w.r.drotik",
+                    "count": 1
+                }
+            ]
+        },
+        "n.c.skeletlord.a1": {
+            "char": {
+                "name": "cкeлeт-лopд",
+                "hp": 42,
+                "hp_max": 42,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:60:120:1198672855",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 8,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": 2,
+                "dodge": 5,
+                "parry": 40,
+                "shield_armor": 4,
+                "magic_dodge": 20,
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "мeчoм",
+                "exp_value": 14,
+                "ammo": "",
+                "respawn": "x2174x363:1200:1800"
+            },
+            "items": [
+                {
+                    "id": "i.w.s.polutorn",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.s.wood",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.b.bone",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.w.s.polutorn",
+                "i.a.s.wood"
+            ],
+            "osvej": [
+                {
+                    "id": "i.h.bone",
+                    "count": 2
+                }
+            ]
+        }
+    },
+    "description": "На север отделяется переулок, а на юге видны остатки некогда красивого сада. На востоке выход из города"
+}

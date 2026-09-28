@@ -1,0 +1,11 @@
+{
+    "id": "i.a.h.rycarsk",
+    "kind": "armor",
+    "name": "рыцарский шлем",
+    "price": 150,
+    "armor": 3,
+    "req": [
+        5,
+        4
+    ]
+}

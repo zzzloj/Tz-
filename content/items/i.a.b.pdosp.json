@@ -1,0 +1,13 @@
+{
+    "id": "i.a.b.pdosp",
+    "kind": "armor",
+    "name": "доспех палладина",
+    "price": 1500,
+    "armor": 9,
+    "req": [
+        5,
+        5,
+        2
+    ],
+    "unknown_4": 2
+}

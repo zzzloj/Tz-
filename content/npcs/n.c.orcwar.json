@@ -1,0 +1,71 @@
+{
+    "id": "n.c.orcwar",
+    "char": {
+        "name": "opк-вoин",
+        "hp": 86,
+        "hp_max": 86,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 6,
+        "dmg_max": 16,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": 4,
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "мeчoм",
+        "exp_value": 18,
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.w.s.kriv",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.w.s.kriv"
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 90,
+            "min": 16,
+            "max": 24
+        },
+        {
+            "id": "i.a.s.krugl",
+            "chance": 50,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.a.h.s",
+            "chance": 20,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.med.b",
+            "chance": 20,
+            "min": 0,
+            "max": 1
+        }
+    ]
+}

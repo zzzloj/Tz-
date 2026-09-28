@@ -1,0 +1,7 @@
+{
+    "id": "i.s.book.story",
+    "kind": "book",
+    "name": "книжная полка",
+    "price": "",
+    "text": "На полке лежат несколько книг, которые можно почитать.<br/><a href=\"http://mag.su/game/f_story.php\">Выбрать книгу</a>."
+}

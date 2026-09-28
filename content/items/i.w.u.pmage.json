@@ -1,0 +1,15 @@
+{
+    "id": "i.w.u.pmage",
+    "kind": "weapon",
+    "name": "посох мага",
+    "price": 60,
+    "dmg_min": 4,
+    "dmg_max": 8,
+    "req": [
+        0,
+        4,
+        5
+    ],
+    "speed": 8,
+    "verb": "магией"
+}

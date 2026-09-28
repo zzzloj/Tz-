@@ -1,0 +1,65 @@
+{
+    "id": "n.c.ogr",
+    "char": {
+        "name": "oгp",
+        "hp": 70,
+        "hp_max": 70,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 70,
+        "dmg_min": 10,
+        "dmg_max": 18,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "дубинoй",
+        "exp_value": 24,
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.w.u.dubina",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.w.u.dubina"
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 90,
+            "min": 12,
+            "max": 24
+        },
+        {
+            "id": "i.w.r.stone",
+            "chance": 50,
+            "min": 2,
+            "max": 8
+        }
+    ],
+    "osvej": [
+        {
+            "id": "i.h.s.ogr",
+            "count": 1
+        }
+    ]
+}

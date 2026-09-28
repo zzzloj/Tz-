@@ -1,0 +1,106 @@
+{
+    "id": "n.c.skeletlord",
+    "char": {
+        "name": "cкeлeт-лopд",
+        "hp": 42,
+        "hp_max": 42,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 4,
+        "dmg_max": 8,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": 2,
+        "dodge": 5,
+        "parry": 40,
+        "shield_armor": 4,
+        "magic_dodge": 20,
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "мeчoм",
+        "exp_value": 14,
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.w.s.polutorn",
+            "count": 1
+        },
+        {
+            "id": "i.a.s.wood",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.w.s.polutorn",
+        "i.a.s.wood"
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 90,
+            "min": 12,
+            "max": 26
+        },
+        {
+            "id": "i.a.b.bone",
+            "chance": 10,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.a.h.bone",
+            "chance": 8,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.a.p.bone",
+            "chance": 8,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.a.l.bone",
+            "chance": 8,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.a.b.bdosp",
+            "chance": 6,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.w.t.battle",
+            "chance": 10,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.med.s",
+            "chance": 8,
+            "min": 0,
+            "max": 1
+        }
+    ],
+    "osvej": [
+        {
+            "id": "i.h.bone",
+            "count": 2
+        }
+    ]
+}

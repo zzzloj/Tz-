@@ -1,0 +1,8 @@
+{
+    "id": "i.f.grusha",
+    "kind": "food",
+    "name": "груша",
+    "price": 4,
+    "heal_hp": 3,
+    "heal_mana": ""
+}

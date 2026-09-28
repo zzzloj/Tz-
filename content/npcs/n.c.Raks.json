@@ -1,0 +1,55 @@
+{
+    "id": "n.c.Raks",
+    "char": {
+        "name": "Рaкc-зомби",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 12,
+        "dmg_max": 25,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "молотом",
+        "exp_value": 20,
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.a.w.c",
+            "count": 1
+        },
+        {
+            "id": "i.a.a.pp1",
+            "count": 1
+        },
+        {
+            "id": "i.w.u.molot",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.w.c",
+        "i.a.a.pp1",
+        "i.w.u.molot"
+    ]
+}

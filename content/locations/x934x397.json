@@ -1,0 +1,70 @@
+{
+    "id": "x934x397",
+    "name": "Западный лес",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x934x372"
+        },
+        {
+            "label": "на восток",
+            "target": "x972x397"
+        },
+        {
+            "label": "на юг",
+            "target": "x934x428"
+        },
+        {
+            "label": "на запад",
+            "target": "x894x399"
+        }
+    ],
+    "objects": {
+        "n.a.hare.sl": {
+            "char": {
+                "name": "зaяц",
+                "hp": 8,
+                "hp_max": 8,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 1,
+                "crime_title": "",
+                "wander": "3:20:60:1198676811",
+                "aux_ts": "",
+                "trail": ":x894x372:x894x399"
+            },
+            "war": {
+                "hit_chance": 40,
+                "dmg_min": 1,
+                "dmg_max": 2,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "лaпaми",
+                "exp_value": 2,
+                "ammo": "",
+                "respawn": "x894x372:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.s.skin",
+                    "count": 1
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ]
+        }
+    }
+}

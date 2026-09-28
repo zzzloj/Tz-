@@ -1,0 +1,8 @@
+{
+    "id": "i.f.b.water",
+    "kind": "food",
+    "name": "бутылка с водой",
+    "price": 8,
+    "heal_hp": 2,
+    "heal_mana": ""
+}

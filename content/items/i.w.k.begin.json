@@ -1,0 +1,12 @@
+{
+    "id": "i.w.k.begin",
+    "kind": "weapon",
+    "name": "нож",
+    "price": 0,
+    "dmg_min": 0,
+    "dmg_max": 2,
+    "req": "",
+    "speed": 4,
+    "verb": "ножом",
+    "ammo": ""
+}

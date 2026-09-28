@@ -1,0 +1,15 @@
+{
+    "id": "i.w.u.grom",
+    "kind": "weapon",
+    "name": "посох грома",
+    "price": 150,
+    "dmg_min": 4,
+    "dmg_max": 8,
+    "req": [
+        0,
+        5,
+        5
+    ],
+    "speed": 8,
+    "verb": "магией"
+}

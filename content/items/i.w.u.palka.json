@@ -1,0 +1,11 @@
+{
+    "id": "i.w.u.palka",
+    "kind": "weapon",
+    "name": "посох",
+    "price": 5,
+    "dmg_min": 1,
+    "dmg_max": 2,
+    "req": "",
+    "speed": 4,
+    "verb": "магией"
+}

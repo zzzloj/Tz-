@@ -1,0 +1,13 @@
+{
+    "id": "i.a.b.troll",
+    "kind": "armor",
+    "name": "дубленная шкура тролля",
+    "price": 2000,
+    "armor": 7,
+    "req": [
+        0,
+        5,
+        5
+    ],
+    "unknown_4": 0
+}

@@ -1,0 +1,98 @@
+{
+    "id": "x1086x552",
+    "name": "Магазин животных",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x1082x564"
+        }
+    ],
+    "objects": {
+        "n.Milta": {
+            "char": {
+                "name": "Милтa",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 11,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1086x552:10:40"
+            }
+        },
+        "n.a.sheep.1": {
+            "char": {
+                "name": "oвцa",
+                "hp": 12,
+                "hp_max": 12,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 1,
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 1,
+                "dmg_max": 4,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кoпытaми",
+                "exp_value": 3,
+                "ammo": "",
+                "respawn": "x1086x552:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.s.sheep",
+                    "count": 1
+                },
+                {
+                    "id": "i.h.kop.sheep",
+                    "count": 1
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "description": "Вы оказались в настоящем хлеву, на полу грязная солома, слышен визг свиней, кудахтанье кур, лай псов, про запах можно и не говорить…"
+}

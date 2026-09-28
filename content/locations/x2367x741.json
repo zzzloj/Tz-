@@ -1,0 +1,71 @@
+{
+    "id": "x2367x741",
+    "name": "Пирамида",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x2367x717"
+        },
+        {
+            "label": "на восток",
+            "target": "x2399x740"
+        },
+        {
+            "label": "на юг",
+            "target": "x2367x765"
+        },
+        {
+            "label": "на запад",
+            "target": "x2336x741"
+        }
+    ],
+    "objects": {
+        "n.Gorh": {
+            "char": {
+                "name": "opк шаман Горх",
+                "hp": 130,
+                "hp_max": 130,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 100,
+                "dmg_min": 11,
+                "dmg_max": 24,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "магией",
+                "exp_value": 20,
+                "ammo": "",
+                "respawn": "x2367x741:300:600"
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 13
+                }
+            ]
+        }
+    },
+    "timers": {
+        "1198677941": "i.q.chasha|0|1|7200|14400",
+        "1198705223": "n.c.orcma.b|21600:43200|2:5:120:1198669327"
+    },
+    "description": "На вершине пирамиды стоят четыре колонны, между которыми расположен плоский каменный саркофаг. Отсюда открывается прекрасный вид - на севере видна гладь озера с аркой моста через него, на востоке виден черный обелиск и какие-то ворота"
+}

@@ -1,0 +1,12 @@
+{
+    "id": "i.a.b.kristal",
+    "kind": "armor",
+    "name": "кристалический доспех",
+    "price": 2000,
+    "armor": 11,
+    "req": [
+        5,
+        6
+    ],
+    "unknown_4": 1
+}

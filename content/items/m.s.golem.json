@@ -1,0 +1,15 @@
+{
+    "id": "m.s.golem",
+    "kind": "spell",
+    "name": "Призвать голема",
+    "mana_cost": 14,
+    "level": 2,
+    "words": "Suent Dal Wan",
+    "power_min": 0,
+    "power_max": 0,
+    "needs_target": 0,
+    "criminals_only": 0,
+    "cast_time": 10,
+    "cooldown": 1800,
+    "description": "Вызов голема, который будет следовать за заклинателем и охранять его"
+}

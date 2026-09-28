@@ -1,0 +1,15 @@
+{
+    "id": "i.w.r.b.bow",
+    "kind": "weapon",
+    "name": "лук",
+    "price": 40,
+    "dmg_min": 1,
+    "dmg_max": 8,
+    "req": [
+        0,
+        2
+    ],
+    "speed": 4,
+    "verb": "из лука",
+    "ammo": "i.arrow"
+}

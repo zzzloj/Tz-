@@ -1,0 +1,36 @@
+{
+    "id": "n.kastle2",
+    "char": {
+        "name": "Kirsun [наемник]",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 90,
+        "dmg_min": 12,
+        "dmg_max": 20,
+        "attack_delay": 6,
+        "is_ranged": "",
+        "armor": 15,
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "из арбалета",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": ""
+    }
+}

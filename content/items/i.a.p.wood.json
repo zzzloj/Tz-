@@ -1,0 +1,10 @@
+{
+    "id": "i.a.p.wood",
+    "kind": "armor",
+    "name": "деревянные поручи",
+    "price": 12,
+    "armor": 1,
+    "req": [
+        2
+    ]
+}

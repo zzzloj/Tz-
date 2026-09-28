@@ -1,0 +1,11 @@
+{
+    "id": "i.a.s.wood",
+    "kind": "armor",
+    "name": "деревянный щит",
+    "price": 40,
+    "armor": 2,
+    "req": [
+        2,
+        3
+    ]
+}

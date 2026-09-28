@@ -1,0 +1,65 @@
+{
+    "id": "x1x8",
+    "name": "землянка",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "в глубь землянки",
+            "target": "x1x9"
+        },
+        {
+            "label": "выйти",
+            "target": "x1x7"
+        }
+    ],
+    "objects": {
+        "n.a.losh.1917": {
+            "char": {
+                "name": "лoшaдь",
+                "hp": 26,
+                "hp_max": 26,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198674169,
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 2,
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 1,
+                "dmg_max": 7,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кoпытaми",
+                "exp_value": 4,
+                "ammo": "",
+                "respawn": ""
+            },
+            "osvej": [
+                {
+                    "id": "i.f.meat",
+                    "count": 3
+                }
+            ],
+            "owner": "u.volchokoo7|u.volchokoo7|0|0|0"
+        },
+        "i.s.d.n.c.gobr.1.61": "труп (гоблин-рабочий)|1|1198678563|i.sh:9|",
+        "i.s.d.n.c.gobr.2.40": "труп (гоблин-рабочий)|1|1198678571|i.sh:1|"
+    },
+    "timers": {
+        "1198678297": "n.c.gobr.2|300:600"
+    },
+    "description": "Бревенчатый потолок и стены, покрыты слоем паутины"
+}

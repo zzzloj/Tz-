@@ -1,0 +1,15 @@
+{
+    "id": "i.w.s.sable",
+    "kind": "weapon",
+    "name": "сабля",
+    "price": 45,
+    "dmg_min": 3,
+    "dmg_max": 5,
+    "req": [
+        0,
+        2
+    ],
+    "speed": 4,
+    "verb": "саблей",
+    "ammo": ""
+}

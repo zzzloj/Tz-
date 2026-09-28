@@ -1,0 +1,15 @@
+{
+    "id": "m.s.wolf",
+    "kind": "spell",
+    "name": "Призвать волка",
+    "mana_cost": 10,
+    "level": 1,
+    "words": "Suent Via",
+    "power_min": 0,
+    "power_max": 0,
+    "needs_target": 0,
+    "criminals_only": 0,
+    "cast_time": 8,
+    "cooldown": 600,
+    "description": "Вызов волка, который будет следовать за заклинателем и охранять его"
+}

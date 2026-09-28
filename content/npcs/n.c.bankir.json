@@ -1,0 +1,44 @@
+{
+    "id": "n.c.bankir",
+    "char": {
+        "name": "Лукac [бaнкиp]-зомби",
+        "hp": 180,
+        "hp_max": 180,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 95,
+        "dmg_min": 11,
+        "dmg_max": 26,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": 26,
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": 20,
+        "magic_parry": 80,
+        "magic_resist": 40,
+        "verb": "ногами",
+        "exp_value": 50,
+        "ammo": "",
+        "respawn": ""
+    },
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 90,
+            "min": 400,
+            "max": 200
+        }
+    ]
+}

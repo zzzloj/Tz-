@@ -1,0 +1,8 @@
+{
+    "id": "i.f.fileroot",
+    "kind": "food",
+    "name": "огненный корень",
+    "price": 25,
+    "heal_hp": "",
+    "heal_mana": 10
+}

@@ -1,0 +1,36 @@
+{
+    "id": "n.a.mouse",
+    "char": {
+        "name": "мышь",
+        "hp": 4,
+        "hp_max": 4,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": 1,
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 40,
+        "dmg_min": 1,
+        "dmg_max": 1,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "зубaми",
+        "exp_value": 1,
+        "ammo": "",
+        "respawn": ""
+    }
+}

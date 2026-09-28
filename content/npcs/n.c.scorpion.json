@@ -1,0 +1,50 @@
+{
+    "id": "n.c.scorpion",
+    "char": {
+        "name": "cкopпиoн",
+        "hp": 10,
+        "hp_max": 10,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 70,
+        "dmg_min": 1,
+        "dmg_max": 4,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "ядoм",
+        "exp_value": 3,
+        "ammo": "",
+        "respawn": ""
+    },
+    "itemsrnd": [
+        {
+            "id": "i.f.fileroot",
+            "chance": 30,
+            "min": 0,
+            "max": 2
+        },
+        {
+            "id": "i.h.jalo",
+            "chance": 25,
+            "min": 0,
+            "max": 1
+        }
+    ]
+}

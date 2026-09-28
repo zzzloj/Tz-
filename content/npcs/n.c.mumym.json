@@ -1,0 +1,50 @@
+{
+    "id": "n.c.mumym",
+    "char": {
+        "name": "мумия маг",
+        "hp": 90,
+        "hp_max": 90,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 95,
+        "dmg_min": 17,
+        "dmg_max": 25,
+        "attack_delay": 3,
+        "is_ranged": "",
+        "armor": 16,
+        "dodge": 20,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": 30,
+        "magic_parry": 70,
+        "magic_resist": 60,
+        "verb": "магией",
+        "exp_value": 20,
+        "ammo": "",
+        "respawn": ""
+    },
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 90,
+            "min": 40,
+            "max": 60
+        },
+        {
+            "id": "i.z.w",
+            "chance": 1,
+            "min": 0,
+            "max": 1
+        }
+    ]
+}

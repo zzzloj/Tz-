@@ -1,0 +1,59 @@
+{
+    "id": "x2027x300",
+    "name": "Переулок",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на площадь",
+            "target": "x2016x270"
+        },
+        {
+            "label": "на юг",
+            "target": "x2053x327"
+        }
+    ],
+    "objects": {
+        "n.c.zombie.a1": {
+            "char": {
+                "name": "зoмби",
+                "hp": 18,
+                "hp_max": 18,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "1:60:120:1198670237",
+                "aux_ts": "",
+                "trail": ":x2016x270"
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 2,
+                "dmg_max": 6,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 10,
+                "magic_parry": 20,
+                "magic_resist": 40,
+                "verb": "pукaми",
+                "exp_value": 8,
+                "ammo": "",
+                "respawn": "x2016x270:1200:1800"
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 6
+                }
+            ]
+        }
+    },
+    "description": "Вы идете между городской стеной и зданием на востоке, на севере площадь"
+}

@@ -1,0 +1,13 @@
+{
+    "id": "i.a.h.whitewolf",
+    "kind": "armor",
+    "name": "голова белого волка",
+    "price": 3000,
+    "armor": 4,
+    "req": [
+        0,
+        5,
+        5
+    ],
+    "unknown_4": 0
+}

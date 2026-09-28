@@ -1,0 +1,82 @@
+{
+    "id": "x1140x54",
+    "name": "Магазин оружия",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x1118x54"
+        },
+        {
+            "label": "дверь на севере",
+            "target": "x1141x52"
+        }
+    ],
+    "objects": {
+        "n.c.Plant.a1": {
+            "char": {
+                "name": "Плaнт-зомби",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 15,
+                "dmg_max": 21,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": 2,
+                "dodge": "",
+                "parry": 80,
+                "shield_armor": 6,
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "утpeннeй звeздoй",
+                "exp_value": 20,
+                "ammo": "",
+                "respawn": "x1140x54:1000:2000"
+            },
+            "items": [
+                {
+                    "id": "i.a.b.skol",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.e.c",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.p.s",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.s.b",
+                    "count": 1
+                },
+                {
+                    "id": "i.w.u.moon",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.b.skol",
+                "i.a.e.c",
+                "i.a.p.s",
+                "i.a.s.b",
+                "i.w.u.moon"
+            ]
+        }
+    },
+    "description": "Вы в здании магазина оружия, в углу к стене прислонены несколько копий и алебард, на стенах развешаны гобелены, изображающие великие сражения, а на полках шкафов разложены мечи и другое оружие. На севере дверь в другую часть здания, на западе выход на улицу."
+}

@@ -1,0 +1,71 @@
+{
+    "id": "x1x6",
+    "name": "лес",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на запад",
+            "target": "x1x5"
+        },
+        {
+            "label": "на восток",
+            "target": "x1x7"
+        },
+        {
+            "label": "на север",
+            "target": "x2x6"
+        }
+    ],
+    "objects": {
+        "n.c.ciklop.1": {
+            "char": {
+                "name": "циклоп",
+                "hp": 170,
+                "hp_max": 170,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": 1198677781,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "1:60:120:1198677978",
+                "aux_ts": "",
+                "trail": ":x1838x129:x1838x98:x1x1:x1x2:x1x3:x1x4:x1x5"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 6,
+                "dmg_max": 28,
+                "attack_delay": 7,
+                "is_ranged": 1,
+                "armor": 20,
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "камнями",
+                "exp_value": 25,
+                "ammo": "",
+                "respawn": "x1838x129:1200:1800"
+            },
+            "items": [
+                {
+                    "id": "i.w.r.stone",
+                    "count": 20
+                },
+                {
+                    "id": "i.money",
+                    "count": 18
+                },
+                {
+                    "id": "i.c.adamant",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "description": "Кроны деревьев вплотную прилегают к друг другу. На востоке видна пещера. "
+}

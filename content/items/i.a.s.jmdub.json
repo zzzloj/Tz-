@@ -1,0 +1,13 @@
+{
+    "id": "i.a.s.jmdub",
+    "kind": "armor",
+    "name": "дубовый щит",
+    "price": 70,
+    "armor": 5,
+    "req": [
+        2,
+        5,
+        2
+    ],
+    "unknown_4": 0
+}

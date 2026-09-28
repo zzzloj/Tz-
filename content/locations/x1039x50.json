@@ -1,0 +1,66 @@
+{
+    "id": "x1039x50",
+    "name": "Западная улица",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x1039x49"
+        },
+        {
+            "label": "на юг",
+            "target": "x1042x52"
+        },
+        {
+            "label": "на запад в рощу",
+            "target": "x1022x50"
+        }
+    ],
+    "objects": {
+        "n.w.Veelzevul": {
+            "char": {
+                "name": "Веельзевул",
+                "hp": 1000,
+                "hp_max": 1000,
+                "mana": 1000,
+                "mana_max": 1000,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 100,
+                "dmg_min": 170,
+                "dmg_max": 260,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1039x50:1:2"
+            },
+            "items": [
+                {
+                    "id": "i.a.b.c",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.b.c"
+            ]
+        }
+    },
+    "description": "На юге за березовой рощей видны какие-то здания, а на север дорога идет между забором двора рыцарей и березовой рощей."
+}

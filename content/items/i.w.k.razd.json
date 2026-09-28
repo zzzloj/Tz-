@@ -1,0 +1,12 @@
+{
+    "id": "i.w.k.razd",
+    "kind": "weapon",
+    "name": "разделочный нож",
+    "price": 18,
+    "dmg_min": 1,
+    "dmg_max": 3,
+    "req": "",
+    "speed": 4,
+    "verb": "ножом",
+    "ammo": ""
+}

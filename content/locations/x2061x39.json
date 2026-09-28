@@ -1,0 +1,59 @@
+{
+    "id": "x2061x39",
+    "name": "Убежище",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "в проход в скале",
+            "target": "x2098x37"
+        },
+        {
+            "label": "в калитку",
+            "target": "x2059x72"
+        },
+        {
+            "label": "на запад",
+            "target": "x2016x41"
+        }
+    ],
+    "objects": {
+        "i.s.nakov": "наковальня|1|0",
+        "n.Palent": {
+            "char": {
+                "name": "Палент [кузнец]",
+                "hp": 500,
+                "hp_max": 500,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 90,
+                "dmg_min": 20,
+                "dmg_max": 70,
+                "attack_delay": 7,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кузнечным молотом",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x2061x39:1200:3000"
+            },
+            "qv": 1198677434
+        }
+    },
+    "description": "Достаточно опрятное помещение, в дальней части горит жаркий горн. На западе проход в скалу, напоминающий пещеру. На юге калитка в ограде"
+}

@@ -1,0 +1,15 @@
+{
+    "id": "i.w.r.molot",
+    "kind": "weapon",
+    "name": "метательный молот",
+    "price": 16,
+    "dmg_min": 8,
+    "dmg_max": 16,
+    "req": [
+        5,
+        2
+    ],
+    "speed": 7,
+    "verb": "метательным молотом",
+    "ammo": "i.w.r.molot"
+}

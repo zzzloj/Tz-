@@ -1,0 +1,59 @@
+{
+    "id": "x1188x538",
+    "name": "Магазин плотника",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x1185x552"
+        }
+    ],
+    "objects": {
+        "n.Sarant": {
+            "char": {
+                "name": "Сapaнт",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": 1198679080,
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 8,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "тoпopoм",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1188x538:1:2"
+            },
+            "items": [
+                {
+                    "id": "i.w.t.plotnik",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.w.t.plotnik"
+            ],
+            "bank": "90:1:4=i.w.t.plotnik:0|70:1:3=i.w.t.toporik:1|40:1:2=i.w.t.lesnik:0|90:12:24=i.spichka:15|50:1:4=i.set.leska:1|90:1:2=i.set.plotn:1|70:1:1=i.set.shampur:1"
+        }
+    },
+    "description": "В доме приятно пахнет стружкой, вдоль стен стоят плотлицкие инструменты - пилы, топоры, рубанки. У противоположной стены два рабочих стола, засыпанных стружкой и опилками."
+}

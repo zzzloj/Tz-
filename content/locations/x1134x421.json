@@ -1,0 +1,60 @@
+{
+    "id": "x1134x421",
+    "name": "Озеро",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на восток вдоль озера",
+            "target": "x1173x419"
+        },
+        {
+            "label": "на запад вдоль озера",
+            "target": "x1096x420"
+        }
+    ],
+    "objects": {
+        "i.s.res": "камень воскрешения||0",
+        "n.a.b.sok.oz": {
+            "char": {
+                "name": "coкoл",
+                "hp": 8,
+                "hp_max": 8,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 2,
+                "crime_title": "",
+                "wander": "2:20:60:1198676037",
+                "aux_ts": "",
+                "trail": ":x1096x420"
+            },
+            "war": {
+                "hit_chance": 90,
+                "dmg_min": 0,
+                "dmg_max": 4,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "клювoм",
+                "exp_value": 2,
+                "ammo": "",
+                "respawn": "x1096x420:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.p.perya",
+                    "count": 12
+                }
+            ]
+        }
+    },
+    "description": "Между городской стеной и озером (ближе к озеру) стоит наполовину ушедший в землю камень примерно в две трети человеческого роста. Матово-черная поверхность странно поблескивает, будто камень под завязку напитан магией.\n"
+}

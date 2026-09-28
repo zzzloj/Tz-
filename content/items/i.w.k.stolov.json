@@ -1,0 +1,12 @@
+{
+    "id": "i.w.k.stolov",
+    "kind": "weapon",
+    "name": "столовый нож",
+    "price": 15,
+    "dmg_min": 1,
+    "dmg_max": 2,
+    "req": "",
+    "speed": 4,
+    "verb": "ножом",
+    "ammo": ""
+}

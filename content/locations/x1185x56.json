@@ -1,0 +1,55 @@
+{
+    "id": "x1185x56",
+    "name": "Волшебный магазин",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x1182x57"
+        }
+    ],
+    "objects": {
+        "n.c.Julien.a1": {
+            "char": {
+                "name": "Жульeн-зомби",
+                "hp": 140,
+                "hp_max": 140,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 12,
+                "dmg_max": 32,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": 20,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 20,
+                "magic_parry": 90,
+                "magic_resist": 70,
+                "verb": "мaгиeй",
+                "exp_value": 35,
+                "ammo": "",
+                "respawn": "x1185x56:200:600"
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 49
+                }
+            ]
+        }
+    },
+    "description": "Небольшое полутемное помещение, на столах разложены сушеные травы и какие-то колбочки с разноцветной жидкостью, в углу дымит масляная лампадка."
+}

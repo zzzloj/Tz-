@@ -1,0 +1,14 @@
+{
+    "id": "i.w.r.c.heavy",
+    "kind": "weapon",
+    "name": "тяжелый арбалет",
+    "price": 140,
+    "dmg_min": 7,
+    "dmg_max": 14,
+    "req": [
+        3
+    ],
+    "speed": 7,
+    "verb": "из арбалета",
+    "ammo": "i.bolt"
+}

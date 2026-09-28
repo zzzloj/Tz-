@@ -1,0 +1,12 @@
+{
+    "id": "i.w.s.short",
+    "kind": "weapon",
+    "name": "короткий меч",
+    "price": 30,
+    "dmg_min": 2,
+    "dmg_max": 3,
+    "req": "",
+    "speed": 4,
+    "verb": "мечом",
+    "ammo": ""
+}

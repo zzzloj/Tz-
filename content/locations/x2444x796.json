@@ -1,0 +1,59 @@
+{
+    "id": "x2444x796",
+    "name": "Лагерь орков",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x2449x738"
+        },
+        {
+            "label": "на запад",
+            "target": "x2363x803"
+        }
+    ],
+    "objects": {
+        "n.c.orcsh.16": {
+            "char": {
+                "name": "орк шаман",
+                "hp": 140,
+                "hp_max": 140,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "3:60:120:1198673242",
+                "aux_ts": "",
+                "trail": ":x2449x738"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 6,
+                "dmg_max": 32,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": 10,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 15,
+                "magic_parry": 85,
+                "magic_resist": 70,
+                "verb": "мaгиeй",
+                "exp_value": 30,
+                "ammo": "",
+                "respawn": "x2449x738:1800:2400"
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 53
+                }
+            ]
+        }
+    },
+    "description": "Вы обходите пирамиду с юго-восточной стороны, на юге высится вулкан"
+}

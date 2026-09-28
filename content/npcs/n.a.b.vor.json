@@ -1,0 +1,66 @@
+{
+    "id": "n.a.b.vor",
+    "char": {
+        "name": "вopoнa",
+        "hp": 5,
+        "hp_max": 5,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": 2,
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 70,
+        "dmg_min": 0,
+        "dmg_max": 3,
+        "attack_delay": 3,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 15,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "клювoм",
+        "exp_value": 2,
+        "ammo": "",
+        "respawn": ""
+    },
+    "osvej": [
+        {
+            "id": "i.h.p.vorona",
+            "count": 8
+        },
+        {
+            "id": "i.f.meat",
+            "count": 1
+        }
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.med.b",
+            "chance": 10,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.ring.r",
+            "chance": 5,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.ring.l",
+            "chance": 10,
+            "min": 0,
+            "max": 1
+        }
+    ]
+}

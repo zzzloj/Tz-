@@ -1,0 +1,12 @@
+{
+    "id": "i.w.k.per",
+    "kind": "weapon",
+    "name": "перочинный нож",
+    "price": 5,
+    "dmg_min": 1,
+    "dmg_max": 2,
+    "req": "",
+    "speed": 4,
+    "verb": "ножом",
+    "ammo": ""
+}

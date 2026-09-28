@@ -1,0 +1,15 @@
+{
+    "id": "m.w.arrow",
+    "kind": "spell",
+    "name": "Магическая стрела",
+    "mana_cost": 5,
+    "level": 1,
+    "words": "In Ost",
+    "power_min": 4,
+    "power_max": 10,
+    "needs_target": 1,
+    "criminals_only": 0,
+    "cast_time": 6,
+    "cooldown": 60,
+    "description": "Наносит урон чистой магией"
+}

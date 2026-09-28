@@ -1,0 +1,9 @@
+{
+    "id": "i.ruda",
+    "kind": "item",
+    "name": "руда",
+    "price": 2,
+    "extra": [
+        ""
+    ]
+}

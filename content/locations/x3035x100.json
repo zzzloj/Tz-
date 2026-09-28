@@ -1,0 +1,104 @@
+{
+    "id": "x3035x100",
+    "name": "долина фараонов",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "к реке",
+            "target": "x3042x100"
+        },
+        {
+            "label": "на юг",
+            "target": "x3033x100"
+        },
+        {
+            "label": "на восток",
+            "target": "x3043x100"
+        }
+    ],
+    "objects": {
+        "n.a.camel.3": {
+            "char": {
+                "name": "верблюд",
+                "hp": 40,
+                "hp_max": 40,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 2,
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 4,
+                "dmg_max": 14,
+                "attack_delay": 9,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "копытами",
+                "exp_value": 9,
+                "ammo": "",
+                "respawn": "x3035x100:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.f.meat",
+                    "count": 6
+                }
+            ]
+        },
+        "n.a.camel.4": {
+            "char": {
+                "name": "верблюд",
+                "hp": 40,
+                "hp_max": 40,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 2,
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 4,
+                "dmg_max": 14,
+                "attack_delay": 9,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "копытами",
+                "exp_value": 9,
+                "ammo": "",
+                "respawn": "x3035x100:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.f.meat",
+                    "count": 6
+                }
+            ]
+        }
+    },
+    "description": "Долина фараонов,небольшие,редкие растения ничуть не скрашивают эту пустынную местнось. "
+}

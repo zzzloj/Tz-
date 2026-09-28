@@ -1,0 +1,9 @@
+{
+    "id": "i.b.antidot",
+    "kind": "item",
+    "name": "противоядие",
+    "price": 100,
+    "extra": [
+        "1"
+    ]
+}

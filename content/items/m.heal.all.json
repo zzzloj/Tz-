@@ -1,0 +1,15 @@
+{
+    "id": "m.heal.all",
+    "kind": "spell",
+    "name": "Помощь",
+    "mana_cost": 14,
+    "level": 2,
+    "words": "Suelt Valla Vasn",
+    "power_min": 8,
+    "power_max": 14,
+    "needs_target": 0,
+    "criminals_only": 0,
+    "cast_time": 10,
+    "cooldown": 1200,
+    "description": "Восстанавливает здоровье у всех союзников заклинателя (соклановцы, наемники, животные и т.д.)"
+}

@@ -1,0 +1,45 @@
+{
+    "id": "n.Ostford",
+    "char": {
+        "name": "Лорд Остфорд",
+        "hp": 200,
+        "hp_max": 200,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 100,
+        "dmg_min": 30,
+        "dmg_max": 80,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": 25,
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "мечом",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.a.e.p",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.e.p"
+    ]
+}

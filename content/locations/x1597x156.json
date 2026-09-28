@@ -1,0 +1,23 @@
+{
+    "id": "x1597x156",
+    "name": "Пещера",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x1593x129"
+        },
+        {
+            "label": "на юг",
+            "target": "x1597x185"
+        },
+        {
+            "label": "на запад",
+            "target": "x1557x156"
+        }
+    ],
+    "objects": {
+        "i.s.d.n.c.pauk.pesh.47": "труп (гигaнтcкий пaук)|1|1198678406|i.f.b.mana:1,i.f.b.heal:1|"
+    },
+    "description": ""
+}

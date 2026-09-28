@@ -1,0 +1,9 @@
+{
+    "id": "i.fishman",
+    "kind": "item",
+    "name": "удочка",
+    "price": 8,
+    "extra": [
+        ""
+    ]
+}

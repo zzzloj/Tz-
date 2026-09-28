@@ -1,0 +1,74 @@
+{
+    "id": "x654x84",
+    "name": "Дальний лес",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север ",
+            "target": "x655x51"
+        },
+        {
+            "label": "на восток ",
+            "target": "x695x84"
+        },
+        {
+            "label": "на юг ",
+            "target": "x655x112"
+        },
+        {
+            "label": "на запад ",
+            "target": "x615x84"
+        }
+    ],
+    "objects": {
+        "n.a.los.dl": {
+            "char": {
+                "name": "лocь",
+                "hp": 38,
+                "hp_max": 38,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "3:20:60:1198677380",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 2,
+                "dmg_max": 12,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "poгaми",
+                "exp_value": 5,
+                "ammo": "",
+                "respawn": "x654x84:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.kop.los",
+                    "count": 1
+                },
+                {
+                    "id": "i.h.r.los",
+                    "count": 1
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 2
+                }
+            ]
+        }
+    }
+}

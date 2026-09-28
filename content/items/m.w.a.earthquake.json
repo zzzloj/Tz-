@@ -1,0 +1,15 @@
+{
+    "id": "m.w.a.earthquake",
+    "kind": "spell",
+    "name": "Землетрясение",
+    "mana_cost": 32,
+    "level": 5,
+    "words": "Swar Di Otr",
+    "power_min": 18,
+    "power_max": 28,
+    "needs_target": 0,
+    "criminals_only": 0,
+    "cast_time": 12,
+    "cooldown": 3600,
+    "description": "Наносит урон всем в округе"
+}

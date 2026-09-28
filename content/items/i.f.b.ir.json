@@ -1,0 +1,8 @@
+{
+    "id": "i.f.b.ir",
+    "kind": "food",
+    "name": "ириска",
+    "price": 1,
+    "heal_hp": 2,
+    "heal_mana": 2
+}

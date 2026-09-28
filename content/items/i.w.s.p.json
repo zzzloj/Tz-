@@ -1,0 +1,14 @@
+{
+    "id": "i.w.s.p",
+    "kind": "weapon",
+    "name": "меч палладина",
+    "price": 800,
+    "dmg_min": 6,
+    "dmg_max": 17,
+    "req": [
+        5,
+        5
+    ],
+    "speed": 6,
+    "verb": "мечом"
+}

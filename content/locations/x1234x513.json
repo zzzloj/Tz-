@@ -1,0 +1,67 @@
+{
+    "id": "x1234x513",
+    "name": "Восточная стена",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "к особняку",
+            "target": "x1231x532"
+        },
+        {
+            "label": "на север",
+            "target": "x1235x497"
+        },
+        {
+            "label": "на запад",
+            "target": "x1220x510"
+        }
+    ],
+    "objects": {
+        "n.a.b.gol.ta": {
+            "char": {
+                "name": "гoлубь",
+                "hp": 4,
+                "hp_max": 4,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 1,
+                "crime_title": "",
+                "wander": "1:20:60:1198675762",
+                "aux_ts": "",
+                "trail": ":x1220x510"
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 0,
+                "dmg_max": 1,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "клювoм",
+                "exp_value": 1,
+                "ammo": "",
+                "respawn": "x1220x510:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.p.perya",
+                    "count": 6
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "description": "Вы пробираетесь вдоль восточной городской стены позади тенистой аллеи. На юге видна крыша двухэтажного особняка у городской стены."
+}

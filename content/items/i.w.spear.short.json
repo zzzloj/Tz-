@@ -1,0 +1,14 @@
+{
+    "id": "i.w.spear.short",
+    "kind": "weapon",
+    "name": "короткое копье",
+    "price": 70,
+    "dmg_min": 2,
+    "dmg_max": 6,
+    "req": [
+        3
+    ],
+    "speed": 5,
+    "verb": "копьем",
+    "ammo": ""
+}

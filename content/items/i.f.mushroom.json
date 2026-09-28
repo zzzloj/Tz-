@@ -1,0 +1,8 @@
+{
+    "id": "i.f.mushroom",
+    "kind": "food",
+    "name": "гриб",
+    "price": 6,
+    "heal_hp": 2,
+    "heal_mana": 2
+}

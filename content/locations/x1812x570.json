@@ -1,0 +1,50 @@
+{
+    "id": "x1812x570",
+    "name": "Крепость",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на первый этаж",
+            "target": "x1811x551"
+        }
+    ],
+    "objects": {
+        "n.Raulq": {
+            "char": {
+                "name": "Рауль",
+                "hp": 90,
+                "hp_max": 90,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 11,
+                "dmg_max": 28,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "из лука",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1812x570:300:600:1"
+            },
+            "bank": "90:1:1=i.w.r.b.berezov:1|70:1:1=i.w.r.b.battle:1|80:1:1=i.w.r.b.elven:1|60:1:1=i.w.r.b.air:1|90:1:1=i.set.bow:1|90:1:22=i.arrow:1|90:1:16=i.bolt:1|90:1:1=i.set.arrow:1|90:1:1=i.set.bolt:1"
+        }
+    },
+    "description": "На втором этаже каменный балкон, с которого открывается великолепный вид. На юге за стеной крепости вы замечаете углубление в земле, а далеко на горизонте на юго-востоке возвышается гора потухшего вулкана."
+}

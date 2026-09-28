@@ -1,0 +1,294 @@
+{
+    "id": "x1092x474",
+    "name": "Банк",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "выйти в западную дверь",
+            "target": "x1082x474"
+        },
+        {
+            "label": "выйти в южную дверь",
+            "target": "x1090x489"
+        }
+    ],
+    "objects": {
+        "i.s.elka": "новогодняя елка|1|0",
+        "n.tamozh": {
+            "char": {
+                "name": "Продавец счастья",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": 1198673885,
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 11,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": 2,
+                "dodge": "",
+                "parry": 80,
+                "shield_armor": 6,
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "посохом",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1092x474:1:2"
+            },
+            "bank": "90:10:10=i.a.b.moroz:10|90:10:10=i.a.h.belka:10|90:10:10=i.a.h.medved:10|90:10:10=i.a.h.poros:10|90:10:10=i.a.h.volk:10|90:10:10=i.a.h.zajac:10|90:10:10=i.a.h.zhaba:10|90:10:10=i.a.p.vb:10|90:10:10=i.a.p.vk:0|90:10:10=i.a.p.vs:10|90:10:10=i.a.p.vz:10|90:10:10=i.a.r.belochka:10|90:10:10=i.a.r.feja:10|90:10:10=i.a.r.mishka:10|90:10:10=i.a.r.mysh:0|90:10:10=i.a.r.pauk:10|90:10:10=i.a.r.snegur:0|90:10:10=i.a.r.snezh:0|90:10:10=i.a.r.zaec:10|90:1000:1000=i.b.bomb:1000|90:10000:10000=i.b.hlop:10000|90:10000:10000=i.b.pit:10000|90:10:10=i.f.b.ir:10|90:10:10=i.f.b.pmol:10|90:10:10=i.f.b.shamp:0|90:10:10=:5000"
+        },
+        "n.bankir": {
+            "char": {
+                "name": "Лукac [бaнкиp]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 11,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1092x474:1:2"
+            }
+        },
+        "n.kenius": {
+            "char": {
+                "name": "Кениус",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": 1198677407,
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 11,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1092x474:1:2"
+            },
+            "items": [
+                {
+                    "id": "i.a.r.c1",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.h.ch1",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.c.tuf1",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.r.c1",
+                "i.a.h.ch1",
+                "i.a.c.tuf1"
+            ],
+            "bank": "100:15:40=i.q.health:27|100:10:30=i.q.recovering:13|100:100:150=i.z.w:122|100:100:150=i.i.ag:110|100:100:150=i.i.am:132|100:100:150=i.i.az:133|100:100:150=i.i.do:128|100:100:150=i.i.dy:144|100:100:150=i.i.hr:134|100:100:150=i.i.kc:126|100:100:150=i.i.ku:138|100:100:150=i.i.ma:111|100:100:150=i.i.me:124|100:100:150=i.i.ne:104|100:100:150=i.i.ob:132|100:100:150=i.i.on:146|100:100:150=i.i.sa:105|100:100:150=i.i.zm:143|100:4:5=i.q.ambroken1:5|100:100:150=i.q.chasha:120|100:100:150=i.q.jofe:114|100:3:4=i.q.darklist:3|100:10:15=i.q.pdeath:12|100:1:3=i.q.pjpt:1|100:10:15=i.q.ssword:11|100:100:150=i.q.svitok:103|100:100:150=i.ress:146|10000:10000:10000=i.snezhok:10000"
+        },
+        "n.officer": {
+            "char": {
+                "name": "Сaнчec [oфицep]",
+                "hp": 1000,
+                "hp_max": 1000,
+                "mana": 1000,
+                "mana_max": 1000,
+                "regen_ts": 1198667655,
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 100,
+                "dmg_min": 100,
+                "dmg_max": 100,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": 100,
+                "dodge": 30,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 80,
+                "magic_parry": 80,
+                "magic_resist": 70,
+                "verb": "шпaгoй",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1092x474:1:2:1"
+            },
+            "items": [
+                {
+                    "id": "i.w.s.shpaga",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.r.b",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.e.k",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.a.lp1",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.w.s.shpaga",
+                "i.a.r.b",
+                "i.a.e.k",
+                "i.a.a.lp1"
+            ],
+            "osvej": null
+        },
+        "n.a.losh.6836": {
+            "char": {
+                "name": "лoшaдь [вор]",
+                "hp": 26,
+                "hp_max": 26,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198669505,
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 2,
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 1,
+                "dmg_max": 7,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кoпытaми",
+                "exp_value": 4,
+                "ammo": "",
+                "respawn": ""
+            },
+            "osvej": [
+                {
+                    "id": "i.f.meat",
+                    "count": 3
+                }
+            ],
+            "name": "[вор]"
+        },
+        "i.s.d.n.c.orc.7988.53": "труп (opк)|1|1198678384||",
+        "i.s.d.n.g.3527.5": "труп (Elcrishe [стража])|0|1198678390|i.w.t.alebarda:1|",
+        "n.g.5490": {
+            "char": {
+                "name": "Chri [стража]",
+                "hp": 200,
+                "hp_max": 200,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": 11986777901,
+                "busy_until": 1198677958,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": 1198678390,
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 100,
+                "dmg_min": 30,
+                "dmg_max": 45,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": 100,
+                "dodge": 30,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 80,
+                "magic_parry": 80,
+                "magic_resist": 70,
+                "verb": "алебардой",
+                "exp_value": 15,
+                "ammo": "",
+                "respawn": ""
+            },
+            "items": [
+                {
+                    "id": "i.w.t.alebarda",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.w.t.alebarda"
+            ],
+            "st": "3"
+        }
+    },
+    "description": "Вы в здании банка, здесь два выхода - на юге и западе."
+}

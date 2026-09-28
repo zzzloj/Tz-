@@ -1,0 +1,68 @@
+{
+    "id": "x1141x527",
+    "name": "Магазин брони",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x1119x522"
+        },
+        {
+            "label": "дверь на юге",
+            "target": "x1140x543"
+        }
+    ],
+    "objects": {
+        "n.Silt": {
+            "char": {
+                "name": "Силт",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": 1198677597,
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 11,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1141x527:1:2"
+            },
+            "items": [
+                {
+                    "id": "i.a.b.heavykol",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.c.sp1",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.b.heavykol",
+                "i.a.c.sp1"
+            ],
+            "bank": "90:1:4=i.a.b.meh:1|80:1:2=i.a.b.leather:2|80:1:2=i.a.b.klep:1|80:1:2=i.a.b.bone:0|90:1:3=i.a.b.mkol:3|80:1:2=i.a.b.bkol:0|70:1:1=i.a.b.skol:1|70:1:1=i.a.b.heavykol:1|70:1:1=i.a.b.mpanc:1|70:1:1=i.a.b.bpanc:1|70:1:1=i.a.b.spanc:1|60:1:1=i.a.b.mdosp:0|60:1:1=i.a.b.bdosp:0|60:1:1=i.a.b.rdosp:0|60:1:1=i.a.b.latndosp:0|50:1:1=i.a.b.turndosp:0|50:1:1=i.a.b.sdosp:1|50:1:1=i.a.b.plastdosp:0|80:1:4=i.a.h.wood:0|70:1:2=i.a.h.bone:0|70:1:1=i.a.h.m:0|70:1:1=i.a.h.b:0|60:1:1=i.a.h.s:1|50:1:1=i.a.h.zakr:0|40:1:1=i.a.h.rycarsk:0|80:1:3=i.a.p.leater:3|70:1:2=i.a.p.wood:1|70:1:1=i.a.p.bone:0|70:1:1=i.a.p.m:1|60:1:1=i.a.p.b:1|50:1:1=i.a.p.s:0|80:1:3=i.a.l.leater:2|60:1:1=i.a.l.wood:1|60:1:1=i.a.l.bone:0|60:1:1=i.a.l.m:1|50:1:1=i.a.l.b:1|50:1:1=i.a.l.s:0|90:1:4=i.a.s.wood:2|70:1:2=i.a.s.krugl:1|70:1:1=i.a.s.obit:1|60:1:1=i.a.s.m:0|60:1:1=i.a.s.b:0|50:1:1=i.a.s.s:0|50:1:1=i.a.s.big:1|50:1:1=i.a.s.osadn:0"
+        }
+    },
+    "description": "Вы в здании магазина брони, по стенам развешаны кольчуги и разнообразные щиты всех видов. На юге дверь во вторую часть здания, а на западе выход на улицу."
+}

@@ -1,0 +1,195 @@
+{
+    "id": "c.1.tron",
+    "name": "Замок Санкастар",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти к воротам",
+            "target": "c.1.gate"
+        }
+    ],
+    "objects": {
+        "n.o.castle3.590": {
+            "char": {
+                "name": "Shel [стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198528552,
+                "busy_until": 1198528558,
+                "target": "u.malqchisha",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.1.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 24,
+                "dmg_max": 35,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 35,
+                "dodge": 35,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": 30,
+                "magic_resist": 60,
+                "verb": "копьем",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.endless|u.endless||1198785259|1|1198527909",
+            "st": "|1"
+        },
+        "n.o.castle4.123": {
+            "char": {
+                "name": "Crivan [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198528552,
+                "busy_until": 1198528558,
+                "target": "u.malqchisha",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.1.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.endless|u.endless||1198785262|1|1198527909"
+        },
+        "n.o.castle4.571": {
+            "char": {
+                "name": "Kongil [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198528552,
+                "busy_until": 1198528558,
+                "target": "u.malqchisha",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.1.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.endless|u.endless||1198785263|1|1198527909"
+        },
+        "n.o.castle4.785": {
+            "char": {
+                "name": "Nadam [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198528552,
+                "busy_until": 1198528558,
+                "target": "u.malqchisha",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.1.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.endless|u.endless||1198785264|1|1198527909"
+        },
+        "n.o.castle4.553": {
+            "char": {
+                "name": "Songob [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": 1198528558,
+                "target": "u.malqchisha",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.1.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.endless|u.endless||1199044465|1|1198527909"
+        }
+    },
+    "description": "Большой прямоугольный зал, в дальнем конце которого стоит трон с высокой спинкой, целиком сделанный из крупных костей какого-то чудовища. К трону через весь зал ведет красная дорожка с золотой бахромой по краям."
+}

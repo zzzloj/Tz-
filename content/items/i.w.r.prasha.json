@@ -1,0 +1,15 @@
+{
+    "id": "i.w.r.prasha",
+    "kind": "weapon",
+    "name": "праща",
+    "price": 12,
+    "dmg_min": 2,
+    "dmg_max": 4,
+    "req": [
+        2,
+        3
+    ],
+    "speed": 5,
+    "verb": "пращой",
+    "ammo": "i.w.r.stone"
+}

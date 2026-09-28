@@ -1,0 +1,163 @@
+{
+    "id": "n.telemag",
+    "topics": {
+        "begin": {
+            "text": "Здравствуй незнакомец, чем могу помочь?",
+            "options": [
+                {
+                    "label": "Кто ты?",
+                    "goto": "who"
+                },
+                {
+                    "label": "Ничем, мне пора",
+                    "goto": "end"
+                }
+            ]
+        },
+        "end": "Прощай",
+        "op": {
+            "text": "Монстры появились не давно,когда одного злого правителя умертвил наш бог Ра,восстал ужасный бог Сэт и тут началось ужасное[брр]",
+            "options": [
+                {
+                    "label": "Говори не тяни!",
+                    "goto": "op2"
+                },
+                {
+                    "label": "Что это за место?",
+                    "goto": "who"
+                },
+                {
+                    "label": "Мне пора",
+                    "goto": "end"
+                }
+            ]
+        },
+        "op2": {
+            "text": "[Немного успокоившись] Ну значит вот восстал Сэт и одолел Ра не убил конечно бога убить нельзя но изгнал из наших земель,а мертвого правителя и его слуг превратил в живых мумий и устроил гонения на поклоняющихся богу Ра,немногим удалось покинуть Египет",
+            "options": [
+                {
+                    "label": "Удачи тебе, пока",
+                    "goto": "end"
+                }
+            ]
+        },
+        "who": {
+            "text": "Я один из учеников одного знаменитого мага из Египта! ",
+            "options": [
+                {
+                    "label": "Я хотел бы,отправиться в путешествие",
+                    "goto": "enter"
+                },
+                {
+                    "label": "А по подробнее?",
+                    "goto": "mage"
+                },
+                {
+                    "label": "А что ты еще можешь?",
+                    "goto": "umen"
+                },
+                {
+                    "label": "Ясно а что ты делаешь здесь?",
+                    "goto": "def"
+                },
+                {
+                    "label": "Это меня не интересует",
+                    "goto": "end"
+                }
+            ]
+        },
+        "umen": {
+            "text": "Я вообще то еще только ученик, но могу тебе поднять временно жизнь и броню, этому я неплохо научился,правда стоить это тебе будет: жизнь 200 и броня 150 монет.",
+            "options": [
+                {
+                    "label": "Подними мне броню",
+                    "goto": "kast1"
+                },
+                {
+                    "label": "Подними мне жизнь",
+                    "goto": "kast2"
+                },
+                {
+                    "label": "Нет я пока не готов",
+                    "goto": "begin"
+                },
+                {
+                    "label": "Не спасибо,удачи",
+                    "goto": "end"
+                }
+            ]
+        },
+        "def": {
+            "text": "Когда мы сбежали с помощью магии перемещения и попали сюда. Мой учитель все время проводит в таверне[просто не просыхает],а я устроился в Академию прислужником.",
+            "options": [
+                {
+                    "label": "А где находится твоя страна?",
+                    "goto": "def2"
+                },
+                {
+                    "label": "Ясно",
+                    "goto": "who"
+                }
+            ]
+        },
+        "def2": {
+            "text": "Далеко,далеко отсюда на юге,если так уж хочешь потерять свою голову могу тебя туда отправить, я знаю 1 заклинание,но мне нужен свиток а она у учителя,если сможешь его принести то я тебя отправлю на границу нашей страны,там более безопасно!",
+            "options": [
+                {
+                    "label": "Ясно",
+                    "goto": "who"
+                }
+            ]
+        },
+        "mage": {
+            "text": "Ну как я сказал я ученик великого мага из Египта,там щас очень тяжелые времена настали,ужасные монстры по всей стране, с которыми не под силу справиться даже моему учителю!",
+            "options": [
+                {
+                    "label": "Ясно,есть у меня еще пару вопросов",
+                    "goto": "who"
+                },
+                {
+                    "label": "Ясно,понятно",
+                    "goto": "end"
+                }
+            ]
+        },
+        "enter": {
+            "text": "А ты принес,свиток от моего учителя?. Без него,я ничего делать не буду!",
+            "options": [
+                {
+                    "label": "Да,я принёс,отправляй меня",
+                    "goto": "enternow"
+                },
+                {
+                    "label": "Нет а где взять этот свиток?",
+                    "goto": "join"
+                },
+                {
+                    "label": "У меня еще пара вопросов",
+                    "goto": "begin"
+                }
+            ]
+        },
+        "enternow": "eval: if(legacy_cmp(additem($loc,$login,\"\",\"i.q.telemag\",\"count\"))>0) {$title_v=\"[голос издалека]Прощай, <imja>,надеюсь тебе повезет.\"; addnpc($login,$loc,\"x3100x100\");$b=0;foreach (array_keys((array)($l_i[$loc])) as $i) if (isset($l_i[$loc][$i][\"owner\"])) {$owner=explode(\"|\",$l_i[$loc][$i][\"owner\"]); if ($owner[0]==$login) {$b=$i;break;}} if($i) {additem($loc,$login,\"\",\"i.q.telemag\",1,\"items\",\"items\",1,0,1);}} else $title_v=\"У тебя нет свитка\";",
+        "join": {
+            "text": "Сходи в таверну и поищи там моего учителя Картерана,поговори с ним, может он и даст тебе свиток,а так их можно достать только у нас на родине.",
+            "options": [
+                {
+                    "label": "Понятно",
+                    "goto": "who"
+                },
+                {
+                    "label": "Делать мне больше нефиг,прощай",
+                    "goto": "end"
+                },
+                {
+                    "label": "Хорошо жди меня",
+                    "goto": "end"
+                }
+            ]
+        },
+        "kast2": "eval: if(legacy_cmp(additem($loc,$login,\"\",\"i.money\",\"count\"))>199) { $title_v=\"Иди с миром\"; addjournal($loc,$login,\"Томрак: Lana Tas\"); addjournal($loc,\"all\",\"Томрак: Lana Tas\",$login); \t$char=explode(\"|\",$l_i[$loc][$login][\"char\"]);\t$skills=explode(\"|\",$l_i[$loc][$login][\"skills\"]);\t$char[2]=10+legacy_num(legacy_num($skills[0]))*10+10; if (strpos($l_i[$loc][$login][\"equip\"],\"..am\")!==false) $char[2]= legacy_num($char[2]) + legacy_num(5);\tif (strpos($l_i[$loc][$login][\"equip\"],\"..ne\")!==false) $char[2]= legacy_num($char[2]) + legacy_num(10);\tif (strpos($l_i[$loc][$login][\"equip\"],\"..on\")!==false) $char[2]= legacy_num($char[2]) - legacy_num(10); $char[5]=time();\t$l_i[$loc][$login][\"char\"]=implode(\"|\",(array)($char));\taddjournal($loc,$login,\"Макс.жизнь +10\");\tadditem($loc,$login,\"\",\"i.money\",200,\"items\",\"items\",1,0,1); } else $title_v=\"У тебя нет денег\";",
+        "kast1": "eval: if(legacy_cmp(additem($loc,$login,\"\",\"i.money\",\"count\"))>149) { $title_v=\"Иди с миром\"; addjournal($loc,$login,\"Томрак: Tana Kas\"); addjournal($loc,\"all\",\"Томрак: Tana Kas\",$login);\tcalcparam($loc,$login);\t// чтобы постоянно не увеличивать каждый раз, сбивает эффект заклинания Сила\r\n\t$war=explode(\"|\",$l_i[$loc][$login][\"war\"]);\r\n\t$skills=explode(\"|\",$l_i[$loc][$login][\"skills\"]);\r\n\t$war[5]= legacy_num($war[5]) + legacy_num(5);\r\n\t$l_i[$loc][$login][\"war\"]=implode(\"|\",(array)($war));\r\n\taddjournal($loc,$login,\"Броня +5\");\r\nadditem($loc,$login,\"\",\"i.money\",150,\"items\",\"items\",1,0,1); } else $title_v=\"У тебя нет денег\";"
+    }
+}

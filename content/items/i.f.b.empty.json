@@ -1,0 +1,8 @@
+{
+    "id": "i.f.b.empty",
+    "kind": "food",
+    "name": "пустая бутылка",
+    "price": 5,
+    "heal_hp": "",
+    "heal_mana": ""
+}

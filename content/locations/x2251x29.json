@@ -1,0 +1,75 @@
+{
+    "id": "x2251x29",
+    "name": "Предгорье",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на восток",
+            "target": "x2304x26"
+        },
+        {
+            "label": "на юг",
+            "target": "x2253x72"
+        },
+        {
+            "label": "на запад",
+            "target": "x2184x27"
+        }
+    ],
+    "objects": {
+        "n.c.wolf.a5": {
+            "char": {
+                "name": "вoлк",
+                "hp": 26,
+                "hp_max": 26,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "3:60:120:1198676800",
+                "aux_ts": "",
+                "trail": ":x2253x72"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 4,
+                "dmg_max": 8,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "клыкaми",
+                "exp_value": 12,
+                "ammo": "",
+                "respawn": "x2253x72:1200:1800"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.s.wolf",
+                    "count": 1
+                },
+                {
+                    "id": "i.h.k.wolf",
+                    "count": 1
+                },
+                {
+                    "id": "i.h.kog.wolf",
+                    "count": 1
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "description": "Горы тянутся с запада на восток"
+}

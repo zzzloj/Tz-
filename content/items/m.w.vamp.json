@@ -1,0 +1,15 @@
+{
+    "id": "m.w.vamp",
+    "kind": "spell",
+    "name": "Вампиризм",
+    "mana_cost": 16,
+    "level": 3,
+    "words": "Ar Fira Sen",
+    "power_min": 7,
+    "power_max": 22,
+    "needs_target": 1,
+    "criminals_only": 0,
+    "cast_time": 8,
+    "cooldown": 1200,
+    "description": "Отнимает у цели жизненную энергию и восстанавливает за счет ее здоровье заклинателя. Не действует на преступников и монстров."
+}

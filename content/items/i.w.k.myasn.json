@@ -1,0 +1,14 @@
+{
+    "id": "i.w.k.myasn",
+    "kind": "weapon",
+    "name": "нож мясника",
+    "price": 40,
+    "dmg_min": 2,
+    "dmg_max": 4,
+    "req": [
+        2
+    ],
+    "speed": 5,
+    "verb": "ножом",
+    "ammo": ""
+}

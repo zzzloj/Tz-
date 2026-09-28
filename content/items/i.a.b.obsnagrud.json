@@ -1,0 +1,12 @@
+{
+    "id": "i.a.b.obsnagrud",
+    "kind": "armor",
+    "name": "обсидиановый нагрудник",
+    "price": 700,
+    "armor": 11,
+    "req": [
+        5,
+        5,
+        2
+    ]
+}

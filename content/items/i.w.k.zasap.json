@@ -1,0 +1,14 @@
+{
+    "id": "i.w.k.zasap",
+    "kind": "weapon",
+    "name": "нож-засапожник",
+    "price": 85,
+    "dmg_min": 2,
+    "dmg_max": 8,
+    "req": [
+        2
+    ],
+    "speed": 4,
+    "verb": "ножом",
+    "ammo": ""
+}

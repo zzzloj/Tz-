@@ -1,0 +1,45 @@
+{
+    "id": "n.Lajma",
+    "char": {
+        "name": "Лайма",
+        "hp": 70,
+        "hp_max": 70,
+        "mana": 120,
+        "mana_max": 120,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 40,
+        "dmg_min": 1,
+        "dmg_max": 4,
+        "attack_delay": 3,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "кулaкaми",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.a.r.b1",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.r.b1"
+    ]
+}

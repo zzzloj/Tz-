@@ -1,0 +1,15 @@
+{
+    "id": "i.w.u.palica",
+    "kind": "weapon",
+    "name": "посох слепца",
+    "price": 22,
+    "dmg_min": 1,
+    "dmg_max": 6,
+    "req": [
+        0,
+        2,
+        3
+    ],
+    "speed": 5,
+    "verb": "магией"
+}

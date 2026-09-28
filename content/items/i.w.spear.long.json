@@ -1,0 +1,14 @@
+{
+    "id": "i.w.spear.long",
+    "kind": "weapon",
+    "name": "длинное копье",
+    "price": 170,
+    "dmg_min": 3,
+    "dmg_max": 11,
+    "req": [
+        4,
+        3
+    ],
+    "speed": 6,
+    "verb": "копьем"
+}

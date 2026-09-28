@@ -1,0 +1,83 @@
+{
+    "id": "x1140x543",
+    "name": "Магазин оружия",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x1118x548"
+        },
+        {
+            "label": "дверь на севере",
+            "target": "x1141x527"
+        }
+    ],
+    "objects": {
+        "n.Plant": {
+            "char": {
+                "name": "Плaнт",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": 1198673865,
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 11,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": 2,
+                "dodge": "",
+                "parry": 80,
+                "shield_armor": 6,
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "утpeннeй звeздoй",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1140x543:1:2"
+            },
+            "items": [
+                {
+                    "id": "i.a.b.skol",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.e.c",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.p.s",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.s.b",
+                    "count": 1
+                },
+                {
+                    "id": "i.w.u.moon",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.b.skol",
+                "i.a.e.c",
+                "i.a.p.s",
+                "i.a.s.b",
+                "i.w.u.moon"
+            ],
+            "bank": "90:1:8=i.w.k.per:6|80:1:5=i.w.k.raskl:5|70:1:2=i.w.k.stolov:2|70:1:2=i.w.k.razd:0|70:1:2=i.w.k.kor:2|70:1:2=i.w.k.korkinj:1|70:1:1=i.w.k.myasn:1|80:1:1=i.w.k.kortik:1|80:1:1=i.w.k.shir:1|70:1:3=i.w.k.kinj:2|70:1:2=i.w.k.long:2|80:1:1=i.w.k.tesak:1|70:1:1=i.w.k.hunter:0|70:1:2=i.w.k.lonjkinj:1|60:1:1=i.w.k.zasap:1|50:1:1=i.w.k.battle:0|40:1:1=i.w.k.shtyk:0|90:1:2=i.w.u.shtyk:1|90:1:4=i.w.u.palka:1|80:1:4=i.w.u.dubina:1|70:1:4=i.w.u.dubinabig:0|90:1:4=i.w.u.palica:2|80:1:2=i.w.u.kuvalda:2|70:1:2=i.w.u.molot:2|60:1:1=i.w.u.bulava:1|50:1:1=i.w.u.moon:0|90:1:4=i.w.t.toporik:3|90:1:2=i.w.t.plotnik:1|80:1:2=i.w.t.lesnik:2|70:1:2=i.w.t.battle:1|70:1:1=i.w.t.sekira:0|50:1:1=i.w.t.alebarda:0|70:1:4=i.w.spear.short:1|60:1:4=i.w.spear.long:1|90:1:4=i.w.s.short:2|90:1:2=i.w.s.polutorn:2|90:1:4=i.w.s.shpaga:1|80:1:2=i.w.s.shir:1|80:1:2=i.w.s.sable:1|80:1:1=i.w.s.kriv:0|70:1:1=i.w.s.samur:0|70:1:2=i.w.s.long:0|60:1:1=i.w.s.yatagan:0|60:1:1=i.w.s.dvuruchn:0|40:1:1=i.w.s.flamberg:0|80:1:1=i.w.s.glefa:0"
+        }
+    },
+    "description": "Вы в здании магазина оружия, в углу к стене прислонены несколько копий и алебард, на стенах развешаны гобелены, изображающие великие сражения, а на полках шкафов разложены мечи и другое оружие. На севере дверь в другую часть здания, на западе выход на улицу."
+}

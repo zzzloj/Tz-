@@ -1,0 +1,15 @@
+{
+    "id": "m.buket",
+    "kind": "spell",
+    "name": "Букет цветов",
+    "mana_cost": 48,
+    "level": 5,
+    "words": "Lan Qiu Ence",
+    "power_min": 0,
+    "power_max": 0,
+    "needs_target": 0,
+    "criminals_only": 0,
+    "cast_time": 10,
+    "cooldown": 120,
+    "description": "Создает один из случайных видов цветов, которые можно объединять в букеты"
+}

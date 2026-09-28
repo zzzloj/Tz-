@@ -1,0 +1,15 @@
+{
+    "id": "i.w.u.molot",
+    "kind": "weapon",
+    "name": "болотный посох",
+    "price": 80,
+    "dmg_min": 5,
+    "dmg_max": 6,
+    "req": [
+        0,
+        4,
+        4
+    ],
+    "speed": 6,
+    "verb": "магией"
+}

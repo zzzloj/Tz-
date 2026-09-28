@@ -1,0 +1,77 @@
+{
+    "id": "x628x171",
+    "name": "Руины",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на юг в руины",
+            "target": "x628x200"
+        }
+    ],
+    "objects": {
+        "i.oj.m": "медное ожерелье|1|0",
+        "n.c.skeletlord.ruin": {
+            "char": {
+                "name": "cкeлeт-лopд",
+                "hp": 42,
+                "hp_max": 42,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 8,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": 2,
+                "dodge": 5,
+                "parry": 40,
+                "shield_armor": 4,
+                "magic_dodge": 20,
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "мeчoм",
+                "exp_value": 14,
+                "ammo": "",
+                "respawn": "x628x171:600:900"
+            },
+            "items": [
+                {
+                    "id": "i.w.s.polutorn",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.s.wood",
+                    "count": 1
+                },
+                {
+                    "id": "i.money",
+                    "count": 19
+                }
+            ],
+            "equip": [
+                "i.w.s.polutorn",
+                "i.a.s.wood"
+            ],
+            "osvej": [
+                {
+                    "id": "i.h.bone",
+                    "count": 2
+                }
+            ]
+        }
+    },
+    "timers": {
+        "1198657722": "i.oj.m|0|1|600|1200"
+    },
+    "description": "Продравшись скозь колючий кустарник, вы ничего интересного не обнаруживаете - остатки каких-то маленьких коморок ровными рядами и изображения на камнях нелепых устройств с направленными к земле то ли палками, то ли трубками. \n"
+}

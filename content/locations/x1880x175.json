@@ -1,0 +1,70 @@
+{
+    "id": "x1880x175",
+    "name": "Предгорье",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x1880x144"
+        },
+        {
+            "label": "на восток",
+            "target": "x1920x173"
+        },
+        {
+            "label": "на юг",
+            "target": "x1879x217"
+        },
+        {
+            "label": "на запад",
+            "target": "x1840x190"
+        }
+    ],
+    "objects": {
+        "n.c.demon.2": {
+            "char": {
+                "name": "демон",
+                "hp": 110,
+                "hp_max": 110,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": 1198676606,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "1:60:120:1198676865",
+                "aux_ts": "",
+                "trail": ":x1799x189:x1840x190"
+            },
+            "war": {
+                "hit_chance": 100,
+                "dmg_min": 15,
+                "dmg_max": 22,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": 90,
+                "magic_resist": 30,
+                "verb": "мaгиeй",
+                "exp_value": 10,
+                "ammo": "",
+                "respawn": "x1799x189:1200:1800"
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 100
+                },
+                {
+                    "id": "i.f.b.health",
+                    "count": 1
+                }
+            ]
+        }
+    }
+}

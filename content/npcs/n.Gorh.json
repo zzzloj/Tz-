@@ -1,0 +1,44 @@
+{
+    "id": "n.Gorh",
+    "char": {
+        "name": "opк шаман Горх",
+        "hp": 130,
+        "hp_max": 130,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 100,
+        "dmg_min": 11,
+        "dmg_max": 24,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "магией",
+        "exp_value": 20,
+        "ammo": "",
+        "respawn": ""
+    },
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 90,
+            "min": 8,
+            "max": 18
+        }
+    ]
+}

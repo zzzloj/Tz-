@@ -1,0 +1,50 @@
+{
+    "id": "n.castleLanset",
+    "char": {
+        "name": "Лансет [стpaжник]",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 100,
+        "mana_max": 100,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 95,
+        "dmg_min": 11,
+        "dmg_max": 28,
+        "attack_delay": 6,
+        "is_ranged": "",
+        "armor": 20,
+        "dodge": 10,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "кoпьeм",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": "x902x254:30:60"
+    },
+    "items": [
+        {
+            "id": "i.a.b.heavykol",
+            "count": 1
+        },
+        {
+            "id": "i.w.spear.long",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.b.heavykol",
+        "i.w.spear.long"
+    ]
+}

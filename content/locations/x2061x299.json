@@ -1,0 +1,160 @@
+{
+    "id": "x2061x299",
+    "name": "Капитолий",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти из комнаты",
+            "target": "x2088x299"
+        }
+    ],
+    "objects": {
+        "i.s.mehs": "сломаный механизм|0|",
+        "n.ginzh": {
+            "char": {
+                "name": "Гном-инженер",
+                "hp": 1000,
+                "hp_max": 1000,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 1000,
+                "dmg_min": 1000,
+                "dmg_max": 1000,
+                "attack_delay": "",
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "мантировкой",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x2061x299:60:300"
+            },
+            "spec": 1198691847
+        },
+        "n.c.gholl.7": {
+            "char": {
+                "name": "гхолл",
+                "hp": 80,
+                "hp_max": 80,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 4,
+                "dmg_max": 26,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 35,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "когтями",
+                "exp_value": 18,
+                "ammo": "",
+                "respawn": "x2061x299:1200:1800"
+            },
+            "items": [
+                {
+                    "id": "i.med.b",
+                    "count": 1
+                },
+                {
+                    "id": "i.oj.z",
+                    "count": 1
+                },
+                {
+                    "id": "i.ring.m",
+                    "count": 1
+                },
+                {
+                    "id": "i.q.bdv",
+                    "count": 1
+                }
+            ]
+        },
+        "n.c.gholl.6": {
+            "char": {
+                "name": "гхолл",
+                "hp": 80,
+                "hp_max": 80,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 4,
+                "dmg_max": 26,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 35,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "когтями",
+                "exp_value": 18,
+                "ammo": "",
+                "respawn": "x2061x299:1200:1800"
+            },
+            "items": [
+                {
+                    "id": "i.oj.z",
+                    "count": 1
+                },
+                {
+                    "id": "i.ring.b",
+                    "count": 1
+                },
+                {
+                    "id": "i.ring.m",
+                    "count": 1
+                },
+                {
+                    "id": "i.q.bdv",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "timers": {
+        "1198672753": "i.q.chasha|0|1|7200|14400"
+    },
+    "description": "Справа и слева видны остатки какого-то сооружения из дерева, которое, видимо, было сломано и вынесено из здания. Остались лишь подпорки и обрывки железных цепей"
+}

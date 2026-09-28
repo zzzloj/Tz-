@@ -1,0 +1,68 @@
+{
+    "id": "n.ginzh",
+    "topics": {
+        "begin": {
+            "text": "Привет <imja>! Что привело тебя в эти края?",
+            "options": [
+                {
+                    "label": "Что ты тут делаешь?",
+                    "goto": "who"
+                },
+                {
+                    "label": "eval: if(legacy_cmp(additem($loc,$login,\"\",\"i.q.zk\",\"count\"))>0 && legacy_cmp(additem($loc,$login,\"\",\"i.q.zp\",\"count\"))>0 && legacy_cmp(additem($loc,$login,\"\",\"i.q.bdv\",\"count\"))>0) $title_v=\"Вот нужные запчасти\"; else $title_v=\"\";",
+                    "goto": "spec"
+                },
+                {
+                    "label": "Да так, гуляю...",
+                    "goto": "end"
+                }
+            ]
+        },
+        "end": "Удачи тебе!",
+        "who": {
+            "text": "Я пытаюсь востановить механизм подачи вина Но мне не хватает деталей.",
+            "options": [
+                {
+                    "label": "Каких деталей?",
+                    "goto": "vorc"
+                }
+            ]
+        },
+        "vorc": {
+            "text": "Если бы я знал... У меня даже нет чертежей.",
+            "options": [
+                {
+                    "label": "Как же ты работаешь без них?",
+                    "goto": "vorc2"
+                }
+            ]
+        },
+        "vorc2": {
+            "text": "Методом научного тыка, только все равно ничего не получается.",
+            "options": [
+                {
+                    "label": "Может я чем помогу?",
+                    "goto": "qv"
+                }
+            ]
+        },
+        "qv": {
+            "text": "Врятли. Если бы у меня были нужные детали, я бы сам все сделал. Впрочем, если найдешь все необходимое, не забудь прихватить бутылку для вина...",
+            "options": [
+                {
+                    "label": "Ясно..",
+                    "goto": "end"
+                }
+            ]
+        },
+        "spec": {
+            "text": "eval: if(time()>$l_i[$loc][$speak][\"spec\"]) {$l_i[$loc][$speak][\"spec\"]=time()+rand(18000,36000); $title_v=\"Заработало! Вот, держи. Думаю такого вина ты еще не пил.\";additem($loc,$login,\"\",\"i.q.zp\",1); additem($loc,$login,\"\",\"i.q.zk\",1); additem($loc,$login,\"\",\"i.q.bdv\",1); additem($loc,\"\",$login,\"i.f.b.kv\",20);} else $title_v=\"Извени, но я еще не готов к запуску механизма. приходи через. \".round(legacy_num((legacy_num($l_i[$loc][$speak][\"spec\"])-time())/60+1)).\" минут.\";",
+            "options": [
+                {
+                    "label": "Угу, удачи!",
+                    "goto": "end"
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "id": "m.w.firestreem",
+    "kind": "spell",
+    "name": "Струя пламени",
+    "mana_cost": 22,
+    "level": 4,
+    "words": "Farta Luz Senn",
+    "power_min": 22,
+    "power_max": 32,
+    "needs_target": 1,
+    "criminals_only": 0,
+    "cast_time": 8,
+    "cooldown": 600,
+    "description": "Наносит урон огнем"
+}

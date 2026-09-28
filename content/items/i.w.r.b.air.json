@@ -1,0 +1,15 @@
+{
+    "id": "i.w.r.b.air",
+    "kind": "weapon",
+    "name": "лук воздуха",
+    "price": 600,
+    "dmg_min": 1,
+    "dmg_max": 10,
+    "req": [
+        3,
+        3
+    ],
+    "speed": 5,
+    "verb": "из лука воздуха",
+    "ammo": ""
+}

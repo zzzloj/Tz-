@@ -1,0 +1,8 @@
+{
+    "id": "i.f.bread",
+    "kind": "food",
+    "name": "хлеб",
+    "price": 6,
+    "heal_hp": 5,
+    "heal_mana": ""
+}

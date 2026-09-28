@@ -1,0 +1,110 @@
+{
+    "id": "x2362x882",
+    "name": "Подземелье",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на восток",
+            "target": "x2409x883"
+        },
+        {
+            "label": "на запад",
+            "target": "x2329x882"
+        }
+    ],
+    "objects": {
+        "n.c.darkmage.10": {
+            "char": {
+                "name": "темный маг",
+                "hp": 77,
+                "hp_max": 120,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198673188,
+                "busy_until": 1198673193,
+                "target": "u.strah_feon",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:60:120:1198673273",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 18,
+                "dmg_max": 26,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 5,
+                "dodge": 10,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 20,
+                "magic_parry": 70,
+                "magic_resist": 60,
+                "verb": "магией",
+                "exp_value": 40,
+                "ammo": "",
+                "respawn": "x2362x882:1800:2400"
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 58
+                },
+                {
+                    "id": "i.m.w.lighting",
+                    "count": 2
+                }
+            ]
+        },
+        "n.c.darkpal.11": {
+            "char": {
+                "name": "темный палладин",
+                "hp": 180,
+                "hp_max": 180,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:60:120:1198673285",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 11,
+                "dmg_max": 26,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": 26,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 20,
+                "magic_parry": 80,
+                "magic_resist": 40,
+                "verb": "мeчoм",
+                "exp_value": 50,
+                "ammo": "",
+                "respawn": "x2362x882:1800:2400"
+            },
+            "items": [
+                {
+                    "id": "i.w.s.dvuruchn",
+                    "count": 1
+                },
+                {
+                    "id": "i.m.s.demon",
+                    "count": 2
+                }
+            ],
+            "equip": [
+                "i.w.s.dvuruchn"
+            ]
+        }
+    }
+}

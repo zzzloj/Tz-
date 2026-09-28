@@ -1,0 +1,14 @@
+{
+    "id": "i.w.s.kriv",
+    "kind": "weapon",
+    "name": "кривой меч",
+    "price": 55,
+    "dmg_min": 3,
+    "dmg_max": 8,
+    "req": [
+        2
+    ],
+    "speed": 5,
+    "verb": "мечом",
+    "ammo": ""
+}

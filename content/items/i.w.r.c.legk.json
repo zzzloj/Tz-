@@ -1,0 +1,14 @@
+{
+    "id": "i.w.r.c.legk",
+    "kind": "weapon",
+    "name": "легкий арбалет",
+    "price": 80,
+    "dmg_min": 5,
+    "dmg_max": 11,
+    "req": [
+        2
+    ],
+    "speed": 6,
+    "verb": "из арбалета",
+    "ammo": "i.bolt"
+}

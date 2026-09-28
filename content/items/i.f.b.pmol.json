@@ -1,0 +1,8 @@
+{
+    "id": "i.f.b.pmol",
+    "kind": "food",
+    "name": "птичье молоко",
+    "price": 1,
+    "heal_hp": 2,
+    "heal_mana": 2
+}

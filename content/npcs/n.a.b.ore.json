@@ -1,0 +1,50 @@
+{
+    "id": "n.a.b.ore",
+    "char": {
+        "name": "opeл",
+        "hp": 18,
+        "hp_max": 18,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": 4,
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 95,
+        "dmg_min": 0,
+        "dmg_max": 8,
+        "attack_delay": 3,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 15,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "клювoм",
+        "exp_value": 3,
+        "ammo": "",
+        "respawn": ""
+    },
+    "osvej": [
+        {
+            "id": "i.h.kog.orel",
+            "count": 1
+        },
+        {
+            "id": "i.h.p.orel",
+            "count": 6
+        },
+        {
+            "id": "i.f.meat",
+            "count": 1
+        }
+    ]
+}

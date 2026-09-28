@@ -1,0 +1,75 @@
+{
+    "id": "n.c.darkinkv",
+    "char": {
+        "name": "темный инквизитор",
+        "hp": 350,
+        "hp_max": 350,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 95,
+        "dmg_min": 12,
+        "dmg_max": 32,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": 15,
+        "dodge": 20,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": 20,
+        "magic_parry": 50,
+        "magic_resist": 90,
+        "verb": "магией",
+        "exp_value": 90,
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.q.pdeath",
+            "count": 1
+        },
+        {
+            "id": "i.a.e.c",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.e.c"
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 90,
+            "min": 40,
+            "max": 60
+        },
+        {
+            "id": "i.m.s.demon",
+            "chance": 80,
+            "min": 1,
+            "max": 3
+        },
+        {
+            "id": "i.r.w.firebolt",
+            "chance": 60,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.w.u.pmage",
+            "chance": 50,
+            "min": 0,
+            "max": 1
+        }
+    ]
+}

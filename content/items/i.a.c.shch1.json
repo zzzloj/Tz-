@@ -1,0 +1,13 @@
+{
+    "id": "i.a.c.shch1",
+    "kind": "armor",
+    "name": "сапоги шороха",
+    "price": 2000,
+    "armor": 2,
+    "req": [
+        5,
+        5,
+        2
+    ],
+    "unknown_4": 0
+}

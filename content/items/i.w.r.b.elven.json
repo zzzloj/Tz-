@@ -1,0 +1,15 @@
+{
+    "id": "i.w.r.b.elven",
+    "kind": "weapon",
+    "name": "эльфийский лук",
+    "price": 300,
+    "dmg_min": 1,
+    "dmg_max": 20,
+    "req": [
+        2,
+        4
+    ],
+    "speed": 3,
+    "verb": "из лука",
+    "ammo": "i.arrow"
+}

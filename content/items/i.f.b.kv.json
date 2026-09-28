@@ -1,0 +1,8 @@
+{
+    "id": "i.f.b.kv",
+    "kind": "food",
+    "name": "крепленое вино",
+    "price": 300,
+    "heal_hp": 40,
+    "heal_mana": 40
+}

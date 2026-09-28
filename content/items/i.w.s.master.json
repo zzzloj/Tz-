@@ -1,0 +1,14 @@
+{
+    "id": "i.w.s.master",
+    "kind": "weapon",
+    "name": "адамантовый меч",
+    "price": 5,
+    "dmg_min": 6,
+    "dmg_max": 15,
+    "req": [
+        5,
+        4
+    ],
+    "speed": 6,
+    "verb": "мечом"
+}

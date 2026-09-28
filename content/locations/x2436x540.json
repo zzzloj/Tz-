@@ -1,0 +1,57 @@
+{
+    "id": "x2436x540",
+    "name": "Лагерь разбойников",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x2434x505"
+        },
+        {
+            "label": "на запад",
+            "target": "x2385x540"
+        }
+    ],
+    "objects": {
+        "n.Vilqyam": {
+            "char": {
+                "name": "Вильям",
+                "hp": 60,
+                "hp_max": 60,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 90,
+                "dmg_min": 2,
+                "dmg_max": 6,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x2436x540:300:600"
+            },
+            "bank": "90:1:3=i.set.leska:1|90:1:1=i.fishman:1|90:1:1=i.w.t.toporik:1"
+        }
+    },
+    "timers": {
+        "1198642633": "n.a.sheep.lr|7200:14400"
+    },
+    "description": "Вы подошли к костру, над которым булькает котелок, подвешенный на треноге из толстых, но уже обгоревших веток"
+}

@@ -1,0 +1,11 @@
+{
+    "id": "i.a.c.twar",
+    "kind": "armor",
+    "name": "боевые сапоги",
+    "price": 1000,
+    "armor": 2,
+    "req": [
+        5,
+        5
+    ]
+}

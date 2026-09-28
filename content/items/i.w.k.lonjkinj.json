@@ -1,0 +1,15 @@
+{
+    "id": "i.w.k.lonjkinj",
+    "kind": "weapon",
+    "name": "длинный кинжал",
+    "price": 75,
+    "dmg_min": 2,
+    "dmg_max": 8,
+    "req": [
+        3,
+        2
+    ],
+    "speed": 5,
+    "verb": "кинжалом",
+    "ammo": ""
+}

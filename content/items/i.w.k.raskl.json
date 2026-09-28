@@ -1,0 +1,12 @@
+{
+    "id": "i.w.k.raskl",
+    "kind": "weapon",
+    "name": "раскладной нож",
+    "price": 12,
+    "dmg_min": 1,
+    "dmg_max": 2,
+    "req": "",
+    "speed": 4,
+    "verb": "ножом",
+    "ammo": ""
+}

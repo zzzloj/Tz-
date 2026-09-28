@@ -1,0 +1,11 @@
+{
+    "id": "i.w.t.toporik",
+    "kind": "weapon",
+    "name": "топорик",
+    "price": 15,
+    "dmg_min": 2,
+    "dmg_max": 4,
+    "req": "",
+    "speed": 4,
+    "verb": "топориком"
+}

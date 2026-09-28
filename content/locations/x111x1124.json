@@ -1,0 +1,202 @@
+{
+    "id": "x111x1124",
+    "name": "Цитадель",
+    "zone": 2,
+    "exits": [
+        {
+            "label": "на юг",
+            "target": "x114x1150"
+        },
+        {
+            "label": "на запад",
+            "target": "x73x1124"
+        },
+        {
+            "label": "на восток",
+            "target": "x145x1124"
+        }
+    ],
+    "objects": {
+        "i.s.nakov": "наковальня|1|0",
+        "n.t.bankir": {
+            "char": {
+                "name": "Антуан [банкир]",
+                "hp": 75,
+                "hp_max": 75,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198638218,
+                "busy_until": 1198638216,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": 1198676414,
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 14,
+                "dmg_max": 20,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": 10,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "мечом",
+                "exp_value": 15,
+                "ammo": "",
+                "respawn": "x111x1124:300:900:1"
+            },
+            "bank": "70:1:2=i.kirka:2|60:1:1=i.set.shlif:1|40:1:1=i.set.molot:0|40:1:1=i.set.plotn:0|90:1:4=i.set.leska:0",
+            "items": null,
+            "equip": null,
+            "osvej": null
+        },
+        "n.t.4": {
+            "char": {
+                "name": "тамплиер",
+                "hp": 75,
+                "hp_max": 75,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198645813,
+                "busy_until": 1198638253,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:30:60:1198675946",
+                "aux_ts": "",
+                "trail": ":x114x1150"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 14,
+                "dmg_max": 20,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": 10,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "мечом",
+                "exp_value": 15,
+                "ammo": "",
+                "respawn": "x114x1150:60:180"
+            }
+        },
+        "n.t.7": {
+            "char": {
+                "name": "тамплиер",
+                "hp": 75,
+                "hp_max": 75,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:30:60:1198675990",
+                "aux_ts": "",
+                "trail": ":x114x1150"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 5,
+                "dmg_max": 22,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": 5,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "магией",
+                "exp_value": 20,
+                "ammo": "",
+                "respawn": "x114x1150:60:180"
+            }
+        },
+        "n.t.9": {
+            "char": {
+                "name": "тамплиер",
+                "hp": 75,
+                "hp_max": 75,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:30:60:1198675977",
+                "aux_ts": "",
+                "trail": ":x114x1150"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 5,
+                "dmg_max": 22,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": 5,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "магией",
+                "exp_value": 20,
+                "ammo": "",
+                "respawn": "x114x1150:60:180"
+            }
+        },
+        "n.t.3": {
+            "char": {
+                "name": "тамплиер",
+                "hp": 75,
+                "hp_max": 75,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198645813,
+                "busy_until": 1198638253,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:30:60:1198675983",
+                "aux_ts": "",
+                "trail": ":x114x1150"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 5,
+                "dmg_max": 22,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": 5,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "магией",
+                "exp_value": 20,
+                "ammo": "",
+                "respawn": "x114x1150:60:180"
+            }
+        }
+    },
+    "description": "У стены участок площади с двух сторон отгорожен деревянным забором по пояс. С одной стороны стоит одноэтажное здание с запертой дверью, служащее видимо в качестве склада"
+}

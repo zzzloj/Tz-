@@ -1,0 +1,15 @@
+{
+    "id": "i.w.u.bulava",
+    "kind": "weapon",
+    "name": "посох дорог",
+    "price": 55,
+    "dmg_min": 4,
+    "dmg_max": 7,
+    "req": [
+        0,
+        0,
+        4
+    ],
+    "speed": 6,
+    "verb": "магией"
+}

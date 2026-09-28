@@ -16,6 +16,7 @@ run() { local name="$1"; shift; if "$@"; then echo "--- $name: passed"; else ech
 
 step "lint"
 run lint sh tests/lint.sh
+run content sh tests/content.sh
 
 step "player scenario and crawl (current commit)"
 unset TZ_CLOCK_FILE

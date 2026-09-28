@@ -1,0 +1,55 @@
+{
+    "id": "n.Batist",
+    "char": {
+        "name": "Бaтиcт",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 100,
+        "mana_max": 100,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 4,
+        "dmg_max": 11,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "кулaкaми",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": "x894x89:60:120"
+    },
+    "items": [
+        {
+            "id": "i.a.w.j",
+            "count": 1
+        },
+        {
+            "id": "i.a.c.k1",
+            "count": 1
+        },
+        {
+            "id": "i.a.r.j",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.w.j",
+        "i.a.c.k1",
+        "i.a.r.j"
+    ]
+}

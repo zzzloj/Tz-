@@ -1,0 +1,36 @@
+{
+    "id": "n.telemage",
+    "char": {
+        "name": "Картеран[пьяный маг]",
+        "hp": 120,
+        "hp_max": 120,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 100,
+        "dmg_min": 8,
+        "dmg_max": 38,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "магией",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": "x1098x542:1:2"
+    }
+}

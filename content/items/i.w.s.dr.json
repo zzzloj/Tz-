@@ -1,0 +1,11 @@
+{
+    "id": "i.w.s.dr",
+    "kind": "weapon",
+    "name": "волшебный меч",
+    "price": 1500,
+    "dmg_min": 4,
+    "dmg_max": 7,
+    "req": "",
+    "speed": 6,
+    "verb": "мечом"
+}

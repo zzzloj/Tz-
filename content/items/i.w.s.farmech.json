@@ -1,0 +1,14 @@
+{
+    "id": "i.w.s.farmech",
+    "kind": "weapon",
+    "name": "меч фараона",
+    "price": 420,
+    "dmg_min": 10,
+    "dmg_max": 18,
+    "req": [
+        5,
+        3
+    ],
+    "speed": 7,
+    "verb": "мечом"
+}

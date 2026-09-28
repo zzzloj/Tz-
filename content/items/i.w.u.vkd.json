@@ -1,0 +1,14 @@
+{
+    "id": "i.w.u.vkd",
+    "kind": "weapon",
+    "name": "недоделанный посох",
+    "price": 420,
+    "dmg_min": 1,
+    "dmg_max": 1,
+    "req": [
+        5,
+        5
+    ],
+    "speed": 5,
+    "verb": "магией"
+}

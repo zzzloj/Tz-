@@ -1,0 +1,206 @@
+{
+    "id": "c.1.gate",
+    "name": "Замок Санкастар*SON_of_GOD*():u.telhar:{1198682108}",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти из замка",
+            "target": "c.1.in"
+        },
+        {
+            "label": "тронный зал",
+            "target": "c.1.tron"
+        },
+        {
+            "label": "общий зал",
+            "target": "c.1.main"
+        },
+        {
+            "label": "кладовая",
+            "target": "c.1.sklad"
+        }
+    ],
+    "objects": {
+        "n.o.castle4.284": {
+            "char": {
+                "name": "Gemar [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": 1198590276,
+                "target": "u.malqchisha",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.him1|u.him1||1198981823|1|1198551814"
+        },
+        "n.o.castle4.710": {
+            "char": {
+                "name": "Aeson [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": 1198590276,
+                "target": "u.malqchisha",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.him1|u.him1||1198981829|1|1198551825"
+        },
+        "n.o.castle3.237": {
+            "char": {
+                "name": "Zahgo [стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": 1198590276,
+                "target": "u.malqchisha",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 24,
+                "dmg_max": 35,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 35,
+                "dodge": 35,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": 30,
+                "magic_resist": 60,
+                "verb": "копьем",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.him1|u.him1||1198981842|1|1198551836"
+        },
+        "n.o.castle3.378": {
+            "char": {
+                "name": "Shna [стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": 1198590276,
+                "target": "u.malqchisha",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 24,
+                "dmg_max": 35,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 35,
+                "dodge": 35,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": 30,
+                "magic_resist": 60,
+                "verb": "копьем",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.him1|u.him1||1198981847|1|1198551847"
+        },
+        "n.o.castle3.371": {
+            "char": {
+                "name": "Ocrannog [стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": 1198590276,
+                "target": "u.malqchisha",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 24,
+                "dmg_max": 35,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 35,
+                "dodge": 35,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": 30,
+                "magic_resist": 60,
+                "verb": "копьем",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.him1|u.him1||1198981852|1|1198551862"
+        }
+    },
+    "description": "Внутренний двор представляет собой каменную площадку с темными арками, ведущими в тронный зал, общий зал и в кладовую."
+}

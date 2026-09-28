@@ -1,0 +1,15 @@
+{
+    "id": "m.w.a.godanger",
+    "kind": "spell",
+    "name": "Гнев богов",
+    "mana_cost": 18,
+    "level": 5,
+    "words": "Kal Rans Bet",
+    "power_min": 16,
+    "power_max": 26,
+    "needs_target": 0,
+    "criminals_only": 1,
+    "cast_time": 11,
+    "cooldown": 300,
+    "description": "Вызывает гнев богов на всех преступников в округе"
+}

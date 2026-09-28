@@ -1,0 +1,13 @@
+{
+    "id": "i.a.l.ogr",
+    "kind": "armor",
+    "name": "ноги огра",
+    "price": 55,
+    "armor": 2,
+    "req": [
+        0,
+        4,
+        5
+    ],
+    "unknown_4": 0
+}

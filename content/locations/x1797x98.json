@@ -1,0 +1,53 @@
+{
+    "id": "x1797x98",
+    "name": "Ущелье",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на юг",
+            "target": "x1797x129"
+        },
+        {
+            "label": "на запад",
+            "target": "x1446x60"
+        }
+    ],
+    "objects": {
+        "n.Arres": {
+            "char": {
+                "name": "Аррес",
+                "hp": 70,
+                "hp_max": 70,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 7,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1797x98:10:60"
+            }
+        }
+    },
+    "description": "Ущелье тянется на юг, на западе проход в горах"
+}

@@ -1,0 +1,70 @@
+{
+    "id": "x1958x443",
+    "name": "Дорога",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север по дороге",
+            "target": "x1947x405"
+        },
+        {
+            "label": "на юг по дороге",
+            "target": "x1958x480"
+        },
+        {
+            "label": "на восток",
+            "target": "x2016x441"
+        },
+        {
+            "label": "на запад",
+            "target": "x1888x441"
+        }
+    ],
+    "objects": {
+        "n.c.demon.a1": {
+            "char": {
+                "name": "демон",
+                "hp": 110,
+                "hp_max": 110,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:60:120:1198674062",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 100,
+                "dmg_min": 15,
+                "dmg_max": 22,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": 90,
+                "magic_resist": 30,
+                "verb": "мaгиeй",
+                "exp_value": 10,
+                "ammo": "",
+                "respawn": "x1958x443:1200:1800"
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 86
+                },
+                {
+                    "id": "i.f.b.health",
+                    "count": 1
+                }
+            ]
+        }
+    }
+}

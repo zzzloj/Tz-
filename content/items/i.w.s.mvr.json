@@ -1,0 +1,14 @@
+{
+    "id": "i.w.s.mvr",
+    "kind": "weapon",
+    "name": "меч времен",
+    "price": 500,
+    "dmg_min": 11,
+    "dmg_max": 19,
+    "req": [
+        5,
+        3
+    ],
+    "speed": 6,
+    "verb": "мечом"
+}

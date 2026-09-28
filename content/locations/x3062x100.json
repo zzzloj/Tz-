@@ -1,0 +1,21 @@
+{
+    "id": "x3062x100",
+    "name": "оазис",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на юг",
+            "target": "x3061x100"
+        },
+        {
+            "label": "на запад",
+            "target": "x3063x100"
+        }
+    ],
+    "objects": {
+        "i.s.d.n.c.peslev.2.96": "труп (песчаный лев)|1|1198678101||i.h.s.peslev:1,i.f.meat:8,i.h.kog.kogti:20",
+        "i.s.d.n.c.peslev.1.49": "труп (песчаный лев)|1|1198678126||i.h.s.peslev:1,i.f.meat:8,i.h.kog.kogti:20",
+        "i.s.d.n.c.peslev.3.42": "труп (песчаный лев)|1|1198678126||i.h.s.peslev:1,i.f.meat:8,i.h.kog.kogti:20",
+        "i.s.d.n.c.peslev.4.60": "труп (песчаный лев)|1|1198678148||i.h.s.peslev:1,i.f.meat:8,i.h.kog.kogti:20"
+    }
+}

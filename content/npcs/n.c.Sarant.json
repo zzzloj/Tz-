@@ -1,0 +1,65 @@
+{
+    "id": "n.c.Sarant",
+    "char": {
+        "name": "Сapaнт-зомби",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 14,
+        "dmg_max": 18,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "тoпopoм",
+        "exp_value": 20,
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.w.t.plotnik",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.w.t.plotnik"
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 90,
+            "min": 12,
+            "max": 24
+        },
+        {
+            "id": "i.a.s.dub_sarant_..ob",
+            "chance": 3,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.w.s.dvtop_sarant_..me..az",
+            "chance": 4,
+            "min": 0,
+            "max": 1
+        }
+    ]
+}

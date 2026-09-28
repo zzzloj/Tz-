@@ -1,0 +1,50 @@
+{
+    "id": "x33x1252",
+    "name": "Пиратская шхуна",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "сойти на берег",
+            "target": "x70x1252"
+        }
+    ],
+    "objects": {
+        "n.capp2": {
+            "char": {
+                "name": "Капитан Арамис",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 8,
+                "dmg_max": 22,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": 2,
+                "dodge": 10,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "шпагой",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x33x1252:30:60:1"
+            },
+            "qv": 1198675963
+        }
+    },
+    "description": "Это больше похоже на рыбацкий баркас, переделанный под грузовой корабль. На реях полощут пирамидальные, на восточный манер, паруса из темно-красной материи с черными горизонтальными полосами"
+}

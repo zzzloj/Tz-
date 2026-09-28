@@ -1,0 +1,8 @@
+{
+    "id": "i.f.apple",
+    "kind": "food",
+    "name": "яблоко",
+    "price": 2,
+    "heal_hp": 2,
+    "heal_mana": ""
+}

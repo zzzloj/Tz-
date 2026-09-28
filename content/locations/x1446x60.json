@@ -1,0 +1,113 @@
+{
+    "id": "x1446x60",
+    "name": "Проход в горах",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на восток",
+            "target": "x1797x98"
+        },
+        {
+            "label": "на запад",
+            "target": "x1398x69"
+        }
+    ],
+    "objects": {
+        "i.s.rudnik": "рудная жила|3|0|300|3|1",
+        "i.c.rubin": "рубин|1|0",
+        "n.a.b.vor.proh": {
+            "char": {
+                "name": "вopoнa",
+                "hp": 5,
+                "hp_max": 5,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 2,
+                "crime_title": "",
+                "wander": "1:20:60:1198677766",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 70,
+                "dmg_min": 0,
+                "dmg_max": 3,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "клювoм",
+                "exp_value": 2,
+                "ammo": "",
+                "respawn": "x1446x60:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.p.vorona",
+                    "count": 8
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ]
+        },
+        "n.a.b.vor.proh2": {
+            "char": {
+                "name": "вopoнa",
+                "hp": 5,
+                "hp_max": 5,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 2,
+                "crime_title": "",
+                "wander": "1:20:60:1198677759",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 70,
+                "dmg_min": 0,
+                "dmg_max": 3,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "клювoм",
+                "exp_value": 2,
+                "ammo": "",
+                "respawn": "x1446x60:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.p.vorona",
+                    "count": 8
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "timers": {
+        "1198678323": "i.c.rubin|0|1|1800|3600"
+    },
+    "description": "Проход наполовину завален валунами. Похоже на горный обвал или оползень, но, видимо, недавно его кто-то немного расчистил.\n\n"
+}

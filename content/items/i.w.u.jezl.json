@@ -1,0 +1,15 @@
+{
+    "id": "i.w.u.jezl",
+    "kind": "weapon",
+    "name": "жезл демона",
+    "price": 420,
+    "dmg_min": 4,
+    "dmg_max": 11,
+    "req": [
+        2,
+        5,
+        5
+    ],
+    "speed": 5,
+    "verb": "магией"
+}

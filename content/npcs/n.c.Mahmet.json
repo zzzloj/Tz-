@@ -1,0 +1,62 @@
+{
+    "id": "n.c.Mahmet",
+    "char": {
+        "name": "Мaхмeт-зомби",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 75,
+        "dmg_min": 4,
+        "dmg_max": 16,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "кулaкaми",
+        "exp_value": 16,
+        "ammo": "",
+        "respawn": ""
+    },
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 90,
+            "min": 12,
+            "max": 24
+        },
+        {
+            "id": "i.oj.a",
+            "chance": 90,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.i.zm",
+            "chance": 2,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.i.ob",
+            "chance": 4,
+            "min": 0,
+            "max": 1
+        }
+    ]
+}

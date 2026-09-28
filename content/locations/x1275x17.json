@@ -1,0 +1,63 @@
+{
+    "id": "x1275x17",
+    "name": "Горы",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на юг вдоль гор",
+            "target": "x1272x48"
+        },
+        {
+            "label": "на запад",
+            "target": "x1236x17"
+        }
+    ],
+    "objects": {
+        "n.a.b.kor.gory": {
+            "char": {
+                "name": "кopшун",
+                "hp": 14,
+                "hp_max": 14,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 3,
+                "crime_title": "",
+                "wander": "1:20:60:1198669336",
+                "aux_ts": "",
+                "trail": ":x1272x48"
+            },
+            "war": {
+                "hit_chance": 90,
+                "dmg_min": 0,
+                "dmg_max": 6,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "клювoм",
+                "exp_value": 2,
+                "ammo": "",
+                "respawn": "x1272x48:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.p.perya",
+                    "count": 18
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "description": "На востоке горы, а на севере высится вековой непроходимый лес.\n"
+}

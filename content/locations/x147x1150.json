@@ -1,0 +1,61 @@
+{
+    "id": "x147x1150",
+    "name": "Цитадель",
+    "zone": 2,
+    "exits": [
+        {
+            "label": "ворота на востоке",
+            "target": "x181x1151"
+        },
+        {
+            "label": "на север",
+            "target": "x145x1124"
+        },
+        {
+            "label": "на юг",
+            "target": "x150x1175"
+        },
+        {
+            "label": "на запад ",
+            "target": "x114x1150"
+        }
+    ],
+    "objects": {
+        "n.t.8": {
+            "char": {
+                "name": "тамплиер",
+                "hp": 75,
+                "hp_max": 75,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198646208,
+                "busy_until": 1198638257,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:30:60:1198675955",
+                "aux_ts": "",
+                "trail": ":x114x1150"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 14,
+                "dmg_max": 20,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": 10,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "мечом",
+                "exp_value": 15,
+                "ammo": "",
+                "respawn": "x114x1150:60:180"
+            }
+        }
+    },
+    "description": "Цитадель построена из темного камня, похожего на вулканическую породу. А так как крепость стоит на холме, это массивное сооружение выглядит довольно грозно и мрачно. На востоке ворота, за которыми спуск по ступеням на дорогу"
+}

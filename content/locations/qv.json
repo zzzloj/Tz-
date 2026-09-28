@@ -1,0 +1,28 @@
+{
+    "id": "qv",
+    "name": "Обитель Бога",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "qv.2"
+        },
+        {
+            "label": "на восток",
+            "target": "qv.5"
+        },
+        {
+            "label": "на запад",
+            "target": "qv.4"
+        },
+        {
+            "label": "на юг",
+            "target": "qv.7"
+        }
+    ],
+    "objects": {
+        "": {
+            "journal": "|"
+        }
+    }
+}

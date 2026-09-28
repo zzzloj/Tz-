@@ -1,0 +1,15 @@
+{
+    "id": "i.w.s.yatagan",
+    "kind": "weapon",
+    "name": "ятаган",
+    "price": 110,
+    "dmg_min": 4,
+    "dmg_max": 10,
+    "req": [
+        3,
+        3
+    ],
+    "speed": 5,
+    "verb": "ятаганом",
+    "ammo": ""
+}

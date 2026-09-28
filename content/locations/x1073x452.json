@@ -1,0 +1,122 @@
+{
+    "id": "x1073x452",
+    "name": "Магазин экзотических товаров",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x1071x463"
+        }
+    ],
+    "objects": {
+        "n.Slejter": {
+            "char": {
+                "name": "Слейтер",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": 1198673505,
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 9,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1073x452:60:300"
+            },
+            "items": [
+                {
+                    "id": "i.a.e.j",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.o.s1",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.d.zsl1",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.c.tuf1",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.h.b1",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.e.j",
+                "i.a.o.s1",
+                "i.a.d.zsl1",
+                "i.a.c.tuf1",
+                "i.a.h.b1"
+            ],
+            "bank": "90:1:8=i.rr.empty:5",
+            "qv": 1198609950
+        },
+        "n.a.losh.5313": {
+            "char": {
+                "name": "лoшaдь",
+                "hp": 26,
+                "hp_max": 26,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198669984,
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 2,
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 1,
+                "dmg_max": 7,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кoпытaми",
+                "exp_value": 4,
+                "ammo": "",
+                "respawn": ""
+            },
+            "osvej": [
+                {
+                    "id": "i.f.meat",
+                    "count": 3
+                }
+            ],
+            "owner": "u.tryxa|u.tryxa|0|1198673584|1|1198673997"
+        }
+    },
+    "description": "Это даже не магазин, а целый музей - стеклянные ящики с табличками, на стенах висят разные хитроумные устройства (по большей части из металла и и кожаных ремней). А в одном углу даже есть чучело волосатого гиганта высотой в два ваших роста."
+}

@@ -1,0 +1,13 @@
+{
+    "id": "i.i.am",
+    "kind": "gem",
+    "name": "аметист",
+    "price": 50,
+    "effects": [
+        [
+            52,
+            5
+        ]
+    ],
+    "description": "Жизнь +5"
+}

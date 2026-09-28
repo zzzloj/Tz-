@@ -1,0 +1,92 @@
+{
+    "id": "x1121x606",
+    "name": "Пристань",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "войти в город",
+            "target": "x1125x588"
+        },
+        {
+            "label": "на восток",
+            "target": "x1149x602"
+        },
+        {
+            "label": "на запад",
+            "target": "x1098x606"
+        }
+    ],
+    "objects": {
+        "n.Ded": {
+            "char": {
+                "name": "Стapый дeд",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 50,
+                "dmg_min": 4,
+                "dmg_max": 6,
+                "attack_delay": 8,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1121x606:10:30"
+            }
+        },
+        "n.Malchugan": {
+            "char": {
+                "name": "Мaльчугaн",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 70,
+                "dmg_min": 2,
+                "dmg_max": 2,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1121x606:30:60"
+            }
+        }
+    },
+    "description": "Вы стоите на пристани у реки, на западе в сторону реки выдается деревянный причал, на севере находятся южные городские ворота."
+}

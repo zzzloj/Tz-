@@ -1,0 +1,93 @@
+{
+    "id": "x1086x501",
+    "name": "Центральная площадь",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "во двор рыцарей",
+            "target": "x1077x507"
+        },
+        {
+            "label": "на север",
+            "target": "x1090x489"
+        },
+        {
+            "label": "на восток",
+            "target": "x1119x500"
+        }
+    ],
+    "objects": {
+        "i.s.book.news": "доска объявлений|0|",
+        "n.guildmaster": {
+            "char": {
+                "name": "Мирандер [гилдмастер]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 11,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1086x501:1:2"
+            }
+        },
+        "n.Den": {
+            "char": {
+                "name": "Дэн [букмекер]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 7,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1086x501:1:2"
+            }
+        }
+    },
+    "description": "Центральная площадь представляет собой выложенную каменным булыжником мостовую, в южной части круглая яма арены для боев. На севере расположено здание банка, на западе вход во двор рыцарей, а с востока примыкает центральная улица.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+}

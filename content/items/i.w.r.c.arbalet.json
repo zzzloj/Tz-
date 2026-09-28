@@ -1,0 +1,14 @@
+{
+    "id": "i.w.r.c.arbalet",
+    "kind": "weapon",
+    "name": "арбалет",
+    "price": 85,
+    "dmg_min": 5,
+    "dmg_max": 11,
+    "req": [
+        2
+    ],
+    "speed": 6,
+    "verb": "из арбалета",
+    "ammo": "i.bolt"
+}

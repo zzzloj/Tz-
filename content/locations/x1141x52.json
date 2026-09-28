@@ -1,0 +1,71 @@
+{
+    "id": "x1141x52",
+    "name": "Магазин брони",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x1119x52"
+        },
+        {
+            "label": "дверь на юге",
+            "target": "x1140x54"
+        }
+    ],
+    "objects": {
+        "n.c.Silt.a1": {
+            "char": {
+                "name": "Силт-зомби",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 14,
+                "dmg_max": 21,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": 15,
+                "ammo": "",
+                "respawn": "x1141x52:1000:2000"
+            },
+            "items": [
+                {
+                    "id": "i.a.b.heavykol",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.c.sp1",
+                    "count": 1
+                },
+                {
+                    "id": "i.money",
+                    "count": 23
+                }
+            ],
+            "equip": [
+                "i.a.b.heavykol",
+                "i.a.c.sp1"
+            ]
+        }
+    },
+    "description": "Вы в здании магазина брони, по стенам развешаны кольчуги и разнообразные щиты всех видов. На юге дверь во вторую часть здания, а на западе выход на улицу."
+}

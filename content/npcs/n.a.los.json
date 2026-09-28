@@ -1,0 +1,50 @@
+{
+    "id": "n.a.los",
+    "char": {
+        "name": "лocь",
+        "hp": 38,
+        "hp_max": 38,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 2,
+        "dmg_max": 12,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "poгaми",
+        "exp_value": 5,
+        "ammo": "",
+        "respawn": ""
+    },
+    "osvej": [
+        {
+            "id": "i.h.kop.los",
+            "count": 1
+        },
+        {
+            "id": "i.h.r.los",
+            "count": 1
+        },
+        {
+            "id": "i.f.meat",
+            "count": 2
+        }
+    ]
+}

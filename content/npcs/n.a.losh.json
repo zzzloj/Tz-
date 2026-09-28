@@ -1,0 +1,42 @@
+{
+    "id": "n.a.losh",
+    "char": {
+        "name": "лoшaдь",
+        "hp": 26,
+        "hp_max": 26,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": 2,
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 60,
+        "dmg_min": 1,
+        "dmg_max": 7,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "кoпытaми",
+        "exp_value": 4,
+        "ammo": "",
+        "respawn": ""
+    },
+    "osvej": [
+        {
+            "id": "i.f.meat",
+            "count": 3
+        }
+    ]
+}

@@ -1,0 +1,105 @@
+{
+    "id": "x1799x189",
+    "name": "Ущелье",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на дорогу",
+            "target": "x1840x190"
+        },
+        {
+            "label": "на север",
+            "target": "x1798x160"
+        },
+        {
+            "label": "на юг",
+            "target": "x1799x219"
+        }
+    ],
+    "objects": {
+        "n.c.gornvel.7": {
+            "char": {
+                "name": "горный великан",
+                "hp": 200,
+                "hp_max": 200,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198674183,
+                "busy_until": 1198672534,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "1:60:120:1198676876",
+                "aux_ts": "",
+                "trail": ":x1798x160"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 12,
+                "dmg_max": 24,
+                "attack_delay": 7,
+                "is_ranged": "",
+                "armor": 25,
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулаками",
+                "exp_value": 40,
+                "ammo": "",
+                "respawn": "x1798x160:1200:1800"
+            },
+            "items": [
+                {
+                    "id": "i.w.r.stone",
+                    "count": 21
+                }
+            ]
+        },
+        "n.c.gornvel.6": {
+            "char": {
+                "name": "горный великан",
+                "hp": 200,
+                "hp_max": 200,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198672533,
+                "busy_until": 1198676596,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:60:120:1198677024",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 12,
+                "dmg_max": 24,
+                "attack_delay": 7,
+                "is_ranged": "",
+                "armor": 25,
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулаками",
+                "exp_value": 40,
+                "ammo": "",
+                "respawn": "x1799x189:1200:1800"
+            },
+            "items": [
+                {
+                    "id": "i.w.r.stone",
+                    "count": 16
+                }
+            ],
+            "st": "|1"
+        }
+    },
+    "description": "Ущелье тянется на север и юг, на востоке между скал есть проход, видны кроны деревьев и желтеет дорога"
+}

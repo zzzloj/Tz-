@@ -1,0 +1,50 @@
+{
+    "id": "x4x7",
+    "name": "Дом Адула",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "выйти",
+            "target": "x4x6"
+        }
+    ],
+    "objects": {
+        "n.adul": {
+            "char": {
+                "name": "Адул",
+                "hp": 1000,
+                "hp_max": 1000,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 1000,
+                "dmg_min": 1000,
+                "dmg_max": 1000,
+                "attack_delay": "",
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "мечем эльфов",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x4x7:1:2"
+            },
+            "spec": 1198625902
+        }
+    },
+    "description": "На стенеах развешано всевозможное оружие."
+}

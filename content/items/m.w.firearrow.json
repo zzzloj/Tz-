@@ -1,0 +1,15 @@
+{
+    "id": "m.w.firearrow",
+    "kind": "spell",
+    "name": "Огненная стрела",
+    "mana_cost": 8,
+    "level": 2,
+    "words": "Sist Ar",
+    "power_min": 7,
+    "power_max": 16,
+    "needs_target": 1,
+    "criminals_only": 0,
+    "cast_time": 6,
+    "cooldown": 120,
+    "description": "Наносит урон огнем"
+}

@@ -1,0 +1,15 @@
+{
+    "id": "i.w.r.boebum",
+    "kind": "weapon",
+    "name": "боевой бумеранг",
+    "price": 400,
+    "dmg_min": 4,
+    "dmg_max": 8,
+    "req": [
+        4,
+        5
+    ],
+    "speed": 12,
+    "verb": "бумерангом",
+    "ammo": ""
+}

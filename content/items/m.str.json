@@ -1,0 +1,15 @@
+{
+    "id": "m.str",
+    "kind": "spell",
+    "name": "Сила",
+    "mana_cost": 11,
+    "level": 3,
+    "words": "Lana Tas",
+    "power_min": 0,
+    "power_max": 0,
+    "needs_target": 1,
+    "criminals_only": 0,
+    "cast_time": 10,
+    "cooldown": 300,
+    "description": "Увеличивает максимум здоровья цели на величину, зависящую от интеллекта заклинателя. Действует только на людей."
+}

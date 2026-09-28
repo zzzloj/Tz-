@@ -1,0 +1,75 @@
+{
+    "id": "x724x261",
+    "name": "Курган",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север к вершине кургана",
+            "target": "x723x236"
+        },
+        {
+            "label": "на восток к кургану",
+            "target": "x754x235"
+        },
+        {
+            "label": "на запад к кургану",
+            "target": "x696x237"
+        },
+        {
+            "label": "на юг",
+            "target": "x739x284"
+        }
+    ],
+    "objects": {
+        "n.a.kaban.sl": {
+            "char": {
+                "name": "кaбaн",
+                "hp": 34,
+                "hp_max": 34,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 4,
+                "crime_title": "",
+                "wander": "4:20:60:1198675994",
+                "aux_ts": "",
+                "trail": ":x742x312:x739x284"
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 6,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "зубaми",
+                "exp_value": 5,
+                "ammo": "",
+                "respawn": "x742x312:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.s.kaban",
+                    "count": 1
+                },
+                {
+                    "id": "i.h.kop.kaban",
+                    "count": 1
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "description": "Южный склон кургана\n"
+}

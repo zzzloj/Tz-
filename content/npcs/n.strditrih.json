@@ -1,0 +1,36 @@
+{
+    "id": "n.strditrih",
+    "char": {
+        "name": "Стражник",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 95,
+        "dmg_min": 4,
+        "dmg_max": 20,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": 4,
+        "dodge": 10,
+        "parry": 40,
+        "shield_armor": 2,
+        "magic_dodge": "",
+        "magic_parry": 30,
+        "magic_resist": 30,
+        "verb": "мeчoм",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": ""
+    }
+}

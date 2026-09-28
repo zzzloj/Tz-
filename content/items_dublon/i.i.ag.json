@@ -1,0 +1,13 @@
+{
+    "id": "i.i.ag",
+    "kind": "gem",
+    "name": "агат",
+    "price": 10,
+    "effects": [
+        [
+            0,
+            5
+        ]
+    ],
+    "description": "Меткость +5%"
+}

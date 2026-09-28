@@ -1,0 +1,107 @@
+{
+    "id": "n.Rene",
+    "topics": {
+        "begin": {
+            "text": "Я Рене, помощник Лорда Хагена. Что ты хочешь узнать?",
+            "options": [
+                {
+                    "label": "Я хотел бы помочь паладинам!",
+                    "goto": "pal"
+                },
+                {
+                    "label": "Где я могу потренироваться?",
+                    "goto": "tren"
+                },
+                {
+                    "label": "Я хочу изучить магию",
+                    "goto": "mag"
+                },
+                {
+                    "label": "Где мне найти главу города?",
+                    "goto": "gl"
+                },
+                {
+                    "label": "Как заказать код?",
+                    "goto": "sms"
+                },
+                {
+                    "label": "eval: if(legacy_cmp(additem($loc,$login,\"\",\"i.f.bread\",\"count\"))>=5 && legacy_cmp(additem($loc,$login,\"\",\"i.f.wine\",\"count\"))>=4) {$title_v=\"Я принес хлеб и вино\";$id=\"qvok\";} else $title_v=\"Я ищу работу\";",
+                    "goto": "qv"
+                },
+                {
+                    "label": "Ничего, мне пора",
+                    "goto": "end"
+                }
+            ]
+        },
+        "qvok": {
+            "text": "eval: if(time()>$l_i[$loc][$speak][\"qv\"]) {$title_v=\"Молодец, <imja>. Вот твоя награда.\";additem($loc,$login,\"\",\"i.f.bread\",5,\"items\",\"items\",1,0,1); additem($loc,$login,\"\",\"i.f.wine\",4,\"items\",\"items\",1,0,1); additem($loc,\"\",$login,\"i.money\",150); addexp($loc,$login,20); $l_i[$loc][$speak][\"qv\"]=time()+rand(3600,4200);} else $title_v=\"Нам сейчас не нужны продовольственные запасы, у нас всего достаточно. Впрочем, рано или поздно они закончатся, конечно, приходи через \".round(legacy_num((legacy_num($l_i[$loc][$speak][\"qv\"])-time())/60+1)).\" минут, тогда и поговорим\";",
+            "options": [
+                {
+                    "label": "Хорошо, мне пора",
+                    "goto": "end"
+                }
+            ]
+        },
+        "qv": {
+            "text": "eval: if(time()>$l_i[$loc][$speak][\"qv\"]) $title_v=\"У нас закончились продовольственные запасы, если ты принесешь хлеба этак штук 5 и бутылки 4 вина, было бы замечательно. Разумеется, мы компенсируем их цену, да еще и сверху накинем за труды. Как тебе предложение?\"; else $title_v=\"Сейчас мы не испытываем никаких проблем, хотя запасы вина и хлеба подходят к концу. Возвращайся позднее, где-то через \".round(legacy_num((legacy_num($l_i[$loc][$speak][\"qv\"])-time())/60+1)).\" минут, может для тебя найдется работа.\";",
+            "options": [
+                {
+                    "label": "Отлично, я еще приду",
+                    "goto": "end"
+                }
+            ]
+        },
+        "tren": {
+            "text": "Иди к ристалищу, там Кантарес тренирует новобранцев. И там же есть где пострелять из лука, если тебя это интересует, спроси про Ханса.",
+            "options": [
+                {
+                    "label": "У меня есть другие вопросы",
+                    "goto": "begin"
+                },
+                {
+                    "label": "Хорошо, пока",
+                    "goto": "end"
+                }
+            ]
+        },
+        "mag": {
+            "text": "Поговори со Стоунсом в северном здании, у него же ты можешь купить магические товары.",
+            "options": [
+                {
+                    "label": "У меня есть другие вопросы",
+                    "goto": "begin"
+                },
+                {
+                    "label": "Хорошо, пока",
+                    "goto": "end"
+                }
+            ]
+        },
+        "gl": {
+            "text": "Сильвестра? Он тоже в северном здании вместе со Стоунсом.",
+            "options": [
+                {
+                    "label": "У меня есть другие вопросы",
+                    "goto": "begin"
+                },
+                {
+                    "label": "Хорошо, пока",
+                    "goto": "end"
+                }
+            ]
+        },
+        "pal": {
+            "text": "eval: $title_v=\"Ну чтож <imja> скажи мне код и я отблагодарю тебя! <br/><input name=\\\"pass\\\" maxlength=\\\"20\\\"/><br/><a href=\\\"$PHP_SELF?sid=$sid&p=$p&speak=$speak&id=pall&pass=$(pass)\\\">Продолжить</a>\";",
+            "options": [
+                {
+                    "label": "Я передумал",
+                    "goto": "begin"
+                }
+            ]
+        },
+        "pall": "eval: \n  \t$count=0;\n\t$dh = opendir(\"../sms/\"); \n\twhile (($fname = readdir($dh))!== false) if ($fname!=\".\" && $fname!=\"..\" && $fname!=\"1.htaccess\" && $fname!=\".htaccess\") {\n\t\t$count++;\n\t\t$tmp[0] = file(\"../sms/\".$fname);\n\t\tif (filemtime(\"../sms/\".$fname)<time()-10000) @unlink(\"../sms/\".$fname); continue;\n\t\t}\n\t//$file = fopen(\"mag.su\", \"r\");\n\t$file = fopen(\"http://www.smszamok.ru/check/try.php?p=\".$pass.\"&id=9182\", \"r\");\n\t//echo $pass;\n\t//echo $file;\n\n  if (!$file) {\n    $title_v=\"Ты ввел не верный код! <a href=\\\"http://wap.smszamok.ru/iget.php?pid=9182&url=bigwap.org?sid=\".$sid.\"\\\">Узнать как получить код</a>\";\n    return false;\r\n  }\r\n  $line = legacy_fgets ($file, 1024);\r\n  legacy_fclose($file);\r\n\r\n  if((substr($line, 0, 4) == \"true\") && (!file_exists(\"../sms/\".$pass))){\n     $file = legacy_fopen_w (\"../sms/\".$pass, \"w\");\r\n     if ($file!==false) {legacy_fwrite($file,\".\");legacy_fclose($file);} else msg(\"Ошибка создания файла\");\r\n    $title_v=\"Держи в благодарность немного дублончиков!\";\n\tadditem($loc,\"\",$login,\"i.q.dublon\",200);\r\n    $life_time = substr($line, 5);\r\n  }else{\r\n    $title_v=\"к сожалению срок кода истек или код уже активирован\";\r\n  }\n\n",
+        "sms": "Чтобы заказать код, нужно перейти по ссылке ниже, выбрать своего оператора и отправить код на номер указаный там же, код действует в течении 2 часов<br/><a href=\"http://wap.smszamok.ru/iget.php?pid=9182&url=bigwap.org\">перейти</a>",
+        "end": "Пока"
+    }
+}

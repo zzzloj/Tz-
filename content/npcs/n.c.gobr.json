@@ -1,0 +1,44 @@
+{
+    "id": "n.c.gobr",
+    "char": {
+        "name": "гоблин-рабочий",
+        "hp": 200,
+        "hp_max": 200,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 95,
+        "dmg_min": 12,
+        "dmg_max": 24,
+        "attack_delay": 7,
+        "is_ranged": "",
+        "armor": 25,
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "кулаками",
+        "exp_value": 40,
+        "ammo": "",
+        "respawn": ""
+    },
+    "itemsrnd": [
+        {
+            "id": "i.sh",
+            "chance": 80,
+            "min": 1,
+            "max": 30
+        }
+    ]
+}

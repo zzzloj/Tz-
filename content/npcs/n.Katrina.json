@@ -1,0 +1,51 @@
+{
+    "id": "n.Katrina",
+    "char": {
+        "name": "Катрина",
+        "hp": 10000,
+        "hp_max": 10000,
+        "mana": 10000,
+        "mana_max": 10000,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 700,
+        "dmg_min": 20,
+        "dmg_max": 40,
+        "attack_delay": 40,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "кулаками",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": "x1143x558:100:200"
+    },
+    "items": [
+        {
+            "id": "i.a.r.b1",
+            "count": 1
+        },
+        {
+            "id": "i.a.h.p1",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.r.b1",
+        "i.a.h.p1"
+    ],
+    "bank": "50:1:4=i.bc.a:1|50:1:4=i.bc.b:1|50:1:4=i.bc.d:1|50:1:4=i.bc.e:1|50:1:4=i.bc.f:1|50:1:4=i.bc.g:1|50:1:4=i.bc.h:1|50:1:4=i.bc.i:1|50:1:4=i.bc.j:1|50:1:4=i.bc.k:1|50:1:4=i.bc.l:1|50:1:4=i.bc.m:1|50:1:4=i.bc.n:1|50:1:4=i.bc.o:1|50:1:4=i.bc.p:1|50:1:4=i.bc.r:1|50:1:4=i.bc.t:1|50:1:4=i.bc.v:1|50:1:4=i.bc.x:1|50:1:4=i.bc.s:1"
+}

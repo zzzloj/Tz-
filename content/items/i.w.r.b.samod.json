@@ -1,0 +1,15 @@
+{
+    "id": "i.w.r.b.samod",
+    "kind": "weapon",
+    "name": "самодельный лук",
+    "price": 25,
+    "dmg_min": 2,
+    "dmg_max": 9,
+    "req": [
+        2,
+        3
+    ],
+    "speed": 4,
+    "verb": "из лука",
+    "ammo": "i.arrow"
+}

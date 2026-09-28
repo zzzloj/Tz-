@@ -1,0 +1,37 @@
+{
+    "id": "n.m.Koda",
+    "char": {
+        "name": "Кода",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 100,
+        "mana_max": 100,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 100,
+        "dmg_min": 100,
+        "dmg_max": 20,
+        "attack_delay": 30,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "топором",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": "x208x2080:1:2"
+    },
+    "bank": "60:1:1=i.a.b.kristal:1|60:1:1=i.a.h.rog:1|60:1:1=i.a.p.ship:1|60:1:1=i.a.l.ship:1|60:1:1=i.a.s.ship:1|60:1:1=i.a.c.twar:1"
+}

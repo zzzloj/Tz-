@@ -1,0 +1,70 @@
+{
+    "id": "x2145x702",
+    "name": "Лагерь орков",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "к обелиску",
+            "target": "x2145x737"
+        },
+        {
+            "label": "на восток",
+            "target": "x2190x702"
+        },
+        {
+            "label": "на запад",
+            "target": "x2091x702"
+        }
+    ],
+    "objects": {
+        "n.c.orcbron.6": {
+            "char": {
+                "name": "орк элита",
+                "hp": 47,
+                "hp_max": 200,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198674152,
+                "busy_until": 1198673388,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "4:60:120:1198674234",
+                "aux_ts": "",
+                "trail": ":x2145x737"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 12,
+                "dmg_max": 24,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 30,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кувалдой",
+                "exp_value": 35,
+                "ammo": "",
+                "respawn": "x2145x737:1800:2400"
+            },
+            "items": [
+                {
+                    "id": "i.w.u.kuvalda",
+                    "count": 1
+                },
+                {
+                    "id": "i.money",
+                    "count": 54
+                }
+            ],
+            "equip": [
+                "i.w.u.kuvalda"
+            ]
+        }
+    },
+    "description": "На севере видно озеро, а на юге черный обелиск"
+}

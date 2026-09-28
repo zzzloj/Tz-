@@ -1,0 +1,254 @@
+{
+    "id": "c.5.sklad",
+    "name": "Кладовая",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "к воротам",
+            "target": "c.5.gate"
+        }
+    ],
+    "objects": {
+        "n.Valor": {
+            "char": {
+                "name": "Валор",
+                "hp": 10,
+                "hp_max": 10,
+                "mana": 10,
+                "mana_max": 10,
+                "regen_ts": 1172509351,
+                "busy_until": 1170741428,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 20,
+                "dmg_min": 0,
+                "dmg_max": 1,
+                "attack_delay": 5,
+                "is_ranged": 0,
+                "armor": 1,
+                "dodge": 0,
+                "parry": 0,
+                "shield_armor": 0,
+                "magic_dodge": 0,
+                "magic_parry": 0,
+                "magic_resist": 0,
+                "verb": "кулаками",
+                "exp_value": 0,
+                "ammo": "0",
+                "respawn": "c.5.sklad:10:20:1",
+                "extra": [
+                    "",
+                    "0"
+                ]
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 12
+                },
+                {
+                    "id": "i.a.b.leather",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.h.s1",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.b.leather",
+                "i.a.h.s1"
+            ],
+            "bank": "90:0:12=i.f.apple:1|90:1:6=i.f.bread:1|90:1:6=i.f.meat.fried:1|90:0:8=i.f.sandwich:1|90:0:3=i.f.sausage:1|80:0:4=i.f.fish:1|70:1:3=i.f.wine:1",
+            "st": "|1",
+            "osvej": null
+        },
+        "i.f.b.empty": "пустая бутылка|2|1197491682",
+        "n.o.castle3.287": {
+            "char": {
+                "name": "Daichra [стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "u.telhar",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.5.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 24,
+                "dmg_max": 35,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 35,
+                "dodge": 35,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": 30,
+                "magic_resist": 60,
+                "verb": "копьем",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.tytahxamoh|u.tytahxamoh||1198809473|1|1198379511"
+        },
+        "n.o.castle4.973": {
+            "char": {
+                "name": "Uuknek [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "u.telhar",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.5.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.tytahxamoh|u.tytahxamoh||1198809475|1|1198379511"
+        },
+        "n.o.castle4.401": {
+            "char": {
+                "name": "Anudur [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "u.telhar",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.5.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.tytahxamoh|u.tytahxamoh||1198809477|1|1198379511"
+        },
+        "n.o.castle4.150": {
+            "char": {
+                "name": "Arcvax [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "u.telhar",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.5.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.tytahxamoh|u.tytahxamoh||1198809477|1|1198379511"
+        },
+        "n.o.castle4.170": {
+            "char": {
+                "name": "Deshan [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "u.telhar",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.5.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.tytahxamoh|u.tytahxamoh||1198809479|1|1198379511"
+        }
+    }
+}

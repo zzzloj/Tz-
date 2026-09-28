@@ -1,0 +1,8 @@
+{
+    "id": "i.f.k.karas",
+    "kind": "food",
+    "name": "копченый карась",
+    "price": 23,
+    "heal_hp": 8,
+    "heal_mana": 10
+}

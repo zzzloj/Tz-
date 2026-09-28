@@ -1,0 +1,66 @@
+{
+    "id": "n.Slejter",
+    "char": {
+        "name": "Слейтер",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 100,
+        "mana_max": 100,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 4,
+        "dmg_max": 9,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "кулaкaми",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.a.e.j",
+            "count": 1
+        },
+        {
+            "id": "i.a.o.s1",
+            "count": 1
+        },
+        {
+            "id": "i.a.d.zsl1",
+            "count": 1
+        },
+        {
+            "id": "i.a.c.tuf1",
+            "count": 1
+        },
+        {
+            "id": "i.a.h.b1",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.e.j",
+        "i.a.o.s1",
+        "i.a.d.zsl1",
+        "i.a.c.tuf1",
+        "i.a.h.b1"
+    ],
+    "bank": "90:1:8=i.rr.empty:1"
+}

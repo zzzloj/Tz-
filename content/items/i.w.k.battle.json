@@ -1,0 +1,14 @@
+{
+    "id": "i.w.k.battle",
+    "kind": "weapon",
+    "name": "боевой нож",
+    "price": 100,
+    "dmg_min": 3,
+    "dmg_max": 6,
+    "req": [
+        3
+    ],
+    "speed": 4,
+    "verb": "ножом",
+    "ammo": ""
+}

@@ -1,0 +1,36 @@
+{
+    "id": "n.ginzh",
+    "char": {
+        "name": "Гном-инженер",
+        "hp": 1000,
+        "hp_max": 1000,
+        "mana": 100,
+        "mana_max": 100,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 1000,
+        "dmg_min": 1000,
+        "dmg_max": 1000,
+        "attack_delay": "",
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "мантировкой",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": "x2061x299:1:2"
+    }
+}

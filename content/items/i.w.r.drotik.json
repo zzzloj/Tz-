@@ -1,0 +1,15 @@
+{
+    "id": "i.w.r.drotik",
+    "kind": "weapon",
+    "name": "дротик",
+    "price": 3,
+    "dmg_min": 1,
+    "dmg_max": 4,
+    "req": [
+        0,
+        3
+    ],
+    "speed": 3,
+    "verb": "дротиком",
+    "ammo": "i.w.r.drotik"
+}

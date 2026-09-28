@@ -1,0 +1,63 @@
+{
+    "id": "x1x1",
+    "name": "поляна",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "в ущелье",
+            "target": "x1838x98"
+        },
+        {
+            "label": "на восток",
+            "target": "x1x2"
+        },
+        {
+            "label": "на север по дороге",
+            "target": "x2x1"
+        }
+    ],
+    "objects": {
+        "n.c.gornvel.2": {
+            "char": {
+                "name": "горный великан",
+                "hp": 100,
+                "hp_max": 200,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198677755,
+                "busy_until": 1198677762,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":x1797x129:x1838x129:x1838x98"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 12,
+                "dmg_max": 24,
+                "attack_delay": 7,
+                "is_ranged": "",
+                "armor": 25,
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулаками",
+                "exp_value": 40,
+                "ammo": "",
+                "respawn": "x1797x129:1200:1800"
+            },
+            "items": [
+                {
+                    "id": "i.w.r.stone",
+                    "count": 12
+                }
+            ]
+        }
+    },
+    "description": "Большая поляна залитая светом. На западе скалы. На юге узкий проход в ущелье. На восток тянется поляна"
+}

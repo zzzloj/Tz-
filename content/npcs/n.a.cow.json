@@ -1,0 +1,42 @@
+{
+    "id": "n.a.cow",
+    "char": {
+        "name": "кopoвa",
+        "hp": 24,
+        "hp_max": 24,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": 2,
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 60,
+        "dmg_min": 1,
+        "dmg_max": 5,
+        "attack_delay": 6,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "poгaми",
+        "exp_value": 4,
+        "ammo": "",
+        "respawn": ""
+    },
+    "osvej": [
+        {
+            "id": "i.f.meat",
+            "count": 3
+        }
+    ]
+}

@@ -1,0 +1,63 @@
+{
+    "id": "x2124x329",
+    "name": "Главная улица",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x2124x297"
+        },
+        {
+            "label": "на юг",
+            "target": "x2124x367"
+        }
+    ],
+    "objects": {
+        "n.c.licharchy.a1": {
+            "char": {
+                "name": "apхилич",
+                "hp": 90,
+                "hp_max": 90,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198672745,
+                "busy_until": 1198672169,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:60:120:1198672836",
+                "aux_ts": "",
+                "trail": ":x2124x297"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 12,
+                "dmg_max": 32,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 20,
+                "magic_parry": 90,
+                "magic_resist": 70,
+                "verb": "мaгиeй",
+                "exp_value": 55,
+                "ammo": "",
+                "respawn": "x2124x297:1200:1800"
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 85
+                },
+                {
+                    "id": "i.m.w.firearrow",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "description": "Вы идете вдоль капитолия на западе, окна выбиты, некоторые забиты досками, между которыми завывает ветер"
+}

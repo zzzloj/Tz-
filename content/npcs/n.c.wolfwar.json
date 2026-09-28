@@ -1,0 +1,74 @@
+{
+    "id": "n.c.wolfwar",
+    "char": {
+        "name": "волк [воин]",
+        "hp": 250,
+        "hp_max": 250,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 95,
+        "dmg_min": 20,
+        "dmg_max": 30,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": 25,
+        "dodge": 30,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "глефой",
+        "exp_value": 40,
+        "ammo": "",
+        "respawn": ""
+    },
+    "osvej": [
+        {
+            "id": "i.h.s.wolf",
+            "count": 1
+        },
+        {
+            "id": "i.h.k.wolf",
+            "count": 1
+        },
+        {
+            "id": "i.h.kog.wolf",
+            "count": 1
+        },
+        {
+            "id": "i.f.meat",
+            "count": 1
+        }
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.f.b.heal",
+            "chance": 40,
+            "min": 0,
+            "max": 2
+        },
+        {
+            "id": "i.f.b.heal.great",
+            "chance": 10,
+            "min": 0,
+            "max": 1
+        }
+    ],
+    "items": [
+        {
+            "id": "i.w.s.glefa",
+            "count": 1
+        }
+    ]
+}

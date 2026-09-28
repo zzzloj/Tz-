@@ -1,0 +1,68 @@
+{
+    "id": "n.c.troll",
+    "char": {
+        "name": "тpoлль",
+        "hp": 92,
+        "hp_max": 92,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 14,
+        "dmg_max": 24,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": 8,
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "лaпaми",
+        "exp_value": 40,
+        "ammo": "",
+        "respawn": ""
+    },
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 90,
+            "min": 26,
+            "max": 42
+        },
+        {
+            "id": "i.ring.l",
+            "chance": 50,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.c.pearl",
+            "chance": 6,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.w.u.palica",
+            "chance": 10,
+            "min": 0,
+            "max": 1
+        }
+    ],
+    "osvej": [
+        {
+            "id": "i.h.s.troll",
+            "count": 1
+        }
+    ]
+}

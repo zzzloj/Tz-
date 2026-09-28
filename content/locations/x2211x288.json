@@ -1,0 +1,59 @@
+{
+    "id": "x2211x288",
+    "name": "Гильдия воров",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x2168x297"
+        }
+    ],
+    "objects": {
+        "n.Rudolf": {
+            "char": {
+                "name": "Рудольф",
+                "hp": 1010,
+                "hp_max": 1010,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198604424,
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 9,
+                "dmg_max": 28,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": 10,
+                "dodge": 10,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кинжалом",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x2211x288:60:120:1"
+            },
+            "items": [
+                {
+                    "id": "i.w.k.kinj",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.w.k.kinj"
+            ],
+            "qv1": 1198667906
+        }
+    },
+    "description": "Внутри оказалось довольно светло и оживленно. Группы людей расположились на диванах, некоторые держат в руках бокалы"
+}

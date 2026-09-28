@@ -1,0 +1,15 @@
+{
+    "id": "i.w.r.b.master",
+    "kind": "weapon",
+    "name": "лук мастера",
+    "price": 55,
+    "dmg_min": 6,
+    "dmg_max": 18,
+    "req": [
+        5,
+        5
+    ],
+    "speed": 6,
+    "verb": "из лука",
+    "ammo": "i.arrow"
+}

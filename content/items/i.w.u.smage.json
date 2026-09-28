@@ -1,0 +1,15 @@
+{
+    "id": "i.w.u.smage",
+    "kind": "weapon",
+    "name": "посох друида",
+    "price": 45,
+    "dmg_min": 1,
+    "dmg_max": 9,
+    "req": [
+        0,
+        3,
+        4
+    ],
+    "speed": 6,
+    "verb": "магией"
+}

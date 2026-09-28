@@ -1,0 +1,60 @@
+{
+    "id": "x1017x457",
+    "name": "Магазин снаряжения",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x1017x471"
+        }
+    ],
+    "objects": {
+        "n.Sloven": {
+            "char": {
+                "name": "Слoвeн",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": 1198673510,
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 10,
+                "dmg_max": 14,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1017x457:1:2"
+            },
+            "items": [
+                {
+                    "id": "i.a.b.meh",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.b.meh"
+            ],
+            "bank": "90:1:24=i.arrow:0|90:1:12=i.bolt:0|90:1:4=i.w.k.per:4|20:1:2=i.w.k.shir:0|80:1:2=i.f.bread:1|20:1:4=i.f.vetchina:0|20:1:1=i.f.ham:0|90:1:4=i.bint:1|60:1:1=i.set.shampur:1|60:1:3=i.set.leska:3|90:1:10=i.spichka:4|30:1:1=i.fishman:1|60:1:1=i.set.koptilka:0",
+            "qv": 1198677771
+        }
+    },
+    "description": "Внутри очень свободно, здесь в случае необходимости может укрыться масса народу. На каменных стенах висят выцветшие гобелены, а вдоль стен стоят несколько грубых деревянных табуретов. Лестница на второй этаж закрыта чугунной решеткой с массивным висячим замком."
+}

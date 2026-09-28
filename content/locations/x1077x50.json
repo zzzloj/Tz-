@@ -1,0 +1,76 @@
+{
+    "id": "x1077x50",
+    "name": "Двор рыцарей",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти на площадь",
+            "target": "x1086x50"
+        },
+        {
+            "label": "во внутренний двор",
+            "target": "x1065x50"
+        }
+    ],
+    "objects": {
+        "n.c.Gant.a1": {
+            "char": {
+                "name": "Гaнт-зомби",
+                "hp": 180,
+                "hp_max": 180,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 11,
+                "dmg_max": 26,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": 26,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 20,
+                "magic_parry": 80,
+                "magic_resist": 40,
+                "verb": "мeчoм",
+                "exp_value": 50,
+                "ammo": "",
+                "respawn": "x1077x50:100:300"
+            },
+            "items": [
+                {
+                    "id": "i.a.b.rdosp",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.e.k",
+                    "count": 1
+                },
+                {
+                    "id": "i.w.s.long",
+                    "count": 1
+                },
+                {
+                    "id": "i.money",
+                    "count": 51
+                }
+            ],
+            "equip": [
+                "i.a.b.rdosp",
+                "i.a.e.k",
+                "i.w.s.long"
+            ]
+        }
+    },
+    "description": "Вы находитесь около высоких стрельчатых ворот двора рыцарей, сделанных из цельных стволов корабельных сосен. В проходе стоит рыцарь в блестящих металлических доспехах и с интересом смотрит на вас. На западе внутренний двор, а на востоке выход со двора рыцарей на центральную площадь."
+}

@@ -1,0 +1,8 @@
+{
+    "id": "i.f.ham",
+    "kind": "food",
+    "name": "окорок",
+    "price": 12,
+    "heal_hp": 8,
+    "heal_mana": ""
+}

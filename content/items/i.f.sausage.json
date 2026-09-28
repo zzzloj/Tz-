@@ -1,0 +1,8 @@
+{
+    "id": "i.f.sausage",
+    "kind": "food",
+    "name": "колбаса",
+    "price": 5,
+    "heal_hp": 4,
+    "heal_mana": ""
+}

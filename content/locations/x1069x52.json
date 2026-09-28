@@ -1,0 +1,116 @@
+{
+    "id": "x1069x52",
+    "name": "Ристалище",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти во двор",
+            "target": "x1065x50"
+        },
+        {
+            "label": "подойти к мечникам",
+            "target": "x1056x52"
+        }
+    ],
+    "objects": {
+        "n.c.Hans.a1": {
+            "char": {
+                "name": "Хaнc-зомби",
+                "hp": 180,
+                "hp_max": 180,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 11,
+                "dmg_max": 26,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": 26,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 20,
+                "magic_parry": 80,
+                "magic_resist": 40,
+                "verb": "из лука",
+                "exp_value": 50,
+                "ammo": "",
+                "respawn": "x1069x52:1000:2000"
+            },
+            "items": [
+                {
+                    "id": "i.w.r.b.long",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.e.z",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.w.r.b.long",
+                "i.a.e.z"
+            ]
+        },
+        "n.c.HansNovobranec.a1": {
+            "char": {
+                "name": "Нoвoбpaнeц-зомби",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 75,
+                "dmg_min": 4,
+                "dmg_max": 16,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "из лука",
+                "exp_value": 16,
+                "ammo": "",
+                "respawn": "x1069x52:100:400"
+            },
+            "items": [
+                {
+                    "id": "i.w.r.b.short",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.e.z",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.w.r.b.short",
+                "i.a.e.z"
+            ]
+        }
+    },
+    "description": "Несколько мишеней для стрельбы из лука стоят в ряд, на земле под ногами валяются сломанные стрелы. Еще несколько торчат в бревнах забора. Два человека хладнокровно и методично стреляют из лука по мишеням. В другом углу ристалища слышен звон мечей тренирующихся воинов."
+}

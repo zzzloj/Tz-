@@ -1,0 +1,96 @@
+{
+    "id": "x3011x100",
+    "name": "пески",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x3009x100"
+        }
+    ],
+    "objects": {
+        "n.a.camel.1": {
+            "char": {
+                "name": "верблюд",
+                "hp": 40,
+                "hp_max": 40,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 2,
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 4,
+                "dmg_max": 14,
+                "attack_delay": 9,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "копытами",
+                "exp_value": 9,
+                "ammo": "",
+                "respawn": "x3011x100:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.f.meat",
+                    "count": 6
+                }
+            ]
+        },
+        "n.a.camel.2": {
+            "char": {
+                "name": "верблюд",
+                "hp": 40,
+                "hp_max": 40,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 2,
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 4,
+                "dmg_max": 14,
+                "attack_delay": 9,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "копытами",
+                "exp_value": 9,
+                "ammo": "",
+                "respawn": "x3011x100:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.f.meat",
+                    "count": 6
+                }
+            ]
+        }
+    },
+    "description": "Дльше ходу нет не пешему,ни конному,путь преграждают зыбучие пески, самое страшное и опасное творение пустыни."
+}

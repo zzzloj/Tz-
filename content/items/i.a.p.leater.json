@@ -1,0 +1,11 @@
+{
+    "id": "i.a.p.leater",
+    "kind": "armor",
+    "name": "кожаные поручи",
+    "price": 6,
+    "armor": 1,
+    "req": [
+        0,
+        2
+    ]
+}

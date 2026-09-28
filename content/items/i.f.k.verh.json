@@ -1,0 +1,8 @@
+{
+    "id": "i.f.k.verh",
+    "kind": "food",
+    "name": "копченая верхоплавка",
+    "price": 20,
+    "heal_hp": 5,
+    "heal_mana": 6
+}

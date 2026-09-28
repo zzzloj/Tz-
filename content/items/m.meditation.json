@@ -1,0 +1,15 @@
+{
+    "id": "m.meditation",
+    "kind": "spell",
+    "name": "Медитация",
+    "mana_cost": 1,
+    "level": 1,
+    "words": "La Miar",
+    "power_min": 0,
+    "power_max": 0,
+    "needs_target": 0,
+    "criminals_only": 0,
+    "cast_time": 10,
+    "cooldown": 30,
+    "description": "Восстанавливает ману за счет здоровья мага, вплоть до полного его обессиливания"
+}

@@ -1,0 +1,65 @@
+{
+    "id": "x999x492",
+    "name": "Березовая роща",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на восток",
+            "target": "x1010x492"
+        },
+        {
+            "label": "на юг",
+            "target": "x999x504"
+        }
+    ],
+    "objects": {
+        "n.c.rat.br1": {
+            "char": {
+                "name": "кpыca",
+                "hp": 6,
+                "hp_max": 6,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": 1198675469,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:20:60:1198675540",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 70,
+                "dmg_min": 1,
+                "dmg_max": 4,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "зубaми",
+                "exp_value": 2,
+                "ammo": "",
+                "respawn": "x999x492:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ],
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "description": "Вы у западной городской стены. Березовая роща подступает вплотную к стене, хотя по стволам деревьем перебраться через нее не удалось бы. Роща простирается на юг и восток."
+}

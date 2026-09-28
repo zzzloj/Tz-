@@ -1,8 +1,0 @@
-<?php 
-$npc=array( 
-'char'=>'палач сэта|160|160|1|1||||||||', 
-'war'=>'95|6|39|3||30|5||||||топором|32||', 
-'items'=>'i.w.t.battle:1', 
-'equip'=>'i.w.t.battle', 
-'itemsrnd'=>'i.ring.b:50:0:1|i.ring.m:90:0:1|i.f.b.health:45:1:4|i.a.b.obsnagrud:20:0:1',
-);

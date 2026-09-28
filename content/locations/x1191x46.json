@@ -1,0 +1,100 @@
+{
+    "id": "x1191x46",
+    "name": "Магазин Академии",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти из магазина",
+            "target": "x1178x46"
+        }
+    ],
+    "objects": {
+        "n.c.Djoshua.a1": {
+            "char": {
+                "name": "Джoшуa-зомби",
+                "hp": 140,
+                "hp_max": 140,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 6,
+                "dmg_max": 32,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": 10,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 15,
+                "magic_parry": 85,
+                "magic_resist": 70,
+                "verb": "мaгиeй",
+                "exp_value": 30,
+                "ammo": "",
+                "respawn": "x1191x46:1000:2000"
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 55
+                }
+            ]
+        },
+        "n.c.Vituan.a1": {
+            "char": {
+                "name": "Витуaн-зомби",
+                "hp": 140,
+                "hp_max": 140,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 6,
+                "dmg_max": 32,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": 10,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 15,
+                "magic_parry": 85,
+                "magic_resist": 70,
+                "verb": "ядом",
+                "exp_value": 30,
+                "ammo": "",
+                "respawn": "x1191x46:1000:2000"
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 89
+                },
+                {
+                    "id": "i.b.fire",
+                    "count": 7
+                }
+            ]
+        }
+    },
+    "description": "Помещение перегорожено длинной стойкой из темного дерева, на которой разложены свитки, колбы с синей и красной жидкостью, сущеные травые и другие загадочные предметы."
+}

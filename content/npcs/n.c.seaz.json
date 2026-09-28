@@ -1,0 +1,42 @@
+{
+    "id": "n.c.seaz",
+    "char": {
+        "name": "морской змей",
+        "hp": 80,
+        "hp_max": 80,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 90,
+        "dmg_min": 1,
+        "dmg_max": 4,
+        "attack_delay": 8,
+        "is_ranged": "",
+        "armor": 7,
+        "dodge": 10,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": 5,
+        "magic_parry": 60,
+        "magic_resist": 70,
+        "verb": "хвостом",
+        "exp_value": 10,
+        "ammo": "",
+        "respawn": ""
+    },
+    "osvej": [
+        {
+            "id": "i.h.s.seaz",
+            "count": 1
+        }
+    ]
+}

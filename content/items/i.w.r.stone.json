@@ -1,0 +1,15 @@
+{
+    "id": "i.w.r.stone",
+    "kind": "weapon",
+    "name": "камень",
+    "price": 2,
+    "dmg_min": 1,
+    "dmg_max": 2,
+    "req": [
+        2,
+        2
+    ],
+    "speed": 4,
+    "verb": "камнем",
+    "ammo": "i.w.r.stone"
+}

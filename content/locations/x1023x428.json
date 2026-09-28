@@ -1,0 +1,61 @@
+{
+    "id": "x1023x428",
+    "name": "За северными воротами",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "войти в город",
+            "target": "x1029x450"
+        },
+        {
+            "label": "по дороге на север",
+            "target": "x1011x396"
+        },
+        {
+            "label": "к озеру на востоке",
+            "target": "x1056x421"
+        },
+        {
+            "label": "по тропинке на запад",
+            "target": "x999x430"
+        }
+    ],
+    "objects": {
+        "n.Yan": {
+            "char": {
+                "name": "Ян [oхoтник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 11,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1023x428:60:300"
+            }
+        }
+    },
+    "description": "Вы за пределами города, на юге находятся северные ворота, дорога из них идет прямиком на север, на востоке видно озеро, а на запад вдоль городской стены уходит небольшая поросшая осокой тропинка."
+}

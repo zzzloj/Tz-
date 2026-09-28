@@ -1,0 +1,64 @@
+{
+    "id": "x1146x491",
+    "name": "Дом лекаря",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x1141x506"
+        },
+        {
+            "label": "дверь в каморку",
+            "target": "x1162x493"
+        }
+    ],
+    "objects": {
+        "i.s.res": "камень воскрешения||0",
+        "n.h.Djozef": {
+            "char": {
+                "name": "Джoзeф [лeкapь]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": 1198662054,
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 11,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1146x491:1:2"
+            },
+            "items": [
+                {
+                    "id": "i.a.b.b",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.b.b"
+            ],
+            "bank": "90:8:32=i.bint:0"
+        }
+    },
+    "description": "Вы в доме лекаря, вдоль стен стоят две кушетки, а в центре один большой стол, на котором разложены инструменты. В углу дверь в каморку."
+}

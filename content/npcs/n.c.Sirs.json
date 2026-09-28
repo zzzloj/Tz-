@@ -1,0 +1,54 @@
+{
+    "id": "n.c.Sirs",
+    "char": {
+        "name": "Стoунc-зомби",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 14,
+        "dmg_max": 21,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": 30,
+        "magic_parry": 80,
+        "magic_resist": 50,
+        "verb": "кулaкaми",
+        "exp_value": 20,
+        "ammo": "",
+        "respawn": ""
+    },
+    "itemsrnd": [
+        {
+            "id": "i.a.b.rdosp",
+            "chance": 3,
+            "min": 1,
+            "max": 1
+        },
+        {
+            "id": "i.a.e.b",
+            "chance": 100,
+            "min": 1,
+            "max": 1
+        }
+    ],
+    "equip": [
+        "i.a.b.rdosp",
+        "i.a.e.b"
+    ]
+}

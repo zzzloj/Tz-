@@ -1,0 +1,11 @@
+{
+    "id": "i.a.b.latndosp",
+    "kind": "armor",
+    "name": "латный доспех",
+    "price": 400,
+    "armor": 5,
+    "req": [
+        5,
+        3
+    ]
+}

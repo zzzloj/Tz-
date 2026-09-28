@@ -1,0 +1,11 @@
+{
+    "id": "i.a.s.prochn",
+    "kind": "armor",
+    "name": "прочный щит",
+    "price": 55,
+    "armor": 3,
+    "req": [
+        4,
+        4
+    ]
+}

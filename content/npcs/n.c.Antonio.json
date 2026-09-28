@@ -1,0 +1,82 @@
+{
+    "id": "n.c.Antonio",
+    "char": {
+        "name": "Антoниo-зомби",
+        "hp": 140,
+        "hp_max": 140,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 180,
+        "dmg_min": 10,
+        "dmg_max": 20,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": 10,
+        "magic_parry": 20,
+        "magic_resist": 30,
+        "verb": "магией",
+        "exp_value": 30,
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.a.b.s",
+            "count": 1
+        },
+        {
+            "id": "i.a.e.c",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.b.s",
+        "i.a.e.c"
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 80,
+            "min": 20,
+            "max": 90
+        },
+        {
+            "id": "i.m.w.icefirst",
+            "chance": 50,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.m.w.a.earthquake",
+            "chance": 50,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.m.w.firebolt",
+            "chance": 50,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.q.kse",
+            "chance": 30,
+            "min": 1,
+            "max": 1
+        }
+    ]
+}

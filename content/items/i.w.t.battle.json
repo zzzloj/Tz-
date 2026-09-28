@@ -1,0 +1,14 @@
+{
+    "id": "i.w.t.battle",
+    "kind": "weapon",
+    "name": "боевой топор",
+    "price": 65,
+    "dmg_min": 3,
+    "dmg_max": 6,
+    "req": [
+        4,
+        2
+    ],
+    "speed": 5,
+    "verb": "топором"
+}

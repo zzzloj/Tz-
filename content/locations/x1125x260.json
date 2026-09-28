@@ -1,0 +1,65 @@
+{
+    "id": "x1125x260",
+    "name": "Башня мага",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "выйти из башни",
+            "target": "x1086x258"
+        }
+    ],
+    "objects": {
+        "n.Torvill": {
+            "char": {
+                "name": "Торвилл",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": 1198641158,
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 90,
+                "dmg_min": 17,
+                "dmg_max": 26,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1125x260:60:300"
+            },
+            "items": [
+                {
+                    "id": "i.a.b.c",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.e.c",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.b.c",
+                "i.a.e.c"
+            ],
+            "bank": "80:1:3=i.m.w.vamp:0|20:1:1=i.r.w.vamp:0",
+            "qv": 1198626525
+        }
+    },
+    "description": "Вы поднимаетесь по винтовой лестнице на третий этаж и попадаете в круглую комнату. На полу роскошные ковры из шкур, на стенах тоже ковры и гобелены с изображением чудовищ. В центре стоит стол, а вдоль стен открытые шкафы с книгами."
+}

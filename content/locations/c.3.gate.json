@@ -1,0 +1,209 @@
+{
+    "id": "c.3.gate",
+    "name": "Замок Луен*Blackarrow*(Не обосремься пацаны! Это будет красивая победа):u.wolverin:[1198618635]:u.lllyxep:#1198679848#",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти из замка",
+            "target": "c.3.in"
+        },
+        {
+            "label": "тронный зал",
+            "target": "c.3.tron"
+        },
+        {
+            "label": "общий зал",
+            "target": "c.3.main"
+        },
+        {
+            "label": "кладовая",
+            "target": "c.3.sklad"
+        }
+    ],
+    "objects": {
+        "n.o.castle3.543": {
+            "char": {
+                "name": "Kayeru [стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198545149,
+                "busy_until": 1198615671,
+                "target": "u.ceksi",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 24,
+                "dmg_max": 35,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 35,
+                "dodge": 35,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": 30,
+                "magic_resist": 60,
+                "verb": "копьем",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.xeon|u.xeon||1198973223|1|1198543050",
+            "st": "|1"
+        },
+        "n.o.castle3.217": {
+            "char": {
+                "name": "Suruna [стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198562914,
+                "busy_until": 1198545155,
+                "target": "u.ceksi",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 24,
+                "dmg_max": 35,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 35,
+                "dodge": 35,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": 30,
+                "magic_resist": 60,
+                "verb": "копьем",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.tytahxamoh|u.tytahxamoh||1198973491|1|1198543345"
+        },
+        "n.o.castle4.274": {
+            "char": {
+                "name": "Rafli [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198562914,
+                "busy_until": 1198545155,
+                "target": "u.ceksi",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.tytahxamoh|u.tytahxamoh||1198973496|1|1198543355"
+        },
+        "n.o.castle4.588": {
+            "char": {
+                "name": "Enos [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198562914,
+                "busy_until": 1198545155,
+                "target": "u.ceksi",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.tytahxamoh|u.tytahxamoh||1198973496|1|1198543364"
+        },
+        "n.o.castle4.637": {
+            "char": {
+                "name": "Gukay [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": 1198545155,
+                "target": "u.ceksi",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.tytahxamoh|u.tytahxamoh||1198973497|1|1198543371",
+            "st": "|1"
+        },
+        "i.log": "ветка|10|1198541004"
+    },
+    "description": "Внутренний двор расчерчен дорожками из белых камней. Часть стен увита мягким зеленым плющом, по сторонам расположены арки и беседки для отдыха. В воздухе разлит аромат весенних цветов, солнечные зайчики играют на листве аккуратных декоративных деревьев."
+}

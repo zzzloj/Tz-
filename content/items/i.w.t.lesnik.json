@@ -1,0 +1,13 @@
+{
+    "id": "i.w.t.lesnik",
+    "kind": "weapon",
+    "name": "топор лесника",
+    "price": 30,
+    "dmg_min": 1,
+    "dmg_max": 8,
+    "req": [
+        2
+    ],
+    "speed": 5,
+    "verb": "топором"
+}

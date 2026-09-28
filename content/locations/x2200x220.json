@@ -1,0 +1,50 @@
+{
+    "id": "x2200x220",
+    "name": "Храм",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "к выходу",
+            "target": "x2169x224"
+        }
+    ],
+    "objects": {
+        "i.s.res": "камень воскрешения||0",
+        "n.Lakosta": {
+            "char": {
+                "name": "Лакоста",
+                "hp": 70,
+                "hp_max": 70,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 70,
+                "dmg_min": 4,
+                "dmg_max": 8,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x2200x220:60:120"
+            }
+        }
+    },
+    "description": "Помост представялет собой возвышенность, с которой велись проповеди. Но в одном углу на полу оплавленое пятно, а на стенах кто-то вывел углем каббалистические знаки"
+}

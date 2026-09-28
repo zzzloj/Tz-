@@ -1,0 +1,67 @@
+{
+    "id": "x3012x100",
+    "name": "у реки",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x3014x100"
+        },
+        {
+            "label": "на восток",
+            "target": "x3015x100"
+        },
+        {
+            "label": "на юг",
+            "target": "x3010x100"
+        }
+    ],
+    "objects": {
+        "i.s.d.n.c.varan.2.32": "труп (варан)|1|1198677435||",
+        "n.c.varan.1": {
+            "char": {
+                "name": "варан",
+                "hp": 6,
+                "hp_max": 30,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198676900,
+                "busy_until": 1198676849,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 90,
+                "dmg_min": 5,
+                "dmg_max": 14,
+                "attack_delay": 14,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "ядoм",
+                "exp_value": 5,
+                "ammo": "",
+                "respawn": "x3012x100:300:600"
+            },
+            "items": [
+                {
+                    "id": "i.f.fileroot",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "timers": {
+        "1198677199": "n.c.varan.2|300:600"
+    },
+    "description": "Вдалеке на юге слышны звуки воды,тропа ведт на север вдоль реки и на восток в глубь пустыни."
+}

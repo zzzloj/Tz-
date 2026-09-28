@@ -1,0 +1,110 @@
+{
+    "id": "x113x1175",
+    "name": "Цитадель",
+    "zone": 2,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x114x1150"
+        },
+        {
+            "label": "на юг",
+            "target": "x111x1203"
+        },
+        {
+            "label": "на восток",
+            "target": "x150x1175"
+        },
+        {
+            "label": "на запад",
+            "target": "x75x1175"
+        }
+    ],
+    "objects": {
+        "n.a.b.ore.t2": {
+            "char": {
+                "name": "opeл",
+                "hp": 18,
+                "hp_max": 18,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 4,
+                "crime_title": "",
+                "wander": "4:60:120:1198675982",
+                "aux_ts": "",
+                "trail": ":x111x1203"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 0,
+                "dmg_max": 8,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "клювoм",
+                "exp_value": 3,
+                "ammo": "",
+                "respawn": "x111x1203:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.kog.orel",
+                    "count": 1
+                },
+                {
+                    "id": "i.h.p.orel",
+                    "count": 6
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ]
+        },
+        "n.t.1": {
+            "char": {
+                "name": "тамплиер",
+                "hp": 75,
+                "hp_max": 75,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198645813,
+                "busy_until": 1198638253,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:30:60:1198675992",
+                "aux_ts": "",
+                "trail": ":x114x1150"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 14,
+                "dmg_max": 20,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": 10,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "мечом",
+                "exp_value": 15,
+                "ammo": "",
+                "respawn": "x114x1150:60:180"
+            }
+        }
+    },
+    "description": "На севере раскинулась мощеная булыжником площаь, на юге пологая насыпь спускается с холма, на котором стоит эта цитадель"
+}

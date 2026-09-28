@@ -1,0 +1,45 @@
+{
+    "id": "n.Seneren",
+    "char": {
+        "name": "Сенерен",
+        "hp": 120,
+        "hp_max": 120,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 97,
+        "dmg_min": 11,
+        "dmg_max": 19,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "магией",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.a.e.p",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.e.p"
+    ]
+}

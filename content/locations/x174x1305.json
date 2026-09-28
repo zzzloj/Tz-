@@ -1,0 +1,271 @@
+{
+    "id": "x174x1305",
+    "name": "Форт пиратов",
+    "zone": 3,
+    "exits": [
+        {
+            "label": "на восток",
+            "target": "x210x1305"
+        },
+        {
+            "label": "на юг",
+            "target": "x176x1330"
+        },
+        {
+            "label": "на север",
+            "target": "x173x1280"
+        },
+        {
+            "label": "на запад",
+            "target": "x140x1305"
+        }
+    ],
+    "objects": {
+        "n.p.3": {
+            "char": {
+                "name": "пират",
+                "hp": 75,
+                "hp_max": 75,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198623907,
+                "busy_until": 1198621697,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:30:60:1198675560",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 5,
+                "dmg_max": 22,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 2,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "магией",
+                "exp_value": 20,
+                "ammo": "",
+                "respawn": "x174x1305:60:180"
+            }
+        },
+        "n.p.1": {
+            "char": {
+                "name": "пират",
+                "hp": 75,
+                "hp_max": 75,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:30:60:1198675560",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 14,
+                "dmg_max": 20,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": 2,
+                "dodge": 10,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "шпагой",
+                "exp_value": 15,
+                "ammo": "",
+                "respawn": "x174x1305:60:180"
+            }
+        },
+        "n.p.9": {
+            "char": {
+                "name": "пират",
+                "hp": 75,
+                "hp_max": 75,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:30:60:1198675559",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 5,
+                "dmg_max": 22,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 2,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "магией",
+                "exp_value": 20,
+                "ammo": "",
+                "respawn": "x174x1305:60:180"
+            }
+        },
+        "n.p.6": {
+            "char": {
+                "name": "пират",
+                "hp": 75,
+                "hp_max": 75,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:30:60:1198675566",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 14,
+                "dmg_max": 20,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": 2,
+                "dodge": 10,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "шпагой",
+                "exp_value": 15,
+                "ammo": "",
+                "respawn": "x174x1305:60:180"
+            }
+        },
+        "n.p.7": {
+            "char": {
+                "name": "пират",
+                "hp": 75,
+                "hp_max": 75,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198624034,
+                "busy_until": 1198614033,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:30:60:1198675570",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 5,
+                "dmg_max": 22,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 2,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "магией",
+                "exp_value": 20,
+                "ammo": "",
+                "respawn": "x174x1305:60:180"
+            }
+        },
+        "n.p.2": {
+            "char": {
+                "name": "пират",
+                "hp": 75,
+                "hp_max": 75,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:30:60:1198675560",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 14,
+                "dmg_max": 20,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": 2,
+                "dodge": 10,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "шпагой",
+                "exp_value": 15,
+                "ammo": "",
+                "respawn": "x174x1305:60:180"
+            }
+        },
+        "n.p.8": {
+            "char": {
+                "name": "пират",
+                "hp": 75,
+                "hp_max": 75,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:30:60:1198675553",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 14,
+                "dmg_max": 20,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": 2,
+                "dodge": 10,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "шпагой",
+                "exp_value": 15,
+                "ammo": "",
+                "respawn": "x174x1305:60:180"
+            }
+        }
+    },
+    "description": "Вы в центре поселения пиратов. Вокруг стоят постройки из позеленевшего от времени дерева. Несмотря на кажущуюся хрупкость, видно, что это укрепленные дома -  маленькие окна, обитые бронзой тяжелые двери, поднимающиеся лестницы с крючьями и т.д."
+}

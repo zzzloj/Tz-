@@ -1,0 +1,57 @@
+{
+    "id": "_begin",
+    "name": "Переулок",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x1141x506"
+        },
+        {
+            "label": "на восток",
+            "target": "x1185x526"
+        },
+        {
+            "label": "на юг",
+            "target": "x1157x548"
+        }
+    ],
+    "objects": {
+        "n.beginner": {
+            "char": {
+                "name": "Пpивpaтник Уин",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 11,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "_begin:1:2"
+            }
+        }
+    },
+    "description": "Вы стоите на мощеной камнем дороге между добротными домами. Человек в нескольких шагах от вас явно хочет с вами поговорить. [Чтобы начать разговор, на следующем экране выберите из списка \"Привратник Уин\", а потом \"Говорить\"]. Дорога идет с севера на юг, на севере расположен двор лекаря, а на востоке стоит здание какого-то магазина."
+}

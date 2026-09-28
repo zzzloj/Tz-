@@ -1,0 +1,52 @@
+{
+    "id": "x1214x584",
+    "name": "Портовое здание",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x1216x570"
+        }
+    ],
+    "objects": {
+        "n.Fernand": {
+            "char": {
+                "name": "Фepнaнд",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 2,
+                "dmg_max": 6,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1214x584:20:60"
+            }
+        }
+    },
+    "timers": {
+        "1198677101": "i.q.yashik|1|2|1800|3600"
+    },
+    "description": "Маленькая комната с низким потолком, в центре стоит массивный стол с лежащими на нем остатками еды, морскими картами и корабельными приборами. В  углу громоздкая тумбочка с золотыми ручками на выдвижных полках.\n\n"
+}

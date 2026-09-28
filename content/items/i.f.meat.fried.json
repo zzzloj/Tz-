@@ -1,0 +1,8 @@
+{
+    "id": "i.f.meat.fried",
+    "kind": "food",
+    "name": "жаренное мясо",
+    "price": 8,
+    "heal_hp": 6,
+    "heal_mana": ""
+}

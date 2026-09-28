@@ -1,0 +1,55 @@
+{
+    "id": "n.Rene",
+    "char": {
+        "name": "Рeнe",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 100,
+        "mana_max": 100,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 90,
+        "dmg_min": 9,
+        "dmg_max": 24,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": 6,
+        "dodge": 10,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "мeчoм",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": "x1056x504:1:2"
+    },
+    "items": [
+        {
+            "id": "i.a.b.latndosp",
+            "count": 1
+        },
+        {
+            "id": "i.a.e.s",
+            "count": 1
+        },
+        {
+            "id": "i.w.s.dvuruchn",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.b.latndosp",
+        "i.a.e.s",
+        "i.w.s.dvuruchn"
+    ]
+}

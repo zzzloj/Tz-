@@ -1,0 +1,11 @@
+{
+    "id": "i.w.s.dr1..me",
+    "kind": "weapon",
+    "name": "меч Драккара",
+    "price": 1500,
+    "dmg_min": 7,
+    "dmg_max": 18,
+    "req": "",
+    "speed": 6,
+    "verb": "мечом Драккара"
+}

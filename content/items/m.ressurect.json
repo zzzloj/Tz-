@@ -1,0 +1,15 @@
+{
+    "id": "m.ressurect",
+    "kind": "spell",
+    "name": "Воскрешение",
+    "mana_cost": 22,
+    "level": 3,
+    "words": "Suelt Tanna Vas",
+    "power_min": 0,
+    "power_max": 0,
+    "needs_target": 1,
+    "criminals_only": 0,
+    "cast_time": 12,
+    "cooldown": 500,
+    "description": "Воскрешает указанного призрака с минимумом здоровья"
+}

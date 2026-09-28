@@ -1,0 +1,56 @@
+{
+    "id": "n.c.Djon",
+    "char": {
+        "name": "Джoн-зомби",
+        "hp": 80,
+        "hp_max": 80,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 75,
+        "dmg_min": 4,
+        "dmg_max": 16,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "из детского лука",
+        "exp_value": 16,
+        "ammo": "",
+        "respawn": ""
+    },
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 90,
+            "min": 12,
+            "max": 24
+        },
+        {
+            "id": "i.a.h.ch1",
+            "chance": 90,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.w.r.b.short",
+            "chance": 100,
+            "min": 0,
+            "max": 1
+        }
+    ]
+}

@@ -1,0 +1,53 @@
+{
+    "id": "x1017x551",
+    "name": "Старый дом",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x1034x549"
+        },
+        {
+            "label": "дверь во вторую комнату",
+            "target": "x1019x566"
+        }
+    ],
+    "objects": {
+        "n.Surri": {
+            "char": {
+                "name": "Суppи",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 11,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1017x551:1:2"
+            }
+        }
+    },
+    "description": "В полумраке видна старая и обшарпанная, очень старинная мебель. Тяжелые меховые шторы почти полностью закрывают окна. В углу комнаты есть небольшая дверь."
+}

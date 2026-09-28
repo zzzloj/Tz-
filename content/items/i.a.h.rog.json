@@ -1,0 +1,12 @@
+{
+    "id": "i.a.h.rog",
+    "kind": "armor",
+    "name": "рогатый шлем",
+    "price": 1000,
+    "armor": 6,
+    "req": [
+        5,
+        6
+    ],
+    "unknown_4": 1
+}

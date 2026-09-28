@@ -1,0 +1,15 @@
+{
+    "id": "m.armor",
+    "kind": "spell",
+    "name": "Броня",
+    "mana_cost": 9,
+    "level": 2,
+    "words": "Tana Kas",
+    "power_min": 0,
+    "power_max": 0,
+    "needs_target": 1,
+    "criminals_only": 0,
+    "cast_time": 10,
+    "cooldown": 300,
+    "description": "Увеличивает броню цели на величину, зависящую от интеллекта заклинателя. Действует только на людей."
+}

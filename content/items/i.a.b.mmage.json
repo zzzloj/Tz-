@@ -1,0 +1,13 @@
+{
+    "id": "i.a.b.mmage",
+    "kind": "armor",
+    "name": "мантия мага",
+    "price": 1000,
+    "armor": 6,
+    "req": [
+        0,
+        5,
+        5
+    ],
+    "unknown_4": 0
+}

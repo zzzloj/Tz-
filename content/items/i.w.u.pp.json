@@ -1,0 +1,15 @@
+{
+    "id": "i.w.u.pp",
+    "kind": "weapon",
+    "name": "посох порчи",
+    "price": 1000,
+    "dmg_min": 5,
+    "dmg_max": 14,
+    "req": [
+        2,
+        5,
+        5
+    ],
+    "speed": 5,
+    "verb": "магией"
+}

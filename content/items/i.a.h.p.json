@@ -1,0 +1,12 @@
+{
+    "id": "i.a.h.p",
+    "kind": "armor",
+    "name": "шлем палладина",
+    "price": 500,
+    "armor": 4,
+    "req": [
+        5,
+        4
+    ],
+    "unknown_4": 2
+}

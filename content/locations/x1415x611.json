@@ -1,0 +1,68 @@
+{
+    "id": "x1415x611",
+    "name": "Водопад",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север вдоль гор",
+            "target": "x1413x585"
+        },
+        {
+            "label": "на запад вдоль берега",
+            "target": "x1376x613"
+        }
+    ],
+    "objects": {
+        "n.a.b.ore.vod": {
+            "char": {
+                "name": "opeл",
+                "hp": 18,
+                "hp_max": 18,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 4,
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 0,
+                "dmg_max": 8,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "клювoм",
+                "exp_value": 3,
+                "ammo": "",
+                "respawn": "x1415x611:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.kog.orel",
+                    "count": 1
+                },
+                {
+                    "id": "i.h.p.orel",
+                    "count": 6
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ]
+        },
+        "i.s.d.n.c.ogr.zl.48": "труп (oгp)|1|1198678269|,i.money:18,i.w.r.stone:8|"
+    },
+    "description": "Вы вышли к водопаду, который обрушивается с высоты пятиэтажного здания. Правда большая часть воды идет в обход и стекает широкими прозрачными струями по проложенными ею каналам среди камней. Река здесь маловодная, дальше к западу она набирается силы из подземных источников.\n\n\n\n"
+}

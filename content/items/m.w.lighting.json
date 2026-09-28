@@ -1,0 +1,15 @@
+{
+    "id": "m.w.lighting",
+    "kind": "spell",
+    "name": "Молния",
+    "mana_cost": 11,
+    "level": 3,
+    "words": "Las Ka Sant",
+    "power_min": 1,
+    "power_max": 28,
+    "needs_target": 1,
+    "criminals_only": 0,
+    "cast_time": 6,
+    "cooldown": 240,
+    "description": "Наносит урон электричеством"
+}

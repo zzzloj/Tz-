@@ -1,0 +1,11 @@
+{
+    "id": "i.a.s.obit",
+    "kind": "armor",
+    "name": "обитый щит",
+    "price": 100,
+    "armor": 3,
+    "req": [
+        4,
+        3
+    ]
+}

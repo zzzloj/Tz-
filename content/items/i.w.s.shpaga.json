@@ -1,0 +1,14 @@
+{
+    "id": "i.w.s.shpaga",
+    "kind": "weapon",
+    "name": "шпага",
+    "price": 35,
+    "dmg_min": 1,
+    "dmg_max": 6,
+    "req": [
+        0,
+        3
+    ],
+    "speed": 2,
+    "verb": "шпагой"
+}

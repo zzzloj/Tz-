@@ -1,0 +1,55 @@
+{
+    "id": "n.Zidvan",
+    "char": {
+        "name": "Зидван",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 100,
+        "mana_max": 100,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 70,
+        "dmg_min": 3,
+        "dmg_max": 7,
+        "attack_delay": 6,
+        "is_ranged": "",
+        "armor": 1000,
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": 100,
+        "magic_resist": 100,
+        "verb": "кулaкaми",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": "c.3.sklad:10:20:1"
+    },
+    "items": [
+        {
+            "id": "i.money",
+            "count": 12
+        },
+        {
+            "id": "i.a.b.leather",
+            "count": 1
+        },
+        {
+            "id": "i.a.h.s1",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.b.leather",
+        "i.a.h.s1"
+    ],
+    "bank": "90:0:12=i.f.apple:1|90:1:6=i.f.bread:1|90:1:6=i.f.meat.fried:1|90:0:8=i.f.sandwich:1|90:0:3=i.f.sausage:1|80:0:4=i.f.fish:1|70:1:3=i.f.wine:1"
+}

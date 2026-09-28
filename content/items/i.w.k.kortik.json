@@ -1,0 +1,12 @@
+{
+    "id": "i.w.k.kortik",
+    "kind": "weapon",
+    "name": "кортик",
+    "price": 40,
+    "dmg_min": 1,
+    "dmg_max": 4,
+    "req": "",
+    "speed": 3,
+    "verb": "кортиком",
+    "ammo": ""
+}

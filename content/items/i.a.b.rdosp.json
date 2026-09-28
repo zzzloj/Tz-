@@ -1,0 +1,11 @@
+{
+    "id": "i.a.b.rdosp",
+    "kind": "armor",
+    "name": "рыцарский доспех",
+    "price": 350,
+    "armor": 4,
+    "req": [
+        4,
+        4
+    ]
+}

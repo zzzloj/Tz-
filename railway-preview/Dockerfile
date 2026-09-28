@@ -1,5 +1,7 @@
 FROM python:3.12-slim AS archive
 COPY game/ /tmp/src/game/
+COPY content/ /tmp/src/content/
+COPY tools/content/ /tmp/src/tools/content/
 COPY railway-preview/fix-game.py /tmp/fix-game.py
 RUN python /tmp/fix-game.py /tmp/src /opt/legacy
 

@@ -1,0 +1,41 @@
+{
+    "id": "n.he.feja",
+    "char": {
+        "name": "фея",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 35,
+        "dmg_min": 2,
+        "dmg_max": 3,
+        "attack_delay": 3,
+        "is_ranged": "",
+        "armor": 5,
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": 20,
+        "magic_parry": 70,
+        "magic_resist": 50,
+        "verb": "мaгиeй",
+        "exp_value": 45,
+        "ammo": "",
+        "respawn": ""
+    },
+    "h_t": "0",
+    "h_s": "Irt Ani",
+    "h_p": "20",
+    "h_v1": "5",
+    "h_v2": "15"
+}

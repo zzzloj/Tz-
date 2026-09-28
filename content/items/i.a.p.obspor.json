@@ -1,0 +1,11 @@
+{
+    "id": "i.a.p.obspor",
+    "kind": "armor",
+    "name": "обсидиановые поручи",
+    "price": 124,
+    "armor": 5,
+    "req": [
+        5,
+        5
+    ]
+}

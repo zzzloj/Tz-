@@ -1,0 +1,15 @@
+{
+    "id": "i.w.r.bumerang",
+    "kind": "weapon",
+    "name": "бумеранг",
+    "price": 35,
+    "dmg_min": 3,
+    "dmg_max": 6,
+    "req": [
+        0,
+        2
+    ],
+    "speed": 5,
+    "verb": "бумерангом",
+    "ammo": ""
+}

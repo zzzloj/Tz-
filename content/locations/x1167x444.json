@@ -1,0 +1,133 @@
+{
+    "id": "x1167x444",
+    "name": "Академия второй этаж",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "на первый этаж",
+            "target": "x1175x454"
+        }
+    ],
+    "objects": {
+        "n.Antonio": {
+            "char": {
+                "name": "Антoниo",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 11,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 10,
+                "magic_parry": 20,
+                "magic_resist": 30,
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1167x444:20:20"
+            },
+            "items": [
+                {
+                    "id": "i.a.b.s",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.e.c",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.b.s",
+                "i.a.e.c"
+            ]
+        },
+        "n.Milton": {
+            "char": {
+                "name": "Милтoн",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 11,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1167x444:1:2"
+            }
+        },
+        "n.telemag": {
+            "char": {
+                "name": "Томрак",
+                "hp": 120,
+                "hp_max": 120,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 100,
+                "dmg_min": 8,
+                "dmg_max": 38,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1167x444:1:2"
+            }
+        }
+    },
+    "description": "На втором этаже всего один зал, но зато огромный, с мраморным полом и хорошо освещенный. По всему залу рассыпались группы магов и учеников, стоит гул от произносимых заклинаний, временами раздаются хлопки, а цветные витражи на высоких окнах бликуют снопами разноцветных искр."
+}

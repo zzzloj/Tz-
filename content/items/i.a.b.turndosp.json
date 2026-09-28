@@ -1,0 +1,11 @@
+{
+    "id": "i.a.b.turndosp",
+    "kind": "armor",
+    "name": "турнирный доспех",
+    "price": 450,
+    "armor": 5,
+    "req": [
+        5,
+        3
+    ]
+}

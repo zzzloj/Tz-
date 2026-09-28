@@ -1,0 +1,49 @@
+{
+    "id": "x1977x219",
+    "name": "Смотровая вышка",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x1977x245"
+        }
+    ],
+    "objects": {
+        "n.Polo": {
+            "char": {
+                "name": "Поло [торговец]",
+                "hp": 60,
+                "hp_max": 60,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 1,
+                "dmg_max": 4,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1977x219:60:120"
+            }
+        }
+    },
+    "description": "С высоты видно, что город находится в крайнем запустении - крыши домой обвалились, на улицах мусор, ветер носит обрывки бумаги и ткани"
+}

@@ -1,0 +1,12 @@
+{
+    "id": "i.a.b.sborn",
+    "kind": "armor",
+    "name": "адамантовый доспех",
+    "price": 75,
+    "armor": 9,
+    "req": [
+        5,
+        5
+    ],
+    "unknown_4": 1
+}

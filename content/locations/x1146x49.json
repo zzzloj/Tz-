@@ -1,0 +1,53 @@
+{
+    "id": "x1146x49",
+    "name": "Дом лекаря",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x1141x50"
+        },
+        {
+            "label": "дверь в каморку",
+            "target": "x1162x49"
+        }
+    ],
+    "objects": {
+        "n.c.Djozef.a1": {
+            "char": {
+                "name": "Джoзeф [лeкapь]-зомби",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 20,
+                "dmg_max": 28,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": 25,
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 20,
+                "magic_parry": 70,
+                "magic_resist": 50,
+                "verb": "мaгиeй",
+                "exp_value": 45,
+                "ammo": "",
+                "respawn": "x1146x49:1000:2000"
+            }
+        }
+    },
+    "description": "Вы в доме лекаря, вдоль стен стоят две кушетки, а в центре один большой стол, на котором разложены инструменты. В углу дверь в каморку."
+}

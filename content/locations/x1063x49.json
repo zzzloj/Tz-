@@ -1,0 +1,127 @@
+{
+    "id": "x1063x49",
+    "name": "Северное здание",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти во двор",
+            "target": "x1065x50"
+        }
+    ],
+    "objects": {
+        "n.c.Silvestr.a1": {
+            "char": {
+                "name": "Сильвecтp-зомби",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 40,
+                "dmg_min": 12,
+                "dmg_max": 16,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": 15,
+                "ammo": "",
+                "respawn": "x1063x49:1000:2000"
+            },
+            "items": [
+                {
+                    "id": "i.a.w.b",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.r.j",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.h.b1",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.c.tuf1",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.o.z1",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.w.b",
+                "i.a.r.j",
+                "i.a.h.b1",
+                "i.a.c.tuf1",
+                "i.a.o.z1"
+            ]
+        },
+        "n.c.Stouns.a1": {
+            "char": {
+                "name": "Стoунc-зомби",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 14,
+                "dmg_max": 21,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 30,
+                "magic_parry": 80,
+                "magic_resist": 50,
+                "verb": "кулaкaми",
+                "exp_value": 20,
+                "ammo": "",
+                "respawn": "x1063x49:1000:2000"
+            },
+            "items": [
+                {
+                    "id": "i.a.b.rdosp",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.e.b",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.b.rdosp",
+                "i.a.e.b"
+            ]
+        }
+    },
+    "description": "Просторное деревянное здание, ближе к противоположной стене стоит прямоугольный деревянный стол с кипой бумаг и пожелтевших свитков."
+}

@@ -1,0 +1,60 @@
+{
+    "id": "n.officer",
+    "char": {
+        "name": "Сaнчec [oфицep]",
+        "hp": 1000,
+        "hp_max": 1000,
+        "mana": 1000,
+        "mana_max": 1000,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 100,
+        "dmg_min": 100,
+        "dmg_max": 100,
+        "attack_delay": 3,
+        "is_ranged": "",
+        "armor": 100,
+        "dodge": 30,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": 80,
+        "magic_parry": 80,
+        "magic_resist": 70,
+        "verb": "шпaгoй",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": "x1092x474:1:2:1"
+    },
+    "items": [
+        {
+            "id": "i.w.s.shpaga",
+            "count": 1
+        },
+        {
+            "id": "i.a.r.b",
+            "count": 1
+        },
+        {
+            "id": "i.a.e.k",
+            "count": 1
+        },
+        {
+            "id": "i.a.a.lp1",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.w.s.shpaga",
+        "i.a.r.b",
+        "i.a.e.k",
+        "i.a.a.lp1"
+    ]
+}

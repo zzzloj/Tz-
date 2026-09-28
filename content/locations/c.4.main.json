@@ -1,0 +1,207 @@
+{
+    "id": "c.4.main",
+    "name": "Замок Танатос",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти к воротам",
+            "target": "c.4.gate"
+        }
+    ],
+    "objects": {
+        "i.s.rudnik": "рудная жила|0|0|300|4|1198677334",
+        "i.s.nakov": "наковальня|1|0",
+        "n.o.castle4.462": {
+            "char": {
+                "name": "Corged [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198398534,
+                "busy_until": 1198398540,
+                "target": "u._nefor_",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.4.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.vetlav|u.vetlav||1199012072|1|1197805199"
+        },
+        "n.o.castle4.404": {
+            "char": {
+                "name": "Zugtru [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198398534,
+                "busy_until": 1198398540,
+                "target": "u._nefor_",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.4.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.vetlav|u.vetlav||1199012073|1|1197805199"
+        },
+        "n.o.castle4.770": {
+            "char": {
+                "name": "Ruvapuuk [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198398534,
+                "busy_until": 1198398540,
+                "target": "u._nefor_",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.4.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.vetlav|u.vetlav||1199012074|1|1197805199",
+            "st": "|1"
+        },
+        "n.o.castle4.391": {
+            "char": {
+                "name": "Donog [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198398520,
+                "busy_until": 1198398540,
+                "target": "u._nefor_",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.4.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.vetlav|u.vetlav||1199013297|1|1197805656"
+        },
+        "n.o.castle4.81": {
+            "char": {
+                "name": "Erumur [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198398534,
+                "busy_until": 1198398540,
+                "target": "u._nefor_",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.4.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.vetlav|u.vetlav||1199013304|1|1197805738"
+        },
+        "i.rr.x2320x348": "руна|1|1198079597",
+        "i.w.u.smage": "посох друида|1|1198241339",
+        "i.w.u.kuvalda": "посох тотема|1|1198241384",
+        "i.w.u.palica": "посох слепца|1|1198241393",
+        "i.w.u.grom": "посох грома|1|1198241405",
+        "i.w.u.palka": "посох|1|1198241414",
+        "i.w.u.moon": "посох раздора|1|1198241452"
+    },
+    "timers": {
+        "1198678028": "i.s.nakov|1|0"
+    },
+    "description": "В общем зале нет столов или стульев, но у западной стены есть навесной балкон для музыкантов."
+}

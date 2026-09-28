@@ -1,0 +1,109 @@
+{
+    "id": "x1143x558",
+    "name": "Магазин одежды",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x1138x573"
+        }
+    ],
+    "objects": {
+        "n.Katrina": {
+            "char": {
+                "name": "Катрина",
+                "hp": 10000,
+                "hp_max": 10000,
+                "mana": 10000,
+                "mana_max": 10000,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": 1198680340,
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 700,
+                "dmg_min": 20,
+                "dmg_max": 40,
+                "attack_delay": 40,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулаками",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1143x558:20:60"
+            },
+            "items": [
+                {
+                    "id": "i.a.r.b1",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.h.p1",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.r.b1",
+                "i.a.h.p1"
+            ],
+            "bank": "50:1:4=i.bc.a:1|50:1:4=i.bc.b:0|50:1:4=i.bc.d:0|50:1:4=i.bc.e:0|50:1:4=i.bc.f:2|50:1:4=i.bc.g:0|50:1:4=i.bc.h:0|50:1:4=i.bc.i:0|50:1:4=i.bc.j:1|50:1:4=i.bc.k:3|50:1:4=i.bc.l:0|50:1:4=i.bc.m:3|50:1:4=i.bc.n:1|50:1:4=i.bc.o:0|50:1:4=i.bc.p:0|50:1:4=i.bc.r:3|50:1:4=i.bc.t:3|50:1:4=i.bc.v:3|50:1:4=i.bc.x:0|50:1:4=i.bc.s:0"
+        },
+        "n.Silvia": {
+            "char": {
+                "name": "Сильвия",
+                "hp": 70,
+                "hp_max": 70,
+                "mana": 120,
+                "mana_max": 120,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": 1198676378,
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 70,
+                "dmg_min": 1,
+                "dmg_max": 6,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1143x558:20:60"
+            },
+            "items": [
+                {
+                    "id": "i.a.r.s1",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.r.s1"
+            ],
+            "bank": "90:3:12=i.polotno:0|90:1:4=i.scissors:0|90:1:4=i.a.r.b:2|90:1:4=i.a.r.s:0|90:1:4=i.a.r.z:0|90:1:4=i.a.r.j:0|90:1:4=i.a.r.c:0|90:1:4=i.a.r.k:0|90:1:4=i.a.r.b1:3|90:1:4=i.a.r.s1:0|90:1:4=i.a.r.z1:4|90:1:4=i.a.r.j1:0|90:1:4=i.a.r.c1:1|90:1:4=i.a.r.k1:3|90:1:4=i.a.w.b:3|90:1:4=i.a.w.s:3|90:1:4=i.a.w.z:3|90:1:4=i.a.w.j:1|90:1:4=i.a.w.c:4|90:1:4=i.a.w.k:2|90:1:4=i.a.w.b1:2|90:1:4=i.a.w.s1:3|90:1:4=i.a.w.z1:1|90:1:4=i.a.w.j1:3|90:1:4=i.a.w.c1:1|90:1:4=i.a.w.k1:2|90:1:4=i.a.a.pp1:0|90:1:4=i.a.a.lp1:1|90:1:4=i.a.d.zsp1:2|90:1:4=i.a.d.zsl1:4|90:1:4=i.a.d.ssp1:2|90:1:4=i.a.d.ssl1:2|90:1:4=i.a.o.z1:3|90:1:4=i.a.o.s1:0|90:1:4=i.a.o.t1:3|90:1:4=i.a.o.k1:3|90:1:4=i.a.o.kv1:0|90:1:4=i.a.o.o1:4|90:1:4=i.a.b.b:0|90:1:4=i.a.b.s:0|90:1:4=i.a.b.z:1|90:1:4=i.a.b.j:1|90:1:4=i.a.b.c:1|90:1:4=i.a.b.k:1|90:1:4=i.a.e.b:3|90:1:4=i.a.e.s:1|90:1:4=i.a.e.z:1|90:1:4=i.a.e.j:3|90:1:4=i.a.e.c:1|90:1:4=i.a.e.k:1|90:1:4=i.a.h.b1:4|90:1:4=i.a.h.s1:2|90:1:4=i.a.h.z1:0|90:1:4=i.a.h.j1:1|90:1:4=i.a.h.c1:1|90:1:4=i.a.h.k1:3|90:1:4=i.a.h.ch1:4|90:1:4=i.a.h.kol1:3|90:1:4=i.a.h.p1:2|90:1:4=i.a.c.s1:3|90:1:4=i.a.c.k1:1|90:1:4=i.a.c.t1:1|90:1:4=i.a.c.sp1:1|90:1:4=i.a.c.tuf1:1|90:1:4=i.a.c.b1:3|90:1:4=i.a.c.tap1:3|90:1:2=i.a.a.bab:1|90:1:2=i.a.a.galst.c:2|90:1:2=i.a.a.galst.b:1|90:1:2=i.a.a.galst.z:2|90:1:2=i.a.a.galst.k:1|90:1:2=i.a.a.galst.s:2|90:1:2=i.a.a.fata:1|90:1:2=i.a.b.frak:1|90:1:2=i.a.b.svpl.b:2|90:1:2=i.a.b.svpl.r:1|90:1:2=i.a.b.svpl.g:0|90:1:2=i.a.b.svpl.c:1|90:1:2=i.a.b.svpl.z:2|90:1:2=i.a.b.svpl.m:2"
+        }
+    },
+    "description": "Большая часть комнаты занята вешалками с разнообразной одеждой, у одной из стен стоит зашторенная кабинка для переодевания, а рядом со входом на стене висит зеркало в полный рост."
+}

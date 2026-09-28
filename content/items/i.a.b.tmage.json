@@ -1,0 +1,13 @@
+{
+    "id": "i.a.b.tmage",
+    "kind": "armor",
+    "name": "теневой доспех",
+    "price": 600,
+    "armor": 5,
+    "req": [
+        0,
+        5,
+        4
+    ],
+    "unknown_4": 0
+}

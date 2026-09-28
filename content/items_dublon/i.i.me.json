@@ -1,0 +1,13 @@
+{
+    "id": "i.i.me",
+    "kind": "gem",
+    "name": "мельхиор",
+    "price": 10,
+    "effects": [
+        [
+            2,
+            5
+        ]
+    ],
+    "description": "Макс. урон +5"
+}

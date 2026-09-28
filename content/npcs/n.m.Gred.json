@@ -1,0 +1,37 @@
+{
+    "id": "n.m.Gred",
+    "char": {
+        "name": "Гред",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 100,
+        "mana_max": 100,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 100,
+        "dmg_min": 100,
+        "dmg_max": 20,
+        "attack_delay": 30,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "ножницами садовника",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": "x214x2140:1:2"
+    },
+    "bank": "50:1:4=i.bc.a:1|50:1:4=i.bc.b:1|50:1:4=i.bc.d:1|50:1:4=i.bc.e:1|50:1:4=i.bc.f:1|50:1:4=i.bc.g:1|50:1:4=i.bc.h:1|50:1:4=i.bc.i:1|50:1:4=i.bc.j:1|50:1:4=i.bc.k:1|50:1:4=i.bc.l:1|50:1:4=i.bc.m:1|50:1:4=i.bc.n:1|50:1:4=i.bc.o:1|50:1:4=i.bc.p:1|50:1:4=i.bc.r:1|50:1:4=i.bc.t:1|50:1:4=i.bc.v:1|50:1:4=i.bc.x:1|50:1:4=i.bc.s:1"
+}

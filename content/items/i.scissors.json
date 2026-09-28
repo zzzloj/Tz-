@@ -1,0 +1,12 @@
+{
+    "id": "i.scissors",
+    "kind": "item",
+    "name": "ножницы",
+    "price": 12,
+    "extra": [
+        "",
+        "",
+        "",
+        ""
+    ]
+}

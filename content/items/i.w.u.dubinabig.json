@@ -1,0 +1,15 @@
+{
+    "id": "i.w.u.dubinabig",
+    "kind": "weapon",
+    "name": "посох мастера",
+    "price": 16,
+    "dmg_min": 2,
+    "dmg_max": 4,
+    "req": [
+        0,
+        0,
+        3
+    ],
+    "speed": 5,
+    "verb": "магией"
+}

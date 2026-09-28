@@ -1,0 +1,108 @@
+{
+    "id": "x3101x100",
+    "name": "пещера",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "в проход",
+            "target": "x3000x100"
+        }
+    ],
+    "objects": {
+        "n.c.rabpepla.12": {
+            "char": {
+                "name": "раб пепла",
+                "hp": 22,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198665216,
+                "busy_until": 1198665220,
+                "target": "n.z.n.c.mumyfar.nzfc",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 8,
+                "dmg_max": 25,
+                "attack_delay": 4,
+                "is_ranged": 1,
+                "armor": 20,
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "ядом",
+                "exp_value": 15,
+                "ammo": "",
+                "respawn": "x3101x100:1200:2400"
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 14
+                },
+                {
+                    "id": "i.c.adamant",
+                    "count": 1
+                },
+                {
+                    "id": "i.f.b.health",
+                    "count": 1
+                }
+            ]
+        },
+        "n.c.rabpepla.11": {
+            "char": {
+                "name": "раб пепла",
+                "hp": 52,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198665206,
+                "busy_until": 1198665210,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 8,
+                "dmg_max": 25,
+                "attack_delay": 4,
+                "is_ranged": 1,
+                "armor": 20,
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "ядом",
+                "exp_value": 15,
+                "ammo": "",
+                "respawn": "x3101x100:1200:2400"
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 19
+                }
+            ]
+        }
+    },
+    "timers": {
+        "1198666964": "n.c.zsfinks.1|1200:2400",
+        "1198667179": "n.c.rabpepla.10|1200:2400"
+    },
+    "description": "Проход в скале закрыт,повсему видимо не так давно здесь случился обвал."
+}

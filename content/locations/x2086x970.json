@@ -1,0 +1,67 @@
+{
+    "id": "x2086x970",
+    "name": "Подземелье",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на восток",
+            "target": "x2134x968"
+        },
+        {
+            "label": "на юг",
+            "target": "x2084x1000"
+        }
+    ],
+    "objects": {
+        "n.c.demon.3": {
+            "char": {
+                "name": "демон",
+                "hp": 110,
+                "hp_max": 110,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:60:120:1198673553",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 100,
+                "dmg_min": 15,
+                "dmg_max": 22,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": 90,
+                "magic_resist": 30,
+                "verb": "мaгиeй",
+                "exp_value": 10,
+                "ammo": "",
+                "respawn": "x2086x970:1200:1800"
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 21
+                },
+                {
+                    "id": "i.oj.a",
+                    "count": 1
+                },
+                {
+                    "id": "i.f.b.health",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "description": "Корридор поворачивает с востока на юг"
+}

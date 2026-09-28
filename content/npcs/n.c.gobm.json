@@ -1,0 +1,42 @@
+{
+    "id": "n.c.gobm",
+    "char": {
+        "name": "гоблин-мастер",
+        "hp": 75,
+        "hp_max": 75,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 14,
+        "dmg_max": 20,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": 4,
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "посохом",
+        "exp_value": 32,
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.q.chsh",
+            "count": 1
+        }
+    ]
+}

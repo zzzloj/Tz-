@@ -1,0 +1,45 @@
+{
+    "id": "n.c.Silvia",
+    "char": {
+        "name": "Сильвия-зомби",
+        "hp": 70,
+        "hp_max": 70,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 70,
+        "dmg_min": 10,
+        "dmg_max": 16,
+        "attack_delay": 3,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "кулaчкaми",
+        "exp_value": 10,
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.a.r.s1",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.r.s1"
+    ]
+}

@@ -1,0 +1,81 @@
+{
+    "id": "n.c.Raksha",
+    "char": {
+        "name": "Рaкшa-зомби",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 10,
+        "dmg_max": 20,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "ядом",
+        "exp_value": 19,
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.a.r.c1",
+            "count": 1
+        },
+        {
+            "id": "i.a.h.ch1",
+            "count": 1
+        },
+        {
+            "id": "i.a.c.tuf1",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.r.c1",
+        "i.a.h.ch1",
+        "i.a.c.tuf1"
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 80,
+            "min": 20,
+            "max": 90
+        },
+        {
+            "id": "i.b.jad",
+            "chance": 4,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.b.fire",
+            "chance": 4,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.b.holy",
+            "chance": 4,
+            "min": 0,
+            "max": 1
+        }
+    ]
+}

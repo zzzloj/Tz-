@@ -1,0 +1,45 @@
+{
+    "id": "n.Serpent",
+    "char": {
+        "name": "Сepпeнт",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 100,
+        "mana_max": 100,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 4,
+        "dmg_max": 11,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": 5,
+        "magic_parry": 40,
+        "magic_resist": 20,
+        "verb": "кулaкaми",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": "x1161x456:1:2"
+    },
+    "items": [
+        {
+            "id": "i.a.e.b",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.a.e.b"
+    ]
+}

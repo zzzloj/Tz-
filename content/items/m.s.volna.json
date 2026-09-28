@@ -1,0 +1,15 @@
+{
+    "id": "m.s.volna",
+    "kind": "spell",
+    "name": "Призвать волну",
+    "mana_cost": 30,
+    "level": 5,
+    "words": "Suent Gigna Tou",
+    "power_min": 0,
+    "power_max": 0,
+    "needs_target": 0,
+    "criminals_only": 0,
+    "cast_time": 8,
+    "cooldown": 2400,
+    "description": "Вызов волны, которая  будет следовать за заклинателем и охранять его. Заклинание работает только если рядом есть вода."
+}

@@ -1,0 +1,15 @@
+{
+    "id": "i.w.u.shtyk",
+    "kind": "weapon",
+    "name": "посох легиона",
+    "price": 4,
+    "dmg_min": 1,
+    "dmg_max": 2,
+    "req": [
+        0,
+        2,
+        2
+    ],
+    "speed": 4,
+    "verb": "магией"
+}

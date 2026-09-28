@@ -1,0 +1,92 @@
+{
+    "id": "n.gregor",
+    "topics": {
+        "begin": {
+            "text": "Привет <imja>! Чем могу помочь?",
+            "options": [
+                {
+                    "label": "Кто ты?",
+                    "goto": "who"
+                },
+                {
+                    "label": "eval: if(legacy_cmp(additem($loc,$login,\"\",\"i.f.healherb\",\"count\"))>0 && legacy_cmp(additem($loc,$login,\"\",\"i.h.jalo\",\"count\"))>0 && legacy_cmp(additem($loc,$login,\"\",\"i.f.mushroom.dark\",\"count\"))>0) $title_v=\"Я принес тебе все, что ты просил\"; else $title_v=\"\";",
+                    "goto": "spec"
+                },
+                {
+                    "label": "Ничем, я просто шел мимо, пока",
+                    "goto": "end"
+                }
+            ]
+        },
+        "end": "И тебе удачи!",
+        "end1": "Спасибо <imja>!",
+        "buy": "1.2|86400",
+        "who": {
+            "text": "Я местный ветеренар, помогаю Мартену следить за его лошадьми.",
+            "options": [
+                {
+                    "label": "Ну и как тебе эта работа?",
+                    "goto": "vorc"
+                },
+                {
+                    "label": "Ветеринар? Хе-хе, я уж думал ты че по интереснее умеешь... Удачи в начинаниях!",
+                    "goto": "end"
+                }
+            ]
+        },
+        "vorc": {
+            "text": "Работа не трудная, но иногда бывают сложные случаи.",
+            "options": [
+                {
+                    "label": "Сложные? Я думал у вас все просто...",
+                    "goto": "fin"
+                },
+                {
+                    "label": "Ясно",
+                    "goto": "who"
+                }
+            ]
+        },
+        "vopr": {
+            "text": "Мне нужны:лечебная трава, темный гриб и ядовитое жало. На их поиски у меня просто не хватает времени.",
+            "options": [
+                {
+                    "label": "Я постораюсь тебе помочь",
+                    "goto": "end1"
+                },
+                {
+                    "label": " Все ясно. Желаю удачи в поисках...",
+                    "goto": "end"
+                },
+                {
+                    "label": ""
+                }
+            ]
+        },
+        "fin": {
+            "text": "Хех, многие так считают, но вот сейчас, к примеру, одна лошадь повредила себе копыто и для ее лечения необходимы редкие растения и еще кое-что.",
+            "options": [
+                {
+                    "label": "Что именно?",
+                    "goto": "vopr"
+                },
+                {
+                    "label": " Ну я думаю ты сам справишся. Удачи!",
+                    "goto": "end"
+                },
+                {
+                    "label": ""
+                }
+            ]
+        },
+        "spec": {
+            "text": "eval: if(legacy_cmp(additem($loc,$login,\"\",\"i.f.healherb\",\"count\"))>0 && legacy_cmp(additem($loc,$login,\"\",\"i.h.jalo\",\"count\"))>0 && legacy_cmp(additem($loc,$login,\"\",\"i.f.mushroom.dark\",\"count\"))>0) {additem($loc,$login,\"\",\"i.f.healherb\",1); additem($loc,$login,\"\",\"i.h.jalo\",1); additem($loc,$login,\"\",\"i.f.mushroom.dark\",1); additem($loc,\"\",$login,\"i.acid\",2); $title_v=\"Спасибо <imja>! Вот возьми в качестве моей благодарности.\";} else $title_v=\"\";",
+            "options": [
+                {
+                    "label": "Спасибо, не откажусь!удачи в работе.",
+                    "goto": "end"
+                }
+            ]
+        }
+    }
+}

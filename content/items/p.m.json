@@ -1,0 +1,7 @@
+{
+    "id": "p.m",
+    "kind": "technique",
+    "name": "меткий удар",
+    "cooldown": 300,
+    "description": "Урон: -30%<br/>Шанс попасть: +40%"
+}

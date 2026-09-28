@@ -1,0 +1,54 @@
+{
+    "id": "x1103x618",
+    "name": "Причал",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "подняться на борт",
+            "target": "x435x1167"
+        },
+        {
+            "label": "вернуться на пристань",
+            "target": "x1098x606"
+        }
+    ],
+    "objects": {
+        "i.s.lodkas": "сломанная лодка|0|",
+        "n.Tonny": {
+            "char": {
+                "name": "Тонни",
+                "hp": 50,
+                "hp_max": 50,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 1,
+                "dmg_max": 6,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x1103x618:1:1"
+            }
+        }
+    },
+    "description": "Деревянные мостки хоть и не в лучшем состоянии, но еще держатся. У дальнего края причала есть столбик, к которому привязывают лодки. У причала стоит красивый фрегат с поднятыми белыми парусами."
+}

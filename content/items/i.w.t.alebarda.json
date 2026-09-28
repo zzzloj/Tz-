@@ -1,0 +1,14 @@
+{
+    "id": "i.w.t.alebarda",
+    "kind": "weapon",
+    "name": "алебарда",
+    "price": 250,
+    "dmg_min": 7,
+    "dmg_max": 11,
+    "req": [
+        5,
+        3
+    ],
+    "speed": 6,
+    "verb": "алебардой"
+}

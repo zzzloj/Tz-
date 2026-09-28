@@ -1,0 +1,15 @@
+{
+    "id": "m.s.fantom",
+    "kind": "spell",
+    "name": "Призвать фантома",
+    "mana_cost": 16,
+    "level": 3,
+    "words": "Suent Lasta",
+    "power_min": 0,
+    "power_max": 0,
+    "needs_target": 0,
+    "criminals_only": 0,
+    "cast_time": 8,
+    "cooldown": 2400,
+    "description": "Вызов фантома, который атакует магией и будет следовать за заклинателем и охранять его"
+}

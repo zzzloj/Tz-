@@ -1,0 +1,50 @@
+{
+    "id": "x6x5",
+    "name": "магазин припасов",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "выйти",
+            "target": "x6x6"
+        }
+    ],
+    "objects": {
+        "n.Ruf": {
+            "char": {
+                "name": "Руф",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": 1198670744,
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 4,
+                "dmg_max": 11,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x6x5:1:2"
+            },
+            "bank": "90:12:45=i.arrow:15|90:12:35=i.bolt:34|60:1:5=i.f.meat.fried:5|80:1:4=i.f.apple:1|70:1:3=i.w.k.hunter:0|60:1:1=i.a.b.leather:1|90:1:2=i.f.fish:1|60:1:1=i.a.c.s1:0|80:1:1=i.fishman:1|90:1:45=i.spichka:21|80:1:1=i.set.leska:1|70:1:1=i.set.arrow:0|70:1:1=i.set.bolt:1|95:1:4=i.set.shampur:3|95:1:4=i.set.koptilka:4"
+        }
+    },
+    "description": ""
+}

@@ -1,0 +1,12 @@
+{
+    "id": "i.w.k.kor",
+    "kind": "weapon",
+    "name": "короткий нож",
+    "price": 22,
+    "dmg_min": 1,
+    "dmg_max": 4,
+    "req": "",
+    "speed": 4,
+    "verb": "ножом",
+    "ammo": ""
+}

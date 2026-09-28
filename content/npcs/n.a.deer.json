@@ -1,0 +1,54 @@
+{
+    "id": "n.a.deer",
+    "char": {
+        "name": "oлeнь",
+        "hp": 26,
+        "hp_max": 26,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": 3,
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 70,
+        "dmg_min": 1,
+        "dmg_max": 8,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "poгaми",
+        "exp_value": 4,
+        "ammo": "",
+        "respawn": ""
+    },
+    "osvej": [
+        {
+            "id": "i.h.s.deer",
+            "count": 1
+        },
+        {
+            "id": "i.h.kop.deer",
+            "count": 1
+        },
+        {
+            "id": "i.h.r.deer",
+            "count": 1
+        },
+        {
+            "id": "i.f.meat",
+            "count": 2
+        }
+    ]
+}

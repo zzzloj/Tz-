@@ -1,0 +1,71 @@
+{
+    "id": "n.c.palset",
+    "char": {
+        "name": "палач сэта",
+        "hp": 160,
+        "hp_max": 160,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 95,
+        "dmg_min": 6,
+        "dmg_max": 39,
+        "attack_delay": 3,
+        "is_ranged": "",
+        "armor": 30,
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "топором",
+        "exp_value": 32,
+        "ammo": "",
+        "respawn": ""
+    },
+    "items": [
+        {
+            "id": "i.w.t.battle",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.w.t.battle"
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.ring.b",
+            "chance": 50,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.ring.m",
+            "chance": 90,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.f.b.health",
+            "chance": 45,
+            "min": 1,
+            "max": 4
+        },
+        {
+            "id": "i.a.b.obsnagrud",
+            "chance": 20,
+            "min": 0,
+            "max": 1
+        }
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "id": "i.w.r.c.gazov2",
+    "kind": "weapon",
+    "name": "газовый самострел",
+    "price": 350,
+    "dmg_min": 18,
+    "dmg_max": 28,
+    "req": [
+        3
+    ],
+    "speed": 5,
+    "verb": "из самострела",
+    "ammo": "i.bolt"
+}

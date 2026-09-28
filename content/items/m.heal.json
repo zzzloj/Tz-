@@ -1,0 +1,15 @@
+{
+    "id": "m.heal",
+    "kind": "spell",
+    "name": "Лечение",
+    "mana_cost": 8,
+    "level": 1,
+    "words": "Suelt Valla",
+    "power_min": 10,
+    "power_max": 12,
+    "needs_target": 1,
+    "criminals_only": 0,
+    "cast_time": 8,
+    "cooldown": 180,
+    "description": "Восстанавливает у цели здоровье"
+}

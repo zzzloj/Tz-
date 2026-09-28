@@ -1,0 +1,15 @@
+{
+    "id": "m.w.holyarrow",
+    "kind": "spell",
+    "name": "Святая стрела",
+    "mana_cost": 3,
+    "level": 1,
+    "words": "Blast Kosta Nor",
+    "power_min": 5,
+    "power_max": 8,
+    "needs_target": 1,
+    "criminals_only": 1,
+    "cast_time": 5,
+    "cooldown": 60,
+    "description": "Наносит урон святой энергией"
+}

@@ -1,0 +1,15 @@
+{
+    "id": "i.w.r.b.compozit",
+    "kind": "weapon",
+    "name": "составной лук",
+    "price": 250,
+    "dmg_min": 4,
+    "dmg_max": 22,
+    "req": [
+        5,
+        5
+    ],
+    "speed": 6,
+    "verb": "из лука",
+    "ammo": "i.arrow"
+}

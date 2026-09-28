@@ -1,0 +1,77 @@
+{
+    "id": "x1220x510",
+    "name": "Тенистая аллея",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x1220x498"
+        },
+        {
+            "label": "на восток",
+            "target": "x1234x513"
+        },
+        {
+            "label": "на юг",
+            "target": "x1220x532"
+        },
+        {
+            "label": "на запад",
+            "target": "x1205x514"
+        }
+    ],
+    "objects": {
+        "n.a.b.vor.ta": {
+            "char": {
+                "name": "вopoнa",
+                "hp": 5,
+                "hp_max": 5,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 2,
+                "crime_title": "",
+                "wander": "1:20:60:1198676471",
+                "aux_ts": "",
+                "trail": ":x1220x498"
+            },
+            "war": {
+                "hit_chance": 70,
+                "dmg_min": 0,
+                "dmg_max": 3,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "клювoм",
+                "exp_value": 2,
+                "ammo": "",
+                "respawn": "x1220x498:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.p.vorona",
+                    "count": 8
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ],
+            "items": [
+                {
+                    "id": "i.med.b",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "description": "Тенистая аллея тянется на север, в этой части растут старые раскидистые деревья - лучшее место чтобы укрыться от дневного зноя. На востоке среди кустов можно пробраться к городской стене, а на юге начинаются жилые кварталы."
+}

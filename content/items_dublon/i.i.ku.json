@@ -1,0 +1,13 @@
+{
+    "id": "i.i.ku",
+    "kind": "gem",
+    "name": "кунцит",
+    "price": 10,
+    "effects": [
+        [
+            7,
+            10
+        ]
+    ],
+    "description": "Парирование +10%"
+}

@@ -1,0 +1,12 @@
+{
+    "id": "i.w.k.long",
+    "kind": "weapon",
+    "name": "длинный нож",
+    "price": 55,
+    "dmg_min": 1,
+    "dmg_max": 5,
+    "req": "",
+    "speed": 4,
+    "verb": "ножом",
+    "ammo": ""
+}

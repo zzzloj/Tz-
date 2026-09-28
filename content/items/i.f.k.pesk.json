@@ -1,0 +1,8 @@
+{
+    "id": "i.f.k.pesk",
+    "kind": "food",
+    "name": "копченый пескарь",
+    "price": 60,
+    "heal_hp": 7,
+    "heal_mana": 8
+}

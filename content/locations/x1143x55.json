@@ -1,0 +1,107 @@
+{
+    "id": "x1143x55",
+    "name": "Магазин одежды",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x1138x57"
+        }
+    ],
+    "objects": {
+        "n.c.Katrina.a1": {
+            "char": {
+                "name": "Катрина-зомби",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 70,
+                "dmg_min": 10,
+                "dmg_max": 16,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулачками",
+                "exp_value": 20,
+                "ammo": "",
+                "respawn": "x1143x55:200:600"
+            },
+            "items": [
+                {
+                    "id": "i.a.r.b1",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.h.p1",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.r.b1",
+                "i.a.h.p1"
+            ]
+        },
+        "n.c.Silvia.a1": {
+            "char": {
+                "name": "Сильвия-зомби",
+                "hp": 70,
+                "hp_max": 70,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 70,
+                "dmg_min": 10,
+                "dmg_max": 16,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулaчкaми",
+                "exp_value": 10,
+                "ammo": "",
+                "respawn": "x1143x55:200:600"
+            },
+            "items": [
+                {
+                    "id": "i.a.r.s1",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.r.s1"
+            ]
+        }
+    },
+    "description": "Большая часть комнаты занята вешалками с разнообразной одеждой, у одной из стен стоит зашторенная кабинка для переодевания, а рядом со входом на стене висит зеркало в полный рост."
+}

@@ -1,0 +1,72 @@
+{
+    "id": "n.c.osfinks",
+    "char": {
+        "name": "огненный сфинкс",
+        "hp": 210,
+        "hp_max": 210,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 95,
+        "dmg_min": 14,
+        "dmg_max": 36,
+        "attack_delay": 3,
+        "is_ranged": "",
+        "armor": 35,
+        "dodge": 20,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": 20,
+        "magic_parry": 50,
+        "magic_resist": 90,
+        "verb": "магией",
+        "exp_value": 50,
+        "ammo": "",
+        "respawn": ""
+    },
+    "osvej": [
+        {
+            "id": "i.q.golsfinks.ogn",
+            "count": 1
+        },
+        {
+            "id": "i.f.meat",
+            "count": 8
+        }
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.i.ag",
+            "chance": 10,
+            "min": 0,
+            "max": 2
+        },
+        {
+            "id": "i.i.am",
+            "chance": 15,
+            "min": 0,
+            "max": 2
+        },
+        {
+            "id": "i.i.az",
+            "chance": 20,
+            "min": 0,
+            "max": 2
+        },
+        {
+            "id": "i.i.do",
+            "chance": 30,
+            "min": 0,
+            "max": 2
+        }
+    ]
+}

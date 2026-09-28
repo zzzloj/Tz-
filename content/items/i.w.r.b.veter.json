@@ -1,0 +1,16 @@
+{
+    "id": "i.w.r.b.veter",
+    "kind": "weapon",
+    "name": "лук ветра",
+    "price": 350,
+    "dmg_min": 8,
+    "dmg_max": 22,
+    "req": [
+        2,
+        5,
+        2
+    ],
+    "speed": 6,
+    "verb": "из лука",
+    "ammo": "i.arrow"
+}

@@ -1,0 +1,12 @@
+{
+    "id": "i.w.k.korkinj",
+    "kind": "weapon",
+    "name": "короткий кинжал",
+    "price": 55,
+    "dmg_min": 1,
+    "dmg_max": 5,
+    "req": "",
+    "speed": 4,
+    "verb": "ножом",
+    "ammo": ""
+}

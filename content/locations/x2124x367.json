@@ -1,0 +1,57 @@
+{
+    "id": "x2124x367",
+    "name": "Главная улица",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "к воротам",
+            "target": "x2061x368"
+        },
+        {
+            "label": "на север",
+            "target": "x2124x329"
+        },
+        {
+            "label": "на восток",
+            "target": "x2174x363"
+        }
+    ],
+    "objects": {
+        "n.guildmage": {
+            "char": {
+                "name": "Маг-охранник",
+                "hp": 40,
+                "hp_max": 40,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 100,
+                "dmg_min": 8,
+                "dmg_max": 24,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x2124x367:1:2"
+            }
+        }
+    },
+    "description": "На юге высокая башня, у входа стоит одинокий человек в робе с капюшоном, надвинутым на глаза. На западе выход из города"
+}

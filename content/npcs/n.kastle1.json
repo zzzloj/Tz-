@@ -1,0 +1,36 @@
+{
+    "id": "n.kastle1",
+    "char": {
+        "name": "Garsl [наемник]",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 90,
+        "dmg_min": 10,
+        "dmg_max": 16,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": 20,
+        "dodge": 10,
+        "parry": 40,
+        "shield_armor": 2,
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "мeчoм",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": ""
+    }
+}

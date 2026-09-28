@@ -1,0 +1,15 @@
+{
+    "id": "m.createfood",
+    "kind": "spell",
+    "name": "Создать еду",
+    "mana_cost": 12,
+    "level": 1,
+    "words": "Manm Kris",
+    "power_min": 0,
+    "power_max": 0,
+    "needs_target": 0,
+    "criminals_only": 0,
+    "cast_time": 6,
+    "cooldown": 500,
+    "description": "Создает случайную еду"
+}

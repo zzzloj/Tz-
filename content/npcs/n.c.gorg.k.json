@@ -1,0 +1,50 @@
+{
+    "id": "n.c.gorg.k",
+    "char": {
+        "name": "каменная горгулья",
+        "hp": 190,
+        "hp_max": 190,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 95,
+        "dmg_min": 12,
+        "dmg_max": 24,
+        "attack_delay": 6,
+        "is_ranged": "",
+        "armor": 25,
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "лапами",
+        "exp_value": 55,
+        "ammo": "",
+        "respawn": ""
+    },
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 80,
+            "min": 40,
+            "max": 80
+        }
+    ],
+    "osvej": [
+        {
+            "id": "i.q.heart.k",
+            "count": 1
+        }
+    ]
+}

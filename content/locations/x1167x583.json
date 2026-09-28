@@ -1,0 +1,94 @@
+{
+    "id": "x1167x583",
+    "name": "Склад",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "в восточную часть склада",
+            "target": "x1186x582"
+        }
+    ],
+    "objects": {
+        "n.c.rat.sk4": {
+            "char": {
+                "name": "кpыca",
+                "hp": 4,
+                "hp_max": 6,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198678027,
+                "busy_until": 1198678051,
+                "target": "u.kipellov",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 70,
+                "dmg_min": 1,
+                "dmg_max": 4,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "зубaми",
+                "exp_value": 2,
+                "ammo": "",
+                "respawn": "x1167x583:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ]
+        },
+        "n.a.mouse.1": {
+            "char": {
+                "name": "мышь",
+                "hp": 2,
+                "hp_max": 4,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198678027,
+                "busy_until": 1198678051,
+                "target": "u.kipellov",
+                "tame_difficulty": 1,
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 40,
+                "dmg_min": 1,
+                "dmg_max": 1,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "зубaми",
+                "exp_value": 1,
+                "ammo": "",
+                "respawn": "x1167x583:300:600"
+            }
+        }
+    },
+    "timers": {
+        "1198678145": "n.c.pauk.sk3|300:600|2:20:60:1198677845",
+        "1198678468": "n.c.rat.sk3|300:600"
+    },
+    "description": "Вы идете, натыкаясь в темноте на разбросанные деревянные ящики и бочки. Часть балок покосилась и угрожающе поскрипывает над головой.\n"
+}

@@ -1,0 +1,46 @@
+{
+    "id": "n.a.bear",
+    "char": {
+        "name": "мeдвeдь",
+        "hp": 44,
+        "hp_max": 44,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": 4,
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 6,
+        "dmg_max": 14,
+        "attack_delay": 6,
+        "is_ranged": "",
+        "armor": 1,
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "зубaми",
+        "exp_value": 8,
+        "ammo": "",
+        "respawn": ""
+    },
+    "osvej": [
+        {
+            "id": "i.h.s.bear",
+            "count": 1
+        },
+        {
+            "id": "i.f.meat",
+            "count": 2
+        }
+    ]
+}

@@ -1,0 +1,251 @@
+{
+    "id": "c.4.sklad",
+    "name": "Замок Танатос",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти к воротам",
+            "target": "c.4.gate"
+        }
+    ],
+    "objects": {
+        "n.Antars": {
+            "char": {
+                "name": "Антарс",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 70,
+                "dmg_min": 3,
+                "dmg_max": 7,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 1000,
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": 100,
+                "magic_resist": 100,
+                "verb": "кулaкaми",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "c.4.sklad:10:20:1"
+            },
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 12
+                },
+                {
+                    "id": "i.a.b.leather",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.h.s1",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.b.leather",
+                "i.a.h.s1"
+            ],
+            "bank": "90:0:12=i.f.apple:1|90:1:6=i.f.bread:1|90:1:6=i.f.meat.fried:1|90:0:8=i.f.sandwich:1|90:0:3=i.f.sausage:1|80:0:4=i.f.fish:1|70:1:3=i.f.wine:1",
+            "qv": "x1092x474|1199094001"
+        },
+        "n.o.castle3.889": {
+            "char": {
+                "name": "Udir [стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198398384,
+                "busy_until": 1198398390,
+                "target": "u._nefor_",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.4.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 24,
+                "dmg_max": 35,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 35,
+                "dodge": 35,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": 30,
+                "magic_resist": 60,
+                "verb": "копьем",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.vetlav|u.vetlav||1199013295|1|1197805656"
+        },
+        "n.o.castle4.778": {
+            "char": {
+                "name": "Cordal [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198398384,
+                "busy_until": 1198398390,
+                "target": "u._nefor_",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.4.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.vetlav|u.vetlav||1199014432|1|1197806957"
+        },
+        "n.o.castle4.399": {
+            "char": {
+                "name": "Criduna [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198398384,
+                "busy_until": 1198398390,
+                "target": "u._nefor_",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.4.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.vetlav|u.vetlav||1199014430|1|1197806744"
+        },
+        "n.o.castle4.430": {
+            "char": {
+                "name": "Bursi [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198398384,
+                "busy_until": 1198398390,
+                "target": "u._nefor_",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.4.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.vetlav|u.vetlav||1199014432|1|1197806902"
+        },
+        "n.o.castle4.908": {
+            "char": {
+                "name": "Lornen [маг-стражник]",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198398384,
+                "busy_until": 1198398390,
+                "target": "u._nefor_",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ":c.4.gate"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 15,
+                "dmg_max": 25,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 15,
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 25,
+                "magic_parry": 50,
+                "magic_resist": 70,
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": ""
+            },
+            "owner": "u.vetlav|u.vetlav||1199016263|1|1197808581"
+        },
+        "i.f.wine": "вино|2|1198061956",
+        "i.f.k.som": "копченый сом|10|1198061967"
+    },
+    "description": "Кладовая заложена деревянными бочками из-под вина и несколькими старинными сундуками с тяжелыми крышками"
+}

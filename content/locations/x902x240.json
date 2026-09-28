@@ -1,0 +1,62 @@
+{
+    "id": "x902x240",
+    "name": "Тренировочный зал",
+    "zone": 1,
+    "exits": [
+        {
+            "label": "выйти во внутренний двор",
+            "target": "x902x254"
+        },
+        {
+            "label": "в дверь на западе",
+            "target": "x888x241"
+        }
+    ],
+    "objects": {
+        "n.Kasten": {
+            "char": {
+                "name": "Кастен",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 100,
+                "mana_max": 100,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 4,
+                "dmg_max": 112,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 20,
+                "dodge": 10,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кулаками",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x902x240:60:120"
+            },
+            "items": [
+                {
+                    "id": "i.a.e.k",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.e.k"
+            ]
+        }
+    },
+    "description": "Вы в просторном помещении, у стены стоит подставка для мечей и копий. Больше никаких предметов или мебели нет, но на западе есть дверь, еще более крепная, чем в эту комнату.\n\n"
+}

@@ -1,0 +1,8 @@
+{
+    "id": "i.f.milk",
+    "kind": "food",
+    "name": "молоко",
+    "price": 10,
+    "heal_hp": 7,
+    "heal_mana": ""
+}

@@ -1,0 +1,21 @@
+{
+    "id": "x2120x212",
+    "name": "Волчья берлога",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "назад на склад",
+            "target": "x1167x58"
+        },
+        {
+            "label": "в глубь волчьей берлоги",
+            "target": "x2121x212"
+        }
+    ],
+    "objects": {
+        "i.s.d.n.c.wolfwar.c6.50": "труп (волк [воин])|1|1198669382|i.w.s.glefa:1|i.h.s.wolf:1,i.h.k.wolf:1,i.h.kog.wolf:1,i.f.meat:1"
+    },
+    "timers": {
+        "1198669151": "n.c.wolfwar.c6|300:600"
+    }
+}

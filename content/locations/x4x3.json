@@ -1,0 +1,24 @@
+{
+    "id": "x4x3",
+    "name": "перед домом",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "войти в дом",
+            "target": "x3x3"
+        },
+        {
+            "label": "на запад",
+            "target": "x4x2"
+        },
+        {
+            "label": "на восток",
+            "target": "x4x4"
+        },
+        {
+            "label": "на север",
+            "target": "x5x3"
+        }
+    ],
+    "description": "На юге здание. "
+}

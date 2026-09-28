@@ -1,0 +1,71 @@
+{
+    "id": "x1004x142",
+    "name": "Северный лес",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x1004x114"
+        },
+        {
+            "label": "на восток",
+            "target": "x1044x142"
+        },
+        {
+            "label": "на юг",
+            "target": "x1004x170"
+        },
+        {
+            "label": "на запад",
+            "target": "x967x142"
+        }
+    ],
+    "objects": {
+        "n.c.werwolf.sl": {
+            "char": {
+                "name": "oбopoтeнь",
+                "hp": 28,
+                "hp_max": 28,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "3:20:60:1198677750",
+                "aux_ts": "",
+                "trail": ":x967x142"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 2,
+                "dmg_max": 8,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 20,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "зубaми",
+                "exp_value": 12,
+                "ammo": "",
+                "respawn": "x967x142:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.k.klyki",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "timers": {
+        "1198679856": "i.f.mushroom.dark|0|1|3600|7200",
+        "1198677221": "n.c.wolf.sl3|300:600|3:20:60:1198676859",
+        "1198677450": "n.c.wolf.sl6|300:600|3:20:60:1198676921"
+    }
+}

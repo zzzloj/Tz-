@@ -1,0 +1,52 @@
+{
+    "id": "n.whitewolf",
+    "char": {
+        "name": "белый волк ",
+        "hp": 450,
+        "hp_max": 450,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": 4,
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 95,
+        "dmg_min": 20,
+        "dmg_max": 30,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": 30,
+        "dodge": 30,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": 10,
+        "magic_parry": 60,
+        "magic_resist": 60,
+        "verb": "молнией",
+        "exp_value": 160,
+        "ammo": "",
+        "respawn": ""
+    },
+    "osvej": [
+        {
+            "id": "i.h.s.whitewolf",
+            "count": 1
+        },
+        {
+            "id": "i.f.meat",
+            "count": 1
+        }
+    ],
+    "items": [
+        {
+            "id": "i.r.w.lighting",
+            "count": 1
+        }
+    ]
+}

@@ -1,0 +1,109 @@
+{
+    "id": "x849x84",
+    "name": "Северный лес",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "войти в дом",
+            "target": "x894x89"
+        },
+        {
+            "label": "на север",
+            "target": "x850x51"
+        },
+        {
+            "label": "на юг",
+            "target": "x850x112"
+        },
+        {
+            "label": "на запад",
+            "target": "x810x84"
+        }
+    ],
+    "objects": {
+        "n.a.cow.krest": {
+            "char": {
+                "name": "кopoвa",
+                "hp": 24,
+                "hp_max": 24,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 2,
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 1,
+                "dmg_max": 5,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "poгaми",
+                "exp_value": 4,
+                "ammo": "",
+                "respawn": "x849x84:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.f.meat",
+                    "count": 3
+                }
+            ]
+        },
+        "n.a.pig.krest": {
+            "char": {
+                "name": "cвинья",
+                "hp": 14,
+                "hp_max": 14,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 1,
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 70,
+                "dmg_min": 1,
+                "dmg_max": 3,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кoпытaми",
+                "exp_value": 3,
+                "ammo": "",
+                "respawn": "x849x84:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.f.meat",
+                    "count": 2
+                }
+            ]
+        },
+        "i.s.d.n.c.troll.sl.63": "труп (тpoлль)|1|1198678049|i.money:37|"
+    },
+    "description": "Неожиданно в глубине леса вы наталкиваетесь на самый обыкновенный крестьянский дом. С одной стороны у него есть небольшой загончик, где мирно пасется корова, а в грязи валяется домашняя свинья. Окна дома затянуты бычьим пузырем, на на крыше лежит вперемешку солома, обломки черепицы и плоская дранка.\n\n"
+}

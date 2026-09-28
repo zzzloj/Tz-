@@ -1,0 +1,75 @@
+{
+    "id": "x696x237",
+    "name": "Курган",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на северо-восток",
+            "target": "x723x210"
+        },
+        {
+            "label": "к вершине",
+            "target": "x724x261"
+        },
+        {
+            "label": "на юго-восток",
+            "target": "x723x236"
+        },
+        {
+            "label": "на север ",
+            "target": "x669x198"
+        }
+    ],
+    "objects": {
+        "n.a.b.ore.1": {
+            "char": {
+                "name": "opeл",
+                "hp": 18,
+                "hp_max": 18,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 4,
+                "crime_title": "",
+                "wander": "1:20:60:1198675971",
+                "aux_ts": "",
+                "trail": ":x723x236"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 0,
+                "dmg_max": 8,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "клювoм",
+                "exp_value": 3,
+                "ammo": "",
+                "respawn": "x723x236:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.kog.orel",
+                    "count": 1
+                },
+                {
+                    "id": "i.h.p.orel",
+                    "count": 6
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "description": "Западный склон кургана.\n\n"
+}

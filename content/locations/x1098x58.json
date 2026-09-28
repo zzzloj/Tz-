@@ -1,0 +1,72 @@
+{
+    "id": "x1098x58",
+    "name": "Магазин элексиров",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти на улицу",
+            "target": "x1099x57"
+        }
+    ],
+    "objects": {
+        "n.c.Raksha.a1": {
+            "char": {
+                "name": "Рaкшa-зомби",
+                "hp": 100,
+                "hp_max": 100,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 80,
+                "dmg_min": 10,
+                "dmg_max": 20,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "ядом",
+                "exp_value": 19,
+                "ammo": "",
+                "respawn": "x1098x58:1000:2000"
+            },
+            "items": [
+                {
+                    "id": "i.a.r.c1",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.h.ch1",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.c.tuf1",
+                    "count": 1
+                },
+                {
+                    "id": "i.money",
+                    "count": 70
+                }
+            ],
+            "equip": [
+                "i.a.r.c1",
+                "i.a.h.ch1",
+                "i.a.c.tuf1"
+            ]
+        }
+    },
+    "description": "В этом магазине есть все что нужно для путешествия - одежда, факелы, продовольствие и тому подобное."
+}

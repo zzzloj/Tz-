@@ -1,0 +1,58 @@
+{
+    "id": "x176x1330",
+    "name": "Форт пиратов",
+    "zone": 3,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x174x1305"
+        },
+        {
+            "label": "на запад",
+            "target": "x142x1329"
+        }
+    ],
+    "objects": {
+        "i.s.nakov": "наковальня|1|0",
+        "n.p.bankir": {
+            "char": {
+                "name": "Сантьяго [банкир]",
+                "hp": 75,
+                "hp_max": 75,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198642166,
+                "busy_until": 1198642165,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 14,
+                "dmg_max": 20,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": 2,
+                "dodge": 10,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "шпагой",
+                "exp_value": 15,
+                "ammo": "",
+                "respawn": "x176x1330:300:900:1"
+            },
+            "bank": 1,
+            "items": null,
+            "equip": null,
+            "osvej": null
+        }
+    },
+    "description": "У двухэтажной деревянной постройки на сваях раскинут просторный навес. С одной стороны стоят рядами ящики и бочки, с другой навален всякий хлам. "
+}

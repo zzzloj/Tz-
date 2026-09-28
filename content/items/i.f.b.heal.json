@@ -1,0 +1,8 @@
+{
+    "id": "i.f.b.heal",
+    "kind": "food",
+    "name": "напиток жизни",
+    "price": 30,
+    "heal_hp": 15,
+    "heal_mana": ""
+}

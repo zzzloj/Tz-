@@ -1,0 +1,116 @@
+{
+    "id": "x1011x345",
+    "name": "Северная дорога",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "войти в дом",
+            "target": "x1053x339"
+        },
+        {
+            "label": "на север по дороге",
+            "target": "x1011x319"
+        },
+        {
+            "label": "на юг по дороге",
+            "target": "x1011x371"
+        },
+        {
+            "label": "на запад",
+            "target": "x972x345"
+        }
+    ],
+    "objects": {
+        "n.a.sheep.sd": {
+            "char": {
+                "name": "oвцa",
+                "hp": 12,
+                "hp_max": 12,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 1,
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 1,
+                "dmg_max": 4,
+                "attack_delay": 5,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "кoпытaми",
+                "exp_value": 3,
+                "ammo": "",
+                "respawn": "x1011x345:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.s.sheep",
+                    "count": 1
+                },
+                {
+                    "id": "i.h.kop.sheep",
+                    "count": 1
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ]
+        },
+        "n.a.b.kur.sd": {
+            "char": {
+                "name": "куpицa",
+                "hp": 2,
+                "hp_max": 2,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 1,
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 0,
+                "dmg_max": 1,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "клювoм",
+                "exp_value": 1,
+                "ammo": "",
+                "respawn": "x1011x345:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.p.kurica",
+                    "count": 5
+                }
+            ]
+        }
+    },
+    "description": "Дорога проходит мимо большого каменного дома. На стене слева от двери масляной краской выведен герб - красный лев на задних лапах в окружении круга из скрученного морского каната.\n\n"
+}

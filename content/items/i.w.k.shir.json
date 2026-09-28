@@ -1,0 +1,14 @@
+{
+    "id": "i.w.k.shir",
+    "kind": "weapon",
+    "name": "широкий нож",
+    "price": 50,
+    "dmg_min": 2,
+    "dmg_max": 4,
+    "req": [
+        2
+    ],
+    "speed": 4,
+    "verb": "ножом",
+    "ammo": ""
+}

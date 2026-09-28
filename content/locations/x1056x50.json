@@ -1,0 +1,79 @@
+{
+    "id": "x1056x50",
+    "name": "Главное здание",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "выйти во двор",
+            "target": "x1065x50"
+        }
+    ],
+    "objects": {
+        "n.c.Rene.a1": {
+            "char": {
+                "name": "Рeнe-зомби",
+                "hp": 100,
+                "hp_max": 140,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198626592,
+                "busy_until": 1198626596,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 12,
+                "dmg_max": 23,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": 20,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": 20,
+                "magic_parry": 90,
+                "magic_resist": 70,
+                "verb": "мечом",
+                "exp_value": 35,
+                "ammo": "",
+                "respawn": "x1056x50:100:200"
+            },
+            "items": [
+                {
+                    "id": "i.a.b.latndosp",
+                    "count": 1
+                },
+                {
+                    "id": "i.a.e.s",
+                    "count": 1
+                },
+                {
+                    "id": "i.w.s.dvuruchn",
+                    "count": 1
+                },
+                {
+                    "id": "i.money",
+                    "count": 54
+                },
+                {
+                    "id": "i.m.w.icefirst",
+                    "count": 1
+                }
+            ],
+            "equip": [
+                "i.a.b.latndosp",
+                "i.a.e.s",
+                "i.w.s.dvuruchn"
+            ]
+        }
+    },
+    "timers": {
+        "1198757980": "n.c.LordHagen.a1|100000:200000"
+    },
+    "description": "Помещение освещено множеством свечей в дорогих подсвечниках. В центре расположен дубовый стол, около которого стоят двое человек в длинных плащах и полных рыцарских доспехах."
+}

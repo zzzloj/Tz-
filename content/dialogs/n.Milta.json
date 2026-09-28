@@ -1,0 +1,36 @@
+{
+    "id": "n.Milta",
+    "topics": {
+        "begin": {
+            "text": "Здесь продаются домашние животные. Ты можешь купить себе, например, собаку, которая будет за тобой всюду ходить и охранять тебя. Только учти, что купить можно лишь одно животное, зато оно тебя не покинет до самой смерти. Выбери, кого ты хочешь купить?",
+            "options": [
+                {
+                    "label": "Собаку [100 монет]",
+                    "goto": "dog"
+                },
+                {
+                    "label": "Сокола [80 монет]",
+                    "goto": "sok"
+                },
+                {
+                    "label": "Корову [70 монет]",
+                    "goto": "cow"
+                },
+                {
+                    "label": "Свинью [70 монет]",
+                    "goto": "pig"
+                },
+                {
+                    "label": "Лошадь [90 монет]",
+                    "goto": "losh"
+                }
+            ]
+        },
+        "end": "Пока, заходи еще",
+        "dog": "eval: if (isset($l_i[$loc][\"n.a.dog.\".$login]) || isset($l_i[$loc][\"n.a.b.sok.\".$login]) || isset($l_i[$loc][\"n.a.cow.\".$login]) || isset($l_i[$loc][\"n.a.pig.\".$login]) || isset($l_i[$loc][\"n.a.losh.\".$login])) $title_v=\"Извини, <imja>, у тебя уже есть купленное здесь животное\"; else {additem($loc,$login,\"\",\"i.money\",100,\"items\",\"items\",1,0,1); include \"npc/n.a.dog\"; $npc[\"owner\"]=$login.\"|\".$login.\"|\".$login; $l_i[$loc][\"n.a.dog.\".$login]=$npc; addnpc(\"n.a.dog.\".$login,\"\",$loc); $title_v=\"Поздравляю, у тебя, <imja>, теперь есть собственная собака!\";}",
+        "sok": "eval: if (isset($l_i[$loc][\"n.a.dog.\".$login]) || isset($l_i[$loc][\"n.a.b.sok.\".$login]) || isset($l_i[$loc][\"n.a.cow.\".$login]) || isset($l_i[$loc][\"n.a.pig.\".$login]) || isset($l_i[$loc][\"n.a.losh.\".$login])) $title_v=\"Извини, <imja>, у тебя уже есть купленное здесь животное\"; else {additem($loc,$login,\"\",\"i.money\",80,\"items\",\"items\",1,0,1); include \"npc/n.a.b.sok\"; $npc[\"owner\"]=$login.\"|\".$login.\"|\".$login; $l_i[$loc][\"n.a.b.sok.\".$login]=$npc; addnpc(\"n.a.b.sok.\".$login,\"\",$loc); $title_v=\"Поздравляю, у тебя, <imja>, теперь есть собственный сокол!\";}",
+        "losh": "eval: if (isset($l_i[$loc][\"n.a.dog.\".$login]) || isset($l_i[$loc][\"n.a.b.sok.\".$login]) || isset($l_i[$loc][\"n.a.cow.\".$login]) || isset($l_i[$loc][\"n.a.pig.\".$login]) || isset($l_i[$loc][\"n.a.losh.\".$login])) $title_v=\"Извини, <imja>, у тебя уже есть купленное здесь животное\"; else {additem($loc,$login,\"\",\"i.money\",90,\"items\",\"items\",1,0,1); include \"npc/n.a.losh\"; $npc[\"owner\"]=$login.\"|\".$login.\"|\"; $l_i[$loc][\"n.a.losh.\".$login]=$npc; addnpc(\"n.a.losh.\".$login,\"\",$loc); $title_v=\"Поздравляю, у тебя, <imja>, теперь есть собственная лошадь! Учти, что она тебя защищать не будет, пока ты ей об этом не скажешь.\";}",
+        "cow": "eval: if (isset($l_i[$loc][\"n.a.dog.\".$login]) || isset($l_i[$loc][\"n.a.b.sok.\".$login]) || isset($l_i[$loc][\"n.a.cow.\".$login]) || isset($l_i[$loc][\"n.a.pig.\".$login]) || isset($l_i[$loc][\"n.a.losh.\".$login])) $title_v=\"Извини, <imja>, у тебя уже есть купленное здесь животное\"; else {additem($loc,$login,\"\",\"i.money\",70,\"items\",\"items\",1,0,1); include \"npc/n.a.cow\"; $npc[\"owner\"]=$login.\"|\".$login.\"|\"; $l_i[$loc][\"n.a.cow.\".$login]=$npc; addnpc(\"n.a.cow.\".$login,\"\",$loc); $title_v=\"Поздравляю, у тебя, <imja>, теперь есть собственная корова! Учти, что она тебя защищать не будет, пока ты ей об этом не скажешь.\";}",
+        "pig": "eval: if (isset($l_i[$loc][\"n.a.dog.\".$login]) || isset($l_i[$loc][\"n.a.b.sok.\".$login]) || isset($l_i[$loc][\"n.a.cow.\".$login]) || isset($l_i[$loc][\"n.a.pig.\".$login]) || isset($l_i[$loc][\"n.a.losh.\".$login])) $title_v=\"Извини, <imja>, у тебя уже есть купленное здесь животное\"; else {additem($loc,$login,\"\",\"i.money\",70,\"items\",\"items\",1,0,1); include \"npc/n.a.pig\"; $npc[\"owner\"]=$login.\"|\".$login.\"|\"; $l_i[$loc][\"n.a.pig.\".$login]=$npc; addnpc(\"n.a.pig.\".$login,\"\",$loc); $title_v=\"Поздравляю, у тебя, <imja>, теперь есть собственная свинья! Учти, что она тебя защищать не будет, пока ты ей об этом не скажешь.\";}"
+    }
+}

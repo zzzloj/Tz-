@@ -1,0 +1,135 @@
+{
+    "id": "x1167x58",
+    "name": "Склад",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "в восточную часть склада",
+            "target": "x1186x58"
+        },
+        {
+            "label": "в отверстие в стене",
+            "target": "x2120x212"
+        }
+    ],
+    "objects": {
+        "n.c.darkwolf.c1": {
+            "char": {
+                "name": "темный волк",
+                "hp": 10,
+                "hp_max": 192,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198669101,
+                "busy_until": 1198669105,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 90,
+                "dmg_min": 14,
+                "dmg_max": 30,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": 8,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "клыками",
+                "exp_value": 40,
+                "ammo": "",
+                "respawn": "x1167x58:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.s.wolf",
+                    "count": 1
+                },
+                {
+                    "id": "i.h.k.wolf",
+                    "count": 1
+                },
+                {
+                    "id": "i.h.kog.wolf",
+                    "count": 1
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ]
+        },
+        "i.s.d.n.c.werwolf.c4.17": "труп (oбopoтeнь)|1|1198669689||i.h.k.klyki:1",
+        "i.s.d.n.c.werwolf.c7.51": "труп (oбopoтeнь)|1|1198669689||i.h.k.klyki:1",
+        "i.s.d.n.c.werwolf.c6.10": "труп (oбopoтeнь)|1|1198669689|i.m.s.wolf:1|i.h.k.klyki:1",
+        "i.s.d.n.c.werwolf.c5.35": "труп (oбopoтeнь)|1|1198669695||i.h.k.klyki:1",
+        "n.c.darkwolf.c2": {
+            "char": {
+                "name": "темный волк",
+                "hp": 32,
+                "hp_max": 192,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198669095,
+                "busy_until": 1198669099,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 90,
+                "dmg_min": 14,
+                "dmg_max": 30,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": 8,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "клыками",
+                "exp_value": 40,
+                "ammo": "",
+                "respawn": "x1167x58:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.s.wolf",
+                    "count": 1
+                },
+                {
+                    "id": "i.h.k.wolf",
+                    "count": 1
+                },
+                {
+                    "id": "i.h.kog.wolf",
+                    "count": 1
+                },
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                }
+            ]
+        }
+    },
+    "timers": {
+        "1198669644": "n.c.werwolf.c4|300:600",
+        "1198669511": "n.c.werwolf.c7|300:600",
+        "1198669549": "n.c.werwolf.c6|300:600",
+        "1198669509": "n.c.werwolf.c5|300:600",
+        "1198669450": "n.c.darkwolf.c3|300:600"
+    },
+    "description": "Вы идете, натыкаясь в темноте на разбросанные деревянные ящики и бочки. Часть балок покосилась и угрожающе поскрипывает над головой.\n\n"
+}

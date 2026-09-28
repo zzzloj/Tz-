@@ -1,0 +1,12 @@
+{
+    "id": "i.a.l.ship",
+    "kind": "armor",
+    "name": "шипованные поножи",
+    "price": 1500,
+    "armor": 6,
+    "req": [
+        5,
+        6
+    ],
+    "unknown_4": 1
+}

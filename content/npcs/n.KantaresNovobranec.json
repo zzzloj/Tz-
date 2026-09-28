@@ -1,0 +1,45 @@
+{
+    "id": "n.KantaresNovobranec",
+    "char": {
+        "name": "Нoвoбpaнeц",
+        "hp": 100,
+        "hp_max": 100,
+        "mana": 100,
+        "mana_max": 100,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 80,
+        "dmg_min": 3,
+        "dmg_max": 8,
+        "attack_delay": 5,
+        "is_ranged": "",
+        "armor": 2,
+        "dodge": "",
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": "",
+        "magic_resist": "",
+        "verb": "мeчoм",
+        "exp_value": "",
+        "ammo": "",
+        "respawn": "x1056x520:10:40"
+    },
+    "items": [
+        {
+            "id": "i.w.s.short",
+            "count": 1
+        }
+    ],
+    "equip": [
+        "i.w.s.short"
+    ]
+}

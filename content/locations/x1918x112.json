@@ -1,0 +1,69 @@
+{
+    "id": "x1918x112",
+    "name": "Предгорье",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на восток",
+            "target": "x1959x112"
+        },
+        {
+            "label": "на юг",
+            "target": "x1917x144"
+        },
+        {
+            "label": "на запад",
+            "target": "x1878x114"
+        }
+    ],
+    "objects": {
+        "n.c.gorg.k.1": {
+            "char": {
+                "name": "каменная горгулья",
+                "hp": 190,
+                "hp_max": 190,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "3:60:180:1198676794",
+                "aux_ts": "",
+                "trail": ":x1878x114"
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 12,
+                "dmg_max": 24,
+                "attack_delay": 6,
+                "is_ranged": "",
+                "armor": 25,
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "лапами",
+                "exp_value": 55,
+                "ammo": "",
+                "respawn": "x1878x114:3600:12000"
+            },
+            "osvej": [
+                {
+                    "id": "i.q.heart.k",
+                    "count": 1
+                }
+            ],
+            "items": [
+                {
+                    "id": "i.money",
+                    "count": 40
+                }
+            ]
+        }
+    },
+    "description": "На севере неприступные скалы"
+}

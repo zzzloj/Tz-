@@ -1,0 +1,69 @@
+{
+    "id": "x702x312",
+    "name": "Западный лес",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x702x284"
+        },
+        {
+            "label": "на восток",
+            "target": "x742x312"
+        },
+        {
+            "label": "на юг",
+            "target": "x702x336"
+        },
+        {
+            "label": "на запад",
+            "target": "x673x310"
+        }
+    ],
+    "objects": {
+        "n.a.b.yas.sl": {
+            "char": {
+                "name": "яcтpeб",
+                "hp": 12,
+                "hp_max": 12,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 3,
+                "crime_title": "",
+                "wander": "3:20:60:1198676770",
+                "aux_ts": "",
+                "trail": ":x665x279:x673x310"
+            },
+            "war": {
+                "hit_chance": 90,
+                "dmg_min": 0,
+                "dmg_max": 5,
+                "attack_delay": 3,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 15,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "клювoм",
+                "exp_value": 2,
+                "ammo": "",
+                "respawn": "x665x279:300:600"
+            },
+            "osvej": [
+                {
+                    "id": "i.h.p.yastreb",
+                    "count": 8
+                }
+            ]
+        }
+    },
+    "timers": {
+        "1198678789": "n.a.dogyan.1|600:1200|6:60:120"
+    }
+}

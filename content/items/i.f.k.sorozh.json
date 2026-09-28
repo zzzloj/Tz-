@@ -1,0 +1,8 @@
+{
+    "id": "i.f.k.sorozh",
+    "kind": "food",
+    "name": "копченая сорожка",
+    "price": 30,
+    "heal_hp": 11,
+    "heal_mana": 13
+}

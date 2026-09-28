@@ -1,0 +1,62 @@
+{
+    "id": "n.c.ghost",
+    "char": {
+        "name": "пpизpaк",
+        "hp": 22,
+        "hp_max": 22,
+        "mana": 1,
+        "mana_max": 1,
+        "regen_ts": "",
+        "busy_until": "",
+        "target": "",
+        "tame_difficulty": "",
+        "crime_title": "",
+        "wander": "",
+        "aux_ts": "",
+        "trail": ""
+    },
+    "war": {
+        "hit_chance": 70,
+        "dmg_min": 1,
+        "dmg_max": 12,
+        "attack_delay": 4,
+        "is_ranged": "",
+        "armor": "",
+        "dodge": 5,
+        "parry": "",
+        "shield_armor": "",
+        "magic_dodge": "",
+        "magic_parry": 90,
+        "magic_resist": 60,
+        "verb": "мaгиeй",
+        "exp_value": 10,
+        "ammo": "",
+        "respawn": ""
+    },
+    "itemsrnd": [
+        {
+            "id": "i.money",
+            "chance": 90,
+            "min": 1,
+            "max": 18
+        },
+        {
+            "id": "i.m.s.wolf",
+            "chance": 20,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.m.s.golem",
+            "chance": 10,
+            "min": 0,
+            "max": 1
+        },
+        {
+            "id": "i.ring.r",
+            "chance": 20,
+            "min": 0,
+            "max": 1
+        }
+    ]
+}

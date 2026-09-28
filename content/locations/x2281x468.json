@@ -1,0 +1,71 @@
+{
+    "id": "x2281x468",
+    "name": "Южная долина",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x2281x429"
+        },
+        {
+            "label": "на восток",
+            "target": "x2331x465"
+        },
+        {
+            "label": "на юг",
+            "target": "x2285x505"
+        },
+        {
+            "label": "на запад",
+            "target": "x2232x470"
+        }
+    ],
+    "objects": {
+        "n.a.jaguar.s": {
+            "char": {
+                "name": "ягуар",
+                "hp": 60,
+                "hp_max": 60,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": 4,
+                "crime_title": "",
+                "wander": "3:60:120:1198674238",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 95,
+                "dmg_min": 11,
+                "dmg_max": 18,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "клыками",
+                "exp_value": 16,
+                "ammo": "",
+                "respawn": "x2281x468:1200:1800"
+            },
+            "osvej": [
+                {
+                    "id": "i.f.meat",
+                    "count": 1
+                },
+                {
+                    "id": "i.h.k.klyki",
+                    "count": 2
+                }
+            ]
+        }
+    },
+    "description": "На юге видна гладь широкого озера"
+}

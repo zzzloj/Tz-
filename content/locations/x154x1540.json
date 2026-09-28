@@ -1,0 +1,53 @@
+{
+    "id": "x154x1540",
+    "name": "перед огненным мостом",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "к воротам",
+            "target": "x141x1410"
+        },
+        {
+            "label": "на мост",
+            "target": "x155x1540"
+        }
+    ],
+    "objects": {
+        "n.w.Mihail": {
+            "char": {
+                "name": "Михаил",
+                "hp": 1000,
+                "hp_max": 1000,
+                "mana": 1000,
+                "mana_max": 1000,
+                "regen_ts": "",
+                "busy_until": "",
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 100,
+                "dmg_min": 170,
+                "dmg_max": 260,
+                "attack_delay": 50,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": "",
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "магией",
+                "exp_value": "",
+                "ammo": "",
+                "respawn": "x154x1540:1:2"
+            }
+        }
+    },
+    "description": "Вы перед мостом ведущий через \"огненное озеро\" На мосту стоит ангел в ослепительных одеждах."
+}

@@ -1,0 +1,54 @@
+{
+    "id": "x1000x517",
+    "name": "Березовая роща",
+    "zone": 0,
+    "exits": [
+        {
+            "label": "на север",
+            "target": "x999x504"
+        },
+        {
+            "label": "на восток",
+            "target": "x1011x518"
+        }
+    ],
+    "objects": {
+        "i.s.d.n.c.rat.br1.67": "труп (кpыca)|1|1198674301|i.money:1|i.f.meat:1",
+        "n.c.pauk.br": {
+            "char": {
+                "name": "гигaнтcкий пaук",
+                "hp": 6,
+                "hp_max": 6,
+                "mana": 1,
+                "mana_max": 1,
+                "regen_ts": 1198674098,
+                "busy_until": 1198673733,
+                "target": "",
+                "tame_difficulty": "",
+                "crime_title": "",
+                "wander": "2:20:60:1198674232",
+                "aux_ts": "",
+                "trail": ""
+            },
+            "war": {
+                "hit_chance": 60,
+                "dmg_min": 1,
+                "dmg_max": 5,
+                "attack_delay": 4,
+                "is_ranged": "",
+                "armor": "",
+                "dodge": 5,
+                "parry": "",
+                "shield_armor": "",
+                "magic_dodge": "",
+                "magic_parry": "",
+                "magic_resist": "",
+                "verb": "лaпaми",
+                "exp_value": 2,
+                "ammo": "",
+                "respawn": "x1000x517:300:600"
+            }
+        }
+    },
+    "description": "Здесь деревья подступают вплотную к городской стене. В тенистом углу, где стена немного изгибается, на траве из больших серых камней выложен ровный круг в несколько шагов диаметром."
+}
