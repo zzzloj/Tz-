@@ -151,6 +151,14 @@
       url.searchParams.forEach(function (value, key) { fields.unshift([key, value]); });
       url.search = '';
       method = 'post';
+    } else if (method !== 'post' && ['p', 'pass', 'newpass'].some(function (k) { return url.searchParams.has(k); })) {
+      // Other links with a password (continue after login, change password):
+      // move only the secret to the POST body. g.php picks the screen from the
+      // query string, so the remaining parameters stay in the URL.
+      ['p', 'pass', 'newpass'].forEach(function (k) {
+        if (url.searchParams.has(k)) { fields.push([k, url.searchParams.get(k)]); url.searchParams.delete(k); }
+      });
+      method = 'post';
     }
     if (method === 'post') {
       var form = document.createElement('form');

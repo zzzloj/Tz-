@@ -15,7 +15,7 @@
 	$s=str_replace('\\',"",$s);
 	$s=str_replace('"',"",$s);
 	$s=str_replace("'","",$s);
-	$s=preg_replace('/([^ -}А-я#])|\$|&/',"",$s);
+	$s=preg_replace('/([^ -}А-яЁё#])|\$|&/',"",$s);
 	$s=preg_replace('/(с|c)(у|y)(ч)?(к|k)(а|a)/i',"[бип]",$s);
 	$s=preg_replace('/пидор/i',"[бип]",$s);
 	$s=preg_replace('/пид(о|o|a|а)(р|p)(а|a)(з|c|с)/i',"[бип]",$s);

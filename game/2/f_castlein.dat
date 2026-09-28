@@ -16,7 +16,7 @@ if ($clanc) {	// инфа
 				$k1=array_keys((array)($tclan["g"]));
 				$tclan["m"][$k1[0]]=1;//глава
 				$tclan["m"] = array_merge((array)($tclan["m"]), (array)($tclan["v"]), (array)($tclan["s"]));
-				$ctitle_v=preg_replace('/Замок ([А-я]+).*/',"\\1",$d[0]);
+				$ctitle_v=preg_replace('/Замок ([А-яЁё]+).*/',"\\1",$d[0]);
 				foreach(array_keys((array)($tclan["m"])) as $k) if (file_exists("online/".$k) && filesize("online/".$k)!=1) {
 					$tmp=file("online/".$k);
 					$tmp[0]=trim($tmp[0]);
@@ -57,7 +57,7 @@ if ($clanc) {	// инфа
 		if (legacy_cmp($ctext)==1) $stmp.="<br/><input name=\"ctext\" type=\"text\" value=\"$to\"/>\n<br/><select name=\"translit\" multiple=\"true\" value=\"1\"><option value=\"1\">Транслит</option></select><anchor>Сохранить<go href=\"$PHP_SELF?sid=$sid\" method=\"post\"><postfield name=\"ctext\" value=\"$(ctext)\"/><postfield name=\"translit\" value=\"$(translit)\"/></go></anchor>";
 		else if ($ctext) {
 			if (legacy_cmp($translit)==1) {include "f_translit.dat";$ctext=trans($ctext);}
-			$ctext=preg_replace('/([^ ,!.?А-я#])|\$|&/',"",$ctext);
+			$ctext=preg_replace('/([^ ,!.?А-яЁё#])|\$|&/',"",$ctext);
 			$ctext=str_replace("#","",$ctext);
 			$ctext=str_replace("{","",$ctext);
 			$ctext=str_replace("}","",$ctext);

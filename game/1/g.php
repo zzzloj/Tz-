@@ -16,7 +16,7 @@ if (!$_SESSION["traf"]) { session_start(); }
 include('gzip.php');
 $tmp=$QUERY_STRING;if($tmp=='')$tmp=$_SERVER['QUERY_STRING'];
 $tmp=urldecode($tmp);
-$tmp=preg_replace("/[^ -}А-я]/","",$tmp);
+$tmp=preg_replace("/[^ -}А-яЁё]/","",$tmp);
 parse_str($tmp, $legacy_qs); extract($legacy_qs);
 $g_tmp=$tmp;
 $PHP_SELF='g.php';
@@ -495,7 +495,8 @@ if ($login=="u.qv" || $login=="u.qw" || $login=="u.kv" || $login=="u.scream") $w
             $wml=str_replace("З", "Ч", $wml);
             $wml=str_replace("и", "ы", $wml);
 }
-        $wml=strtr($wml,"КЕНХВАРОСМТехарос","KEHXBAPOCMTexapoc");
+        // Раньше здесь кириллица заменялась похожей латиницей (КЕНХВАРОСМТехарос -> KEHXBAPOCMTexapoc),
+        // чтобы экономить платный WAP-трафик: латинская буква занимала 1 байт, а &#x0430; — 8.
 
 
         echo translate($wml);

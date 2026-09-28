@@ -35,7 +35,8 @@ function msg($s) {
 	function translate($s) {return(preg_replace_callback("/[А-яЁё]/",function ($m) { return win2unicode($m[0]); },$s));} 
 	$s=str_replace("&amp;","&",$s);
 	$s=str_replace("&","&amp;",$s);
-	$s=strtr($s,"КЕНХВАРОСМТехарос","KEHXBAPOCMTexapoc");
+	// Раньше здесь кириллица заменялась похожей латиницей (КЕНХВАРОСМТехарос -> KEHXBAPOCMTexapoc),
+	// чтобы экономить платный WAP-трафик: латинская буква занимала 1 байт, а &#x0430; — 8.
 	ob_start("translate");
 	echo "<?xml version=\"1.0\"?>\n<!DOCTYPE wml PUBLIC \"-//WAPFORUM//DTD WML 1.1//EN\" \"http://www.wapforum.org/DTD/wml_1.1.xml\">";
 	echo "

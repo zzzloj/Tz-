@@ -20,7 +20,7 @@ if ($ctele) {
 		foreach($arr as $i) {
 			loadloc($tc.$i);
 			if ($l_i[$tc.$i]) foreach(array_keys((array)($l_i[$tc.$i])) as $k) if($k!=$login && substr($k,0,2)=="u.") {
-				$tchar=explode("|",$l_i[$tc.$i][$k]["char"]);
+				$tchar=explode("|",is_array($l_i[$tc.$i][$k]) ? $l_i[$tc.$i][$k]["char"] : "");
 				if (strpos($tchar[0],"*")===false) $tclan=""; else $tclan=substr($tchar[0],legacy_num(strpos($tchar[0],"*")+1),legacy_num(strrpos($tchar[0],"*")-strpos($tchar[0],"*")-1));
 				if ($tclan!=$clanc && strpos($d[0],":".$k.":")===false) {addnpc($login,$loc,$ctele); return;}
 				}
@@ -50,7 +50,7 @@ if (substr($loc,3)==".gate" && $clanc && $clanc!=$clan && strpos($d[0],":".$logi
 		foreach($arr as $i) {
 			loadloc($tc.$i);
 			if ($l_i[$tc.$i]) foreach(array_keys((array)($l_i[$tc.$i])) as $k) if($k!=$login) {
-				$tchar=explode("|",$l_i[$tc.$i][$k]["char"]);
+				$tchar=explode("|",is_array($l_i[$tc.$i][$k]) ? $l_i[$tc.$i][$k]["char"] : "");
 				if (strpos($tchar[0],"*")===false) $tclan=""; else $tclan=substr($tchar[0],legacy_num(strpos($tchar[0],"*")+1),legacy_num(strrpos($tchar[0],"*")-strpos($tchar[0],"*")-1));
 				if (substr($k,0,4)=="n.o." || (substr($k,0,2)=="u." && !$tchar[8] && ($tclan==$clanc || strpos($d[0],":".$k.":")!==false))) $b=0;
 				}

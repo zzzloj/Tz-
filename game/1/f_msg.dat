@@ -116,7 +116,7 @@ $count++;}
 	$s=preg_replace_callback("/\xd1([\x80-\x8f])/",function ($m) { return chr(legacy_num(ord($m[1])+112)); },$s);
 
 	$s=str_replace('\\',"",$s);
-	$s=preg_replace('/([^ -}À-ÿ#])|\$|&/',"",$s);
+	$s=preg_replace('/([^ -}À-ÿ¨¸#])|\$|&/',"",$s);
 	$s=str_replace("|","",$s);
 	$s=str_replace("<","",$s);
 	$s=str_replace(">","",$s);
@@ -156,7 +156,7 @@ $count++;}
 	$s=preg_replace_callback("/\xd1([\x80-\x8f])/",function ($m) { return chr(legacy_num(ord($m[1])+112)); },$s);
 
 	$s=str_replace('\\',"",$s);
-	$s=preg_replace('/([^ -}À-ÿ#])|\$|&/',"",$s);
+	$s=preg_replace('/([^ -}À-ÿ¨¸#])|\$|&/',"",$s);
 	$s=str_replace("|","",$s);
 	$s=str_replace("<","",$s);
 	$s=str_replace(">","",$s);
