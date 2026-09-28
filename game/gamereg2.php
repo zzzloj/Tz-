@@ -19,7 +19,7 @@ msg("Регистрация успешно завершена!<br/>
 msg("Проверочное число не совпало!!!");}
 $press_kod='';
 $press_kod=rand(10000,99999); 
-session_register("press_kod");
+$_SESSION["press_kod"]=$press_kod;
 session_unset();
 session_destroy();
 

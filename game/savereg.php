@@ -1,18 +1,18 @@
-<?
+<?php 
 
 function ValidNN($s) 
 {
-  return !eregi("[^a-z0-9_]",$s);
+  return !preg_match("/[^a-z0-9_]/i",$s);
 }
 
 function ValidPass($s) 
 {
-  return !eregi("[^a-z0-9]",$s);
+  return !preg_match("/[^a-z0-9]/i",$s);
 }
   
 function validEmail($email) 
 {
- return  eregi("^[a-z0-9]+([-_\.]?[a-z0-9])+@[a-z0-9]+([-_\.]?[a-z0-9])+\.[a-z]{2,4}", $email);
+ return  preg_match("/^[a-z0-9]+([-_\.]?[a-z0-9])+@[a-z0-9]+([-_\.]?[a-z0-9])+\.[a-z]{2,4}/i", $email);
 }
 
 require("functionChat.ssp");

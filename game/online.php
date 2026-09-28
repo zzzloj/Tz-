@@ -1,4 +1,4 @@
-<?
+<?php 
 	$arr=array();
 	$dh = opendir('./1/online/'); 
 	while (($fname = readdir($dh))!== false) if ($fname!='.' && $fname!='..' && $fname!='1.htaccess' && $fname!='.htaccess') {

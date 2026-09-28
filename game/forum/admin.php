@@ -1,4 +1,4 @@
-<?
+<?php 
 include "./config.inc.php";
 include "system.php";
 header("Content-type: text/vnd.wap.wml");

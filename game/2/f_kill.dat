@@ -103,7 +103,7 @@
 							$l_i[$loc][$from]["war"]=implode("|",$fwarr);
 							}
 						if (substr($to,0,2)!="u.") {	//killedto
-							$skills=split("\|",$l_i[$loc][$from]["skills"]);
+							$skills=explode("|",$l_i[$loc][$from]["skills"]);
 							$skills[3]+=$twar[13];
 							addjournal($loc,$from,"Опыт +".intval($twar[13]));
 							if ($skills[3]>$fwar[13]*$g_exp) {$skills[3]=0; $skills[4]+=1; addjournal($loc,$from,"Вы получили 1 очко опыта!");}
@@ -122,10 +122,10 @@
 							$l_i[$loc][$from]['war']=implode('|',$fwarr);
 							}
 						if (substr($to,0,2)!='u.') {	//killedto
-						$us=split('\|',$l_i[$loc][$from]['owner']);
+						$us=explode("|",$l_i[$loc][$from]['owner']);
 						$usr=$us[1];
-							$sk=split('\|',$l_i[$loc][$usr]['skills']);
-							$fw=split('\|',$l_i[$loc][$usr]['war']);
+							$sk=explode("|",$l_i[$loc][$usr]['skills']);
+							$fw=explode("|",$l_i[$loc][$usr]['war']);
 							$exp=$twar[13]/2;
 							$sk[3]+=$exp;
 							addjournal($loc,$usr,'Onыт +'.intval($exp));

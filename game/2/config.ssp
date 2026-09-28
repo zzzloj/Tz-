@@ -1,4 +1,4 @@
-<?
+<?php 
 $server="localhost";
 $user="bigwap_igrok";
 $dbpass="CHANGE_ME";

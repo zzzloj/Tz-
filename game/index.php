@@ -22,5 +22,5 @@ ob_start("translate");
 </p>
 </card>
 </wml>
-<?
+<?php 
 ob_end_flush();die("");

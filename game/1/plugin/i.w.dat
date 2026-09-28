@@ -10,8 +10,8 @@
 				if (strpos($use,"_")!==false) $ti=substr($use,0,strpos($use,"_")); else
 				if (strpos($use,"-")!==false) {$ti=substr($use,0,strpos($use,"-"));} else $ti=$use;
 				
-				 if(eregi("i.a.s.", $equip)) $shit="1";
-				 if(eregi("i.w.r.", $equip)) $luk="1";
+				 if(preg_match("/i.a.s./i", $equip)) $shit="1";
+				 if(preg_match("/i.w.r./i", $equip)) $luk="1";
 				if (strpos($equip,$ti)===false) {	// одеваем
 					if (substr($use,0,4)=='i.w.' && substr($use,0,6)!='i.w.r.') { 
 						if (strpos($equip,"i.w.")===false) {if (!$equip) $equip=$use; else if ($equip[strlen($equip)-1]=="|") $equip.=$use; else $equip.="|".$use;}

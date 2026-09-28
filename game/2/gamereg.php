@@ -1,4 +1,4 @@
-<?  
+<?php   
 require("datafunc.php");
 //require($_SERVER['DOCUMENT_ROOT']."/javainc.ssp");
 require("config.ssp");

@@ -1,9 +1,9 @@
-<?
+<?php 
 require("functionChat.ssp");
 
 function ValidNN($s)
 {
-  return !eregi("[^a-z0-9_]",$s);
+  return !preg_match("/[^a-z0-9_]/i",$s);
 }
 
 

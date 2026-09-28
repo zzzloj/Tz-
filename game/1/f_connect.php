@@ -8,7 +8,7 @@ extract($_GET);
 $tmp=$QUERY_STRING;if($tmp=='') $tmp=$_SERVER["QUERY_STRING"];
 $tmp=urldecode($tmp);
 parse_str($tmp);
-if(eregi("[^a-z0-9_.-]",$login) || $ip=='217.144.164.164' || $login=='u.alatiel' || $login=='u.fox' || $login=='u.liska' || $login=='u.anjelika' || $login=='u.erra' || ($brouzer=='SonyEricssonK500i/R2AA SEMC-Browser/4.0.2 Profile/MIDP-2.0 Configuration/CLDC-1.1' && $ip=='83.149.48.211')){
+if(preg_match("/[^a-z0-9_.-]/i",$login) || $ip=='217.144.164.164' || $login=='u.alatiel' || $login=='u.fox' || $login=='u.liska' || $login=='u.anjelika' || $login=='u.erra' || ($brouzer=='SonyEricssonK500i/R2AA SEMC-Browser/4.0.2 Profile/MIDP-2.0 Configuration/CLDC-1.1' && $ip=='83.149.48.211')){
 header ("Location: http://download.l2db.ru/original%20clients/L2_C5_Installer.zip"); exit;}
 
 // константы должны совпадать с g.php

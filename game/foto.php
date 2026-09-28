@@ -1,4 +1,4 @@
-<?
+<?php 
 header("Cache-Control: no-cache");
 require("config.ssp");
 $ref=rand(10000,1000000); 

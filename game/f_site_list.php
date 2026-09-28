@@ -7,10 +7,10 @@ header("Content-type:text/vnd.wap.wml;charset=utf-8");
 
 echo "<?xml version=\"1.0\" ?>\n";?>
 <!DOCTYPE wml PUBLIC "-//WAPFORUM//DTD WML 1.1//EN" "http://www.wapforum.org/DTD/wml_1.1.xml"> 
-<? setlocale (LC_CTYPE, 'ru_RU.CP1251'); 
+<?php  setlocale (LC_CTYPE, 'ru_RU.CP1251'); 
 function win2unicode ( $s ) { if ( (ord($s)>=192) & (ord($s)<=255) ) $hexvalue=dechex(ord($s)+848); if ($s=="¨") $hexvalue="401"; if ($s=="¸") $hexvalue="451"; return("&#x0".$hexvalue.";");} 
-function translate($s) {return(preg_replace("/[À-ÿ¨¸]/e","win2unicode('\\0')",$s));} 
-ob_start("translate");?><?
+function translate($s) {return(preg_replace_callback("/[À-ÿ¨¸]/",function ($m) { return win2unicode($m[0]); },$s));} 
+ob_start("translate");?><?php 
      $count=0;
 	$s1=include "./1/count.dat";
 print"
@@ -23,5 +23,5 @@ print"
 </p>
 </card>
 </wml>"; ?>
-<?
+<?php 
 ob_end_flush();die("");

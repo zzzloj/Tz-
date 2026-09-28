@@ -5,10 +5,10 @@
   extract(isset($_SESSION) ? $_SESSION : array());
 session_name("SID");
 session_start();
-if(empty($_SESSION[press_kod])){
+if(empty($_SESSION["press_kod"])){
 $press_kod=rand(1000,9999);
 
-session_register("press_kod");}
+$_SESSION["press_kod"]=$press_kod;}
 msg("<p>Проверочный код: * <b>".$press_kod."</b>
 <br/>Введите проверочный код:
 <br/><input  format=\"*N\" maxlength=\"9\" name=\"chis\"/>

@@ -3,7 +3,7 @@
 ///вызов демона стихий
 
 if($to=="i.s.alt"){
-$ran=array(x1141x50,x1199x47,x1182x57,x1225x55,x1071x46,x1034x54);
+$ran=array("x1141x50","x1199x47","x1182x57","x1225x55","x1071x46","x1034x54");
 $randd=rand(0,5);
 $randl=$ran[$randd];
 if (file_exists('quest/quest.demon')) { msg("Демон уже разбужен,найдите и убейте его.");} 

@@ -41,7 +41,7 @@ if($d == $dir_games) {$title = $title_games;    $DIR = $dir_games;}
         while (false !== ($file = readdir($dir)))
         {
 
-                if($DIR == $dir_games) {if (!ereg("^(.*)\\.(jpg|JPG|gif|GIF|png|PNG|wbmp|WBMP)$",$file))continue; $array_files[]=$file;}
+                if($DIR == $dir_games) {if (!preg_match("/^(.*)\\.(jpg|JPG|gif|GIF|png|PNG|wbmp|WBMP)$/",$file))continue; $array_files[]=$file;}
         }
         }
         closedir($dir);

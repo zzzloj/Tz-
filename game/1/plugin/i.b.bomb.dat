@@ -1,4 +1,4 @@
-<?
+<?php 
 	if ($to) {
 	if (!isset($l_i[$loc][$to])) msg("Нет цели");
 $a = array(

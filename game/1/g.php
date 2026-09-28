@@ -7,7 +7,7 @@ extract($_SERVER);
 //extract(isset($_SESSION) ? $_SESSION : array());
 
 session_name('SID');
-if (!$_SESSION[traf]) { session_start(); }
+if (!$_SESSION["traf"]) { session_start(); }
 	//получяем ip
 	$ip = ("$REMOTE_ADDR");
 	//получяем браузер
@@ -107,7 +107,7 @@ if (!file_exists('online/'.$login)) {$f_c=1;require 'f_site_connect2.dat';}
 $tmp=file('online/'.$login);
 $loc=trim($tmp[0]);
 loadloc($loc);
-if (isset($l_i[$loc][u.alatiel])) {
+if (isset($l_i[$loc]["u.alatiel"])) {
 $log_save=$login." - ".$loc." - ".$QUERY_STRING." - ".date("d/m Y H:i",time())."\r\n";
 $file=fopen("./z_net_dannih.txt","a+");@fputs($file,$log_save);@fclose($file);
 @unlink('online/'.$login); msg('Нет данных');}
@@ -398,7 +398,7 @@ function msg($msg,$title_v='Территория Зла',$journal=1,$menu='',$vname='',$vval=
                 setlocale (LC_CTYPE, 'ru_RU.CP1251');
                 function win2unicode ($s) {if ((ord($s)>=192) & (ord($s)<=255)) $hexvalue=dechex(ord($s)+848); if ($s=="Ё") $hexvalue="401"; if ($s=="ё") $hexvalue="451"; return("&#x0".$hexvalue.";");}
                 //function win2unicode ($s) {$hexvalue=iconv("cp1251","Utf-8",$hexvalue);}
-				function translate($s) {global $g_ch; if ($g_ch==0) return(preg_replace_callback("/[А-яЁё]/",function ($m) { return win2unicode($m[0]); },$s)); else if ($g_ch==1) return $s; else if ($g_ch==2) return $s=UTF8($s); else return convert_cyr_string($s,"w","k");}
+				function translate($s) {global $g_ch; if ($g_ch==0) return(preg_replace_callback("/[А-яЁё]/",function ($m) { return win2unicode($m[0]); },$s)); else if ($g_ch==1) return $s; else if ($g_ch==2) return $s=UTF8($s); else return iconv("CP1251","KOI8-R//IGNORE",$s);}
                  } else {function translate($s) {return $s;};};
         $wml = "<wml>";
         if (!$login) {$journal=0;$menu="none";}
@@ -520,12 +520,12 @@ $gzib_file_out = strlen(gzcompress($Contents,9));
 }else {
 $gzib_file_out = strlen($Contents);
 }}}
-if(!$_SESSION[traffic]){
-		session_register("traffic");
+if(!$_SESSION["traffic"]){
+		$_SESSION["traffic"]=0;
 }
 $traff=$gzib_file_out;
 //$traff=strlen(gzencode($Contents,9));
-$_SESSION['traffic']=$_SESSION[traffic]+$traff;
+$_SESSION['traffic']=$_SESSION["traffic"]+$traff;
  die("");
  }
 function doai($i) {                                // искусственный интеллект, проверяем локацию с именем $i

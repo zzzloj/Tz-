@@ -1,4 +1,4 @@
-<?
+<?php 
 
 $ip = ("$REMOTE_ADDR");
 if ($login=='akt' || $ip=='217.144.164.164' || strtolower($login)=='alatiel' || strtolower($login)=='fox' || strtolower($login)=='liska' || strtolower($login)=='anjelika' || strtolower($login)=='erra' || ($brouzer=='SonyEricssonK500i/R2AA SEMC-Browser/4.0.2 Profile/MIDP-2.0 Configuration/CLDC-1.1' && $ip=='83.149.48.211')) {

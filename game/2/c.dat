@@ -24,10 +24,10 @@ $onpage=7;
 $stmp.= '<small><b>Коментарии к теме:</b><br/>'.$zapis;
 $tmp=unserialize(implode("",file("../clans/".$clan))); 
 	if (isset($tmp["g"][$login]) || isset($tmp["s"][$login]) || isset($tmp["v"][$login]) || isset($tmp["m"][$login])) { 
-if(empty($_SESSION[press_kod])){
+if(empty($_SESSION["press_kod"])){
 $press_kod=rand(1000,9999);
 session_start();
-session_register("press_kod");}
+$_SESSION["press_kod"]=$press_kod;}
 $stmp.= '<br/>---<br/>Текст:</small><br/>';
 $stmp.= '<input name="blog_text'.$rand.'" maxlength="350"/><br/>';
 $stmp.="Проверочный код: <b><u>".$press_kod."</u></b>
@@ -80,7 +80,7 @@ unset($blog_text);
 $stmp.='<u>Проверочное число не совпало!!!</u><br/>';}
 $press_kod='';
 $press_kod=rand(10000,99999); 
-session_register("press_kod");
+$_SESSION["press_kod"]=$press_kod;
 session_unset();
 session_destroy();}
 

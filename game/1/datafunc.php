@@ -1,4 +1,4 @@
-<?
+<?php 
 
 $gamedays = 27;  // Оплачиваемый период
 $freedays = 3000; // Бесплатно дней можно играть
@@ -48,12 +48,12 @@ require("config.ssp"); // Настройки БД
 
 function ValidNN($s)
 {
-  return !eregi("[^a-z0-9_]",$s);
+  return !preg_match("/[^a-z0-9_]/i",$s);
 }
 
 function ValidPass($s)
 {
-  return !eregi("[^a-z0-9]",$s);
+  return !preg_match("/[^a-z0-9]/i",$s);
 }
 
 function InitParam($N,$V)
@@ -67,10 +67,10 @@ function GetParam($Name)
 {
 global $Names,$Values,$NOT_SET;
   $Name = strtolower($Name);
-  $Nlist = split(":",$Names);
+  $Nlist = explode(":",$Names);
   for ($i=0; $i<count($Nlist); $i++) if ($Nlist[$i] == $Name) break;
   if ($i == count($Nlist)) return $NOT_SET;
-  $Vlist = split(":",$Values);
+  $Vlist = explode(":",$Values);
   return stripslashes(str_replace("!~!",":",$Vlist[$i]));
 }
 
@@ -78,7 +78,7 @@ global $Names,$Values,$NOT_SET;
 function SetParam($Name,$Value)
 {
 global $Names,$Values,$NOT_SET;
-  $Nlist = split(":",$Names);
+  $Nlist = explode(":",$Names);
   $Name = strtolower($Name);
   $Value = addslashes(str_replace(":","!~!",$Value));
   for ($i=0; $i<count($Nlist); $i++) if ($Nlist[$i] == $Name) break;
@@ -90,7 +90,7 @@ global $Names,$Values,$NOT_SET;
   }
   else
   {
-    $Vlist = split(":",$Values);
+    $Vlist = explode(":",$Values);
     $Vlist[$i] = $Value;
     $Values = implode(":",$Vlist);
     if ($Value == $NOT_SET)

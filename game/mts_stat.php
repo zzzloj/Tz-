@@ -7,11 +7,11 @@
 <SCRIPT>
 function SetToday() {
   with (document) {
-form2.from_month.value = <? echo date ("m", time());?>;
-form2.to_day.value = <? echo date ("d", time());?>;
-form2.to_month.value = <? echo date ("m", time());?>;
-form2.year.value = <? echo date ("Y", time());?>;
-form2.from_day.value = <? echo date ("d", time());?>;
+form2.from_month.value = <?php echo date ("m", time());?>;
+form2.to_day.value = <?php echo date ("d", time());?>;
+form2.to_month.value = <?php echo date ("m", time());?>;
+form2.year.value = <?php echo date ("Y", time());?>;
+form2.from_day.value = <?php echo date ("d", time());?>;
   
   } // with  
 }  
@@ -24,7 +24,7 @@ form2.from_day.value = <? echo date ("d", time());?>;
 <?=(time()+24*60*60*100);?>
 <p>
   MTS Stats<br>
-  Current Moscow time: <? echo date("d/m/Y H:i:s",time());?></p>
+  Current Moscow time: <?php echo date("d/m/Y H:i:s",time());?></p>
 <table><tr><td>
 <form method="get" action="mts_stat.php" name="form2">
   <table border="1"><tr><td align="center"> 

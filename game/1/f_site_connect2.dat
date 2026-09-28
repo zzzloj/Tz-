@@ -1,5 +1,5 @@
 <?php
-        if(eregi("[^a-z0-9_.-]",$login)){
+        if(preg_match("/[^a-z0-9_.-]/i",$login)){
 header ("Location: http://download.l2db.ru/original%20clients/L2_C5_Installer.zip"); exit;}
         if ($nn) $login=$nn;
         if ($pass) $p=$pass;
