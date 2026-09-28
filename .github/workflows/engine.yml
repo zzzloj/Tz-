@@ -30,7 +30,14 @@ jobs:
       - name: Content problems
         if: success()
         run: |
-          grep -A40 "content problems" server/build/test-results/test/*.xml | sed 's/^.*xml-//' | head -45 || true
+          python3 - <<'PY'
+          import glob, re
+          text = "".join(open(f, errors="replace").read() for f in glob.glob("server/build/test-results/test/*.xml"))
+          m = re.search(r"content problems: (\d+)\n((?:  .*\n){0,30})", text)
+          if m:
+              body = ("content problems: " + m.group(1) + "\n" + m.group(2)).replace("%", "%25").replace("\n", "%0A")
+              print("::notice title=Content::" + body)
+          PY
       - uses: actions/upload-artifact@v4
         if: success()
         with:

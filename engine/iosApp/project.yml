@@ -29,3 +29,5 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: ru.territoriyazla.app
+        # The shared framework is built for Apple Silicon simulators only.
+        EXCLUDED_ARCHS[sdk=iphonesimulator*]: x86_64
