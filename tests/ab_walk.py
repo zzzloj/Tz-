@@ -68,6 +68,8 @@ for i in range(len(fixed) + STEPS):
     visited.add(re.sub(r"sid=[^&]+", "sid", path))
     pa, pb = both(path)
     na, nb = normalise_for_diff(pa), normalise_for_diff(pb)
+    if os.environ.get("AB_FOLD"):  # compare with Latin look-alikes folded to Cyrillic
+        na, nb = [fold(x) for x in na], [fold(x) for x in nb]
     if na == nb:
         same += 1
     else:

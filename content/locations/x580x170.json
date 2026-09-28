@@ -13,10 +13,10 @@
         }
     ],
     "objects": {
-        "i.s.d.n.c.wolf.dl.77": "труп (вoлк)|1|1198676731|,i.h.k.wolf:1,i.h.kog.wolf:1,i.f.meat:1|",
+        "i.s.d.n.c.wolf.dl.77": "труп (волк)|1|1198676731|,i.h.k.wolf:1,i.h.kog.wolf:1,i.f.meat:1|",
         "n.c.wolf.dl4": {
             "char": {
-                "name": "вoлк",
+                "name": "волк",
                 "hp": 26,
                 "hp_max": 26,
                 "mana": 1,
@@ -43,7 +43,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "клыкaми",
+                "verb": "клыками",
                 "exp_value": 12,
                 "ammo": "",
                 "respawn": "x580x141:300:600"
@@ -69,7 +69,7 @@
         },
         "n.c.wolf.dl": {
             "char": {
-                "name": "вoлк",
+                "name": "волк",
                 "hp": 26,
                 "hp_max": 26,
                 "mana": 1,
@@ -96,7 +96,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "клыкaми",
+                "verb": "клыками",
                 "exp_value": 12,
                 "ammo": "",
                 "respawn": "x580x141:300:600"

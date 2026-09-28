@@ -1,7 +1,7 @@
 {
     "id": "n.a.b.ore",
     "char": {
-        "name": "opeл",
+        "name": "орел",
         "hp": 18,
         "hp_max": 18,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": "",
         "magic_parry": "",
         "magic_resist": "",
-        "verb": "клювoм",
+        "verb": "клювом",
         "exp_value": 3,
         "ammo": "",
         "respawn": ""

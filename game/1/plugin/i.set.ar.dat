@@ -21,7 +21,7 @@ addjournal($loc,"all",$char[0]. " извлек самоцвет",$login);
 } else { addjournal($loc,$login,"Вы не смогли извлеч самоцвет"); 
 addjournal($loc,"all",$char[0]. " не смог извлеч самоцвет",$login);
 additem($loc,$login,"",$to,1); }
-if (rand(1,100)<=5) {addjournal($loc,$login,"Вы сломали нaбop для извлeчeния кaмнeй"); addjournal($loc,"all",$char[0]. " сломал нaбop для извлeчeния кaмнeй",$login); additem($loc,$login,"","i.set.ar",1);}
+if (rand(1,100)<=5) {addjournal($loc,$login,"Вы сломали набор для извлечения камней"); addjournal($loc,"all",$char[0]. " сломал набор для извлечения камней",$login); additem($loc,$login,"","i.set.ar",1);}
 } elseif (!$k) {
 if ($rF[1]) $rF[1]="<a href=\"$PHP_SELF?sid=$sid&to=$to&use=i.set.ar&k=$rF[1]\">".$rF[1]."</a><br/>"; else $rF[1]="";
 if ($rF[2]) $rF[2]="<a href=\"$PHP_SELF?sid=$sid&to=$to&use=i.set.ar&k=$rF[2]\">".$rF[2]."</a><br/>"; else $rF[2]="";

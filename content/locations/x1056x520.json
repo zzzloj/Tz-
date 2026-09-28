@@ -15,7 +15,7 @@
     "objects": {
         "n.Kantares": {
             "char": {
-                "name": "Кaнтapec",
+                "name": "Кантарес",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 100,
@@ -42,7 +42,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "мeчoм",
+                "verb": "мечом",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1056x520:10:40"
@@ -74,7 +74,7 @@
         },
         "n.KantaresNovobranec": {
             "char": {
-                "name": "Нoвoбpaнeц",
+                "name": "Новобранец",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 100,
@@ -101,7 +101,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "мeчoм",
+                "verb": "мечом",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1056x520:10:40"

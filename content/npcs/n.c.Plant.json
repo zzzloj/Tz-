@@ -1,7 +1,7 @@
 {
     "id": "n.c.Plant",
     "char": {
-        "name": "Плaнт-зомби",
+        "name": "Плант-зомби",
         "hp": 100,
         "hp_max": 100,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": "",
         "magic_parry": "",
         "magic_resist": "",
-        "verb": "утpeннeй звeздoй",
+        "verb": "утренней звездой",
         "exp_value": 20,
         "ammo": "",
         "respawn": "x1140x543:1:2"

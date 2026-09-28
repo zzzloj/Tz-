@@ -21,7 +21,7 @@
         }
     ],
     "objects": {
-        "i.s.d.n.c.witch.sl.85": "труп (вeдьмa)|1|1198676332|i.money:11,i.f.fileroot:1,i.ring.z:1|"
+        "i.s.d.n.c.witch.sl.85": "труп (ведьма)|1|1198676332|i.money:11,i.f.fileroot:1,i.ring.z:1|"
     },
     "timers": {
         "1198676132": "n.c.witch.sl|300:600|2:20:60:1198675737"

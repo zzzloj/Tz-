@@ -11,7 +11,7 @@
     "objects": {
         "n.Sarant": {
             "char": {
-                "name": "Сapaнт",
+                "name": "Сарант",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 100,
@@ -38,7 +38,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "тoпopoм",
+                "verb": "топором",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1188x538:1:2"

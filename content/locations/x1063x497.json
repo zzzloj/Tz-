@@ -11,7 +11,7 @@
     "objects": {
         "n.Silvestr": {
             "char": {
-                "name": "Сильвecтp",
+                "name": "Сильвестр",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 100,
@@ -38,7 +38,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1063x497:1:2"
@@ -75,7 +75,7 @@
         },
         "n.Stouns": {
             "char": {
-                "name": "Стoунc",
+                "name": "Стоунс",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 100,
@@ -102,7 +102,7 @@
                 "magic_dodge": 30,
                 "magic_parry": 80,
                 "magic_resist": 50,
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1063x497:1:2"

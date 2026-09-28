@@ -23,7 +23,7 @@
     "objects": {
         "n.Yan": {
             "char": {
-                "name": "Ян [oхoтник]",
+                "name": "Ян [охотник]",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 100,
@@ -50,7 +50,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1023x428:60:300"

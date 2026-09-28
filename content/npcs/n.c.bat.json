@@ -1,7 +1,7 @@
 {
     "id": "n.c.bat",
     "char": {
-        "name": "нeтoпыpь",
+        "name": "нетопырь",
         "hp": 14,
         "hp_max": 14,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": "",
         "magic_parry": "",
         "magic_resist": "",
-        "verb": "кoгтями",
+        "verb": "когтями",
         "exp_value": 4,
         "ammo": "",
         "respawn": ""

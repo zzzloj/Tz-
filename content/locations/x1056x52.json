@@ -13,11 +13,11 @@
         }
     ],
     "objects": {
-        "i.s.d.n.c.Kantares.a1.23": "труп (Кaнтapec-зомби)|1|1198626599|i.a.h.zakr:1,i.m.s.demon:2,i.m.w.vamp:1|",
-        "i.s.d.n.c.KantaresNovobranec.a1.21": "труп (Нoвoбpaнeц-зомби)|1|1198626610|i.w.s.short:1|",
+        "i.s.d.n.c.Kantares.a1.23": "труп (Кантарес-зомби)|1|1198626599|i.a.h.zakr:1,i.m.s.demon:2,i.m.w.vamp:1|",
+        "i.s.d.n.c.KantaresNovobranec.a1.21": "труп (Новобранец-зомби)|1|1198626610|i.w.s.short:1|",
         "n.c.KantaresNovobranec.a1": {
             "char": {
-                "name": "Нoвoбpaнeц-зомби",
+                "name": "Новобранец-зомби",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 1,
@@ -44,7 +44,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "мeчoм",
+                "verb": "мечом",
                 "exp_value": 20,
                 "ammo": "",
                 "respawn": "x1056x52:100:400"

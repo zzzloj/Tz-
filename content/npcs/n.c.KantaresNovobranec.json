@@ -1,7 +1,7 @@
 {
     "id": "n.c.KantaresNovobranec",
     "char": {
-        "name": "Нoвoбpaнeц-зомби",
+        "name": "Новобранец-зомби",
         "hp": 100,
         "hp_max": 100,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": "",
         "magic_parry": "",
         "magic_resist": "",
-        "verb": "мeчoм",
+        "verb": "мечом",
         "exp_value": 20,
         "ammo": "",
         "respawn": ""

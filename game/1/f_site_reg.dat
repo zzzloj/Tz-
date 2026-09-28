@@ -6,7 +6,7 @@ $stmp="Пол персонажа:
 </select>
 Дата рождения (31/12/2009):<br/><input name=\"age\" value=\"31/12/2009\" maxlength=\"10\"/>
 <br/>Город:<br/><input name=\"from\" maxlength=\"20\" value=\"".$i_dat[5]."\"/>
-<br/>O Ceбe:<br/><input name=\"osebe\" maxlength=\"300\" value=\"".$i_dat[7]."\"/>
+<br/>O Себе:<br/><input name=\"osebe\" maxlength=\"300\" value=\"".$i_dat[7]."\"/>
 <br/><anchor>[зарегистрироваться]<go href=\"$PHP_SELF?site=reg2\" method=\"post\">
 <postfield name=\"login\" value=\"$(title_v)\"/>
 <postfield name=\"p\" value=\"$(p)\"/>

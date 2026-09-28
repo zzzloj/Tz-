@@ -1,7 +1,7 @@
 {
     "id": "n.c.Gregg",
     "char": {
-        "name": "Гpeгг-зомби",
+        "name": "Грегг-зомби",
         "hp": 100,
         "hp_max": 100,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": "",
         "magic_parry": "",
         "magic_resist": "",
-        "verb": "кулaкaми",
+        "verb": "кулаками",
         "exp_value": 20,
         "ammo": "",
         "respawn": ""

@@ -47,7 +47,7 @@ if ($use=="m.s.golem") $item=array(
 ); else
 if ($use=="m.s.fantom") $item=array(
 "char"=>"призванный фантом|50|50|1|1|1|1||0|0||",
-"war"=>"100|4|12|4|||10|||10|70|40|мaгиeй|0||",
+"war"=>"100|4|12|4|||10|||10|70|40|магией|0||",
 "owner"=>$login."|".$login."|".$login."|".(time()+rand(legacy_num(1*60),legacy_num(10*60)))."|1",
 ); else
 if ($use=="m.s.tucha") $item=array(

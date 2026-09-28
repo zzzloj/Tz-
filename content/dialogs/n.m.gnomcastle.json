@@ -5,7 +5,7 @@
             "text": "стой сюда могут войти люди с особым знаком дружбы между людьми и гномами.",
             "options": [
                 {
-                    "label": "eval: if(legacy_cmp(additem($loc,$login,\"\",\"i.q.gnom\",\"count\"))>0) {$title_v=\"у меня есть этот знак его мне дал кузнец Пaлeнт\";$id=\"gr\";} else $title_v=\"у меня  нету на какого знака\";",
+                    "label": "eval: if(legacy_cmp(additem($loc,$login,\"\",\"i.q.gnom\",\"count\"))>0) {$title_v=\"у меня есть этот знак его мне дал кузнец Палент\";$id=\"gr\";} else $title_v=\"у меня  нету на какого знака\";",
                     "goto": "end"
                 },
                 {

@@ -23,7 +23,7 @@
     "objects": {
         "n.a.los.dl": {
             "char": {
-                "name": "лocь",
+                "name": "лось",
                 "hp": 38,
                 "hp_max": 38,
                 "mana": 1,
@@ -50,7 +50,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "poгaми",
+                "verb": "рогами",
                 "exp_value": 5,
                 "ammo": "",
                 "respawn": "x654x84:300:600"

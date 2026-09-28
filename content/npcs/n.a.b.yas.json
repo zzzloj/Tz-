@@ -1,7 +1,7 @@
 {
     "id": "n.a.b.yas",
     "char": {
-        "name": "яcтpeб",
+        "name": "ястреб",
         "hp": 12,
         "hp_max": 12,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": "",
         "magic_parry": "",
         "magic_resist": "",
-        "verb": "клювoм",
+        "verb": "клювом",
         "exp_value": 2,
         "ammo": "",
         "respawn": ""

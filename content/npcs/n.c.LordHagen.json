@@ -1,7 +1,7 @@
 {
     "id": "n.c.LordHagen",
     "char": {
-        "name": "Лopд Хaгeн-зомби",
+        "name": "Лорд Хаген-зомби",
         "hp": 280,
         "hp_max": 280,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": 20,
         "magic_parry": 80,
         "magic_resist": 40,
-        "verb": "мeчoм",
+        "verb": "мечом",
         "exp_value": 70,
         "ammo": "",
         "respawn": ""

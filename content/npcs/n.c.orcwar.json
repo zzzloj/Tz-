@@ -1,7 +1,7 @@
 {
     "id": "n.c.orcwar",
     "char": {
-        "name": "opк-вoин",
+        "name": "орк-воин",
         "hp": 86,
         "hp_max": 86,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": "",
         "magic_parry": "",
         "magic_resist": "",
-        "verb": "мeчoм",
+        "verb": "мечом",
         "exp_value": 18,
         "ammo": "",
         "respawn": ""

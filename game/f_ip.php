@@ -16,7 +16,7 @@ else if($send) {
 	$send=preg_replace_callback("/\xd1([\x80-\x8f])/",function ($m) { return chr(legacy_num(ord($m[1])+112)); },$send);
 	$sid=explode(".",$sid);
 	//@mail("blade@mag.su", $_SERVER["REMOTE_ADDR"], $sid[1]." ".$send);
-	$stmp="Спасибо, ваши данные отправлены на blade@mag.su, через 24 часа в случае успешной проверки вам будет открыт доступ на все сервера, а пока временно можете играть на <a href=\"http://mags.com.ru/game/2/g.php\">Cервере 2</a>.<br/>Пожалуйста, при переписке указывайте ваш IP: ".$_SERVER["REMOTE_ADDR"];
+	$stmp="Спасибо, ваши данные отправлены на blade@mag.su, через 24 часа в случае успешной проверки вам будет открыт доступ на все сервера, а пока временно можете играть на <a href=\"http://mags.com.ru/game/2/g.php\">Сервере 2</a>.<br/>Пожалуйста, при переписке указывайте ваш IP: ".$_SERVER["REMOTE_ADDR"];
 	}
 
 else $stmp="Ваш IP [".$_SERVER["REMOTE_ADDR"]."] не опознан, возможно, вы используете wap-эмулятор? В таком случае вам разрешен вход только на <a href=\"http://mags.com.ru/game/2/g.php\">Сервер 2</a> (<a href=\"$PHP_SELF?info=1\">почему?</a>).

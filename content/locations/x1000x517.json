@@ -13,10 +13,10 @@
         }
     ],
     "objects": {
-        "i.s.d.n.c.rat.br1.67": "труп (кpыca)|1|1198674301|i.money:1|i.f.meat:1",
+        "i.s.d.n.c.rat.br1.67": "труп (крыса)|1|1198674301|i.money:1|i.f.meat:1",
         "n.c.pauk.br": {
             "char": {
-                "name": "гигaнтcкий пaук",
+                "name": "гигантский паук",
                 "hp": 6,
                 "hp_max": 6,
                 "mana": 1,
@@ -43,7 +43,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "лaпaми",
+                "verb": "лапами",
                 "exp_value": 2,
                 "ammo": "",
                 "respawn": "x1000x517:300:600"

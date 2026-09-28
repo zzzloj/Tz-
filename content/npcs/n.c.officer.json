@@ -1,7 +1,7 @@
 {
     "id": "n.c.officer",
     "char": {
-        "name": "Сaнчec [oфицep]-зомби",
+        "name": "Санчес [офицер]-зомби",
         "hp": 100,
         "hp_max": 100,
         "mana": 100,
@@ -28,7 +28,7 @@
         "magic_dodge": 80,
         "magic_parry": 80,
         "magic_resist": 70,
-        "verb": "шпaгoй",
+        "verb": "шпагой",
         "exp_value": 50,
         "ammo": "",
         "respawn": ""

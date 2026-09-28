@@ -15,7 +15,7 @@
     "objects": {
         "n.a.losh.zam2": {
             "char": {
-                "name": "лoшaдь",
+                "name": "лошадь",
                 "hp": 26,
                 "hp_max": 26,
                 "mana": 1,
@@ -42,7 +42,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кoпытaми",
+                "verb": "копытами",
                 "exp_value": 4,
                 "ammo": "",
                 "respawn": "x879x297:300:600"
@@ -56,7 +56,7 @@
         },
         "n.a.losh.zam1": {
             "char": {
-                "name": "лoшaдь",
+                "name": "лошадь",
                 "hp": 26,
                 "hp_max": 26,
                 "mana": 1,
@@ -83,7 +83,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кoпытaми",
+                "verb": "копытами",
                 "exp_value": 4,
                 "ammo": "",
                 "respawn": "x879x297:300:600"

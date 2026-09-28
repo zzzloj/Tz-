@@ -11,7 +11,7 @@
     "objects": {
         "n.c.Silvestr.a1": {
             "char": {
-                "name": "Сильвecтp-зомби",
+                "name": "Сильвестр-зомби",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 1,
@@ -38,7 +38,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": 15,
                 "ammo": "",
                 "respawn": "x1063x49:1000:2000"
@@ -75,7 +75,7 @@
         },
         "n.c.Stouns.a1": {
             "char": {
-                "name": "Стoунc-зомби",
+                "name": "Стоунс-зомби",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 1,
@@ -102,7 +102,7 @@
                 "magic_dodge": 30,
                 "magic_parry": 80,
                 "magic_resist": 50,
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": 20,
                 "ammo": "",
                 "respawn": "x1063x49:1000:2000"

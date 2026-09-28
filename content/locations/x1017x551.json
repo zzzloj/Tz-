@@ -15,7 +15,7 @@
     "objects": {
         "n.Surri": {
             "char": {
-                "name": "Суppи",
+                "name": "Сурри",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 100,
@@ -42,7 +42,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1017x551:1:2"

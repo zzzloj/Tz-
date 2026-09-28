@@ -15,7 +15,7 @@
     "objects": {
         "n.Gant": {
             "char": {
-                "name": "Гaнт",
+                "name": "Гант",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 100,
@@ -42,7 +42,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "мeчoм",
+                "verb": "мечом",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1077x507:10:30"

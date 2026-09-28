@@ -23,7 +23,7 @@
     "objects": {
         "n.a.sheep.sd": {
             "char": {
-                "name": "oвцa",
+                "name": "овца",
                 "hp": 12,
                 "hp_max": 12,
                 "mana": 1,
@@ -50,7 +50,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кoпытaми",
+                "verb": "копытами",
                 "exp_value": 3,
                 "ammo": "",
                 "respawn": "x1011x345:300:600"
@@ -72,7 +72,7 @@
         },
         "n.a.b.kur.sd": {
             "char": {
-                "name": "куpицa",
+                "name": "курица",
                 "hp": 2,
                 "hp_max": 2,
                 "mana": 1,
@@ -99,7 +99,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "клювoм",
+                "verb": "клювом",
                 "exp_value": 1,
                 "ammo": "",
                 "respawn": "x1011x345:300:600"

@@ -23,7 +23,7 @@
     "objects": {
         "n.c.orcchem.a3": {
             "char": {
-                "name": "opк-чeмпиoн",
+                "name": "орк-чемпион",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 1,
@@ -50,7 +50,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "мeчoм",
+                "verb": "мечом",
                 "exp_value": 26,
                 "ammo": "",
                 "respawn": "x2181x509:1200:1800"

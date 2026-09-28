@@ -17,7 +17,7 @@
         }
     ],
     "objects": {
-        "i.s.d.n.c.zombie.kl2.26": "труп (зoмби)|1|1198678009|i.money:3|"
+        "i.s.d.n.c.zombie.kl2.26": "труп (зомби)|1|1198678009|i.money:3|"
     },
     "timers": {
         "1198677720": "n.c.zombie.kl2|300:600"

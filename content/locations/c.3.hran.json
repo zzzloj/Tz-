@@ -28,7 +28,7 @@
         "i.s.d.u.xeon.21": "труп (Xeon *MECTb*)|1|1193550075||",
         "n.a.losh.6032": {
             "char": {
-                "name": "лoшaдь",
+                "name": "лошадь",
                 "hp": 26,
                 "hp_max": 26,
                 "mana": 1,
@@ -55,7 +55,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кoпытaми",
+                "verb": "копытами",
                 "exp_value": 4,
                 "ammo": "",
                 "respawn": ""

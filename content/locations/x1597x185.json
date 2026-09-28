@@ -13,8 +13,8 @@
         }
     ],
     "objects": {
-        "i.s.d.n.c.scorpion.pesh.81": "труп (cкopпиoн)|1|1198678392||",
-        "i.s.d.n.c.ogrwar.pesh.15": "труп (oгp-вoин)|1|1198678596|i.a.b.mpanc:1,i.money:6,i.w.s.kriv:1|"
+        "i.s.d.n.c.scorpion.pesh.81": "труп (скорпион)|1|1198678392||",
+        "i.s.d.n.c.ogrwar.pesh.15": "труп (огр-воин)|1|1198678596|i.a.b.mpanc:1,i.money:6,i.w.s.kriv:1|"
     },
     "timers": {
         "1198679750": "i.c.emerald|0|1|1800|3600",

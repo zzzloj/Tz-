@@ -1,7 +1,7 @@
 {
     "id": "n.c.Serpent",
     "char": {
-        "name": "Сepпeнт-зомби",
+        "name": "Серпент-зомби",
         "hp": 100,
         "hp_max": 100,
         "mana": 1,

@@ -19,7 +19,7 @@
     "objects": {
         "n.c.witch.sd": {
             "char": {
-                "name": "вeдьмa",
+                "name": "ведьма",
                 "hp": 18,
                 "hp_max": 18,
                 "mana": 1,
@@ -46,7 +46,7 @@
                 "magic_dodge": 5,
                 "magic_parry": 70,
                 "magic_resist": 40,
-                "verb": "мaгиeй",
+                "verb": "магией",
                 "exp_value": 6,
                 "ammo": "",
                 "respawn": "x735x24:300:600"

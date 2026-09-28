@@ -1,7 +1,7 @@
 {
     "id": "n.c.troll",
     "char": {
-        "name": "тpoлль",
+        "name": "тролль",
         "hp": 92,
         "hp_max": 92,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": "",
         "magic_parry": "",
         "magic_resist": "",
-        "verb": "лaпaми",
+        "verb": "лапами",
         "exp_value": 40,
         "ammo": "",
         "respawn": ""

@@ -1,7 +1,7 @@
 {
     "id": "n.Silvio",
     "char": {
-        "name": "Сильвиo",
+        "name": "Сильвио",
         "hp": 100,
         "hp_max": 100,
         "mana": 100,
@@ -28,7 +28,7 @@
         "magic_dodge": "",
         "magic_parry": 80,
         "magic_resist": 80,
-        "verb": "кoпьeм",
+        "verb": "копьем",
         "exp_value": "",
         "ammo": "",
         "respawn": "x1284x393:40:120"

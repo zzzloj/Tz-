@@ -23,7 +23,7 @@
     "objects": {
         "n.a.bear.sl2": {
             "char": {
-                "name": "мeдвeдь",
+                "name": "медведь",
                 "hp": 44,
                 "hp_max": 44,
                 "mana": 1,
@@ -50,7 +50,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "зубaми",
+                "verb": "зубами",
                 "exp_value": 8,
                 "ammo": "",
                 "respawn": "x927x54:300:600"

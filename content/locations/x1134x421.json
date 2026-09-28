@@ -16,7 +16,7 @@
         "i.s.res": "камень воскрешения||0",
         "n.a.b.sok.oz": {
             "char": {
-                "name": "coкoл",
+                "name": "сокол",
                 "hp": 8,
                 "hp_max": 8,
                 "mana": 1,
@@ -43,7 +43,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "клювoм",
+                "verb": "клювом",
                 "exp_value": 2,
                 "ammo": "",
                 "respawn": "x1096x420:300:600"

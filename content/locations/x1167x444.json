@@ -11,7 +11,7 @@
     "objects": {
         "n.Antonio": {
             "char": {
-                "name": "Антoниo",
+                "name": "Антонио",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 100,
@@ -38,7 +38,7 @@
                 "magic_dodge": 10,
                 "magic_parry": 20,
                 "magic_resist": 30,
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1167x444:20:20"
@@ -60,7 +60,7 @@
         },
         "n.Milton": {
             "char": {
-                "name": "Милтoн",
+                "name": "Милтон",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 100,
@@ -87,7 +87,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1167x444:1:2"

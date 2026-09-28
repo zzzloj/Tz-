@@ -11,7 +11,7 @@
     "objects": {
         "n.c.Sloven.a1": {
             "char": {
-                "name": "Слoвeн-зомби",
+                "name": "Словен-зомби",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 1,
@@ -38,7 +38,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": 15,
                 "ammo": "",
                 "respawn": "x1017x45:100:200"

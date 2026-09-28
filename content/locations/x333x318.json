@@ -13,8 +13,8 @@
         }
     ],
     "objects": {
-        "i.s.d.n.c.skeletwar.kat1.70": "труп (cкeлeт-вoин)|1|1198655571|i.w.s.short:1|i.h.bone:2",
-        "i.s.d.n.c.scorpion.kat.86": "труп (cкopпиoн)|1|1198655576|i.f.fileroot:1,i.h.jalo:1|"
+        "i.s.d.n.c.skeletwar.kat1.70": "труп (скелет-воин)|1|1198655571|i.w.s.short:1|i.h.bone:2",
+        "i.s.d.n.c.scorpion.kat.86": "труп (скорпион)|1|1198655576|i.f.fileroot:1,i.h.jalo:1|"
     },
     "description": "Корридор делает поворот под прямым углом.\n"
 }

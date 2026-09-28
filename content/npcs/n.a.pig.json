@@ -1,7 +1,7 @@
 {
     "id": "n.a.pig",
     "char": {
-        "name": "cвинья",
+        "name": "свинья",
         "hp": 14,
         "hp_max": 14,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": "",
         "magic_parry": "",
         "magic_resist": "",
-        "verb": "кoпытaми",
+        "verb": "копытами",
         "exp_value": 3,
         "ammo": "",
         "respawn": ""

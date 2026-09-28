@@ -1,7 +1,7 @@
 {
     "id": "n.a.krolik",
     "char": {
-        "name": "кpoлик",
+        "name": "кролик",
         "hp": 8,
         "hp_max": 8,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": "",
         "magic_parry": "",
         "magic_resist": "",
-        "verb": "лaпaми",
+        "verb": "лапами",
         "exp_value": 2,
         "ammo": "",
         "respawn": ""

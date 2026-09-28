@@ -1,7 +1,7 @@
 {
     "id": "n.Serpent",
     "char": {
-        "name": "Сepпeнт",
+        "name": "Серпент",
         "hp": 100,
         "hp_max": 100,
         "mana": 100,
@@ -28,7 +28,7 @@
         "magic_dodge": 5,
         "magic_parry": 40,
         "magic_resist": 20,
-        "verb": "кулaкaми",
+        "verb": "кулаками",
         "exp_value": "",
         "ammo": "",
         "respawn": "x1161x456:1:2"

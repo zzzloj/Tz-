@@ -1,7 +1,7 @@
 {
     "id": "n.a.b.gal",
     "char": {
-        "name": "гaлкa",
+        "name": "галка",
         "hp": 3,
         "hp_max": 3,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": "",
         "magic_parry": "",
         "magic_resist": "",
-        "verb": "клювoм",
+        "verb": "клювом",
         "exp_value": 1,
         "ammo": "",
         "respawn": ""

@@ -9,8 +9,8 @@
         }
     ],
     "objects": {
-        "i.s.d.n.c.skeletwar.kat2.98": "труп (cкeлeт-вoин)|1|1198655601|i.w.s.short:1,i.oj.m:1|i.h.bone:2",
-        "i.s.d.n.c.licharchy.kat.91": "труп (apхилич)|1|1198655601|,i.m.w.firearrow:1|",
+        "i.s.d.n.c.skeletwar.kat2.98": "труп (скелет-воин)|1|1198655601|i.w.s.short:1,i.oj.m:1|i.h.bone:2",
+        "i.s.d.n.c.licharchy.kat.91": "труп (архилич)|1|1198655601|,i.m.w.firearrow:1|",
         "i.flag": "флаг лидерства|1|0"
     },
     "timers": {

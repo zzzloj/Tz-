@@ -1,7 +1,7 @@
 {
     "id": "n.c.sneak",
     "char": {
-        "name": "змeя",
+        "name": "змея",
         "hp": 8,
         "hp_max": 8,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": 10,
         "magic_parry": "",
         "magic_resist": "",
-        "verb": "ядoм",
+        "verb": "ядом",
         "exp_value": 3,
         "ammo": "",
         "respawn": ""

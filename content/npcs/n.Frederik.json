@@ -1,7 +1,7 @@
 {
     "id": "n.Frederik",
     "char": {
-        "name": "Фpeдepик",
+        "name": "Фредерик",
         "hp": 100,
         "hp_max": 100,
         "mana": 100,
@@ -28,7 +28,7 @@
         "magic_dodge": "",
         "magic_parry": 100,
         "magic_resist": 100,
-        "verb": "кулaкaми",
+        "verb": "кулаками",
         "exp_value": "",
         "ammo": "",
         "respawn": "x1098x542:10:20:1"

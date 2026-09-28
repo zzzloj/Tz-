@@ -1,7 +1,7 @@
 {
     "id": "n.c.vampire",
     "char": {
-        "name": "вaмпиp",
+        "name": "вампир",
         "hp": 34,
         "hp_max": 34,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": 5,
         "magic_parry": 60,
         "magic_resist": 90,
-        "verb": "клыкaми",
+        "verb": "клыками",
         "exp_value": 14,
         "ammo": "",
         "respawn": ""

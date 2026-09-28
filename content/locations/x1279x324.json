@@ -17,7 +17,7 @@
         }
     ],
     "objects": {
-        "i.s.d.n.c.skeletwar.kl.17": "труп (cкeлeт-вoин)|1|1198678294|,i.money:7,i.oj.m:1|i.h.bone:2"
+        "i.s.d.n.c.skeletwar.kl.17": "труп (скелет-воин)|1|1198678294|,i.money:7,i.oj.m:1|i.h.bone:2"
     },
     "timers": {
         "1198678064": "n.c.skeletwar.kl|300:600"

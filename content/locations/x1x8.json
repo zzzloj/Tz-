@@ -15,7 +15,7 @@
     "objects": {
         "n.a.losh.1917": {
             "char": {
-                "name": "лoшaдь",
+                "name": "лошадь",
                 "hp": 26,
                 "hp_max": 26,
                 "mana": 1,
@@ -42,7 +42,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кoпытaми",
+                "verb": "копытами",
                 "exp_value": 4,
                 "ammo": "",
                 "respawn": ""

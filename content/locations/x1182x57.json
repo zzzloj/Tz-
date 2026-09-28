@@ -23,7 +23,7 @@
     "objects": {
         "n.c.Djon.a1": {
             "char": {
-                "name": "Джoн-зомби",
+                "name": "Джон-зомби",
                 "hp": 80,
                 "hp_max": 80,
                 "mana": 1,

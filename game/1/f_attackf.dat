@@ -25,7 +25,7 @@ global $l_i,$l_tt,$g_destroy,$g_crim,$g_exp,$PHP_SELF,$game;
 	$tloc=explode("x",$loc);
 	if ($magic) $fwar=explode("|",$magic); else $fwar=explode("|",$l_i[$loc][$from]["war"]);
 	if ($answer) {$fchar[6]=time()+legacy_num($fwar[3]); $l_i[$loc][$from]["char"]=implode("|",(array)($fchar));}
-	if ($fwar[12]=="мaгиeй") $fwar[12]="магией";	//eng a,e
+	if ($fwar[12]=="магией") $fwar[12]="магией";	//eng a,e
 	if (substr($from,0,2)!='u.' && rand(0,100)>"10" && $fwar[12]!="молнией") { $use="p.p"; }//$fwar[12]="магией";
 	if ($rmagic || $fwar[12]=="магией" || $fwar[12]=="молнией") {
 		if ($tdef[0]=="p.d.z" && rand(0,100)<=legacy_num($tdef[3])*0.10) {if (substr($l_i[$loc][$from]["def"],0,5)=="p.d.c") {$fdef=explode("|",$l_i[$loc][$from]["def"]); $fdef=$fdef[3];} else $fdef=0; if (rand(0,100)>$fdef) $fwar[0]=0;}

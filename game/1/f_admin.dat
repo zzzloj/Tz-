@@ -114,7 +114,7 @@ if ($adm=='online') {
 
 	//$stmp.= "\n<br/><br/><a href=\"f_site_list.php\">Список серверов</a><br/><br/><anchor>[Назад]<prev/></anchor>";
 
-	msg($stmp,"Онлайн (Cервер ".implode("",(array)(file("server.dat"))).")");
+	msg($stmp,"Онлайн (Сервер ".implode("",(array)(file("server.dat"))).")");
 
 }
 

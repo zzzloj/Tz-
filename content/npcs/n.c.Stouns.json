@@ -1,7 +1,7 @@
 {
     "id": "n.c.Stouns",
     "char": {
-        "name": "Стoунc-зомби",
+        "name": "Стоунс-зомби",
         "hp": 100,
         "hp_max": 100,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": 30,
         "magic_parry": 80,
         "magic_resist": 50,
-        "verb": "кулaкaми",
+        "verb": "кулаками",
         "exp_value": 20,
         "ammo": "",
         "respawn": ""

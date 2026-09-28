@@ -128,8 +128,8 @@
 							$fw=explode("|",$l_i[$loc][$usr]['war']);
 							$exp=legacy_num($twar[13])/2;
 							$sk[3]= legacy_num($sk[3]) + legacy_num($exp);
-							addjournal($loc,$usr,'Onыт +'.intval($exp));
-							if ($sk[3]>legacy_num($fw[13])*legacy_num($g_exp)) {$sk[3]=0; $sk[4]= legacy_num($sk[4]) + legacy_num(1); addjournal($loc,$usr,'Bы noлyчuлu 1 oчko onытa!');}
+							addjournal($loc,$usr,'Опыт +'.intval($exp));
+							if ($sk[3]>legacy_num($fw[13])*legacy_num($g_exp)) {$sk[3]=0; $sk[4]= legacy_num($sk[4]) + legacy_num(1); addjournal($loc,$usr,'Вы получили 1 очко опыта!');}
 							$l_i[$loc][$usr]['skills']=implode('|',(array)($sk));
 							if (legacy_cmp($sk[3])==0) calcparam($loc,$usr); //levelup
 							}

@@ -19,7 +19,7 @@
     "objects": {
         "n.c.wolf.dl2": {
             "char": {
-                "name": "вoлк",
+                "name": "волк",
                 "hp": 26,
                 "hp_max": 26,
                 "mana": 1,
@@ -46,7 +46,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "клыкaми",
+                "verb": "клыками",
                 "exp_value": 12,
                 "ammo": "",
                 "respawn": "x580x141:300:600"

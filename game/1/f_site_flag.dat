@@ -6,4 +6,4 @@
 
 	$stmp.="<br/><br/>Точную позицию флага и имя его текущего обладателя вы всегда можете посмотреть на игровой карте (в основном меню пункт Карта).<br/><a href=\"$PHP_SELF?site=flag&id=info\">Что такое флаг лидерства?</a>";
 
-	msg($stmp,"(Cервер ".implode("",(array)(file("server.dat"))).")",0,'none');
+	msg($stmp,"(Сервер ".implode("",(array)(file("server.dat"))).")",0,'none');

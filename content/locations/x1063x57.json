@@ -15,7 +15,7 @@
     "objects": {
         "n.c.Markus.a1": {
             "char": {
-                "name": "Мapкуc-зомби",
+                "name": "Маркус-зомби",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 1,
@@ -42,7 +42,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": 20,
                 "ammo": "",
                 "respawn": "x1063x57:1000:2000"

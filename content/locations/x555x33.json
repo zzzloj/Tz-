@@ -10,7 +10,7 @@
     ],
     "objects": {
         "i.oj.z": "золотое ожерелье|1|0",
-        "i.s.d.n.c.orcchem.sto.28": "труп (opк-чeмпиoн)|1|1198678576|i.w.s.long:1,i.a.b.mkol:1,i.money:16|"
+        "i.s.d.n.c.orcchem.sto.28": "труп (орк-чемпион)|1|1198678576|i.w.s.long:1,i.a.b.mkol:1,i.money:16|"
     },
     "timers": {
         "1198679012": "i.oj.z|1|1|600|1200",

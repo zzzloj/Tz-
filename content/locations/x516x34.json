@@ -13,7 +13,7 @@
         }
     ],
     "objects": {
-        "i.s.d.n.c.orcwar.sto2.36": "труп (opк-вoин)|1|1198678632|i.w.s.kriv:1,i.money:21|"
+        "i.s.d.n.c.orcwar.sto2.36": "труп (орк-воин)|1|1198678632|i.w.s.kriv:1,i.money:21|"
     },
     "timers": {
         "1198678548": "n.c.orcwar.sto2|300:600"

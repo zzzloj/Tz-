@@ -15,7 +15,7 @@
     "objects": {
         "n.c.Gant.a1": {
             "char": {
-                "name": "Гaнт-зомби",
+                "name": "Гант-зомби",
                 "hp": 180,
                 "hp_max": 180,
                 "mana": 1,
@@ -42,7 +42,7 @@
                 "magic_dodge": 20,
                 "magic_parry": 80,
                 "magic_resist": 40,
-                "verb": "мeчoм",
+                "verb": "мечом",
                 "exp_value": 50,
                 "ammo": "",
                 "respawn": "x1077x50:100:300"

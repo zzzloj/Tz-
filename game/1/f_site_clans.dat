@@ -22,7 +22,7 @@ $clan=str_replace('.','',$clan);
 			if (isset($tmp["m"][$keys[$i]]) && !isset($tmp["g"][$keys[$i]])) $stmp.=" [неофит]";
 			if (isset($tmp["v"][$keys[$i]]) && !isset($tmp["g"][$keys[$i]])) $stmp.=" [вассал]";
 			if (isset($tmp["s"][$keys[$i]]) && !isset($tmp["g"][$keys[$i]])) $stmp.=" [сенешаль]";
-			if (isset($tmp["g"][$keys[$i]])) $stmp.=" [сеньoр]";
+			if (isset($tmp["g"][$keys[$i]])) $stmp.=" [сеньор]";
 			}
 	
 
@@ -55,4 +55,4 @@ $clan=str_replace('.','',$clan);
 		if (legacy_num($start)+legacy_num($g_list)<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&site=clans&start=".(legacy_num($start)+legacy_num($g_list))."\">+ (".(count((array)($keys))+1-legacy_num(legacy_num($start))-legacy_num($g_list)).")</a>";}
 		} else $stmp="<p>Нет ни одного клана"; 
 
-	msg($stmp,"Онлайн (Cервер ".implode("",(array)(file("server.dat"))).")",0,'none');
+	msg($stmp,"Онлайн (Сервер ".implode("",(array)(file("server.dat"))).")",0,'none');

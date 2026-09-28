@@ -1,7 +1,7 @@
 {
     "id": "n.a.b.vor",
     "char": {
-        "name": "вopoнa",
+        "name": "ворона",
         "hp": 5,
         "hp_max": 5,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": "",
         "magic_parry": "",
         "magic_resist": "",
-        "verb": "клювoм",
+        "verb": "клювом",
         "exp_value": 2,
         "ammo": "",
         "respawn": ""

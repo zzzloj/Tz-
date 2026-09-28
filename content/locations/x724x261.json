@@ -23,7 +23,7 @@
     "objects": {
         "n.a.kaban.sl": {
             "char": {
-                "name": "кaбaн",
+                "name": "кабан",
                 "hp": 34,
                 "hp_max": 34,
                 "mana": 1,
@@ -50,7 +50,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "зубaми",
+                "verb": "зубами",
                 "exp_value": 5,
                 "ammo": "",
                 "respawn": "x742x312:300:600"

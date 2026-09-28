@@ -15,7 +15,7 @@
     "objects": {
         "n.c.Surri.a1": {
             "char": {
-                "name": "Суppи-зомби",
+                "name": "Сурри-зомби",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 1,
@@ -42,7 +42,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": 20,
                 "ammo": "",
                 "respawn": "x1017x55:1000:2000"

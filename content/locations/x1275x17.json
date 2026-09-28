@@ -15,7 +15,7 @@
     "objects": {
         "n.a.b.kor.gory": {
             "char": {
-                "name": "кopшун",
+                "name": "коршун",
                 "hp": 14,
                 "hp_max": 14,
                 "mana": 1,
@@ -42,7 +42,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "клювoм",
+                "verb": "клювом",
                 "exp_value": 2,
                 "ammo": "",
                 "respawn": "x1272x48:300:600"

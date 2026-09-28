@@ -185,7 +185,7 @@
                 "magic_dodge": 20,
                 "magic_parry": 80,
                 "magic_resist": 40,
-                "verb": "мeчoм",
+                "verb": "мечом",
                 "exp_value": 50,
                 "ammo": "",
                 "respawn": "x2375x934:1800:2400"
@@ -237,7 +237,7 @@
                 "magic_dodge": 20,
                 "magic_parry": 80,
                 "magic_resist": 40,
-                "verb": "мeчoм",
+                "verb": "мечом",
                 "exp_value": 50,
                 "ammo": "",
                 "respawn": "x2375x934:1800:2400"
@@ -289,7 +289,7 @@
                 "magic_dodge": 20,
                 "magic_parry": 80,
                 "magic_resist": 40,
-                "verb": "мeчoм",
+                "verb": "мечом",
                 "exp_value": 50,
                 "ammo": "",
                 "respawn": "x2375x934:1800:2400"
@@ -341,7 +341,7 @@
                 "magic_dodge": 20,
                 "magic_parry": 80,
                 "magic_resist": 40,
-                "verb": "мeчoм",
+                "verb": "мечом",
                 "exp_value": 50,
                 "ammo": "",
                 "respawn": "x2375x934:1800:2400"
@@ -389,7 +389,7 @@
                 "magic_dodge": "",
                 "magic_parry": 90,
                 "magic_resist": 30,
-                "verb": "мaгиeй",
+                "verb": "магией",
                 "exp_value": 10,
                 "ammo": "",
                 "respawn": "x2340x936:1200:1800"

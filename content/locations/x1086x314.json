@@ -23,7 +23,7 @@
     "objects": {
         "n.a.deer.oz": {
             "char": {
-                "name": "oлeнь",
+                "name": "олень",
                 "hp": 26,
                 "hp_max": 26,
                 "mana": 1,
@@ -50,7 +50,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "poгaми",
+                "verb": "рогами",
                 "exp_value": 4,
                 "ammo": "",
                 "respawn": "x1128x341:300:600"

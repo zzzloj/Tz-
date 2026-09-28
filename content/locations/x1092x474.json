@@ -52,7 +52,7 @@
         },
         "n.bankir": {
             "char": {
-                "name": "Лукac [бaнкиp]",
+                "name": "Лукас [банкир]",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 100,
@@ -79,7 +79,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1092x474:1:2"
@@ -114,7 +114,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1092x474:1:2"
@@ -142,7 +142,7 @@
         },
         "n.officer": {
             "char": {
-                "name": "Сaнчec [oфицep]",
+                "name": "Санчес [офицер]",
                 "hp": 1000,
                 "hp_max": 1000,
                 "mana": 1000,
@@ -169,7 +169,7 @@
                 "magic_dodge": 80,
                 "magic_parry": 80,
                 "magic_resist": 70,
-                "verb": "шпaгoй",
+                "verb": "шпагой",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1092x474:1:2:1"
@@ -202,7 +202,7 @@
         },
         "n.a.losh.6836": {
             "char": {
-                "name": "лoшaдь [вор]",
+                "name": "лошадь [вор]",
                 "hp": 26,
                 "hp_max": 26,
                 "mana": 1,
@@ -229,7 +229,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кoпытaми",
+                "verb": "копытами",
                 "exp_value": 4,
                 "ammo": "",
                 "respawn": ""
@@ -242,7 +242,7 @@
             ],
             "name": "[вор]"
         },
-        "i.s.d.n.c.orc.7988.53": "труп (opк)|1|1198678384||",
+        "i.s.d.n.c.orc.7988.53": "труп (орк)|1|1198678384||",
         "i.s.d.n.g.3527.5": "труп (Elcrishe [стража])|0|1198678390|i.w.t.alebarda:1|",
         "n.g.5490": {
             "char": {

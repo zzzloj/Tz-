@@ -23,7 +23,7 @@
     "objects": {
         "n.a.b.vor.ta": {
             "char": {
-                "name": "вopoнa",
+                "name": "ворона",
                 "hp": 5,
                 "hp_max": 5,
                 "mana": 1,
@@ -50,7 +50,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "клювoм",
+                "verb": "клювом",
                 "exp_value": 2,
                 "ammo": "",
                 "respawn": "x1220x498:300:600"

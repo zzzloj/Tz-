@@ -11,7 +11,7 @@
     "objects": {
         "n.Julien": {
             "char": {
-                "name": "Жульeн",
+                "name": "Жульен",
                 "hp": 10000,
                 "hp_max": 10000,
                 "mana": 10000,
@@ -38,7 +38,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1185x560:20:60"

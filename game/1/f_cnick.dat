@@ -18,7 +18,7 @@ if ($cnick=="1") {
 	<br/>Отключить журнал (1-да,0-нет): <br/><input name=\"joff\" value=\"".intval($g_joff)."\" format=\"*N\" maxlength=\"1\"/>
 	<br/>Маленький шрифт (1-да,0-нет): <br/><input name=\"smf\" value=\"".intval($g_smf)."\" format=\"*N\" maxlength=\"1\"/>
 	<br/>Кодировка (0-unicode,1-windows-1251,2-utf-8): <br/><input name=\"ch\" value=\"".intval($g_ch)."\" format=\"*N\" maxlength=\"1\"/>
-	<br/><a href=\"$PHP_SELF?sid=$sid&cnick=$(new)&list=$(list)&size=$(size)&j2loc=$(j2loc)&j2go=$(j2go)&menu=$(menu)&smenu=$(smenu)&sounds=$(sounds)&joff=$(joff)&map=$(map)&smf=$(smf)&age=$(age)&ch=$(ch)&newp=$(newp)\">[cохранить]</a>
+	<br/><a href=\"$PHP_SELF?sid=$sid&cnick=$(new)&list=$(list)&size=$(size)&j2loc=$(j2loc)&j2go=$(j2go)&menu=$(menu)&smenu=$(smenu)&sounds=$(sounds)&joff=$(joff)&map=$(map)&smf=$(smf)&age=$(age)&ch=$(ch)&newp=$(newp)\">[сохранить]</a>
 	<br/><a href=\"http://wap.hostgrad.ru/game/f_faq.php?id=err\">Помощь</a>";
 
 } else  {

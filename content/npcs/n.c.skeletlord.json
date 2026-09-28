@@ -1,7 +1,7 @@
 {
     "id": "n.c.skeletlord",
     "char": {
-        "name": "cкeлeт-лopд",
+        "name": "скелет-лорд",
         "hp": 42,
         "hp_max": 42,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": 20,
         "magic_parry": "",
         "magic_resist": "",
-        "verb": "мeчoм",
+        "verb": "мечом",
         "exp_value": 14,
         "ammo": "",
         "respawn": ""

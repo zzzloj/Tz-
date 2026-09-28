@@ -12,7 +12,7 @@
         "i.s.book.story": "книжная полка|0|",
         "n.Klavdius": {
             "char": {
-                "name": "Клaвдиуc",
+                "name": "Клавдиус",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 100,
@@ -39,7 +39,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1194x454:20:40"

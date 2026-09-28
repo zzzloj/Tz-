@@ -19,7 +19,7 @@
     "objects": {
         "n.Varvar": {
             "char": {
-                "name": "Вapвap",
+                "name": "Варвар",
                 "hp": 140,
                 "hp_max": 140,
                 "mana": 100,
@@ -46,7 +46,7 @@
                 "magic_dodge": "",
                 "magic_parry": 80,
                 "magic_resist": 40,
-                "verb": "кoпьeм",
+                "verb": "копьем",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1162x57:120:300"

@@ -23,7 +23,7 @@
     "objects": {
         "n.c.zombie.kl4": {
             "char": {
-                "name": "зoмби",
+                "name": "зомби",
                 "hp": 18,
                 "hp_max": 18,
                 "mana": 1,
@@ -50,7 +50,7 @@
                 "magic_dodge": 10,
                 "magic_parry": 20,
                 "magic_resist": 40,
-                "verb": "pукaми",
+                "verb": "руками",
                 "exp_value": 8,
                 "ammo": "",
                 "respawn": "x1343x335:300:600"

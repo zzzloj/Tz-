@@ -11,7 +11,7 @@
     "objects": {
         "n.c.Julien.a1": {
             "char": {
-                "name": "Жульeн-зомби",
+                "name": "Жульен-зомби",
                 "hp": 140,
                 "hp_max": 140,
                 "mana": 1,
@@ -38,7 +38,7 @@
                 "magic_dodge": 20,
                 "magic_parry": 90,
                 "magic_resist": 70,
-                "verb": "мaгиeй",
+                "verb": "магией",
                 "exp_value": 35,
                 "ammo": "",
                 "respawn": "x1185x56:200:600"

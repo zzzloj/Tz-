@@ -14,4 +14,4 @@ if ($pi) {
 	$stmp.="</p><p align=\"center\"><br/><small><a href=\"$homeurl\">$home </a> 2004<br/></small>\n";
 	}
 $srv=implode("",(array)(file("server.dat")));
-msg($stmp,"Статистика (Cервер ".$srv.")",0,'none');
+msg($stmp,"Статистика (Сервер ".$srv.")",0,'none');

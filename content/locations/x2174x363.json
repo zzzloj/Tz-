@@ -23,7 +23,7 @@
     "objects": {
         "n.c.skeletbow.a1": {
             "char": {
-                "name": "cкeлeт-лучник",
+                "name": "скелет-лучник",
                 "hp": 24,
                 "hp_max": 24,
                 "mana": 1,
@@ -50,7 +50,7 @@
                 "magic_dodge": 20,
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "из лукa",
+                "verb": "из лука",
                 "exp_value": 10,
                 "ammo": "",
                 "respawn": "x2174x363:1200:1800"
@@ -74,7 +74,7 @@
         },
         "n.c.skeletlord.a1": {
             "char": {
-                "name": "cкeлeт-лopд",
+                "name": "скелет-лорд",
                 "hp": 42,
                 "hp_max": 42,
                 "mana": 1,
@@ -101,7 +101,7 @@
                 "magic_dodge": 20,
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "мeчoм",
+                "verb": "мечом",
                 "exp_value": 14,
                 "ammo": "",
                 "respawn": "x2174x363:1200:1800"

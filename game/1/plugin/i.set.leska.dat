@@ -21,4 +21,4 @@ if (legacy_cmp($skills[27])>0) {
 			}
 
 } else addjournal($loc,$login,"Ваш навык плотника равен 0, вы не умеете делать удочки");
-} else addjournal($loc,$login,"Чтобы cделать удочку, нужна ветка от дерева");
+} else addjournal($loc,$login,"Чтобы сделать удочку, нужна ветка от дерева");

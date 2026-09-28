@@ -24,7 +24,7 @@
         "i.s.fontan": "фонтан|0|",
         "n.dvoreckiy": {
             "char": {
-                "name": "Двopeцкий",
+                "name": "Дворецкий",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 100,
@@ -51,7 +51,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x902x254:60:120"
@@ -59,7 +59,7 @@
         },
         "n.castleLanset": {
             "char": {
-                "name": "Лансет [стpaжник]",
+                "name": "Лансет [стражник]",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 100,
@@ -86,7 +86,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кoпьeм",
+                "verb": "копьем",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x902x254:60:300"

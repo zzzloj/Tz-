@@ -1,7 +1,7 @@
 {
     "id": "n.Plant",
     "char": {
-        "name": "Плaнт",
+        "name": "Плант",
         "hp": 100,
         "hp_max": 100,
         "mana": 100,
@@ -28,7 +28,7 @@
         "magic_dodge": "",
         "magic_parry": "",
         "magic_resist": "",
-        "verb": "утpeннeй звeздoй",
+        "verb": "утренней звездой",
         "exp_value": "",
         "ammo": "",
         "respawn": "x1140x543:1:2"

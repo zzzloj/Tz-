@@ -1,7 +1,7 @@
 {
     "id": "n.Franchesko",
     "char": {
-        "name": "Фpaнчecкo",
+        "name": "Франческо",
         "hp": 100,
         "hp_max": 100,
         "mana": 100,
@@ -28,7 +28,7 @@
         "magic_dodge": 20,
         "magic_parry": 20,
         "magic_resist": 20,
-        "verb": "кулaкaми",
+        "verb": "кулаками",
         "exp_value": "",
         "ammo": "",
         "respawn": "x1178x468:1:2"

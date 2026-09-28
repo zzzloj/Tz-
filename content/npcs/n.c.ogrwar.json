@@ -1,7 +1,7 @@
 {
     "id": "n.c.ogrwar",
     "char": {
-        "name": "oгp-вoин",
+        "name": "огр-воин",
         "hp": 75,
         "hp_max": 75,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": "",
         "magic_parry": "",
         "magic_resist": "",
-        "verb": "дубинoй",
+        "verb": "дубиной",
         "exp_value": 32,
         "ammo": "",
         "respawn": ""

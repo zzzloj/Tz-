@@ -15,7 +15,7 @@
     "objects": {
         "n.c.Djozef.a1": {
             "char": {
-                "name": "Джoзeф [лeкapь]-зомби",
+                "name": "Джозеф [лекарь]-зомби",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 1,
@@ -42,7 +42,7 @@
                 "magic_dodge": 20,
                 "magic_parry": 70,
                 "magic_resist": 50,
-                "verb": "мaгиeй",
+                "verb": "магией",
                 "exp_value": 45,
                 "ammo": "",
                 "respawn": "x1146x49:1000:2000"

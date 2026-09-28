@@ -40,4 +40,4 @@
 		if ($clanc) $stmp.=" принадлежит клану ".$clanc; else $stmp.=" никому не принадлежит";
 		} else $stmp.=" [ошибка загрузки]";
 
-	msg($stmp,"Онлайн (Cервер ".implode("",(array)(file("server.dat"))).")",0,'none');
+	msg($stmp,"Онлайн (Сервер ".implode("",(array)(file("server.dat"))).")",0,'none');

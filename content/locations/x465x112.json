@@ -19,7 +19,7 @@
     "objects": {
         "n.a.b.sok.dl": {
             "char": {
-                "name": "coкoл",
+                "name": "сокол",
                 "hp": 8,
                 "hp_max": 8,
                 "mana": 1,
@@ -46,7 +46,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "клювoм",
+                "verb": "клювом",
                 "exp_value": 2,
                 "ammo": "",
                 "respawn": "x465x112:300:600"

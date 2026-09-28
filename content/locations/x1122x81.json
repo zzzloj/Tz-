@@ -19,7 +19,7 @@
     "objects": {
         "n.c.bear.sev.1": {
             "char": {
-                "name": "северный мeдвeдь",
+                "name": "северный медведь",
                 "hp": 24,
                 "hp_max": 90,
                 "mana": 1,
@@ -46,7 +46,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "зубaми",
+                "verb": "зубами",
                 "exp_value": 0,
                 "ammo": "",
                 "respawn": "x1134x15:1800:3600"
@@ -64,7 +64,7 @@
         },
         "n.c.bear.sev.2": {
             "char": {
-                "name": "северный мeдвeдь",
+                "name": "северный медведь",
                 "hp": 90,
                 "hp_max": 90,
                 "mana": 1,
@@ -91,7 +91,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "зубaми",
+                "verb": "зубами",
                 "exp_value": 0,
                 "ammo": "",
                 "respawn": "x1134x15:1800:3600"

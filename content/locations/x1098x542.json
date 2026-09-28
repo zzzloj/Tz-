@@ -19,7 +19,7 @@
     "objects": {
         "n.Frederik": {
             "char": {
-                "name": "Фpeдepик",
+                "name": "Фредерик",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 100,
@@ -46,7 +46,7 @@
                 "magic_dodge": "",
                 "magic_parry": 100,
                 "magic_resist": 100,
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1098x542:10:20:1"
@@ -108,7 +108,7 @@
         },
         "n.a.cat.tav": {
             "char": {
-                "name": "кoшкa",
+                "name": "кошка",
                 "hp": 6,
                 "hp_max": 6,
                 "mana": 1,
@@ -135,7 +135,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кoгтями",
+                "verb": "когтями",
                 "exp_value": 2,
                 "ammo": "",
                 "respawn": "x1098x542:300:600"

@@ -11,7 +11,7 @@
     "objects": {
         "n.Djoshua": {
             "char": {
-                "name": "Джoшуa",
+                "name": "Джошуа",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 100,
@@ -38,7 +38,7 @@
                 "magic_dodge": 5,
                 "magic_parry": 20,
                 "magic_resist": 20,
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1191x467:1:2"
@@ -53,7 +53,7 @@
         },
         "n.Vituan": {
             "char": {
-                "name": "Витуaн",
+                "name": "Витуан",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 100,
@@ -80,7 +80,7 @@
                 "magic_dodge": 5,
                 "magic_parry": 20,
                 "magic_resist": 20,
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1191x467:1:2"

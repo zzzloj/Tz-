@@ -23,7 +23,7 @@
     "objects": {
         "n.a.krot.bl": {
             "char": {
-                "name": "кpoт",
+                "name": "крот",
                 "hp": 5,
                 "hp_max": 5,
                 "mana": 1,
@@ -50,7 +50,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "зубaми",
+                "verb": "зубами",
                 "exp_value": 1,
                 "ammo": "",
                 "respawn": "x1299x613:300:600"

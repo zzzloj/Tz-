@@ -15,7 +15,7 @@
     "objects": {
         "n.c.Gregg.a1": {
             "char": {
-                "name": "Гpeгг-зомби",
+                "name": "Грегг-зомби",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 1,
@@ -42,7 +42,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": 20,
                 "ammo": "",
                 "respawn": "x1240x53:200:600"
@@ -56,7 +56,7 @@
         },
         "n.c.Stoun.a1": {
             "char": {
-                "name": "Стoун-зомби",
+                "name": "Стоун-зомби",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 1,
@@ -83,7 +83,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": 16,
                 "ammo": "",
                 "respawn": "x1240x53:200:600"

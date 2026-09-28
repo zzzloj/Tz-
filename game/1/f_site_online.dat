@@ -50,4 +50,4 @@ $onli="".(legacy_num($i)+1)."|".$gmtDate."|".$gmtTime."|";
 
 	$stmp.= "\n<br/><br/><a href=\"f_site_list.php\">Список серверов</a><br/><br/><anchor>[Назад]<prev/></anchor>";
 
-	msg($stmp,"Онлайн (Cервер ".implode("",(array)(file("server.dat"))).")",0,'none');
+	msg($stmp,"Онлайн (Сервер ".implode("",(array)(file("server.dat"))).")",0,'none');

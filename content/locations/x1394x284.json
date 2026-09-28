@@ -23,7 +23,7 @@
     "objects": {
         "n.c.wolf.zl5": {
             "char": {
-                "name": "вoлк",
+                "name": "волк",
                 "hp": 26,
                 "hp_max": 26,
                 "mana": 1,
@@ -50,7 +50,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "клыкaми",
+                "verb": "клыками",
                 "exp_value": 12,
                 "ammo": "",
                 "respawn": "x1392x256:300:600"

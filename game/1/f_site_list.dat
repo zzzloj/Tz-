@@ -20,4 +20,4 @@ if ($pi) {
 	$stmp.="</p><p align=\"center\"><br/><small><a href=\"$homeurl\">$home </a> 2004<br/></small>\n";
 	}
 
-msg($stmp,"Территория Зла (Cервер ".implode("",(array)(file("server.dat"))).")",0,'none');
+msg($stmp,"Территория Зла (Сервер ".implode("",(array)(file("server.dat"))).")",0,'none');

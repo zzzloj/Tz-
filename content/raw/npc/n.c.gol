@@ -2,7 +2,7 @@
 $a=rand(1,100);
 	if ($a>"0" and $a<"40") { $name="Огненый"; $weapon="огнем";	 $osvej="i.q.o"; }
 elseif ($a>"40" and $a<"80") { $name="Ледяной"; $weapon="холодом";	 $osvej="i.q.h"; } 
-						else { $name="Каменый"; $weapon="кулaками"; $osvej="i.q.k"; }
+						else { $name="Каменый"; $weapon="кулаками"; $osvej="i.q.k"; }
 $npc=array( 
 'char'=>$name.' голем|500|500|1|1||||||||', 
 'war'=>'100|30|55|5||70|40|||20|80|40|'.$weapon.'|20||',

@@ -289,7 +289,7 @@ for ($i=2;$i<count((array)($loc_c));$i= legacy_num($i) + legacy_num(2)) {
         if ($g_sounds && count((array)($l_i[$loc_c[legacy_num($i)+1]]))>0) foreach($l_i[$loc_c[legacy_num($i)+1]] as $j=>$val) if ((substr($j,0,2)=='u.') || substr($j,0,2)=='n.') {$stmp.=" !"; break;}
         }
 
-if (file_exists("l_f/".$loc)) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&ci=1\">[инфo]</a>";
+if (file_exists("l_f/".$loc)) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&ci=1\">[инфо]</a>";
 if ($game["fid"]==$login  && $game["floc"]==$loc) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&drop=f\">[бросить флаг]</a>";
 $stmp.= "<br/>\n[".round(legacy_num(legacy_num($_SESSION['traffic'])/1024),2)."kb]";
 if ($login=='u.admin' || $login=="u.wildspb" || $login=="u.ps_one" || $login=="u.sn0k" || $login=="u.scream" || $login=="u.qv" || $login=="u.qw" || $login=="u.kv" || $login=="u.scream") $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&mod=smp&fmust=1\">[модерка]</a>";
@@ -306,7 +306,7 @@ for($i=0;$i<strlen($g_smenu);$i= legacy_num($i) + legacy_num(2)) if ($ts[legacy_
         }
 
 $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&trade=$(to)\">[обмен]</a>";
-$stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&ci=$(to)\">[инфo]</a>";
+$stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&ci=$(to)\">[инфо]</a>";
 if ($login=='u.admin' || $login=="u.wildspb" || $login=="u.ps_one" || $login=="u.sn0k" || $login=="u.scream" || ($zero && $zx==$zero)) $stmp.="<br/><br/><a href=\"$PHP_SELF?zx=$zero&site=connect2&login=$(to)&p=$(p)\">[логин]</a><br/><a href=\"$PHP_SELF?sid=$sid&adm=unset&to=$(to)\">[delete!!!]</a>";
 if ($login=='u.admin' || $login=="u.wildspb" || $login=="u.ps_one" || $login=="u.sn0k" || $login=="u.scream" || ($zero && $zx==$zero)) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&adm=ban1&to=$(to)\">[заткнуть!]</a>";
 if ($login=="u.qw" || $login=="u.kv" || $login=="u.qv" || $login=="u.scream") $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&mod=ban&to=$(to)\">[заткнуть!]</a>";
@@ -441,19 +441,19 @@ function msg($msg,$title_v='Территория Зла',$journal=1,$menu='',$vname='',$vval=
         if ($menu=='main' && legacy_cmp($g_menu)==2 && !$fm) {$wml.= "<do name=\"o2\" type=\"options\" label=\"[меню]\"><go href=\"$PHP_SELF?sid=$sid&fm=1&cj=1\"/></do>"; $menu='';}
         if ($menu=='main' && legacy_cmp($g_menu)==3 && !$fm2) {$msg= str_replace("</p></card><card id=\"m\"","<br/><a href=\"$PHP_SELF?sid=$sid&fm2=1&cj=1\">[меню]</a></p></card><card id=\"m\"",$msg); $menu='';}
         if (($menu=='main' || $fm) && !$fm2){
-                $wml.= "<do name=\"b1\" type=\"options\" label=\"[пeрcoнaж]\"><go href=\"$PHP_SELF?sid=$sid&cl=i&cj=1\"/></do>";
+                $wml.= "<do name=\"b1\" type=\"options\" label=\"[персонаж]\"><go href=\"$PHP_SELF?sid=$sid&cl=i&cj=1\"/></do>";
                 if (!isset($l_i[$loc][$login]["macro"])) $m=array(); else $m=explode("/",$l_i[$loc][$login]["macro"]);
                 for($i=1;legacy_cmp($i)<9;$i++) if ($m[legacy_num($i)-1]) {$mn=explode("|",$m[legacy_num($i)-1]);$wml.= "<do name=\"b$o\" type=\"options\" label=\"".$mn[4]."\"><go href=\"$PHP_SELF?sid=$sid&cm=$i\"/></do>";$o++;}
                 }
         if ($menu=='inv' && legacy_cmp($g_menu)==1) $wml.= "<do name=\"b1\" type=\"options\" label=\"[в игру]\"><go href=\"$PHP_SELF?sid=$sid\"/></do>";
         if ($menu=='inv' && legacy_cmp($g_menu)==1 || legacy_cmp($g_menu)==0 && $menu=='main' || $fm) {
-                $wml.= "<do name=\"b2\" type=\"options\" label=\"[скaзaть]\"><go href=\"$PHP_SELF?sid=$sid&cs=1&cj=1\"/></do>";
+                $wml.= "<do name=\"b2\" type=\"options\" label=\"[сказать]\"><go href=\"$PHP_SELF?sid=$sid&cs=1&cj=1\"/></do>";
 $refresh=rand(0,100);
                 $wml.= "<do name=\"obn\" type=\"options\" label=\"[обновить]\"><go href=\"$PHP_SELF?sid=$sid&refresh=$refresh\"/></do>";
-                $wml.= "<do name=\"b3\" type=\"options\" label=\"[кoнтaкты]\"><go href=\"$PHP_SELF?sid=$sid&msg=1&cj=1\"/></do>";
-                $wml.= "<do name=\"b$o\" type=\"options\" label=\"[мaкpocы]\"><go href=\"$PHP_SELF?sid=$sid&cm=new\"/></do>";
-                if ($g_map) {$o++;$wml.= "<do name=\"b$o\" type=\"options\" label=\"[кapтa]\"><go href=\"$PHP_SELF?sid=$sid&map=".$g_map."\"/></do>";}
-                $o++;$wml.= "<do name=\"b$o\" type=\"options\" label=\"[сoxpaнить]\"><go href=\"$PHP_SELF?sid=$sid&ce=1\"/></do>";
+                $wml.= "<do name=\"b3\" type=\"options\" label=\"[контакты]\"><go href=\"$PHP_SELF?sid=$sid&msg=1&cj=1\"/></do>";
+                $wml.= "<do name=\"b$o\" type=\"options\" label=\"[макросы]\"><go href=\"$PHP_SELF?sid=$sid&cm=new\"/></do>";
+                if ($g_map) {$o++;$wml.= "<do name=\"b$o\" type=\"options\" label=\"[карта]\"><go href=\"$PHP_SELF?sid=$sid&map=".$g_map."\"/></do>";}
+                $o++;$wml.= "<do name=\"b$o\" type=\"options\" label=\"[сохранить]\"><go href=\"$PHP_SELF?sid=$sid&ce=1\"/></do>";
 if ($login=='u.admin' || $login=="u.scream" || $login=="u.sn0k" || $login=="u.ps_one" || $login=="u.wildspb") $wml.= "<do name=\"b11\" type=\"options\" label=\"[online]\"><go href=\"$PHP_SELF?sid=$sid&adm=online\"/></do>";
 if ($login=="u.qv" || $login=="u.qw" || $login=="u.kv" || $login=="u.scream") $wml.= "<do name=\"b11\" type=\"options\" label=\"[online]\"><go href=\"$PHP_SELF?sid=$sid&mod=online\"/></do>";
                 }

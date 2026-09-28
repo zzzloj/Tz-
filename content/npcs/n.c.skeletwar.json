@@ -1,7 +1,7 @@
 {
     "id": "n.c.skeletwar",
     "char": {
-        "name": "cкeлeт-вoин",
+        "name": "скелет-воин",
         "hp": 28,
         "hp_max": 28,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": 20,
         "magic_parry": "",
         "magic_resist": "",
-        "verb": "мeчoм",
+        "verb": "мечом",
         "exp_value": 12,
         "ammo": "",
         "respawn": ""

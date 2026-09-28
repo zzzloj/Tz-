@@ -7,7 +7,7 @@
         "i.s.arena": "камень выхода|0|",
         "n.a.losh.4190": {
             "char": {
-                "name": "лoшaдь",
+                "name": "лошадь",
                 "hp": 26,
                 "hp_max": 26,
                 "mana": 1,
@@ -34,7 +34,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кoпытaми",
+                "verb": "копытами",
                 "exp_value": 4,
                 "ammo": "",
                 "respawn": ""

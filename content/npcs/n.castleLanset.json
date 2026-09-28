@@ -1,7 +1,7 @@
 {
     "id": "n.castleLanset",
     "char": {
-        "name": "Лансет [стpaжник]",
+        "name": "Лансет [стражник]",
         "hp": 100,
         "hp_max": 100,
         "mana": 100,
@@ -28,7 +28,7 @@
         "magic_dodge": "",
         "magic_parry": "",
         "magic_resist": "",
-        "verb": "кoпьeм",
+        "verb": "копьем",
         "exp_value": "",
         "ammo": "",
         "respawn": "x902x254:30:60"

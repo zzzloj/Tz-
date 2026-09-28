@@ -1,7 +1,7 @@
 {
     "id": "n.c.werwolf",
     "char": {
-        "name": "oбopoтeнь",
+        "name": "оборотень",
         "hp": 28,
         "hp_max": 28,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": "",
         "magic_parry": "",
         "magic_resist": "",
-        "verb": "зубaми",
+        "verb": "зубами",
         "exp_value": 12,
         "ammo": "",
         "respawn": ""

@@ -16,7 +16,7 @@
         "i.s.res": "камень воскрешения||0",
         "n.h.Djozef": {
             "char": {
-                "name": "Джoзeф [лeкapь]",
+                "name": "Джозеф [лекарь]",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 100,
@@ -43,7 +43,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1146x491:1:2"

@@ -1,7 +1,7 @@
 {
     "id": "n.c.ogr",
     "char": {
-        "name": "oгp",
+        "name": "огр",
         "hp": 70,
         "hp_max": 70,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": "",
         "magic_parry": "",
         "magic_resist": "",
-        "verb": "дубинoй",
+        "verb": "дубиной",
         "exp_value": 24,
         "ammo": "",
         "respawn": ""

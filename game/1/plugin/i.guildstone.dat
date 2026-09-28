@@ -43,7 +43,7 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 							$b=0;
 				//ОБЯЗАТЕЛЬНО сначала выдаем в журнал, а затем только меняем статус
 				if ($t=='m' && !isset($tmp["m"][$status])) addjournal($loc,$status,"Глава клана ".$clan." изменил ваш ранг на Неофит!");
-				if ($t=='s' && !isset($tmp["s"][$status])) addjournal($loc,$status,"Глава клана ".$clan." изменил ваш ранг на Сeнeшaль!");
+				if ($t=='s' && !isset($tmp["s"][$status])) addjournal($loc,$status,"Глава клана ".$clan." изменил ваш ранг на Сенешаль!");
 				if ($t=='v' && !isset($tmp["v"][$status])) addjournal($loc,$status,"Глава клана ".$clan." изменил ваш ранг на Вассал!");
 				if (isset($tmp["m"][$status]) && $t!='m') {$b=1; $tmp[$t][$status]=$tmp["m"][$status]; unset($tmp["m"][$status]); }
 				if (isset($tmp["s"][$status]) && $t!='s' && count((array)($tmp["s"]<'2'))) {$b=1; $tmp[$t][$status]=$tmp["s"][$status]; unset($tmp["s"][$status]); }
@@ -57,9 +57,9 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 			if ($me && isset($tmp["g"][$login])) {
 			msg("
 <select name=\"t\" title=\"\">
-<option value=\"s\">[Сeнeшaль]</option>
-<option value=\"v\">[Вaccaл]</option>
-<option value=\"m\">[Нeoфит]</option>
+<option value=\"s\">[Сенешаль]</option>
+<option value=\"v\">[Вассал]</option>
+<option value=\"m\">[Неофит]</option>
 </select><br/>
 <a href=\"$PHP_SELF?sid=$sid&use=$use&status=".$me."&t=$(t)\">сохранить</a><br/>
 <a href=\"$PHP_SELF?sid=$sid&use=$use&del=".$me."\">Выгнать</a>");

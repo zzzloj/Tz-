@@ -15,7 +15,7 @@
     "objects": {
         "n.c.Hans.a1": {
             "char": {
-                "name": "Хaнc-зомби",
+                "name": "Ханс-зомби",
                 "hp": 180,
                 "hp_max": 180,
                 "mana": 1,
@@ -64,7 +64,7 @@
         },
         "n.c.HansNovobranec.a1": {
             "char": {
-                "name": "Нoвoбpaнeц-зомби",
+                "name": "Новобранец-зомби",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 1,

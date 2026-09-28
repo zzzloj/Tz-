@@ -19,7 +19,7 @@
     "objects": {
         "n.Ded": {
             "char": {
-                "name": "Стapый дeд",
+                "name": "Старый дед",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 100,
@@ -46,7 +46,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1121x606:10:30"
@@ -54,7 +54,7 @@
         },
         "n.Malchugan": {
             "char": {
-                "name": "Мaльчугaн",
+                "name": "Мальчуган",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 100,
@@ -81,7 +81,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1121x606:30:60"

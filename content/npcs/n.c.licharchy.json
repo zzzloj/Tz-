@@ -1,7 +1,7 @@
 {
     "id": "n.c.licharchy",
     "char": {
-        "name": "apхилич",
+        "name": "архилич",
         "hp": 90,
         "hp_max": 90,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": 20,
         "magic_parry": 90,
         "magic_resist": 70,
-        "verb": "мaгиeй",
+        "verb": "магией",
         "exp_value": 55,
         "ammo": "",
         "respawn": ""

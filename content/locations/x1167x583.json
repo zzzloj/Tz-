@@ -11,7 +11,7 @@
     "objects": {
         "n.c.rat.sk4": {
             "char": {
-                "name": "кpыca",
+                "name": "крыса",
                 "hp": 4,
                 "hp_max": 6,
                 "mana": 1,
@@ -38,7 +38,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "зубaми",
+                "verb": "зубами",
                 "exp_value": 2,
                 "ammo": "",
                 "respawn": "x1167x583:300:600"
@@ -79,7 +79,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "зубaми",
+                "verb": "зубами",
                 "exp_value": 1,
                 "ammo": "",
                 "respawn": "x1167x583:300:600"

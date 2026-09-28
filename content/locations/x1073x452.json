@@ -38,7 +38,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1073x452:60:300"
@@ -77,7 +77,7 @@
         },
         "n.a.losh.5313": {
             "char": {
-                "name": "лoшaдь",
+                "name": "лошадь",
                 "hp": 26,
                 "hp_max": 26,
                 "mana": 1,
@@ -104,7 +104,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кoпытaми",
+                "verb": "копытами",
                 "exp_value": 4,
                 "ammo": "",
                 "respawn": ""

@@ -1,7 +1,7 @@
 {
     "id": "n.g.guard",
     "char": {
-        "name": "Стpaжник",
+        "name": "Стражник",
         "hp": 100,
         "hp_max": 100,
         "mana": 100,
@@ -28,7 +28,7 @@
         "magic_dodge": "",
         "magic_parry": "",
         "magic_resist": "",
-        "verb": "aлeбapдoй",
+        "verb": "алебардой",
         "exp_value": "",
         "ammo": "",
         "respawn": ""

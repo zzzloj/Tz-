@@ -11,7 +11,7 @@
     "objects": {
         "n.Sloven": {
             "char": {
-                "name": "Слoвeн",
+                "name": "Словен",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 100,
@@ -38,7 +38,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1017x457:1:2"

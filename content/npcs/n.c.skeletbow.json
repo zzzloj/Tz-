@@ -1,7 +1,7 @@
 {
     "id": "n.c.skeletbow",
     "char": {
-        "name": "cкeлeт-лучник",
+        "name": "скелет-лучник",
         "hp": 24,
         "hp_max": 24,
         "mana": 1,
@@ -28,7 +28,7 @@
         "magic_dodge": 20,
         "magic_parry": "",
         "magic_resist": "",
-        "verb": "из лукa",
+        "verb": "из лука",
         "exp_value": 10,
         "ammo": "",
         "respawn": ""

@@ -19,7 +19,7 @@
     "objects": {
         "n.c.werwolf.a1": {
             "char": {
-                "name": "oбopoтeнь",
+                "name": "оборотень",
                 "hp": 28,
                 "hp_max": 28,
                 "mana": 1,
@@ -46,7 +46,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "зубaми",
+                "verb": "зубами",
                 "exp_value": 12,
                 "ammo": "",
                 "respawn": "x2267x273:1200:1800"
@@ -60,7 +60,7 @@
         },
         "n.a.b.kor.a1": {
             "char": {
-                "name": "кopшун",
+                "name": "коршун",
                 "hp": 14,
                 "hp_max": 14,
                 "mana": 1,
@@ -87,7 +87,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "клювoм",
+                "verb": "клювом",
                 "exp_value": 2,
                 "ammo": "",
                 "respawn": "x2316x272:1200:1800"

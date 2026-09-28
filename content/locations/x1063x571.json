@@ -15,7 +15,7 @@
     "objects": {
         "n.Markus": {
             "char": {
-                "name": "Мapкуc",
+                "name": "Маркус",
                 "hp": 100,
                 "hp_max": 100,
                 "mana": 100,
@@ -42,7 +42,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "кулaкaми",
+                "verb": "кулаками",
                 "exp_value": "",
                 "ammo": "",
                 "respawn": "x1063x571:1:2"

@@ -19,7 +19,7 @@
     "objects": {
         "n.a.b.sin.zam": {
             "char": {
-                "name": "cиницa",
+                "name": "синица",
                 "hp": 1,
                 "hp_max": 1,
                 "mana": 1,
@@ -46,7 +46,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "клювoм",
+                "verb": "клювом",
                 "exp_value": 1,
                 "ammo": "",
                 "respawn": "x816x228:300:600"

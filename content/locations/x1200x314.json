@@ -23,7 +23,7 @@
     "objects": {
         "n.c.ghost.sl": {
             "char": {
-                "name": "пpизpaк",
+                "name": "призрак",
                 "hp": 22,
                 "hp_max": 22,
                 "mana": 1,
@@ -50,7 +50,7 @@
                 "magic_dodge": "",
                 "magic_parry": 90,
                 "magic_resist": 60,
-                "verb": "мaгиeй",
+                "verb": "магией",
                 "exp_value": 10,
                 "ammo": "",
                 "respawn": "x1200x314:300:600"

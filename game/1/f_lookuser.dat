@@ -141,13 +141,13 @@ $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&look=$look&st=1\">Статистика</a>";
 	if ($clan && file_exists("../clans/".$clan)) {
 		$tmp=unserialize(implode("",(array)(file("../clans/".$clan)))); 
 	if (isset($tmp["g"][$look])) { 
-		$stmp.="<br/>Ceньop клана <a href=\"$PHP_SELF?sid=$sid&site=clans&clan=$clan\">".$clan."</a>"; }
+		$stmp.="<br/>Сеньор клана <a href=\"$PHP_SELF?sid=$sid&site=clans&clan=$clan\">".$clan."</a>"; }
 	elseif (isset($tmp["m"][$look])) {
-		$stmp.="<br/>Нeoфит клана <a href=\"$PHP_SELF?sid=$sid&site=clans&clan=$clan\">".$clan."</a>"; }
+		$stmp.="<br/>Неофит клана <a href=\"$PHP_SELF?sid=$sid&site=clans&clan=$clan\">".$clan."</a>"; }
 	elseif (isset($tmp["s"][$look])) {
-		$stmp.="<br/>Сeнeшaль клана <a href=\"$PHP_SELF?sid=$sid&site=clans&clan=$clan\">".$clan."</a>"; }
+		$stmp.="<br/>Сенешаль клана <a href=\"$PHP_SELF?sid=$sid&site=clans&clan=$clan\">".$clan."</a>"; }
 	elseif (isset($tmp["v"][$look])) {
-		$stmp.="<br/>Вaccaл клана <a href=\"$PHP_SELF?sid=$sid&site=clans&clan=$clan\">".$clan."</a>"; }
+		$stmp.="<br/>Вассал клана <a href=\"$PHP_SELF?sid=$sid&site=clans&clan=$clan\">".$clan."</a>"; }
 	
 	else $stmp.="<br/>Состоит в клане <a href=\"$PHP_SELF?sid=$sid&site=clans&clan=$clan\">".$clan."</a>";
 	} else $tmp=array();

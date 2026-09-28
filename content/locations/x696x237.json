@@ -23,7 +23,7 @@
     "objects": {
         "n.a.b.ore.1": {
             "char": {
-                "name": "opeл",
+                "name": "орел",
                 "hp": 18,
                 "hp_max": 18,
                 "mana": 1,
@@ -50,7 +50,7 @@
                 "magic_dodge": "",
                 "magic_parry": "",
                 "magic_resist": "",
-                "verb": "клювoм",
+                "verb": "клювом",
                 "exp_value": 3,
                 "ammo": "",
                 "respawn": "x723x236:300:600"
