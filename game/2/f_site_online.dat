@@ -33,7 +33,7 @@
           legacy_fclose($ons); 
      if ((legacy_num($i)+1)>$on[0]) {
 $onli="".(legacy_num($i)+1)."|".$gmtDate."|".$gmtTime."|";
-     $onl=fopen("on.dat", "w+");
+     $onl=legacy_fopen_w("on.dat", "w+");
         chmod("on.dat", 0777);
         legacy_fwrite($onl, $onli);
           legacy_fclose($onl); 

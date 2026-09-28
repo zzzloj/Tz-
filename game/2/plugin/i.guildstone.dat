@@ -23,7 +23,7 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 				addjournal($loc,$to,$tc[0]." приглашает вас в свой клан"); 
 				addjournal($loc,$login,$tc1[0]." приглашен в ваш клан, передайте ему камень гильдии, чтобы он использовал его на вас"); 
 				}
-		$file = fopen ("../clans/".$clan, "w"); 
+		$file = legacy_fopen_w ("../clans/".$clan, "w"); 
 		if ($file!==false) {legacy_fputs($file,serialize($tmp));legacy_fclose($file);}
 		} else {
 			if ($del && isset($tmp["g"][$login])) {		// удаление из гильдии
@@ -34,7 +34,7 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 				if (isset($tmp["w"][$del])) {$b=1; unset($tmp["w"][$del]);}
 				if (isset($tmp["wg"][$del])) {$b=1; unset($tmp["wg"][$del]);}
 				if ($b) { 
-					$file = fopen ("../clans/".$clan, "w"); 
+					$file = legacy_fopen_w ("../clans/".$clan, "w"); 
 					if ($file!==false) {legacy_fputs($file,serialize($tmp));legacy_fclose($file);}
 					msg("Вы выгнали из клана/удалили из рекрутов ".substr($del,2));
 					} else msg(substr($del,2)." нет в вашем клане");
@@ -49,7 +49,7 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 				if (isset($tmp["s"][$status]) && $t!='s' && count((array)($tmp["s"]<'2'))) {$b=1; $tmp[$t][$status]=$tmp["s"][$status]; unset($tmp["s"][$status]); }
 				if (isset($tmp["v"][$status]) && $t!='v') {$b=1; $tmp[$t][$status]=$tmp["v"][$status]; unset($tmp["v"][$status]); }
 				if ($b) { 
-					$file = fopen ("../clans/".$clan, "w"); 
+					$file = legacy_fopen_w ("../clans/".$clan, "w"); 
 					if ($file!==false) {legacy_fputs($file,serialize($tmp));legacy_fclose($file);}
 					msg("Ранг у игрока ".substr($status,2)." успешно изменен");
 					} else msg("Не возможно изменить ранг");
@@ -83,7 +83,7 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 					$write=$s;
 					}
 					$tmp["i"]=$write;
-					$file = fopen ("../clans/".$clan, "w"); 
+					$file = legacy_fopen_w ("../clans/".$clan, "w"); 
 					if ($file!==false) {legacy_fputs($file,serialize($tmp));legacy_fclose($file);}
 					msg("Описание клана сохранено");
 					}
@@ -151,7 +151,7 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 					unset($tmp["w"][$login]);
 					$tmp["m"][$login]=$p;
 					}
-			$file = fopen ("../clans/".$clan, "w"); 
+			$file = legacy_fopen_w ("../clans/".$clan, "w"); 
 			if ($file!==false) {legacy_fputs($file,serialize($tmp));legacy_fclose($file);}
 			$tc=explode("|",$l_i[$loc][$login]["char"]); 
 			if(strpos($tc[0],"*")!==false) $tc[0]=substr($tc[0],0,legacy_num(strpos($tc[0],"*")-1));

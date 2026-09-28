@@ -34,7 +34,10 @@ function legacy_fwrite($h, $data, $len = null) { return is_resource($h) ? ($len 
 function legacy_fputs($h, $data, $len = null) { return legacy_fwrite($h, $data, $len); }
 function legacy_fgets($h, $len = null) { return is_resource($h) ? ($len === null ? fgets($h) : fgets($h, (int)$len)) : false; }
 function legacy_fgetc($h) { return is_resource($h) ? fgetc($h) : false; }
-function legacy_fclose($h) { return is_resource($h) ? fclose($h) : false; }
+function legacy_fclose($h) {
+    if (is_resource($h) && isset($GLOBALS['__legacy_atomic'][(int)$h])) return legacy_atomic_commit($h);
+    return is_resource($h) ? fclose($h) : false;
+}
 function legacy_flock($h, $op, &$wb = null) { return is_resource($h) ? flock($h, (int)$op, $wb) : false; }
 function legacy_feof($h) { return is_resource($h) ? feof($h) : true; } // true: loops end
 function legacy_fseek($h, $off, $wh = SEEK_SET) { return is_resource($h) ? fseek($h, (int)$off, (int)$wh) : -1; }
@@ -42,6 +45,45 @@ function legacy_rewind($h) { return is_resource($h) ? rewind($h) : false; }
 function legacy_ftell($h) { return is_resource($h) ? ftell($h) : false; }
 function legacy_ftruncate($h, $size) { return is_resource($h) ? ftruncate($h, (int)$size) : false; }
 function legacy_fflush($h) { return is_resource($h) ? fflush($h) : false; }
+
+// Atomic file replacement. The engine rewrites world files in place
+// (fopen "w" truncates, then fputs), so a process killed mid-request left an
+// empty or cut location/game.dat ("Нет данных", lost items). Files opened for
+// writing go to a temporary file next to the target and replace it with
+// rename() on fclose (or at the end of the request), so readers and later
+// requests see either the old or the new version, never a partial one.
+function legacy_abs_path($path) {
+    $path = (string)$path;
+    if ($path === '' || $path[0] === '/') return $path;
+    return getcwd() . '/' . $path;
+}
+function legacy_fopen_w($path, $mode = 'w') {
+    $target = legacy_abs_path($path);
+    $tmp = $target . '.tmp.' . getmypid() . '.' . mt_rand(100000, 999999);
+    $h = @fopen($tmp, $mode);
+    if ($h === false) return false;
+    $GLOBALS['__legacy_atomic'][(int)$h] = array($h, $tmp, $target);
+    return $h;
+}
+function legacy_atomic_commit($h) {
+    $id = (int)$h;
+    if (!isset($GLOBALS['__legacy_atomic'][$id])) return null;
+    list(, $tmp, $target) = $GLOBALS['__legacy_atomic'][$id];
+    unset($GLOBALS['__legacy_atomic'][$id]);
+    $ok = is_resource($h) ? fclose($h) : true;
+    if (!@rename($tmp, $target)) { @unlink($tmp); return false; }
+    return $ok;
+}
+function legacy_atomic_write($path, $data) {
+    $h = legacy_fopen_w($path, 'w');
+    if ($h === false) return false;
+    $n = fwrite($h, (string)$data);
+    return legacy_atomic_commit($h) !== false ? $n : false;
+}
+register_shutdown_function(function () {
+    if (empty($GLOBALS['__legacy_atomic'])) return;
+    foreach ($GLOBALS['__legacy_atomic'] as $entry) legacy_atomic_commit($entry[0]);
+});
 
 }
 

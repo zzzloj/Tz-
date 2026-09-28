@@ -5,5 +5,5 @@ $dialog=array('begin'=>'eval: if (time()-legacy_num($l_i[$loc][$speak]["qv"])<30
 
 
 
-'go'=>'eval: if(time()-legacy_num($l_i[$loc][$speak]["qv"])<300) $title_v="Уп-с, извини я пока не полностью восстановил свои силы. потерпишь немного?."; else {$l_i[$loc][$speak]["qv"]=time(); addjournal($loc,"all","[Появились клубы дыма и искры]"); $title_v="Все, ну вот вроде получилось,а я щас обратно вдруг еще кому то помощь нужна!"; foreach($l_i["x3099x100"] as $i=>$val) if ($i!=$speak) {addnpc($i,"x3099x100","x1098x585");if(substr($i,0,2)=="u.") {$f=fopen("online/".$i,"w"); legacy_fputs($f,"x1098x585\\n".time()); legacy_fclose($f);}}}#Будь здоров, удачи#end'
+'go'=>'eval: if(time()-legacy_num($l_i[$loc][$speak]["qv"])<300) $title_v="Уп-с, извини я пока не полностью восстановил свои силы. потерпишь немного?."; else {$l_i[$loc][$speak]["qv"]=time(); addjournal($loc,"all","[Появились клубы дыма и искры]"); $title_v="Все, ну вот вроде получилось,а я щас обратно вдруг еще кому то помощь нужна!"; foreach($l_i["x3099x100"] as $i=>$val) if ($i!=$speak) {addnpc($i,"x3099x100","x1098x585");if(substr($i,0,2)=="u.") {$f=legacy_fopen_w("online/".$i,"w"); legacy_fputs($f,"x1098x585\\n".time()); legacy_fclose($f);}}}#Будь здоров, удачи#end'
 );

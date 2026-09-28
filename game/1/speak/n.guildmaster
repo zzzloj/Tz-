@@ -33,7 +33,7 @@ $dialog=array(
 	if (isset($tmp["m"][$login])) unset($tmp["m"][$login]);
 	if (isset($tmp["v"][$login])) unset($tmp["v"][$login]);
 	if (isset($tmp["s"][$login])) unset($tmp["s"][$login]);
-		$file = fopen ("../clans/".$clan, "w"); 
+		$file = legacy_fopen_w ("../clans/".$clan, "w"); 
 		if ($file!==false) {legacy_fputs($file,serialize($tmp));legacy_fclose($file);} 
 		$tc[0]=str_replace(" *".$clan."*","",$tc[0]); 
 		$l_i[$loc][$login]["char"]=implode("|",(array)($tc)); 
@@ -61,7 +61,7 @@ $dialog=array(
 		closedir($dh);
 		additem($loc,$login,"","i.money",50000,"items","items",1,0,1);
 		$tmp=array("m"=>array(),"g"=>array($login=>$p)); 
-		$file = fopen ("../clans/".$cname, "w"); 
+		$file = legacy_fopen_w ("../clans/".$cname, "w"); 
 		if ($file!==false) {legacy_fputs($file,serialize($tmp));legacy_fclose($file);chmod ("../clans/".$cname, 0777);} 
 		$tc[0].=" *".$cname."*"; 
 		$l_i[$loc][$login]["char"]=implode("|",(array)($tc)); 

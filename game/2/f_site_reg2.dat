@@ -48,7 +48,7 @@
 	if (file_exists($fntmp)) {
 		$all=0;
 		$all=@implode("",(array)(@file($fntmp)));
-		if ($all) {$all++;$file=fopen($fntmp,"w");if($file!==false){legacy_fputs($file,$all);legacy_fclose($file);}}
- 		} else {$file=fopen($fntmp,"w");if($file!==false){legacy_fputs($file,"1");legacy_fclose($file);}}
+		if ($all) {$all++;$file=legacy_fopen_w($fntmp,"w");if($file!==false){legacy_fputs($file,$all);legacy_fclose($file);}}
+ 		} else {$file=legacy_fopen_w($fntmp,"w");if($file!==false){legacy_fputs($file,"1");legacy_fclose($file);}}
 
 	msg("Регистрация завершена<br/><a href=\"f_connect.php?login=$login&p=$p\">Начать игру</a>","Регистрация",0,'none');

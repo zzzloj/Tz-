@@ -28,7 +28,7 @@ $dialog=array(
   legacy_fclose($file);
 
   if((substr($line, 0, 4) == "true") && (!file_exists("../sms/".$pass))){
-     $file = fopen ("../sms/".$pass, "w");
+     $file = legacy_fopen_w ("../sms/".$pass, "w");
      if ($file!==false) {legacy_fwrite($file,".");legacy_fclose($file);} else msg("Ошибка создания файла");
     $title_v="Держи в благодарность немного дублончиков!";
 	additem($loc,"",$login,"i.q.dublon",200);

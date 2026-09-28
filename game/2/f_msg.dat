@@ -180,7 +180,7 @@ legacy_fclose($file);
 
 $log=$login." -> ".$id.": (".date("d/m Y H:i",time()).") ".$text."\r\n";
 $log .= $source;
-$file=fopen("./x_konti.txt","w");
+$file=legacy_fopen_w("./x_konti.txt","w");
 @legacy_fputs($file,$log);
 @legacy_fclose($file);
 
@@ -192,7 +192,7 @@ legacy_fclose($file);
 
 $log=$login." -> ".$id.": (".date("d/m Y H:i",time()).") ".$text."\r\n";
 $log .= $source;
-$file=fopen("./x_konti.txt","w");
+$file=legacy_fopen_w("./x_konti.txt","w");
 @legacy_fputs($file,$log);
 @legacy_fclose($file);
 

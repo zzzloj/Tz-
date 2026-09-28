@@ -29,7 +29,7 @@ $PHP_SELF = "g.php";
 
         // создаем файл c точкой (длина 1 байт), чтобы нельзя было войти на 2 сервера сразу, потом удалим, если не изменится
         @ignore_user_abort(true);
-        $file = fopen ("online/".$login, "w");
+        $file = legacy_fopen_w ("online/".$login, "w");
         if ($file!==false) {legacy_fwrite($file,".");legacy_fclose($file);} else msg("Ошибка создания файла");
 
         // проверим на других серверах

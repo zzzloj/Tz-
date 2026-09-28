@@ -15,7 +15,7 @@ if ($newstime) die(@date("d/m",legacy_num(@filemtime("story/news.htm"))));
 // список у Санчеса
 if ($gwanted) die(@implode("",(array)(@file("wanted.dat"))));
 if ($swanted) {
-        $file = fopen ("wanted.dat", "w");
+        $file = legacy_fopen_w ("wanted.dat", "w");
         if($file!==false) {legacy_fputs($file,str_replace("\\","",$swanted));legacy_fclose($file);}
         }
 
@@ -37,7 +37,7 @@ if ($inclan) {
 if ($sclan) {
         $test=unserialize(str_replace("\\","",$data));
         if ($test["g"]) {
-                $file = fopen ("clans/".$sclan, "w");
+                $file = legacy_fopen_w ("clans/".$sclan, "w");
                 if($file!==false) {legacy_fputs($file,str_replace("\\","",$data));legacy_fclose($file);}
                 } else die("err:");
         }
@@ -54,15 +54,15 @@ if ($payed) {
         if (file_exists("payed.dat")) {
                 $all=0;
                 $all=@implode("",(array)(@file("payed.dat")));
-                if ($all) {$all++;$file=fopen("payed.dat","w");if($file!==false){legacy_fputs($file,$all);legacy_fclose($file);}}
-                 } else {$file=fopen("payed.dat","w");if($file!==false){legacy_fputs($file,"1");legacy_fclose($file);}}
+                if ($all) {$all++;$file=legacy_fopen_w("payed.dat","w");if($file!==false){legacy_fputs($file,$all);legacy_fclose($file);}}
+                 } else {$file=legacy_fopen_w("payed.dat","w");if($file!==false){legacy_fputs($file,"1");legacy_fclose($file);}}
         die("ok");
         }
 if ($reg2) {
         if (file_exists("all.dat")) {
                 $all=0;
                 $all=@implode("",(array)(@file("all.dat")));
-                if ($all) {$all++;$file=fopen("all.dat","w");if($file!==false){legacy_fputs($file,$all);legacy_fclose($file);}}
-                 } else {$file=fopen("all.dat","w");if($file!==false){legacy_fputs($file,"1");legacy_fclose($file);}}
+                if ($all) {$all++;$file=legacy_fopen_w("all.dat","w");if($file!==false){legacy_fputs($file,$all);legacy_fclose($file);}}
+                 } else {$file=legacy_fopen_w("all.dat","w");if($file!==false){legacy_fputs($file,"1");legacy_fclose($file);}}
         die("ok");
         }

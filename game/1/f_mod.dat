@@ -132,7 +132,7 @@ if ($mod=='tele') {
 		if (!file_exists("l_i/".$to[1])) msg("Локации с id ".$to[1]." не существует");
 		if (substr($to[0],0,2)=="n.") {addnpc($to[0],$loc,strtolower($to[1]));} 
 		elseif(substr($to[0],0,2)=="u.") { 
-		addnpc($to[0],$loc,strtolower($to[1]));  $file = fopen ("online/".$to[0], "w"); legacy_fputs($file,$to[1]."\n".time());legacy_fclose($file);}
+		addnpc($to[0],$loc,strtolower($to[1]));  $file = legacy_fopen_w ("online/".$to[0], "w"); legacy_fputs($file,$to[1]."\n".time());legacy_fclose($file);}
 		else msg ("Телепортировать можно только NPC или игроков"); 
 		 
 ///////////////////////////////////////////////////////////////////////////

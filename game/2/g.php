@@ -53,7 +53,7 @@ if ((!$sid && !$site) || !$tmp) $site='main';
 $glast=@implode('',(array)(@file('glast.dat')));
 $glast=trim($glast); //$sl=rand(3,20); sleep($sl);
 $tlast=time().$_SERVER['HTTP_USER_AGENT'].substr($sid,0,10);
-$file=fopen('glast.dat','w');@legacy_fputs($file,$tlast);@legacy_fclose($file);
+$file=legacy_fopen_w('glast.dat','w');@legacy_fputs($file,$tlast);@legacy_fclose($file);
 if ($glast==$tlast) msg("<a href=\"$PHP_SELF?$g_tmp\">Обновить</a>");
 
 if ($sid) {
@@ -70,16 +70,16 @@ if(preg_match("/[\/{}$\"\']+/",$QUERY_STRING)) msg('error');
 //if (!$mod && !$adm && $REMOTE_ADDR!="127.0.0.1" && $REMOTE_ADDR!="80.91.191.171") {
 //if(preg_match("/[\/{}$\"\']+/",$_POST)) msg("error");
 //}
-if (file_exists('game.dat')) {
-        $file_save = fopen('game.dat','r+');
-        if (!$file_save) msg('Ошибка загрузки game.dat');
-        if (legacy_flock($file_save,2)) {
-                legacy_rewind($file_save);
-                $game = legacy_fread($file_save, 65535);
-                $game = unserialize($game);
+// game.lock serialises requests; game.dat is replaced atomically on save
+// (legacy_atomic_write), so a killed process never leaves it cut short.
+$file_save = fopen('game.lock','c');
+if (!$file_save) msg('Ошибка загрузки game.dat');
+if (legacy_flock($file_save,2)) {
+        if (file_exists('game.dat')) {
+                $game = unserialize((string)@file_get_contents('game.dat'));
                 if (gettype($game)!='array') $game=array();
-                } else {$file_save=''; msg('Ошибка блокировки game.dat');}
-        } else {$file_save = fopen('game.dat','w+'); if ($file_save && legacy_flock($file_save,2)) {$f_all=1; require 'f_online.dat'; require 'f_blank.dat';} else {$file_save=''; msg('Ошибка создания game.dat');}}
+                } else {$f_all=1; require 'f_online.dat'; require 'f_blank.dat';}
+        } else {$file_save=''; msg('Ошибка блокировки game.dat');}
 if (substr($ip,0,10)=="83.149.19.") msg("<b>error</b><br/>ip заблакирован");
 if (strstr($brouzer,'Windows NT 5.1')!==false || strstr($brouzer,'WinWAP')!==false) $ip='127.1.1.2';
 if ($sid && substr($ip,0,9)!="89.20.97." && substr($ip,0,7)!="83.178." && substr($ip,0,9)!="212.58.18" && substr($ip,0,10)!="213.87.86." && substr($ip,0,11)!="217.119.94." && substr($ip,0,9)!="83.178.20" && substr($ip,0,7)!="83.149." && substr($ip,0,10)!="84.15.15.1" && substr($ip,0,11)!="217.74.245." && substr($ip,0,11)!="217.169.92." && substr($ip,0,12)!="193.201.231."  && substr($ip,0,12)!="213.228.120." && substr($ip,0,11)!="217.118.66.") {
@@ -456,18 +456,16 @@ function savegame() {
                         if(count((array)($l_i[$i]))>0) $arr["i"]=$l_i[$i];
                         if(count((array)($l_t[$i]))>0) $arr["t"]=$l_t[$i];
                         if ($arr!=$l_tt[$i] && $arr["d"]) {
-                                $file = fopen ("l_i/".$i, "w");
+                                $file = legacy_fopen_w ("l_i/".$i, "w");
                                 if ($file!==false) {legacy_fputs($file,serialize($arr));legacy_fclose($file);}
                                 }
                         }
                 if ($login && $loc && isset($l_i[$loc][$login])) {
-                        $file = fopen ("online/".$login, "w");
+                        $file = legacy_fopen_w ("online/".$login, "w");
                         if ($file!==false) {legacy_fputs($file,$loc."\n".time());legacy_fclose($file);}
                         }
-                legacy_rewind($file_save);
-                legacy_ftruncate($file_save,0);
                 if ($login && $game["fid"]==$login) $game["floc"]=$loc;
-                legacy_fputs($file_save,serialize($game));
+                legacy_atomic_write('game.dat', serialize($game));
                 //flock($file_save,3);
                 legacy_fclose($file_save);
                 };

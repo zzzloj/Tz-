@@ -15,7 +15,7 @@ loadloc($randl);
 $l_i[$randl]["n.c.demogn"]=$npc;
 addnpc("n.c.demogn","",$loc);
 $demon=".";
-$fp=fopen("quest/quest.demon","w+");
+$fp=legacy_fopen_w("quest/quest.demon","w+");
 legacy_fputs($fp,"$demon"); 
 legacy_fclose($fp);
 chmod ("quest/quest.demon", 0777);

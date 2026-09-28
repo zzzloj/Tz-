@@ -45,7 +45,7 @@ require_once("datafunc.php");
 	closedir($dh);
 
 	if ($count>$g_max) $count=$g_max;
-	$file = fopen ("count.dat", "w");
+	$file = legacy_fopen_w ("count.dat", "w");
 	if ($file!==false) {legacy_fputs($file,$count." &#x438;&#x437; ".$g_max);legacy_fclose($file);}
 
 	$game["lastai"]=time();

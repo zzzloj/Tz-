@@ -11,7 +11,8 @@
 6. `fix_array_args.php` — `(array)` для аргументов `implode`/`in_array`/`array_*` (запускать до неподвижной точки).
 7. `fix_numeric.php` — `legacy_num()`/`legacy_cmp()` вокруг операндов арифметики и сравнений с числами (см. `game/lib/legacy.php`).
 8. `fix_fileops.php` — `fread`/`fclose`/... → `legacy_f*()`.
-9. `evalcode.php extract|apply` — то же для PHP-кода внутри данных (`"eval: ..."` в диалогах, `f_attackf.dat`): извлекает фрагменты во временные файлы, по ним прогоняются шаги 1–8, затем фрагменты возвращаются на место.
+9. `fix_atomic.php` — `fopen(путь, "w"|"w+")` → `legacy_fopen_w()`: запись во временный файл и атомарная подмена через `rename()` при `fclose` (кроме `game.dat`, его пишет `g.php` через `legacy_atomic_write()` под блокировкой `game.lock`).
+10. `evalcode.php extract|apply` — то же для PHP-кода внутри данных (`"eval: ..."` в диалогах, `f_attackf.dat`): извлекает фрагменты во временные файлы, по ним прогоняются шаги 1–9, затем фрагменты возвращаются на место.
 
 Диагностика: `scan.php` (удалённые функции, `/e`, голые константы, `mysql_*`), `calls.php` (вызовы с `/e`), `count_ops.php`, `concat_prec.php` (выражения `A . B + C`, чей смысл изменился в PHP 8).
 

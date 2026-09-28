@@ -14,6 +14,8 @@ sed -i "s/<VirtualHost \*:80>/<VirtualHost *:${PORT}>/" /etc/apache2/sites-avail
 
 mkdir -p /data/game /data/sessions
 /usr/local/bin/legacy-sync-code /opt/legacy-game /data/game
+# Temporary files of atomic writes interrupted by a crash or redeploy.
+find /data/game -name '*.tmp.*' -type f -delete
 sed -i 's@DocumentRoot /var/www/html@DocumentRoot /data/game@' /etc/apache2/sites-available/000-default.conf
 
 # Archive has F_blank.dat, while g.php requires f_blank.dat on Linux.

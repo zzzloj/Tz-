@@ -40,7 +40,7 @@ if ($id=="login") {			// вход в акк
 		$partn=implode("",(array)(file("../partn.dat")));
 		if (!$partn) msg("Ошибка регистрации нового партнера, сообщите об этом администрации");
 		$partn.="|".$nn;
-		$file = fopen ("../partn.dat", "w");
+		$file = legacy_fopen_w ("../partn.dat", "w");
 		if ($file===false) msg("Ошибка записи, попробуйте еще раз");
 		legacy_fputs($file,$partn);
 		legacy_fclose($file);
