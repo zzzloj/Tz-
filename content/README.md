@@ -7,7 +7,7 @@ python3 tools/content/build.py content <каталог game/1>   # JSON → фа
 sh tests/content.sh                                       # проверка: собрать и выгрузить обратно
 ```
 
-Значения полей описаны в `docs/data-fields.md`, имена полей заданы в `tools/content/schema.json`.
+Значения полей описаны в `docs/data-fields.md`, квесты и их логика — в `docs/quests.md`, имена полей заданы в `tools/content/schema.json`.
 
 ## Каталоги
 
