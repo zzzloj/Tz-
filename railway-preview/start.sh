@@ -41,13 +41,14 @@ chmod 640 /run/legacy-preview.htpasswd
 
 # The shipped menu points to a defunct external domain. Do not send test
 # credentials to it. Local single-server links are repaired after boot tests.
-printf '/\n' > /data/game/1/srvmain.dat
-printf '/\n' > /data/game/srvmain.dat
-printf '/\n' > /data/game/2/srvmain.dat
-printf '/\n' > /data/game/1/serverurl.dat
-printf '/\n' > /data/game/2/serverurl.dat
+printf '/' > /data/game/1/srvmain.dat
+printf '/' > /data/game/srvmain.dat
+printf '/' > /data/game/2/srvmain.dat
+printf '/' > /data/game/1/serverurl.dat
+printf '/' > /data/game/2/serverurl.dat
 printf '1\n/1/\n' > /data/game/1/servers.dat
 printf '1\n/1/\n' > /data/game/2/servers.dat
+printf '1\n/1/\n' > /data/game/servers.dat
 
 chown -R www-data:www-data /data/game /data/sessions
 php -d auto_prepend_file= /opt/init-db.php

@@ -16,6 +16,7 @@ COPY railway-preview/php.ini /usr/local/etc/php/conf.d/legacy-preview.ini
 COPY railway-preview/apache.conf /etc/apache2/conf-enabled/legacy-preview.conf
 COPY railway-preview/bootstrap.php /opt/legacy-bootstrap.php
 COPY railway-preview/html-output.php /opt/legacy-html.php
+COPY railway-preview/wml.js /opt/legacy-wml.js
 COPY railway-preview/init-db.php /opt/init-db.php
 COPY railway-preview/start.sh /usr/local/bin/legacy-start
 COPY railway-preview/sync-code.sh /usr/local/bin/legacy-sync-code

@@ -36,3 +36,16 @@ for server in ('1', '2'):
     new = 'Возраст (полных лет):<br/><input name=\\"age\\" value=\\"18\\" maxlength=\\"2\\"/>'.encode('cp1251')
     assert contents.count(old) == 1, str(path)
     path.write_bytes(contents.replace(old, new))
+
+# Links hardcoded to the game's original (long dead) domains point back to
+# this site instead, e.g. the news and FAQ pages.
+OLD_ROOTS = (b'http://bigwap.org/game/', b'http://zlo.holys.com.ru/game/', b'http://worldwap.info/game/')
+for path in (destination / 'game').rglob('*'):
+    if not path.is_file() or (path.suffix not in ('.php', '.dat', '.htm') and 'items' not in path.parts):
+        continue
+    contents = path.read_bytes()
+    if not any(root in contents for root in OLD_ROOTS):
+        continue
+    for root in OLD_ROOTS:
+        contents = contents.replace(root, b'/')
+    path.write_bytes(contents)
