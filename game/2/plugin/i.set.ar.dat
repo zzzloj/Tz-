@@ -1,0 +1,33 @@
+<?php
+//выкалупывание камней
+if ($to) {
+if (intval(preg_replace('/.*'.$to.':(\d+).*/',"\\1",$l_i[$loc][$login]["items"]))<1) msg("У вас нет ".$item[0].", чтобы извлечь камни из него");
+if (strpos($to,"..")===false) msg("в ".$item[0]." нет вставленых камней");
+$keys=explode("|",$to);
+$rF=explode("..",$to);
+$skills=explode("|",$l_i[$loc][$login]["skills"]);
+if ($skills[28]>0) {
+	$char[6]=time()+5;
+	$l_i[$loc][$login]["char"]=implode("|",$char);
+if ($k && ($k==$rF[1] || $k==$rF[2] || $k==$rF[3] || $k==$rF[4])) {
+if ($rF[1]) $shans=$skills[28]*10-5;
+if ($rF[2]) $shans=$skills[28]*10+15;
+if ($rF[3]) $shans=$skills[28]*10+35;
+if ($shans>rand(0,100)) { $k="i.i.".$k;
+addjournal($loc,$login,"Вы извлекли самоцвет");
+additem($loc,"",$login,$k,1);
+additem($loc,$login,"",$to,1);
+addjournal($loc,"all",$char[0]. " извлек самоцвет",$login);
+} else { addjournal($loc,$login,"Вы не смогли извлеч самоцвет"); 
+addjournal($loc,"all",$char[0]. " не смог извлеч самоцвет",$login);
+additem($loc,$login,"",$to,1); }
+if (rand(1,100)<=5) {addjournal($loc,$login,"Вы сломали нaбop для извлeчeния кaмнeй"); addjournal($loc,"all",$char[0]. " сломал нaбop для извлeчeния кaмнeй",$login); additem($loc,$login,"","i.set.ar",1);}
+} elseif (!$k) {
+if ($rF[1]) $rF[1]="<a href=\"$PHP_SELF?sid=$sid&to=$to&use=i.set.ar&k=$rF[1]\">".$rF[1]."</a><br/>"; else $rF[1]="";
+if ($rF[2]) $rF[2]="<a href=\"$PHP_SELF?sid=$sid&to=$to&use=i.set.ar&k=$rF[2]\">".$rF[2]."</a><br/>"; else $rF[2]="";
+if ($rF[3]) $rF[3]="<a href=\"$PHP_SELF?sid=$sid&to=$to&use=i.set.ar&k=$rF[3]\">".$rF[3]."</a><br/>"; else $rF[3]="";
+if ($rF[4]) $rF[4]="<a href=\"$PHP_SELF?sid=$sid&to=$to&use=i.set.ar&k=$rF[4]\">".$rF[4]."</a><br/>"; else $rF[4]="";
+msg($rF[1].$rF[2].$rF[3].$rF[4]); 
+} else { addjournal($loc,$login,"Нет такого самоцвета");  } 
+} else addjournal($loc,$login,"Ваш навык ювелира равен 0, вы не умеете обрабатывать камни");
+} else $list='all';	

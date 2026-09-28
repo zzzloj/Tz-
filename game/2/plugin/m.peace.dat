@@ -1,0 +1,7 @@
+<?php
+
+if (isset($l_i[$loc][$to]) && substr($to,0,2)=='n.')  {
+	$tchar=explode("|",$l_i[$loc][$to]["char"]);
+	$tchar[7]="";
+	$l_i[$loc][$to]["char"]=implode("|",$tchar);
+	} else addjournal($login,$login,"Заклинание действует только на NPC");

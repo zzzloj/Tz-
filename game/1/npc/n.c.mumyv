@@ -1,0 +1,8 @@
+<?php 
+$npc=array( 
+'char'=>'мумия воин|140|140|1|1||||||||', 
+'war'=>'95|14|28|6||26|15|||20|80|40|мeчoм|25||', 
+'items'=>'i.w.s.long:1', 
+'equip'=>'i.w.s.long', 
+'itemsrnd'=>'i.money:90:40:100|i.bint:70:5:50|i.a.p.obspor:15:0:1|i.a.l.obspon:15:0:1|i.a.s.obschit:15:0:1', 
+);

@@ -1,0 +1,7 @@
+<?
+$server="localhost";
+$user="bigwap_igrok";
+$dbpass="987321654";
+$dbname="bigwap_amulet";
+
+?>

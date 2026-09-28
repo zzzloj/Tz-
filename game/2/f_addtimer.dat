@@ -1,0 +1,9 @@
+<?php
+//$curr - тек. таймер в локации $loct
+global $l_i,$l_t,$loc,$login;
+loadloc($loct);
+$new=time()+$time;
+while (isset($l_t[$loct][$new])) $new++;
+if ($text=='old') $text=$l_t[$loct][$curr];
+$l_t[$loct][$new]=$text;
+if ($delete && $curr) unset($l_t[$loct][$curr]);

@@ -1,0 +1,62 @@
+<?php
+$mocr=$cm;
+if ($mocr) {						//mocr=obj|objv|to|tov|name_x/..., mocrl=obj|objv|to|tov
+	if ($mocr=="save") {	// сохраняем
+		if (!$name_x) msg("Не указано имя макроса, используйте англ. буквы.","Макросы",0);
+		if ($num<1 || $num>8) msg("Диапазон номера от 1 до 8","Макросы",0);
+		if (!isset($l_i[$loc][$login]["mocr"])) $m=array("","","","","","","",""); else $m=explode("/",$l_i[$loc][$login]["mocr"]);
+		if (!isset($l_i[$loc][$login]["mocrl"])) $ml=array(); else $ml=explode("|",$l_i[$loc][$login]["mocrl"]);
+		if ($obj=="curr") {$obj=$ml[0];$objv=$ml[1];}
+		if ($to=="curr") {$to=$ml[2];$tov=$ml[3];}
+		if ($to=="none") {$to="";$tov="";}
+		$name_x=substr(preg_replace('/\W/',"",$name_x),0,9);
+		$m[$num-1]="$obj|$objv|$to|$tov|$name_x";
+            if(strlen($l_i[$loc][$login]["mocr"])>300) msg("Слишком много или слишком длинные макросы");
+		$l_i[$loc][$login]["mocr"]=implode("/",$m);
+		msg("Макрос с именем $name_x сохранен.","Макросы",0);
+            
+		}
+
+	if ($mocr=="del") {	// удаляем
+		if ($num<1 || $num>8) msg("Диапазон номера от 1 до 8");
+		if (!isset($l_i[$loc][$login]["mocr"])) $m=array("","","","","","","",""); else $m=explode("/",$l_i[$loc][$login]["mocr"]);
+		unset($m[$num-1]);
+		$l_i[$loc][$login]["mocr"]=implode("/",$m);
+		msg("Макрос с номером $num удален.","Макросы",0);
+		}
+
+	if ($mocr=="new") {	// форма для нового макроса
+		$sher="Действие:<br/>
+		<select name=\"obj\" value=\"curr\">\n<option value=\"curr\">Текущее</option>\n<option value=\"last\">Последнее</option></select>
+		Цель:<br/>
+		<select name=\"to\" value=\"curr\">\n<option value=\"curr\">Текущая</option>\n<option value=\"last\">Последняя</option>\n<option value=\"none\">Вручную</option></select>
+		Имя макроса:<br/>
+		<input name=\"name_x\" value=\"mocr\" />
+		<br/>Номер:
+		<select name=\"num\" value=\"1\">
+		";
+		if (!isset($l_i[$loc][$login]["mocr"])) $m=array("","","","","","","",""); else $m=explode("/",$l_i[$loc][$login]["mocr"]);
+		for($i=1;$i<9;$i++) {
+			if ($m[$i-1]) {$mn=explode("|",$m[$i-1]); $mn=$mn[4];} else $mn="Пусто";
+			$sher.="\n<option value=\"$i\">$i: $mn</option>";
+			}
+		$sher.="</select>
+		<anchor>Сохранить<go href=\"$PHP_SELF?sid=$sid&cm=save&obj=$(obj)&to=$(to)\" method=\"post\">
+		<postfield name=\"name_x\" value=\"$(name_x)\"/>
+		<postfield name=\"num\" value=\"$(num)\"/>
+		</go>
+		</anchor>
+		<br/>
+		<anchor>Удалить<go href=\"$PHP_SELF?sid=$sid&cm=del&num=$(num)\"/></anchor>
+		<br/><br/>
+		<anchor>Помощь<go href=\"$PHP_SELF?sid=$sid&cm=help\"/></anchor>
+		";
+            
+
+		msg($sher,"Макросы",0);
+		}
+
+	if ($mocr=="help") msg("Чтобы записать новый макрос, совершите любое действие, например, используйте навык или заклинание и выберите в меню \"макросы\".<br/>\"Текущее\" - это совершенное действие и текущая цель.<br/>\"Последнее\" - последнее действие или цель перед вызовом макроса.<br/>\"Вручную\" - при вызове макроса надо будет вручную указать на кого применить.","Макросы",0);
+
+	if ($mocr<1 || $mocr>8) msg("Макрос может быть от 1 до 8","Макросы",0);
+	}

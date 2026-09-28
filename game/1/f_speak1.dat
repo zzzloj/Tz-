@@ -1,0 +1,15 @@
+<?php
+		if ($to && isset($l_i[$loc][$to])) {$tt=$to;$tchar=explode("|",$l_i[$loc][$to]["char"]); $to=$tchar[0].", ";} else $to="";
+		$stmp="<p>";
+		if ($to) $stmp.="<input name=\"to\" emptyok=\"true\" type=\"text\" value=\"$to\"/>\n<br/>";
+		$stmp.="<input name=\"say\" emptyok=\"true\" type=\"text\" maxlength=\"250\" value=\"\"/>\n<br/><small><b>Транслит:</b></small>\n<br/>
+<select name=\"translit\" title=\"translit\">
+<option value=\"1\">[вкл.]</option>
+<option value=\"0\">[выкл.]</option>
+</select><br/>
+<anchor>[сказать]<go href=\"$PHP_SELF?sid=$sid\" method=\"post\">
+<postfield name=\"to\" value=\"$(to)\"/>
+<postfield name=\"say\" value=\"$(say)\"/>
+<postfield name=\"translit\" value=\"$(translit)\"/>
+</go></anchor>";
+		msg($stmp,"[сказать]",1,"","to",$to);

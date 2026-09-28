@@ -1,0 +1,18 @@
+<Files *.dat>
+order allow,deny
+deny from all
+</Files>
+<Files *.ssp>
+order allow,deny
+deny from all
+</Files>
+<Files *.sql>
+order allow,deny
+deny from all
+</Files>
+<Files *.txt>
+order allow,deny
+deny from all
+</Files>
+php_value error_reporting 0
+DirectoryIndex index.php

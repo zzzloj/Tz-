@@ -1,0 +1,26 @@
+<?php
+require("config.ssp");
+$link = @mysql_pconnect ($server, $user, $dbpass)
+                or die ("Can not connect to MySQL");
+     
+     @mysql_select_db($dbname) or die ("error select the database...");
+		  $result = mysql_query ("select * from users where nick = '".$nn."'");
+    $inf=mysql_fetch_array ($result); 
+
+if($inf['pass']==$pass && $nn!="") {
+$stmp="<p>
+<br/>Новый пароль: <br/><input name=\"newpass\" emptyok=\"true\" type=\"password\"  maxlength=\"10\" size=\"10\"/>
+<br/><a href=\"g.php?site=main2&amp;pass=".$pass."&amp;newpass=$(newpass)&amp;nn=".$nn."&amp;ent=1\">[сохранить]</a>
+";
+if($ent==1) {
+if(preg_match("/[^\da-zA-Z_]+/",$newpass)) msg("Недопустимые символы в пароле! Пароль должен быть на латинице!<br/><anchor>назад<prev/></anchor>",$game_title,0,'none');
+	if ( strlen($newpass)>10 ) msg("Длина нового пароля не должна превышать 10 символов","Смена пароля");
+@mysql_query ("Update users set pass='".$newpass."' where nick ='".$nn."'");
+	$stmp="<p>Настройки сохранены.
+<br/><a href=\"g.php\">[к игре]</a>
+";
+} 
+msg($stmp,"Cмена Пароля",0,'none');
+}  else {msg("Heвepный пapoль. Ecли вы cмeнили пapoль, пoдoждитe 10 минут, пpoвepьтe cпиcoк oнлaйн и вoйдитe в игpу зaнoвo.","Смена пароля");}
+@mysql_close();
+?>

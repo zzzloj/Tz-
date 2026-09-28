@@ -1,0 +1,172 @@
+//<?
+global $l_i,$l_tt,$g_destroy,$g_crim,$g_exp,$PHP_SELF,$game;
+	// проверки
+	if ((substr($from,0,2)!='u.' && substr($from,0,2)!='n.') || (substr($to,0,2)!='u.' && substr($to,0,2)!='n.') || !isset($l_i[$loc][$from]) || !isset($l_i[$loc][$to]) || $from==$to) return;
+	$fchar=explode("|",$l_i[$loc][$from]["char"]);
+	if (substr($from,0,2)=='u.' && $fchar[8]) {if ($answer) addjournal($loc,$from,"¬ы призрак");return;}
+
+	$loct=$loc;
+	$aloct=explode("|",$l_tt[$loc]["d"]);
+	$tchar=explode("|",$l_i[$loct][$to]["char"]);
+	if (substr($to,0,2)=='u.' && $tchar[8]) {if ($answer) addjournal($loc,$from,"Ќельз€ атаковать призрака"); return;}
+	$twar=explode("|",$l_i[$loct][$to]["war"]);
+	if (!$fchar[9] && !$tchar[9] && $loc=='x1092x474' && $to!='u.ogir' && $from!='u.ogir' && $to!='u.sn0k' && $from!='u.sn0k') { addjournal($loc,$from,"¬ банке нельз€ атаковать"); 
+	return;
+	}
+	
+	if ($fchar[6]-time()>300) $fchar[6]=time()-1;
+	if (!$rmagic && time()<=$fchar[6]) {
+			if ($answer) addjournal($loc,$from,"¬ы должны отдохнуть ".round($fchar[6]-time()+1)." сек"); 
+			return;
+			} 
+	if ($l_i[$loc][$to]["def"]) $tdef=explode("|",$l_i[$loc][$to]["def"]); else $tdef=array("","",0);
+	if ($tdef[2] && time()>$tdef[2]) {$l_i[$loc][$to]["def"]=""; $tdef=array("","",0);}
+	if ($ptitle_v) $ptitle_v=" (".$ptitle_v.")";
+	$tloc=explode("x",$loc);
+	if ($magic) $fwar=explode("|",$magic); else $fwar=explode("|",$l_i[$loc][$from]["war"]);
+	if ($answer) {$fchar[6]=time()+$fwar[3]; $l_i[$loc][$from]["char"]=implode("|",$fchar);}
+	if ($fwar[12]=="мaгиeй") $fwar[12]="магией";	//eng a,e
+	if (substr($from,0,2)!='u.' && rand(0,100)>"10" && $fwar[12]!="молнией") { $use="p.p"; }//$fwar[12]="магией";
+	if ($rmagic || $fwar[12]=="магией" || $fwar[12]=="молнией") {
+		if ($tdef[0]=="p.d.z" && rand(0,100)<=$tdef[3]*0.10) {if (substr($l_i[$loc][$from]["def"],0,5)=="p.d.c") {$fdef=explode("|",$l_i[$loc][$from]["def"]); $fdef=$fdef[3];} else $fdef=0; if (rand(0,100)>$fdef) $fwar[0]=0;}
+		if (substr($l_i[$loc][$from]["def"],0,5)=="p.d.c") $l_i[$loc][$from]["def"]="";
+		if ($tdef[0]=="p.d.z") {$l_i[$loc][$to]["def"]=""; $t2=$tdef[1];}
+		$uklon=$twar[9];$parring=$twar[10];$shield=$twar[11];
+		} else {
+			$uklon=$twar[6];$parring=$twar[7];$shield=$twar[8];
+			if ($tdef[0]=="p.d.u" && $fwar[4]) {if(rand(0,100)<=$tdef[3]) $uklon+=35; $l_i[$loc][$to]["def"]=""; $t2=$tdef[1];}
+			if ($tdef[0]=="p.d.re") {if(rand(0,100)<=$tdef[3]) $uklon+=20; $l_i[$loc][$to]["def"]=""; $t2=$tdef[1];}
+			if ($tdef[0]=="p.d.p") {if(rand(0,100)<=$tdef[3]) $parring*=2; $l_i[$loc][$to]["def"]=""; $t2=$tdef[1];}
+			}
+
+	if ($priem=="p.g" && $tdef[0]=="p.d.g") {if(rand(0,100)<=$tdef[3]) {$fwar[1]=0;$fwar[2]=0;} $l_i[$loc][$to]["def"]=""; $t2=$tdef[1];}
+	if (substr($l_i[$loc][$from]["def"],0,6)=="p.d.re") {$fwar[1]=round($fwar[1]*0.6);$fwar[2]=round($fwar[2]*0.6);}
+	if ($tdef[0]=="p.d.o" && !$rmagic) {if(rand(0,100)<=$tdef[3]) {$fwar[1]=round($fwar[1]*0.4);$fwar[2]=round($fwar[2]*0.4);} $t2=$tdef[1];} 
+	if ($priem=="p.n" && $tdef[0]=="p.d.n" || $priem=="p.r" && $tdef[0]=="p.d.r" || $priem=="p.vs" && $tdef[0]=="p.d.s" || $priem=="p.vw" && strpos($l_i[$loc][$to]["equip"],"i.a.s.")!==false) $t2=$tdef[1];
+	if($t2) $t2=" (".$t2.")";
+
+
+	// крим если атакует не крима или животное в городе
+	$fstp=strpos($fchar[0],"*");
+	$tstp=strpos($tchar[0],"*");
+	if ($fstp===false) $clan1=""; else $clan1=substr($fchar[0],$fstp+1,strrpos($fchar[0],"*")-$fstp-1);
+	if ($tstp===false) $clan=""; else $clan=substr($tchar[0],$tstp+1,strrpos($tchar[0],"*")-$tstp-1);
+	$fcrim = $fchar[9] || substr($from,0,4)=="n.c.";
+     
+	$tcrim = $tchar[9] || substr($to,0,4)=="n.c." || $to=="n.w.Veelzevul" || $to=="n.whitewolf" || $game["floc"]==$loc && $game["fid"]==$to;
+	if ($tloc[2]>=1099) {$tcrim = $tcrim || $tchar[14]=="p" || substr($to,0,4)=="n.p." || $fchar[14]=="p" && $tchar[14]=="t";} 
+	if($fchar[13]) $wife=$to==substr($fchar[13],0,strlen($to)); else $wife=0;
+	if ($from!=$to && !$fcrim && $tchar[7]!=$from && !$tcrim && (!$clan1 || ($clan1 && $clan1!=$clan)) && !$wife && $from!="u.qv" && $to!="u.qv" && $from!="u.admin"  && $to!="u.admin" && $from!="u.qw" && $to!="u.qw" && $from!="u.kv" && $to!="u.kv" && $from!="u.scream" && $to!="u.scream") {
+		if (isset($l_i[$loc][$to]["owner"])) docrim($loc,$from,"живодер");	//$aloct[1] && substr($to,0,4)=="n.a." || 
+		else if (substr($to,0,4)!="n.a.") docrim($loc,$from,"бандит");
+		$fchar=explode("|",$l_i[$loc][$from]["char"]);
+		}
+
+	// патроны
+	if ($fwar[14]) 
+	if (strpos($l_i[$loc][$from]["items"],$fwar[14].":")!==false) {
+			additem($loc,$from,"",$fwar[14],1,"items","",0);
+			if (strpos($l_i[$loc][$from]["items"],$fwar[14].":")===false) addjournal($loc,$from,"Ѕоеприпасы кончились");
+			}else {addjournal($loc,$from,"Ќет боеприпасов"); return;}
+	// цель конник
+	if (substr($to,0,2)=="u." && $tchar[12] && !$rmagic && $fwar[12]!="магией") $fwar[0]-=10;
+      if (substr($to,0,4)=="n.c." ) 
+      if (strpos($l_i[$loc][$from]["equip"],"i.a.m.vlast")!==false) {$fwar[1]=$fwar[1]*2;$fwar[2]=$fwar[2]*2;}
+
+		// заклинание сорвалось?
+		if ($fwar[0] || !$fwar[0] && !$rmagic && $fwar[12]!="магией") {
+		// попадание
+		if (rand(0,100)<=$fwar[0]) {
+			// урон
+			$damage=round(rand($fwar[1],$fwar[2]));
+//**мод**урон в замке**//
+			if (substr($loc,0,4)=="c.1." || substr($loc,0,4)=="c.2." || substr($loc,0,4)=="c.3." || substr($loc,0,4)=="c.4." || substr($loc,0,4)=="c.5.") { 
+			$gate=substr($loc,0,4)."gate";
+			$d=explode("|",$l_tt[$gate]["d"]);
+			if (strpos($d[0],"*")===false) $clanc=""; else $clanc=substr($d[0],strpos($d[0],"*")+1,strrpos($d[0],"*")-strpos($d[0],"*")-1);
+			if ($clanc==$clan1) $damage+=rand(0,10); }
+	require "f_time.dat";
+	if ($tchar[9] && ($time >= 20.00 and $time <= 00.00) || ($time = 00.00 and $time < 08.00)) $damage+=rand(0,5); else $damage-=rand(0,5);
+	//if (strpos($l_i[$loc][$login]['items'],'..fa')!==false) $ext=' огнем';
+			// уклон
+			if (rand(0,100)>$uklon) {
+				// щит
+				if ($parring && $shield) if (rand(0,100)<=$parring) {if (!$rmagic && $fwar[12]!="магией" && $fwar[12]!="молнией") {$damage-=$shield; $t1=" (щит ".$shield.")";} else {$resist=round($damage*$shield/100); if ($resist) $tsh=rand(0,$resist); else $tsh=0; $damage-=$tsh; $t1=" (сопр. магии ".$tsh.")";}}
+				// брон€
+				if (!$rmagic && $fwar[12]!="магией" && $twar[5] && $fwar[12]!="молнией" && $twar[5]) $damage-=round(rand(0,$twar[5])); // armor
+				if ($damage<0) $damage=0;
+				if ($fwar[4]) $skrit=5; else if ($rmagic || $fwar[12]=="магией" || $fwar[12]=="молнией") $skrit=4; else $skrit=2;
+				if (strpos($l_i[$loc][$from]['equip'],'..kp')!==false) $skrit=$skrit+4;
+				if ($damage && rand(0,100)<$skrit) {$damage*=2; $tkrit=" критически";} else $tkrit="";
+				if ($l_i[$loct][$to]["god"]) $damage=0;	// Ѕќ√
+				// урон
+				$tchar[1]-=$damage;
+				$tchar[5]=time();
+				if ($tchar[1]<0) $tchar[1]=0;
+				if (!$answer && !$rmagic) {
+					addjournal($loc,$from,"вы".$ptitle_v.$tkrit." ".$fwar[12]." ".$damage.$t1.$t2,"","",", ");
+					addjournal($loc,"all",$fchar[0].$ptitle_v.$tkrit." ".$fwar[12]." ".$damage.$t1.$t2,$from,"",", ");}
+					else {
+					addjournal($loc,$from,"¬ы".$ptitle_v." по ".$tchar[0].$tkrit." ".$fwar[12]." ".$damage.$t1.$t2);
+					addjournal($loc,$to,$fchar[0].$ptitle_v." по вам".$tkrit." ".$fwar[12]." ".$damage.$t1.$t2);
+					addjournal($loc,"all",$fchar[0].$ptitle_v." по ".$tchar[0].$tkrit." ".$fwar[12]." ".$damage.$t1.$t2,$from,$to);
+					}
+
+				// жена/муж
+				if(substr($to,0,2)=="u." && $tchar[13] && $tchar[1]<$tchar[2]) {
+					$tm=explode(":",$tchar[13]);
+					if(time()>$tm[1] && file_exists("online/".$tm[0]) && filesize("online/".$tm[0])!=1) {
+						$tmf=file("online/".$tm[0]); 
+						$tmf=trim($tmf[0]);
+						if($tmf!=$loc) {
+							loadloc($tmf);
+							$tup=explode("|",$l_i[$tmf][$tm[0]]["user"]);
+							if (strpos($aloct[0],"*")!==false) $aloct[0]=substr($aloct[0],0,strpos($aloct[0],"*"));
+							if($tup[2]=="m") $ts="¬аша жена (".$aloct[0].") ранена!"; else $ts="¬аш муж (".$aloct[0].") ранен!";
+							addjournal($tmf,$tm[0],"<a href=\"$PHP_SELF?sid=".$tm[0]."&p=".$tup[0]."&stele=1\">".$ts."</a>");
+							$tm[1]=time()+300;
+							$tchar[13]=implode(":",$tm);
+							}
+						}
+					}
+				// если убили, добавим труп
+				if ($tchar[1]<1) {
+					include "f_kill.dat";
+					} else $l_i[$loct][$to]["char"]=implode("|",$tchar); // иначе сохраним в f_kill.dat
+
+				} else {if (!$answer) {
+					if (!$rmagic && $fwar[12]!="магией" && $fwar[12]!="молнией") {
+						addjournal($loct,$from,"вы".$ptitle_v." мимо (уклон)".$t2,"","",", "); 
+						addjournal($loct,"all",$fchar[0].$ptitle_v." мимо (уклон)".$t2,$from,"",", ");
+						} else {
+							addjournal($loct,$from,"вы".$ptitle_v." мимо (уклон от магии)".$t2,"","",", "); 
+							addjournal($loct,"all",$fchar[0].$ptitle_v." мимо (уклон от магии)".$t2,$from,"",", ");
+							} 
+					} else {
+						if (!$rmagic && $fwar[12]!="магией" && $fwar[12]!="молнией") {
+							addjournal($loct,$from,"¬ы".$ptitle_v." по ".$tchar[0]." мимо (уклон)".$t2); 
+							addjournal($loct,$to,$fchar[0]." по вам мимо (уклон)"); 
+							addjournal($loct,"all",$fchar[0].$ptitle_v." по ".$tchar[0]." мимо (уклон)".$t2,$from,$to); 
+							}else {
+								addjournal($loct,$from,"¬ы".$ptitle_v." по ".$tchar[0]." мимо (уклон от магии)".$t2); 
+								addjournal($loct,$to,$fchar[0].$ptitle_v." по вам мимо (уклон от магии)".$t2); 
+								addjournal($loct,"all",$fchar[0].$ptitle_v." по ".$tchar[0]." мимо (уклон от магии)".$t2,$from,$to); 
+								}
+						}
+					}
+			} else {if (!$answer && !$rmagic) {
+					addjournal($loc,$from,"вы".$ptitle_v." мимо".$t2,"","",", ");
+					addjournal($loc,"all",$fchar[0].$ptitle_v." мимо".$t2,$from,"",", ");
+					} else {
+					addjournal($loc,$from,"¬ы".$ptitle_v." по ".$tchar[0]." мимо".$t2);
+					addjournal($loc,$to,$fchar[0].$ptitle_v." по вам мимо".$t2);
+					addjournal($loc,"all",$fchar[0].$ptitle_v." по ".$tchar[0]." мимо".$t2,$from,$to);
+					}}
+			}// заклинание сорвалось
+
+	// если npc свободен, то атакует
+	if(isset($l_i[$loc][$from]) && ($answer || $rmagic)) {$fchar[7]=$to; $l_i[$loc][$from]["char"]=implode("|",$fchar);}
+	if(isset($l_i[$loc][$from]) && isset($l_i[$loct][$to]) && $from!=$to && ($fwar[0] || !$fwar[0] && !$rmagic && $fwar[12]!="магией" && $fwar[12]!="молнией")) {
+		if (substr($to,0,2)=="n." && !$tсhar[7]) {$tchar[7]=$from; $l_i[$loct][$to]["char"]=implode("|",$tchar);}
+		if ($answer) attack($loct,$to,$from,0,0);
+		}

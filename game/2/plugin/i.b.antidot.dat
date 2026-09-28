@@ -1,0 +1,11 @@
+<?php
+				if (file_exists("items/".$use)) $item=explode("|",implode("",file("items/".$use))); else die("err: no items/".$use);
+				$char[6]=time()+4;
+				$l_i[$loc][$login]["char"]=implode("|",$char);
+				if ($item[2]) {
+					$char[17]-=300;
+					$l_i[$loc][$login]["char"]=implode("|",$char);
+					addjournal($loc,$login,'Вы исцелились');
+					}
+				// удаляем
+				additem($loc,$login,"",$use,1);

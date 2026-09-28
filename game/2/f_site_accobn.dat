@@ -1,0 +1,80 @@
+<?php
+
+// продление аккаунта $sid на 3 дня с тек. момента
+
+if (substr($login,0,2)!="u.") $login="u.".$login;
+$login=strtolower($login);
+
+if (!$agry) msg("Вы действительно ходите обнулить своего персонажа?<br/><a href=\"$PHP_SELF?site=accobn&login=$login&p=$p&agry=1\">Да, я согласен</a><br/><br/><a href=\"f_connect.php?login=$login&p=$p\">Нет, я передумал</a>");
+
+require_once("datafunc.php");
+
+	$res=GetGameTime(substr($login,2), $p, $t);
+	if ($res) msg($res,"Ошибка",0,"none");
+	if (time()<=$t) msg("Обнулять аккаунт можно только по истечении оплаченного периода","Ошибка",0,"none");
+
+	// принудительно в оффлайн
+	if (file_exists("online/".$login) && filesize("online/".$login)!=1) {
+		$tmp = file("online/".$login);
+		$tmp[0]=trim($tmp[0]);
+		loadloc($tmp[0]);
+		if (isset($l_i[$tmp[0]][$login])) { // в оффлайн
+			$auser = $l_i[$tmp[0]][$login];
+			$auser["journal"] = "";
+			$auser["loc"] = $tmp[0];
+			$auser["time"]=time();
+			unset($auser["msgt"]);
+			unset($auser["trade"]);
+			$tp=explode("|",$auser["user"]);
+			if ($auser["user"] && $auser["char"] && $auser["skills"] && $auser["war"]) $res=SetData(substr($login,2),$tp[0],serialize($auser));
+			addnpc($login,$tmp[0],"");
+			unset($l_i[$tmp[0]][$login]);
+			}
+		}
+	@unlink("online/".$login);
+
+// загружаем...
+$data="";
+$res=GetData(substr($login,2),$p,$data);
+if ($res) msg("Ошибка при загрузке: ".$res,"Ошибка",0,'none');
+if (!$data) msg ("Отсутствуют данные игрока, сообщите логин администрации","Ошибка",0,'none');
+
+$auser=unserialize($data);
+if (!$auser) {$data=preg_replace('/s:(?:\d+):"(.*?)";/e',"calcser('\\1')",$data);$auser=unserialize($data);}
+$tuser=explode("|",$auser["user"]); 
+if ($p!=$tuser[0]) {$tuser[0]=$p; $auser["user"]=implode("|",$tuser);}
+
+$t=time()+$freedays*24*3600;
+$tuser[6]=$t;
+$auser["user"]=implode("|",$tuser);
+
+// обнуляем персонаж, в user принудительно ставим флаг, чтоб не давать потом 150 монет
+$tuser[9]=1;
+$auser["user"]=implode("|",$tuser);
+$tchar=explode("|",$auser["char"]); 
+$auser["char"]=$tchar[0]."|20|20|20|20|1|1||0|0|0||";
+$auser["skills"]="1|1|1|0|2|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0";
+$auser["items"]="";
+$auser["equip"]="";
+$auser["bank"]="";
+$auser["magic"]="";
+$auser["priem"]="";
+unset($auser["war"]);
+
+	// добавим в локацию, чтобы посчитать параметры war
+	loadloc($auser["loc"]);
+	$l_i[$auser["loc"]][$login] = $auser;
+	calcparam($auser["loc"],$login);
+	$auser=$l_i[$auser["loc"]][$login];
+	unset($l_i[$auser["loc"]][$login]);
+
+// сохраняем...
+if ($auser["user"] && $auser["char"] && $auser["skills"] && $auser["war"]) SetData(substr($login,2),$p,serialize($auser)); else $res="Неверный формат";
+if ($res) msg("Ошибка при сохранении персонажа: ".$res,"Ошибка",0,'none');
+
+
+// продлеваем на три дня
+$res=SetGameTime(substr($login,2), $p, $t);
+if ($res) msg($res,"Ошибка",0,"none");
+
+msg("Ваш аккаунт продлен на три дня, считая с текущего момента, до ".date("d/m Y H:i",$t)." включительно, после чего будет заблокирован до внесения оплаты.<br/><a href=\"$PHP_SELF?site=connect2&login=$login&p=$p\">Начать игру</a>","Продление аккаунта",0,'none');

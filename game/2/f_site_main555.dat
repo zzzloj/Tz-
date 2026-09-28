@@ -1,0 +1,30 @@
+<?php
+    //  echo "1";
+
+$stmp.="<p>
+<br/>Ваше имя:
+<br/><input name=\"nn\" emptyok=\"true\" type=\"text\" maxlength=\"10\" size=\"10\"/>
+<br/>Пароль:
+<br/><input name=\"pass\" emptyok=\"true\" type=\"password\" value=\"\" maxlength=\"10\" size=\"10\"/>
+<br/><a href=\"f_connects.php?spylog=$(nn:escape)&amp;p=$(pass:escape)&amp;rnd=".rand(1,99)."\">- войти</a>
+<br/><a href=\"f_site_found.php?spylog=$(nn:escape)&r=".rand(1,99)."\">[найти игрока]</a>
+<br/><a href=\"$PHP_SELF?site=main3&r=".rand(1,99)."&pi=$pi\">[статистика]</a>
+
+
+
+
+<br/>***";
+    //  echo "1";
+if ($pi) {
+ 
+         }
+
+         //   echo "1";
+
+$srv=implode("",file("server.dat"));
+if($srv==1 && $pi=="001") {
+$stmp.="
+
+</p>";
+}
+msg($stmp,"Территория Зла (Cервер ".$srv.")",0,'none');

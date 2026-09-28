@@ -1,0 +1,38 @@
+<?php
+// делаем из шелковой нити i.sh
+
+$arr=array(	// id, name_x, dificalt -%, count_logs, 
+1=>array("i.a.c.shch",		"шелковые черевички",   97,  120),
+2=>array("i.a.c.shch1",		"сапоги шороха",		97,	 120),
+3=>array("i.a.h.sh",		"шелковая повязка",		97,	 150),
+4=>array("i.a.e.sh",		"шелковый плащ",		97,  150),
+);
+
+if (isset($l_i[$loc]["i.s.tkach"])) {
+$skills=explode("|",$l_i[$loc][$login]["skills"]);
+function tsret($s) {if($s>0) return $s; else return 0;}
+
+if (!$to || !isset($arr[$to])) {
+	$sher="Выберите что сделать:";
+	foreach(array_keys($arr) as $i) $sher.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&to=$i\">".$arr[$i][1]." (".$arr[$i][3]." шелковых нитей, шанс: ".tsret($skills[33]*20-$arr[$i][2])."%)</a>";
+	msg($sher);
+	}
+
+if ($skills[33]*20-$arr[$to][2]>0) {
+	$char[6]=time()+15;
+	$l_i[$loc][$login]["char"]=implode("|",$char);
+
+	additem($loc,$login,"","i.sh",$arr[$to][3],"items","items",1,0,1);	// удаляем нити
+
+	if (rand(0,100)<$skills[33]*20-$arr[$to][2]) {
+		addjournal($loc,$login,"Вы сделали ".$arr[$to][1]); 
+		addjournal($loc,"all",$char[0]." сделал ".$arr[$to][1],$login);
+		additem($loc,"",$login,$arr[$to][0]."_".substr($login,2)."_",1);
+		if (round($arr[$to][2]/10)) addexp($loc,$login,round($arr[$to][2]/10));
+		} else {
+			addjournal($loc,$login,"Вы не смогли сделать ".$arr[$to][1]); 
+			addjournal($loc,"all",$char[0]." не смог сделать ".$arr[$to][1],$login);
+			}
+
+} else addjournal($loc,$login,"Ваш навык ткача слишком низок, вам нужно вначале его повысить");
+} else addjournal($loc,$login,"Чтобы шить вещи, нужно чтобы рядом был ткатский станок");

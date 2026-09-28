@@ -1,0 +1,8 @@
+<?php 
+$npc=array( 
+'char'=>'Агерес|100|100|100|100||||||||', 
+'war'=>'80|4|11|5||2||80|6||||посохом|||x5x7:1:2', 
+'items'=>'i.a.b.skol:1|i.a.e.c:1|i.a.p.s:1|i.a.s.b:1|i.w.u.moon:1', 
+'equip'=>'i.a.b.skol|i.a.e.c|i.a.p.s|i.a.s.b|i.w.u.moon', 
+'bank'=>'90:1:4=i.w.u.palka:1|80:1:4=i.w.u.dubina:1|70:1:4=i.w.u.dubinabig:1|90:1:4=i.w.u.palica:1|80:1:2=i.w.u.kuvalda:1|70:1:2=i.w.u.molot:1|60:1:1=i.w.u.bulava:1|50:1:1=i.w.u.moon:1|50:1:2=i.w.u.pmage:1|50:1:2=i.w.u.smage:1|50:1:2=i.w.u.grom:1|50:1:2=i.w.u.shtyk:1|50:1:2=i.w.u.jmage:1', 
+);

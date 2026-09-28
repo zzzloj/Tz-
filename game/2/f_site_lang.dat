@@ -1,0 +1,15 @@
+<?php
+
+$stmp="<p>Выберите язык:
+<br/><a href=\"http://zlo.holys.com.ru/game/1/g.php?pi=$pi\">Russian</a>
+<br/>
+<br/><a href=\"$PHP_SELF?site=langinfo\">Как перевести на другой язык</a>";
+
+if ($pi) {
+	require($GLOBALS["DOCUMENT_ROOT"]."/javainc.ssp");
+	$stmp.="</p><p align=\"center\"><br/><small><a href=\"$homeurl\">$home </a><br/></small>\n";
+	}
+
+$stmp.="<br/><anchor>Назад<prev/></anchor>";
+
+msg($stmp,"Территория Зла",0,'none');

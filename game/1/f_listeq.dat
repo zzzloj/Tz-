@@ -1,0 +1,39 @@
+<?php
+//Список одетых вещей
+	$equip=explode("|",$l_i[$loc][$login]["equip"]);
+	
+	if ($l_i[$loc][$login]["equip"]=="") $stmp.="<br/>У вас нет ни одного одетого предмета<br/>-<br/><a href=\"$PHP_SELF?sid=$sid\">В игру</a>"; else {
+	
+	$stmp="<p>";
+	
+	$equip=explode("|",$l_i[$loc][$login]["equip"]);
+	
+	if (!$start) $start=0;
+	$keys=array_keys($equip);
+
+	for ($i=$start;$i<$start+$g_list && $i<count($keys);$i++) if ($equip[$keys[$i]]) {
+		$k=explode(":",$equip[$keys[$i]]);
+		if (strpos($k[0],"_")!==false) $tk=substr($k[0],0,strpos($k[0],"_")); else
+		if (strpos($k[0],"-")!==false) $tk=substr($k[0],0,strpos($k[0],"-")); else $tk=$k[0];
+		if (substr($k[0],0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$tk)) $item=explode("|",implode("",file("items/".$tk))); else die("err: no items/".$k[0]);
+		$item=$item[0];
+		if (strpos($k[0],"..")!==false) $item.=" *";
+		if ($k[1]>1) $item.=" (".$k[1].")";
+		if ($to) {
+			$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&to=$to&use=".$k[0]."\">".$item."</a>";
+			} else {	// основное меню
+				$stmp.="\n<br/><anchor>".$item."<go href=\"#menu\"><setvar name=\"to\" value=\"".$k[0]."\"/></go></anchor>";
+				}
+		}
+	if ($start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&list=eq\">^ </a>";}
+	if ($start+$g_list<count($keys)) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&list=eq&start=".($start+$g_list)."\">+ (".(count($keys)-$start-$g_list).")</a>";}
+	$stmp.="<br/>-<br/><a href=\"$PHP_SELF?sid=$sid\">В игру</a>";
+
+	// меню
+	$stmp.="\n</p>\n</card>\n<card id=\"menu\" title=\"Меню\">\n<p>\n<a href=\"$PHP_SELF?sid=$sid&use=$(to)\">Снять</a>\n<br/><a href=\"$PHP_SELF?sid=$sid&drop=$(to)\">Бросить</a>";
+	if (isset($loc_i[$loc][$loc_i[$loc][$login]["trade"]["to"]])) $stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&trade=add&id=$(to)\">Добавить в обмен</a>";
+	$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&from=$login&look=$(to)\">Инфо</a>";
+
+	}// items!=""
+	
+	msg($stmp,"[".date("H:i",time())."] Одето ",1,'eq');

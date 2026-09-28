@@ -1,0 +1,8 @@
+<?php 
+$npc=array( 
+'char'=>'слуга сэта|90|90|1|1||||||||', 
+'war'=>'95|6|28|4|||45||||||копьём|16||', 
+'items'=>'i.w.r.spear:1', 
+'equip'=>'i.w.r.spear', 
+'itemsrnd'=>'i.oj.z:80:0:1|i.ring.b:50:0:1|i.ring.m:90:0:1|i.f.b.health:40:1:2',
+);

@@ -1,0 +1,24 @@
+<?php 
+
+///вызов демона стихий
+
+if($to=="i.s.alt"){
+$ran=array(x1141x50,x1199x47,x1182x57,x1225x55,x1071x46,x1034x54);
+$randd=rand(0,5);
+$randl=$ran[$randd];
+if (file_exists('quest/quest.demon')) { msg("Демон уже разбужен,найдите и убейте его.");} 
+else{ 
+additem($loc,$login,"",$use,1,"items","items",1,0,1);
+addjournal($loc,$login,"Вы разбудили Демона!"); 
+include "npc/n.c.demogn";
+loadloc($randl);
+$l_i[$randl]["n.c.demogn"]=$npc;
+addnpc("n.c.demogn","",$loc);
+$demon=".";
+$fp=fopen("quest/quest.demon","w+");
+fputs($fp,"$demon"); 
+fclose($fp);
+chmod ("quest/quest.demon", 0777);
+}
+}else msg("Чтобы разбить пузырек используйте его на черный алтарь!");
+

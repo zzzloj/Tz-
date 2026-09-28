@@ -1,0 +1,27 @@
+<?php
+
+// дадим 150 монет и установим флаг
+		require_once("datafunc.php");
+
+		$tuser[9]=1;
+		$l_i[$loc][$login]["user"]=implode("|",$tuser);
+		addjournal($loc,$login,"Спасибо, что вы выбрали эт игру! Если вы тут впервые поговорите с Уином он вам всё объяснит и ответит на вопросы, также прочтите помощь на входе! Добро пожаловать в этот увлекательный мир ;)");
+
+		$auser = $l_i[$loc][$login];
+		$auser["journal"] = "";
+		$auser["loc"] = $loc;
+		$auser["time"]=time();
+		unset($auser["msgt"]);
+		unset($auser["macrol"]);
+		unset($auser["trade"]);
+		$tp=explode("|",$auser["user"]);
+		if ($auser["user"] && $auser["char"] && $auser["skills"] && $auser["war"]) $res=SetData(substr($login,2),$p,serialize($auser)); else $res="Неверный формат.";
+		if ($res) {unset($l_i[$loc][$login]); $login=""; msg("Ошибка при сохранении персонажа: ".$res,"Ошибка",0,"none");}
+
+		// общее число оплаченных
+		$fntmp="../payed.dat";
+		if (file_exists($fntmp)) {
+			$all=0;
+			$all=@implode("",@file($fntmp));
+			if ($all) {$all++;$file=fopen($fntmp,"w");if($file!==false){fputs($file,$all);fclose($file);}}
+ 			} else {$file=fopen($fntmp,"w");if($file!==false){fputs($file,"1");fclose($file);}}

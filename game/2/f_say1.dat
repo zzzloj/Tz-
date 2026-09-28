@@ -1,0 +1,37 @@
+<?php
+// сказать текст всем
+	if (strpos($say1,"/g.php?sid=")!==false) $say1=substr($say1,0,strpos($say1,"/g.php?sid="));
+	if ($translit) {
+		include "f_translit.dat";
+		$say1=trans($say1);
+		}
+	$s=$say1;
+	// UTF-8 русские буквы
+	$s=str_replace("\xd0\x81","Ё",$s);
+	$s=str_replace("\xd1\x91","ё",$s);
+	$s=preg_replace("/\xd0([\x90-\xbf])/e","chr(ord('\\1')+48)",$s);
+	$s=preg_replace("/\xd1([\x80-\x8f])/e","chr(ord('\\1')+112)",$s);
+
+	$s=str_replace('\\',"",$s);
+	$s=str_replace('"',"",$s);
+	$s=str_replace("'","",$s);
+	$s=preg_replace('/([^ -}А-я#])|\$|&/e',"",$s);
+	$s=preg_replace('/(с|c)(у|y)(ч)?(к|k)(а|a)/i',"[бип]",$s);
+	$s=preg_replace('/пидор/i',"[бип]",$s);
+	$s=preg_replace('/пид(о|o|a|а)(р|p)(а|a)(з|c|с)/i',"[бип]",$s);
+	$s=preg_replace('/\w*(х|x)(у|y)\w*/i',"[бип]",$s);
+	$s=preg_replace('/\w*пизд\w*/i',"[бип]",$s);
+	$s=preg_replace('/\w*(е|e)б(а|a)\w*/i',"[бип]",$s);
+	$s=preg_replace('/\w*бля\w*/i',"[бип]",$s);
+	$s=str_replace("|","",$s);
+	$s=str_replace("<","",$s);
+	$s=str_replace(">","",$s);
+	$say=substr($s,0,250);
+	//if (crc32($say1)==$l_i[$loc][$login]["lsay1"]) {addjournal($loc,$login,"Вы это уже говорили! Измените текст"); return;}
+	//$l_i[$loc][$login]["lsay1"]=crc32($say1);
+	$l_i[$loc][$login]["macrol"]="say1|$say1||";
+	// добавим всем, включая себя, в журнал что сказали
+	$b=0;
+addjournal($loc,$login,"<b> Вы шепчете : </b>".$say1");
+addjournal($loc,$user,"<b> ".$char[0]."  шепчет вам: </b>".$say1");
+		

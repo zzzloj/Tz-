@@ -1,0 +1,51 @@
+<?php
+// проверка всех онлайн и удаление в оффлайн
+require_once("datafunc.php");
+
+	$count=0;
+	$dh = opendir("online/"); 
+	while (($fname = readdir($dh))!== false) if ($fname!="." && $fname!=".." && $fname!="1.htaccess" && $fname!=".htaccess") {
+		$count++;
+		$tmp = file("online/".$fname);
+		if ($tmp[0]==".") {if (filemtime("online/".$fname)<time()-60) @unlink("online/".$fname); continue;}
+		$tmp[0]=trim($tmp[0]);
+		$tmp[1]=trim($tmp[1]);
+		if (time()>$tmp[1]+$g_logout || $f_all==1 || $f_all==$tmp[0]) {
+			loadloc($tmp[0]);
+			$res="";
+			if (isset($l_i[$tmp[0]][$fname])) {
+				if ($game["floc"]==$tmp[0] && $game["fid"]==$fname) {if($tmp[0]=="x1087x543" || $tmp[0]=="x1080x539" || $tmp[0]=="x1080x532" || $tmp[0]=="x1087x528") $loc1="x1095x532"; else $loc1=$tmp[0]; $l_i[$loc1]["i.flag"]="флаг лидерства|1|0"; $game["floc"]=$loc1; $game["fid"]=""; calcparam($tmp[0],$fname);}
+				if ($game["floc"]==$tmp[0] && $game["fid"]==$fname) {if ($tmp[0]=="z.x1087x543z1" || $tmp[0]=="z.x1080x539z1" || $tmp[0]=="z.x1087x528z1" || $tmp[0]=="z.x1080x532z1" || $tmp[0]=="z.1.sklad" || $tmp[0]=="z.1.hran")$loc1="c.1.in"; else $loc1=$tmp[0]; $l_i[$loc1]["i.flag"]="флаг лидерства|1|0"; $game["floc"]=$loc1; $game["fid"]=""; calcparam($tmp[0],$fname);}		
+				if ($game["floc"]==$tmp[0] && $game["fid"]==$fname) {if ($tmp[0]=="z.x1087x543z2" || $tmp[0]=="z.x1080x539z2" || $tmp[0]=="z.x1087x528z2" || $tmp[0]=="z.x1080x532z2" || $tmp[0]=="z.2.sklad" || $tmp[0]=="z.2.hran")$loc1="c.2.in"; else $loc1=$tmp[0]; $l_i[$loc1]["i.flag"]="флаг лидерства|1|0"; $game["floc"]=$loc1; $game["fid"]=""; calcparam($tmp[0],$fname);}
+				if ($game["floc"]==$tmp[0] && $game["fid"]==$fname) {if ($tmp[0]=="z.x1087x543z3" || $tmp[0]=="z.x1080x539z3" || $tmp[0]=="z.x1087x528z3" || $tmp[0]=="z.x1080x532z3" || $tmp[0]=="z.3.sklad" || $tmp[0]=="z.3.hran")$loc1="c.3.in"; else $loc1=$tmp[0]; $l_i[$loc1]["i.flag"]="флаг лидерства|1|0"; $game["floc"]=$loc1; $game["fid"]=""; calcparam($tmp[0],$fname);}
+				if ($game["floc"]==$tmp[0] && $game["fid"]==$fname) {if ($tmp[0]=="z.x1087x543z4" || $tmp[0]=="z.x1080x539z4" || $tmp[0]=="z.x1087x528z4" || $tmp[0]=="z.x1080x532z4" || $tmp[0]=="z.4.sklad" || $tmp[0]=="z.4.hran")$loc1="c.4.in"; else $loc1=$tmp[0]; $l_i[$loc1]["i.flag"]="флаг лидерства|1|0"; $game["floc"]=$loc1; $game["fid"]=""; calcparam($tmp[0],$fname);}
+				if ($game["floc"]==$tmp[0] && $game["fid"]==$fname) {if ($tmp[0]=="z.x1087x543z5" || $tmp[0]=="z.x1080x539z5" || $tmp[0]=="z.x1087x528z5" || $tmp[0]=="z.x1080x532z5" || $tmp[0]=="z.5.sklad" || $tmp[0]=="z.5.hran")$loc1="c.5.in"; else $loc1=$tmp[0]; $l_i[$loc1]["i.flag"]="флаг лидерства|1|0"; $game["floc"]=$loc1; $game["fid"]=""; calcparam($tmp[0],$fname);}
+
+
+
+
+		$auser = $l_i[$tmp[0]][$fname];
+				$auser["journal"] = "";
+				$auser["loc"] = $tmp[0];
+				$auser["time"]=time();
+				unset($auser["macrol"]);
+				unset($auser["trade"]);
+				unset($auser["inf"]);
+				unset($auser["lsay1"]);
+				$tp=explode("|",$auser["user"]);
+				if ($auser["user"] && $auser["char"] && $auser["skills"] && $auser["war"]) {
+					$res=SetData(substr($fname,2),$tp[0],serialize($auser));
+					if (!$res) addnpc($fname,$tmp[0],"");
+					} 
+				if (!$res || $f_all==1 || $f_all==$tmp[0]) unset($l_i[$tmp[0]][$fname]);
+				}
+			if (!$res || $f_all==1 || $f_all==$tmp[0]) {@unlink("online/".$fname);$count--;}
+			}
+		}
+	closedir($dh);
+
+	if ($count>$g_max) $count=$g_max;
+	$file = fopen ("count.dat", "w");
+	if ($file!==false) {fputs($file,$count." &#x438;&#x437; ".$g_max);fclose($file);}
+
+	$game["lastai"]=time();

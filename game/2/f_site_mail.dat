@@ -1,0 +1,12 @@
+<?php
+if(!$nn) msg("Вход только для зарегистрированных игроков (введите на предыдущем экране ваше имя и пароль).<br/><anchor>Назад<prev/></anchor>");
+require_once("datafunc.php");
+$res=GetData($nn,$pass,$data);
+if ($res=="Логин не найден" || $res=="Данные не найдены") msg("Чтобы попасть в свою почту, сначала зарегистрируйтесь в игре (введите свое имя и пароль и выберите ссылку Регистрация)<br/><anchor>Назад<prev/></anchor>");
+$stmp="<p align=\"center\">Чтобы написать письмо другому игроку, просто введите его имя, например, Ivan. А чтобы отправить письмо на любой Email, вводите его полностью, например, ivan@mail.ru. Чтобы ввести длинное письмо, нажимайте не Отправить, а Начать письмо и потом Продолжить.
+<br/>***<br/><a href=\"http://mag.su/magmail/dispMess.php?p=&login=$nn&pass=$pass\">Войти в почту</a>";
+if ($pi) {
+	require($GLOBALS["DOCUMENT_ROOT"]."/javainc.ssp");
+	$stmp.="<br/><br/><small><a href=\"$homeurl\">$home </a> 2004<br/></small>\n";
+	}
+msg($stmp);

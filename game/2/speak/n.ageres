@@ -1,0 +1,10 @@
+<?php
+$dialog=array(
+'begin'=>'Добро пожаловать, в магазин посохов <imja>. #Покажи свои товары#buy#Я хочу продать оружие#sell#eval: if(additem($loc,$login,"","i.q.vkd","count")>0) $title_v="Я нашел ветку красного дерева. На знаешь, что можно с нее изготовить? "; else $title_v="";#qv#eval: if(additem($loc,$login,"","i.w.u.vkd_ageres_..ag..dy..kp","count")>0) $title_v="Я вставил камни как ты просил."; else $title_v="";#qv2#Мне пора#end',
+'buy'=>'1.2|1200',
+'sell'=>'0.6|i.w.',
+'trennow'=>'skill|coldweapon|180|0|4',
+'qv'=>'eval: if(additem($loc,$login,"","i.q.vkd","count")>0) {additem($loc,$login,"","i.q.vkd",1); additem($loc,"",$login,"i.w.u.vkd_ageres_",1); $title_v="[Берет ветку и ложит на верстак. Стамеской делает несколько глубоких лунок]. Если хочешь получить хороший посох, то вставь в эту палку камни с такой очередностью: агат, дымчатый кварц и криптонит.";} else $title_v="";#Хорошо, я все сделаю как ты сказал.#end',
+'qv2'=>'eval: if(additem($loc,$login,"","i.w.u.vkd_ageres_..ag..dy..kp","count")>0) {additem($loc,$login,"","i.w.u.vkd_ageres_..ag..dy..kp",1); additem($loc,"",$login,"i.w.u.pp",1); $title_v="Вот, держи. Лучше этого посоха в мире не найти.";} else $title_v="";#Спасибо тебе!#end',
+'end'=>'Пока!'
+);

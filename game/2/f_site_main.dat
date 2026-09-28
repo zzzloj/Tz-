@@ -1,0 +1,33 @@
+<?php
+$srvmain=implode("",file("srvmain.dat"));
+$stmp="<p align=\"center\"><a href=\"../f_story.php?id=news&amp;pi=$pi\">Новости ";
+$t=filemtime("../story/news.htm");
+if ($t) $stmp.=date("d/m",$t);
+if(!$pi) $pi="001";        // mag.su по умолчанию
+$stmp.="</a></p><p>
+<br/>Ваше имя:
+<br/><input name=\"nn\" emptyok=\"true\" type=\"text\" maxlength=\"10\" size=\"10\"/>
+<br/>Пароль:
+<br/><input name=\"pass\" emptyok=\"true\" type=\"password\" value=\"\" maxlength=\"10\" size=\"10\"/>
+<br/><a href=\"f_connect.php?login=$(nn:escape)&amp;p=$(pass:escape)&amp;rnd=".rand(1,99)."\">- войти</a>
+<br/><a href=\"".$srvmain."gamereg.php?log=new&amp;nn=$(nn:escape)&amp;pass=$(pass:escape)&amp;pi=$pi\">- регистрация</a>
+<br/><a href=\"".$srvmain."forum/index.php?login=$(nn:escape)&amp;pass=$(pass:escape)&amp;rnd=".rand(1,99)."\">- форум</a>
+<br/><a href=\"".$srvmain."foto.php?\">[установить фото]</a>
+<br/><a href=\"".$srvmain."gall.php?\">[ФОТО-галлерея]</a>
+<br/><a href=\"$PHP_SELF?site=main2&nn=$(nn:escape)&amp;pass=$(pass:escape)&pi=$pi\">[сменить пароль]</a>
+<br/><a href=\"f_site_found.php?login=$(nn:escape)&r=".rand(1,99)."\">[найти игрока]</a>
+<br/><a href=\"$PHP_SELF?site=main3&r=".rand(1,99)."&pi=$pi\">[статистика]</a>
+
+
+<br/><a href=\"../f_faq.php?id=0\">[помощь]</a>
+<br/><a href=\"http://chat.bigwap.org\">[НаШ ЧаТ]</a>
+<br/><a href=\"http://worldwap.info\">[Главная]</a>";
+
+
+$srv=implode("",file("server.dat"));
+if($srv==1 && $pi=="001") {
+$stmp.="
+
+</p>";
+}
+msg($stmp,"Территория Зла (Cервер ".$srv.")",0,'none');

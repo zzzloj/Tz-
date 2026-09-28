@@ -1,0 +1,8 @@
+<?php
+$srv=implode("",file("server.dat"));
+if ($sid) $sid.="&p=".$p."&srv=".$srv;
+if ($admin==$gm_id) $sid.="&amp;admin=".$admin;
+$stmp="<p align=\"center\">Выберите раздел форума:<br/>---<br/><a href=\"../forum.php?sid=$sid&f=forum.dat&ft=Forum.Talk\">Для общения</a><br/><a href=\"../forum.php?sid=$sid&f=forumh.dat&ft=Forum.Help\">Требуется помощь</a><br/><a href=\"../forum.php?sid=$sid&f=forume.dat&ft=Forum.Errors\">Об ошибках</a><br/><a href=\"../forum.php?sid=$sid&f=forump.dat&ft=Forum.More\">Предложения</a><br/>";
+if ($sid) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&p=$p\">[в игру]</a>";
+$stmp.="<br/><a href=\"$PHP_SELF?site=main\">[на главную]</a>";
+msg($stmp,"Форумы",0,'none');

@@ -1,0 +1,17 @@
+<?php
+$srvmain=implode("",file("srvmain.dat"));
+$stmp="<p align=\"center\">
+<a href=\"$PHP_SELF?site=online&r=".rand(1,99)."\">Кто онлайн?</a>
+<br/><a href=\"$PHP_SELF?site=flag&r=".rand(1,99)."\">Флаг лидерства</a>
+<br/><a href=\"./f_site_list.php?r=".rand(1,99)."&pi=$pi\">Список серверов</a>
+<br/><a href=\"$PHP_SELF?site=clans&r=".rand(1,99)."\">Список кланов</a>
+<br/><a href=\"$PHP_SELF?site=castle&=".rand(1,99)."\">Захват замков</a>
+</p><p><anchor>Назад<prev/></anchor>
+";
+
+if ($pi) {
+	require($GLOBALS["DOCUMENT_ROOT"]."/javainc.ssp");
+	$stmp.="</p><p align=\"center\"><br/><small><a href=\"$homeurl\">$home </a> 2004<br/></small>\n";
+	}
+$srv=implode("",file("server.dat"));
+msg($stmp,"Статистика (Cервер ".$srv.")",0,'none');

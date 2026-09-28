@@ -1,0 +1,7 @@
+<?php
+$dialog=array(
+'begin'=>'Привет <b><imja></b>#Квест#qv',
+'qv'=>'eval: $l_i[$loc][$login]["kvest"]="n.c.orc|i.q.ambroken|10|15"; $title_v="Убевая орков найди 10 сломаных палок"; ',
+'end'=>'Счастливо'
+);
+//$l_i[$loc][$login]["kvest"]="ид моба|что нужно найти|количество|шанс";

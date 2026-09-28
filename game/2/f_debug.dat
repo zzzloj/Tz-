@@ -1,0 +1,17 @@
+<?php
+echo "<a name=up><title_v>".$title_v."</title_v>";
+echo "<a onclick=javascript:void(document.all.loc.style.display=document.all.loc.style.display=='none'?'':'none') href=#edit>[локация]</a> <a onclick=javascript:void(document.all.arr.style.display=document.all.arr.style.display=='none'?'':'none') href=#arrview>[массивы]</a>";
+//echo "<code id=arr style='display:none'><p><a name=arrview>".$l_i[$loc][$login]["items"]."<br><pre>"; 
+//print_r($l_i); 
+//print_r($game); 
+//print_r($l_t);
+echo "<p id=loc style='display:none'><a name=edit><form name=fmeval action=$PHP_SELF><input type=hidden name=sid value=$sid><input type=hidden name=adm value=locsave><input type=hidden name=look value=1>
+Описание:
+<textarea rows=8 cols=80 name=desc>";
+if (file_exists("l_f/".$loc)) $desc=implode("",file("l_f/".$loc)); else $desc="";
+echo $desc."</textarea>
+Выходы:
+<textarea rows=13 cols=80 name=exits>".str_replace("|","\n",$l_tt[$loc]["d"])."</textarea>
+<input type=submit value=Сохранить>
+</form>
+<a href=#up onclick=javascript:void(document.all.loc.style.display=document.all.loc.style.display=='none'?'':'none')>[назад]</a></code>";

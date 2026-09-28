@@ -1,0 +1,144 @@
+<?php
+
+header ("Content-type:text/vnd.wap.wml; charset=utf-8");
+
+$mes_id= (int) $mes_id;
+$blog_text=htmlspecialchars($blog_text, ENT_QUOTES); 
+$tc=explode("|",$l_i[$loc][$login]["char"]); 
+     if (strpos($tc[0],"*")===false) $clan=""; else $clan=substr($tc[0],strpos($tc[0],"*")+1,strrpos($tc[0],"*")-strpos($tc[0],"*")-1);
+$stmp="<b>Клан: ";
+if(!$clan) {$stmp.='Вы не в клане ;)';} else{
+$stmp.="<u>".$clan."</u></b><br/>";
+$link = mysql_connect('localhost', 'ya_admin', 'sow89') or die("Не могу соединиться");
+mysql_select_db('amulet', $link);
+
+include "./func_pages.php";
+include "./func_val_text.php";
+
+		 switch ($mode) 
+{  
+  case "read":
+
+$onpage=7;
+$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
+$base_url="'.$PHP_SELF.'?sid='.$sid.'&mode=read&amp;start=";
+$num_items=mysql_num_rows(mysql_query("select id from blogs where userid='".$clan."';",$link));
+
+$rq=mysql_query("select text,time,id from blogs where userid='".$clan."' order by time desc limit $start,$onpage;",$link);
+
+	while(list($text,$time,$messid)=mysql_fetch_array($rq))
+	{
+$count=@mysql_query("select count(*) from blogs_com where messid='".$messid."';",$link);
+$dcount = @mysql_fetch_array($count);
+		$stmp.='<small><b>('.date("d.m.Y-H:i",$time).')</b><br/>'.$text.'<br/><b>[<a href="'.$PHP_SELF.'?sid='.$sid.'&blogid='.$messid.'">обсуждение</a>-'.$dcount['count(*)'].']</b><br/>';
+		$stmp.="</small>";
+	}
+$stmp.= pages($base_url, $num_items, $onpage, $start);
+    break;
+
+
+  default:
+ $blog_text=htmlspecialchars(stripslashes(trim($blog_text)));
+		$tmp=unserialize(implode("",file("../clans/".$clan))); 
+	if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {
+$s=$blog_text;
+	// UTF-8 русские буквы
+	$s=str_replace("\xd0\x81","Ё",$s);
+	$s=str_replace("\xd1\x91","ё",$s);
+	$s=preg_replace("/\xd0([\x90-\xbf])/e","chr(ord('\\1')+48)",$s);
+	$s=preg_replace("/\xd1([\x80-\x8f])/e","chr(ord('\\1')+112)",$s);
+
+	$s=str_replace('\\',"",$s);
+	$s=str_replace('"',"",$s);
+	$s=str_replace("'","",$s);
+	$s=preg_replace('/([^ -}А-я#])|\$|&/e',"",$s);
+	$s=preg_replace('/(с|c)(у|y)(ч)?(к|k)(а|a)/i',"[бип]",$s);
+	$s=preg_replace('/пидор/i',"[бип]",$s);
+	$s=preg_replace('/пид(о|o|a|а)(р|p)(а|a)(з|c|с)/i',"[бип]",$s);
+	$s=preg_replace('/\w*(х|x)(у|y)\w*/i',"[бип]",$s);
+	$s=preg_replace('/\w*пизд\w*/i',"[бип]",$s);
+	$s=preg_replace('/\w*(е|e)б(а|a)\w*/i',"[бип]",$s);
+	$s=preg_replace('/\w*бля\w*/i',"[бип]",$s);
+	$s=str_replace("|","",$s);
+	$s=str_replace("<","",$s);
+	$s=str_replace(">","",$s);
+$blog_text=substr($s,0,350);
+list($prevblog_text)=mysql_fetch_array(mysql_query("select text from blogs where userid='".$clan."';",$link));
+if(!empty($blog_text) && $blog_text!=$prevblog_text  && mysql_num_rows(mysql_query("select id from blogs where userid='".$clan."' and text='$blog_text' and time>".(time()-300).";"))<1)
+{
+$time1=time();
+$count=@mysql_query("select count(*) from blogs where userid='".$clan."';",$link);
+$dcount = @mysql_fetch_array($count);
+if($dcount['count(*)']>30){
+$stmp.="Вы привысили максимальное число записей! Максимальное число записей должно быть не больше <b>30</b>!<br/>";
+} else {
+session_start();
+	if($chis==$_SESSION['press_kod']){
+
+$query = "INSERT INTO blogs (userid,time,text) VALUES ('".$clan."','$time1','$blog_text')";
+mysql_query($query, $link);
+$stmp.= '<u>Запись добавлена!</u><br/>';
+unset($blog_text);
+} else {
+
+$stmp.='<u>Проверочное число не совпало!!!</u><br/>';}
+$press_kod='';
+$press_kod=rand(10000,99999); 
+session_register("press_kod");
+session_unset();
+session_destroy();
+}
+}
+if($del)
+{
+$query1 ="delete from blogs where id='$mes_id'";
+mysql_query($query1, $link);
+$query2 ="delete from blogs_com where messid='$mes_id'";
+mysql_query($query2, $link);
+$stmp.= '<u>Запись удалена!</u><br/>';
+}
+
+$rand=rand(1,9999);
+if(empty($_SESSION[press_kod])){
+$press_kod=rand(1000,9999);
+session_start();
+session_register("press_kod");}
+$stmp.= 'Тема:<br/>';
+$stmp.= '<input name="blog_text'.$rand.'" maxlength="350"/><br/>';
+$stmp.="Проверочный код: <b><u>".$press_kod."</u></b>
+<br/>Введите проверочный код:
+<br/><input  format=\"*N\" maxlength=\"9\" name=\"chis\"/><br/>";
+$stmp.= '<small><anchor>[добавить]<go href="'.$PHP_SELF.'?sid='.$sid.'&dn=1&chis=$(chis)" method="post">'.
+'<postfield name="blog_text" value="$(blog_text'.$rand.')"/></go></anchor><br/>';
+$onpage=7;
+$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
+$base_url2="'.$PHP_SELF.'?sid='.$sid.'&dn=1&start=";
+$num_items=mysql_num_rows(mysql_query("select id from blogs where userid='".$clan."';",$link));
+
+$rq=mysql_query("select text,time,id from blogs where userid='".$clan."' order by time desc limit $start,$onpage;",$link);
+	
+	
+	while(list($text,$time,$mesid)=mysql_fetch_array($rq))
+	{
+
+		$stmp.= ' <br/><b>('.date("d.m.Y-H:i",$time).')</b>-<a href="'.$PHP_SELF.'?sid='.$sid.'&amp;dn=1&amp;del=true&amp;mes_id='.$mesid.'">[удалить]</a><br/>'.$text.'<br/>';
+		
+	}
+$stmp.= pages2($base_url2, $num_items, $onpage, $start);
+$stmp.="</small>";
+    break;
+}
+else {
+$stmp.= 'Вы неможите создовать темы! Создавать темы могут только сеньоры и сенешали клана!'; } 
+}
+
+$stmp.= '<br/>---<br/><a href="'.$PHP_SELF.'?sid='.$sid.'">[В игру]</a>';
+
+msg($stmp,"Дневник клана ".$clan."",0,'none');
+
+
+mysql_close();	
+
+}
+
+

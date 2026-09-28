@@ -1,0 +1,12 @@
+<?php
+if(!$nn) msg("Вход только для зарегистрированных игроков (введите на предыдущем экране ваше имя и пароль).<br/><anchor>Назад<prev/></anchor>");
+require_once("datafunc.php");
+$res=GetData($nn,$pass,$data);
+if ($res=="Логин не найден" || $res=="Данные не найдены") msg("Чтобы попасть на форум, сначала зарегистрируйтесь в игре (введите свое имя и пароль и выберите ссылку Регистрация)<br/><anchor>Назад<prev/></anchor>");
+$stmp="<p align=\"center\">В форуме запрещен мат и оскорбления участников, старайтесь соблюдать темы рубрик
+<br/>***<br/><a href=\"http://mag.su/magforum/subforums.php?login=$nn&pass=$pass&lev1=19\">Войти в форум</a>";
+if ($pi) {
+	require($GLOBALS["DOCUMENT_ROOT"]."/javainc.ssp");
+	$stmp.="<br/><br/><small><a href=\"$homeurl\">$home </a> 2004<br/></small>\n";
+	}
+msg($stmp);

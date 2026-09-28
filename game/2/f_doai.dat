@@ -1,0 +1,77 @@
+<?php
+        global $game,$loc,$l_i,$l_t,$l_tt,$g_list,$start,$g_destroy,$g_crim,$g_logout,$login;
+        $g_regen=30;
+
+        $locai=explode("|",$l_tt[$i]["d"]);
+
+         // таймеры
+        if (isset($l_t[$i])) {
+                foreach ($l_t[$i] as $j=>$val) if (time()>$j) {
+                        if (gettype($l_t[$i][$j])=="array" || substr($l_t[$i][$j],0,2)=="n.") {require "f_timernpc.dat"; continue;}
+                        if (substr($l_t[$i][$j],0,2)=="i.") {require "f_timeritem.dat"; continue;}
+                        $loct=$i;$curr=$j;
+                        eval($l_t[$i][$j]);
+                        }
+                }
+        $crim=array();
+        $users=array();
+        $ti=explode("x",$i);
+        if ($l_i[$i]) {
+                foreach ($l_i[$i] as $j=>$val) if ($j!="u.qv" && $j!="u.ogir" && $j!="u.qw" && $j!="u.kv" && $j!="u.scream") {
+                        if (substr($j,0,2)=='u.') {
+                                $uc=explode("|",$l_i[$i][$j]["char"]);
+                                if (!$uc[8]) {$us=explode("|",$l_i[$i][$j]["skills"]); if (rand(0,100)>$us[17]*6) $users[]=$j; if ($locai[1]!=3 && $uc[9] || $ti[2]>=1099 && ($locai[1]==2 && $uc[14]=="p" || $locai[1]==3 && $uc[14]=="t")) $crim[]=$j;}
+                                }
+                        if (substr($j,0,4)=='n.c.') $crim[]=$j;
+                        if (substr($j,0,4)=="n.g.") $guard=1;
+                        }
+                }
+        if ($locai[1]==1 && count($crim)>0 && !$guard) require "f_addguard.dat";
+
+        // по всем объектам
+        if ($l_i[$i]) foreach ($l_i[$i] as $j=>$val) if (isset($l_i[$i][$j])) {
+                if (substr($j,0,2)=='i.') {
+                        if ($j=="i.flag" && $game["floc"]!=$i) {unset($l_i[$i][$j]); continue;}
+                        if (substr($i,0,2)=="c." && substr($j,0,4)!="i.s.") continue;
+                        $tmp=explode("|",$l_i[$i][$j]);
+                        if ($tmp[2] && time()>$tmp[2]) unset($l_i[$i][$j]);
+                        continue;
+                        }
+                if (substr($j,0,2)=='u.' || substr($j,0,2)=='n.') {
+                        $char=explode("|",$l_i[$i][$j]["char"]);
+                        $tm=time()-$char[5];
+                        if ($tm>$g_regen && (time()<$char[17] || $char[1]!=$char[2] || $char[3]!=$char[4]) && (substr($j,0,2)=='n.' || (substr($j,0,2)=='u.' && !$char[8]))) {
+                                if (substr($j,0,2)=='u.') $skills=explode("|",$l_i[$i][$j]["skills"]); else {$skills[5]=0; $skills[16]=0;}
+//яды и регенерация
+if (time()>$char[17]) { $char[1]=min($char[1]+=round($tm/($g_regen-$skills[16]*4)),$char[2]);
+ } else { $char[1]=max($char[1]-=round($tm/($g_regen-5*4)),1); }
+                        $char[3]=min($char[3]+=round($tm/($g_regen-$skills[5]*4)),$char[4]);
+                                $char[5]=time();
+                                }
+                if (substr($j,0,2)=='u.') {
+                        if ($char[9] && time()>$char[10]) {$char[9]=0;$char[10]="";}
+                        if ($j==$login) $char[11]=time();
+                        if ($char[11] && time()>$char[11]+$g_logout*5 && !file_exists("online/".$j)) {unset($l_i[$i][$j]); continue;}
+                        }
+                if (substr($j,0,2)=='n.') {
+                        if ($loc==$i && time()>$char[6] && $char[1]<$char[2]/4 && rand(0,100)<50 && substr($j,0,4)!='n.s.' && substr($j,0,4)!='n.o.' && substr($j,0,4)!='n.z.') {require "f_run.dat"; if($b) continue;}
+                        if ($char[7] && isset($l_i[$i][$char[7]]) && substr($char[7],0,2)=="u.") {$tc=explode("|",$l_i[$i][$char[7]]["char"]); if ($tc[8]) $char[7]="";}
+                        if ($j=="n.a.b.jarpt.1") {$b=0; foreach ($l_i[$i] as $k=>$v) if(substr($k,0,2)=="u.") {addnpc($j,$i,$locai[2+2*rand(0,(count($locai)-2)/2-1)+1]); $b=1; break;} if ($b) continue;}
+                        if (substr($j,0,4)=="n.g." && time()>$char[11]) {addnpc($j,$i,""); continue;}
+                        if (isset($l_i[$i][$j]["owner"])) {require "f_owner.dat"; if ($b) continue;} else {$owner[1]="";}
+                        if ($char[7] && !$owner[1] && !isset($l_i[$i][$char[7]])) {
+                                $b=0;
+                                if (substr($j,0,4)!="n.o." && $j!="n.a.b.jarpt.1") require "f_goto.dat";
+                                if ($b) continue; else $char[7]="";
+                                }
+                        if (!$char[7]) {
+                                if (count($crim)>0 && (substr($j,0,4)=="n.g." || substr($j,0,4)=="n.t." || substr($j,0,4)=="n.p.")) $char[7]=$crim[rand(0,count($crim)-1)];
+                                if (($char[9] || substr($j,0,4)=='n.c.') && count($users)>0) $char[7]=$users[rand(0,count($users)-1)];
+                                }
+                        if (substr($j,0,4)=="n.o." && substr($i,0,2)=="c." && substr($i,3)!=".in" && (!$char[7] || !isset($l_i[$i][$char[7]]))) require "f_no.dat";
+                        if (!$char[7] && !$owner[1] && ($char[10] || (!$char[10] && $char[12])) && substr($j,0,4)!="n.o.") {require "f_na.dat"; if($b) continue;}
+                        }
+                $l_i[$i][$j]["char"]=implode("|",$char);
+                if ($char[7] && substr($j,0,2)!="u.") attack($i,$j,$char[7]);
+                } else {unset($l_i[$i][$j]); continue;}
+                }

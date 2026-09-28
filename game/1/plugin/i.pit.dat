@@ -1,0 +1,25 @@
+<?
+	if ($to) {
+	if (!isset($l_i[$loc][$to])) msg("Нет цели");
+$a = array(
+'<from> поджог брюки <to>',
+'<from> поджег питарду, но стормазил и нона взорвалась у него в руках',
+'питарда <from> банально просрала',
+'не везучий <to> сел на заженную питарду и прожег штаны.',
+'питарда <from> взорвалась у уха  <to>',
+
+
+
+
+
+
+
+);
+$r = rand(0,count($a)-1);
+$tchar=explode("|",$l_i[$loc][$to]["char"]);
+$a[$r]=str_replace("<from>",$char[0],$a[$r]);
+$a[$r]=str_replace("<to>",$tchar[0],$a[$r]);
+addjournal($loc,$login,$a[$r]); 
+addjournal($loc,"all",$a[$r],$login);
+additem($loc,$login,"","i.b.pit",1,"items","items",1,0,1);
+}else $list='all';

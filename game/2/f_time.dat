@@ -1,0 +1,5 @@
+<?php
+$chas=date("H")*11; $minuta=date("i")*11; $sek=date("s")*11;
+$time=date("H.i", mktime($chas,$minuta,$sek));
+#	require "f_time.dat";
+#	if ($time >= 10.00 and $time < 12.00)

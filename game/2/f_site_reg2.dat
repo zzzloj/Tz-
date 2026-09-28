@@ -1,0 +1,54 @@
+<?php
+	if (!$login || !$p || !$sex || !$age) msg("Заполните все поля.<br/><anchor>Назад<prev/></anchor>","Ошибка",0,'none');
+	$sex=strip_tags($sex);
+	$age=intval(strip_tags($age));
+	if (intval($age)!=$age || $age<5 || $age>99) msg("Неправдоподобный возраст, укажите более реальный.<br/><anchor>Назад<prev/></anchor>","Ошибка",0,'none');
+	if (strlen($sex)>1) msg("Неправильный пол<br/><anchor>Назад<prev/></anchor>","Ошибка",0,'none');
+	if (substr($login,0,2)!="u.") $login='u.'.$login;
+	$title_v=substr($login,2);
+	$login=strtolower($login);
+
+	// проверка только для нового
+	require_once("datafunc.php");
+	$res=GetData(substr($login,2),$p,$data);
+	if ($res && $res!="Данные не найдены") msg($res,"Ошибка");
+	if ($res!="Данные не найдены") msg("Персонаж уже создан","Ошибка");
+
+	$loc="_begin";	// начальная локация
+
+	// создаем игрока
+	$auser = array(
+		"user"=>"$p||$sex|$age||".time()."|0|0|0|0|0",
+		"char"=>"$title_v|20|20|20|20|1|1||0|0|0||",
+		"skills"=>"1|1|1|0|2|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0",
+		"loc"=>$loc, 
+		"journal"=>"",
+		"items"=>"i.w.k.begin:1",
+		"magic"=>"",
+		);
+
+	// добавим в локацию, чтобы посчитать параметры
+	loadloc($loc);
+	$l_i[$loc][$login] = $auser;
+	calcparam($loc,$login);
+
+	// сохраним...
+	$auser=$l_i[$loc][$login];
+	unset($l_i[$loc][$login]);
+	if ($auser["user"] && $auser["char"] && $auser["skills"] && $auser["war"]) $res=SetData(substr($login,2),$p,serialize($auser)); else $res="Неверный формат";
+	if ($res) {unset($l_i[$loc][$login]); msg($res,"Ошибка",0,'none');}
+
+	// ознакомительный период три дня
+	$t=time()+$freedays*24*3600;
+	$res=SetGameTime(substr($login,2), $p, $t);
+	if ($res) msg($res,"Ошибка",0,"none");
+
+	// общее число зарегистрированных
+	$fntmp="../all.dat";
+	if (file_exists($fntmp)) {
+		$all=0;
+		$all=@implode("",@file($fntmp));
+		if ($all) {$all++;$file=fopen($fntmp,"w");if($file!==false){fputs($file,$all);fclose($file);}}
+ 		} else {$file=fopen($fntmp,"w");if($file!==false){fputs($file,"1");fclose($file);}}
+
+	msg("Регистрация завершена<br/><a href=\"f_connect.php?login=$login&p=$p\">Начать игру</a>","Регистрация",0,'none');

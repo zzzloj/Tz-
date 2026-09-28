@@ -1,0 +1,10 @@
+// список инвентори
+
+	$stmp="<p>";
+			$stmp.="Выбрать:
+		$stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&cl=r&cj=1\">[руны]</a>";
+		$stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&cl=b&cj=1\">[броня]</a>";
+		$stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&cl=re&cj=1\">[реагенты]</a>";
+		$stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&cl=k&cj=1\">[камни]</a>";
+ ";
+			msg($stmp,"[".date("H:i",time())."] Руны ",1,'inv');
