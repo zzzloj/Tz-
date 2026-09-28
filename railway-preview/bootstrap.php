@@ -24,6 +24,12 @@ if (isset($_POST['login'], $_POST['p']) && $_POST['login'] === getenv('PREVIEW_U
     && hash_equals(getenv('PREVIEW_PASSWORD'), $_POST['p'])) {
     $_POST['p'] = substr(hash_hmac('sha256', getenv('PREVIEW_PASSWORD'), getenv('MYSQLPASSWORD')), 0, 10);
 }
+// The HTML adapter turns every WML link into a same-origin POST so values do
+// not end up in URLs, but many legacy scripts read $_GET directly.
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $_GET = $_GET + $_POST;
+    $_REQUEST = $_REQUEST + $_POST;
+}
 $HTTP_GET_VARS = $_GET;
 $HTTP_POST_VARS = $_POST;
 $HTTP_COOKIE_VARS = $_COOKIE;

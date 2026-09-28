@@ -13,20 +13,14 @@ sed -i "s/^Listen 80$/Listen ${PORT}/" /etc/apache2/ports.conf
 sed -i "s/<VirtualHost \*:80>/<VirtualHost *:${PORT}>/" /etc/apache2/sites-available/000-default.conf
 
 mkdir -p /data/game /data/sessions
-if [ ! -e /data/game/.preview-installed ]; then
-    cp -a /opt/legacy-game/. /data/game/
-    touch /data/game/.preview-installed
-fi
+/usr/local/bin/legacy-sync-code /opt/legacy-game /data/game
 sed -i 's@DocumentRoot /var/www/html@DocumentRoot /data/game@' /etc/apache2/sites-available/000-default.conf
 
 # Archive has F_blank.dat, while g.php requires f_blank.dat on Linux.
 for server in 1 2; do
-    if [ -f "/data/game/$server/F_blank.dat" ] && [ ! -e "/data/game/$server/f_blank.dat" ]; then
+    if [ -f "/data/game/$server/F_blank.dat" ]; then
         cp "/data/game/$server/F_blank.dat" "/data/game/$server/f_blank.dat"
     fi
-    # Keep the PHP login bridge current on persistent preview volumes.
-    cp "/opt/legacy-game/$server/f_connect.php" "/data/game/$server/f_connect.php"
-    cp "/opt/legacy-game/$server/f_site_reg.dat" "/data/game/$server/f_site_reg.dat"
 done
 
 for config in /data/game/config.ssp /data/game/1/config.ssp /data/game/2/config.ssp; do
