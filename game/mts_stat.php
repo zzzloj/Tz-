@@ -158,7 +158,7 @@ form2.from_day.value = <?php echo date ("d", time());?>;
 </form>
 </td></tr></table>
 
-<? 
+<?php
 $tmp=$QUERY_STRING;if($tmp=='')$tmp=$_SERVER["QUERY_STRING"];
 $tmp=urldecode($tmp);
 parse_str($tmp);
