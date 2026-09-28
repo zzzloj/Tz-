@@ -36,3 +36,6 @@
 
 ## Запуск
 Сервис `territory-evil-php` в Railway-проекте `territory-evil-legacy-preview` собирается из ветки `main` по `railway-preview/Dockerfile` (build context — корень репозитория). Нужны MariaDB 10.11 и том `/data`, см. `railway-preview/README.md`.
+
+## Тесты
+`bash tests/run.sh`: линтер, сквозной сценарий игрока в браузере, случайный обход тремя игроками с проверкой целостности файлов мира и дифференциальный тест «предыдущий коммит против текущего». GitHub Actions запускает его на каждый push в `main` и на pull request. Подробности и локальный запуск — в `tests/README.md`.

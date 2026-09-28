@@ -85,7 +85,7 @@ if (legacy_flock($file_save,2)) {
         } else {$file_save=''; msg('Ошибка блокировки game.dat');}
 
 
-srand ((float) microtime() * 10000000);
+legacy_srand();
 //if ($zxf==$zero) require 'f_zxf.dat';
 if ($game['stop']) require 'f_stop.dat';
 

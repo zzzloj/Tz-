@@ -216,7 +216,7 @@ msg ("Этот сервер только для игроков с телефона! Если вы считаете, что ваш комп 
  //}
 //}
 
-srand ((float) microtime() * 10000000);
+legacy_srand();
 //if ($zxf==$zero) require 'f_zxf.dat';
 if ($game['stop']) require 'f_stop.dat';
 

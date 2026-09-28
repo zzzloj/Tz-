@@ -1,6 +1,6 @@
 <?php
 // добавляем 1 стража
-srand ((float) microtime() * 10000000);
+legacy_srand();
 for ($k=0;legacy_cmp($k)<1;$k++) {	
 		$id='n.g.'.rand(5,9999);
 		$title_v=rndname().' [стража]';

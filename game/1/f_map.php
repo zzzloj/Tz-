@@ -41,7 +41,7 @@ if ($img) {						// выведем картинку
 	die("");
 	}//if $img
 
-srand ((float) microtime() * 10000000);
+legacy_srand();
 $stmp="<p align=\"center\"><img alt=\"map\" src=\"f_map.php?loc=$loc&amp;img=1&amp;r=".rand(99,999)."&amp;bw=$bw\"/><br/><anchor>[назад]<prev/></anchor></p><p>Вы на ";
 if($b) $stmp.=" территории Ансалона."; else $stmp.="основной территории.";
 $stmp.="<br/><a href=\"f_map.php?info=1\">Помощь</a>";

@@ -85,6 +85,19 @@ register_shutdown_function(function () {
     foreach ($GLOBALS['__legacy_atomic'] as $entry) legacy_atomic_commit($entry[0]);
 });
 
+// Random seed. The engine re-seeded from the clock (srand(microtime()*1e7)),
+// also in the middle of a request. Tests set LEGACY_RANDOM_SEED so that two
+// copies of the world given the same requests make the same random choices
+// (tests/ab_walk.py); otherwise the generator gets a fresh random seed.
+function legacy_srand() {
+    static $calls = 0;
+    $seed = getenv('LEGACY_RANDOM_SEED');
+    if ($seed === false || $seed === '') { mt_srand(); return; }
+    $body = isset($_POST) ? http_build_query($_POST) : '';
+    $uri = isset($_SERVER['REQUEST_URI']) ? preg_replace('/(sid=[a-z0-9]+\.[a-z0-9]+\.)[a-z]/', '$1*', $_SERVER['REQUEST_URI']) : '';
+    mt_srand(crc32($seed . '|' . $uri . '|' . $body . '|' . ($calls++)));
+}
+
 }
 
 require_once __DIR__ . '/mysql_compat.php';

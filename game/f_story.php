@@ -4,7 +4,7 @@ $tmp=$QUERY_STRING;if($tmp=='') $tmp=$_SERVER["QUERY_STRING"];	// в зависимости 
 $tmp=urldecode($tmp);
 parse_str($tmp, $legacy_qs); extract($legacy_qs);									// теперь появятся переменные $url, $p и т.д.
 
-srand ((float) microtime() * 10000000);
+legacy_srand();
 
 $stmp="";
 if (!$id) $stmp="<p>

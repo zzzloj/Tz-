@@ -19,7 +19,8 @@ COPY railway-preview/wml.js /opt/legacy-wml.js
 COPY railway-preview/init-db.php /opt/init-db.php
 COPY railway-preview/start.sh /usr/local/bin/legacy-start
 COPY railway-preview/sync-code.sh /usr/local/bin/legacy-sync-code
-RUN chmod +x /usr/local/bin/legacy-start /usr/local/bin/legacy-sync-code \
+COPY railway-preview/prepare-game.sh /usr/local/bin/legacy-prepare-game
+RUN chmod +x /usr/local/bin/legacy-start /usr/local/bin/legacy-sync-code /usr/local/bin/legacy-prepare-game \
     && a2dismod mpm_event mpm_worker \
     && a2enmod mpm_prefork rewrite headers \
     && php -l /opt/legacy-html.php \

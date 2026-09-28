@@ -32,7 +32,7 @@ return $tc;
 $tc=calctc($l);
 $tcf=calctc($f);
 
-srand ((float) microtime() * 10000000);
+legacy_srand();
 $stmp="<p align=\"center\"><img alt=\"map\" src=\"m.php?l=$loc&amp;f=".$game["floc"]."&amp;img=1&amp;r=".rand(99,999)."&amp;bw=$map\"/><br/><a href=\"$PHP_SELF?sid=$sid\">В игру</a></p>";
 $stmp.="<p>Вы на ";if(legacy_cmp($tc[3])==2) $stmp.="Волчьем острове."; else if($tc[3]) $stmp.="территории Ансалона."; else $stmp.="основной территории.";
 if (!$game["floc"]) $fc="неизвестно у кого (попробуйте обновить карту) "; else if ($game["fid"]) $fc="у ".$game["fchar"]." "; else $fc="сейчас никому не принадлежит ";

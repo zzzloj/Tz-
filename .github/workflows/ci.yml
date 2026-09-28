@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: ci
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=5s --health-retries=30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: mysqli, gd, iconv, mbstring
+          ini-values: short_open_tag=On
+          coverage: none
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Test tools
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq faketime
+          pip install playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Commit to compare with
+        id: base
+        env:
+          EVENT: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          BEFORE: ${{ github.event.before }}
+          MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          if [ "$EVENT" = pull_request ]; then base="$PR_BASE"; else base="$BEFORE"; fi
+          case "$base" in ""|0000000000000000000000000000000000000000) base="$(git rev-parse HEAD~1 2>/dev/null || true)";; esac
+          echo "ref=$base" >> "$GITHUB_OUTPUT"
+          case "$MESSAGE" in *"[ab-accept]"*) echo "accept=1" >> "$GITHUB_OUTPUT";; *) echo "accept=0" >> "$GITHUB_OUTPUT";; esac
+
+      - name: Regression tests
+        env:
+          MYSQLHOST: 127.0.0.1
+          MYSQLPORT: "3306"
+          MYSQLUSER: root
+          MYSQLPASSWORD: ci
+          TEST_ROOT: ${{ runner.temp }}/tz-tests
+          BASE_REF: ${{ steps.base.outputs.ref }}
+          AB_ACCEPT: ${{ steps.base.outputs.accept }}
+        run: bash tests/run.sh
+
+      - name: Logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs
+          path: |
+            ${{ runner.temp }}/tz-tests/*/php-errors.log
+            ${{ runner.temp }}/tz-tests/*/http.log
+          if-no-files-found: ignore
