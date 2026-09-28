@@ -19,7 +19,7 @@ if ($ctele) {
 		$tc=substr($ctele,0,4);
 		foreach($arr as $i) {
 			loadloc($tc.$i);
-			if ($l_i[$tc.$i]) foreach(array_keys($l_i[$tc.$i]) as $k) if($k!=$login && substr($k,0,2)=="u.") {
+			if ($l_i[$tc.$i]) foreach(array_keys((array)($l_i[$tc.$i])) as $k) if($k!=$login && substr($k,0,2)=="u.") {
 				$tchar=explode("|",$l_i[$tc.$i][$k]["char"]);
 				if (strpos($tchar[0],"*")===false) $tclan=""; else $tclan=substr($tchar[0],strpos($tchar[0],"*")+1,strrpos($tchar[0],"*")-strpos($tchar[0],"*")-1);
 				if ($tclan!=$clanc && strpos($d[0],":".$k.":")===false) {addnpc($login,$loc,$ctele); return;}
@@ -37,7 +37,7 @@ if (substr($loc,3)!=".in") {
 	else if (strpos($d[0],"#")===false) {	// открываем, время истекло
 		if ($timez!=0) $d[0]=substr($d[0],0,strpos($d[0],"{")).substr($d[0],strpos($d[0],"}")+1);
 		$d[0].="#".($timez+60*60*8)."#";
-		$l_tt[$gate]["d"]=implode("|",$d);
+		$l_tt[$gate]["d"]=implode("|",(array)($d));
 		$l_tt[$gate]["save"]=1;
 		}
 	}
@@ -49,19 +49,19 @@ if (substr($loc,3)==".gate" && $clanc && $clanc!=$clan && strpos($d[0],":".$logi
 		$b=1;
 		foreach($arr as $i) {
 			loadloc($tc.$i);
-			if ($l_i[$tc.$i]) foreach(array_keys($l_i[$tc.$i]) as $k) if($k!=$login) {
+			if ($l_i[$tc.$i]) foreach(array_keys((array)($l_i[$tc.$i])) as $k) if($k!=$login) {
 				$tchar=explode("|",$l_i[$tc.$i][$k]["char"]);
 				if (strpos($tchar[0],"*")===false) $tclan=""; else $tclan=substr($tchar[0],strpos($tchar[0],"*")+1,strrpos($tchar[0],"*")-strpos($tchar[0],"*")-1);
 				if (substr($k,0,4)=="n.o." || (substr($k,0,2)=="u." && !$tchar[8] && ($tclan==$clanc || strpos($d[0],":".$k.":")!==false))) $b=0;
 				}
 			}
 
-			$tclan=unserialize(implode("",file("../clans/".$clanc)));
+			$tclan=unserialize(implode("",(array)(file("../clans/".$clanc))));
 			if ($tclan) {
-				$k1=array_keys($tclan["g"]);
+				$k1=array_keys((array)($tclan["g"]));
 				//$tclan["m"][$k1[0]]=1;//глава
-				$tclan["m"] = array_merge($tclan["m"], $tclan["v"], $tclan["s"], $tclan["g"]);
-				foreach(array_keys($tclan["m"]) as $k) if (file_exists("online/".$k) && filesize("online/".$k)!=1) {
+				$tclan["m"] = array_merge((array)($tclan["m"]), (array)($tclan["v"]), (array)($tclan["s"]), (array)($tclan["g"]));
+				foreach(array_keys((array)($tclan["m"])) as $k) if (file_exists("online/".$k) && filesize("online/".$k)!=1) {
 					$tmp=file("online/".$k);
 					$tmp[0]=trim($tmp[0]);
 					loadloc($tmp[0]);
@@ -73,12 +73,12 @@ if (substr($loc,3)==".gate" && $clanc && $clanc!=$clan && strpos($d[0],":".$logi
 
 // захват замка
 if (substr($loc,3,5)==".gate" && $b && $clan && $clanc!=$clan && strpos($d[0],":".$login.":")===false) {
-	if ($clanc) $tclan=unserialize(implode("",file("../clans/".$clanc))); else $tclan=0;	// сообщ. о захвате замка
+	if ($clanc) $tclan=unserialize(implode("",(array)(file("../clans/".$clanc)))); else $tclan=0;	// сообщ. о захвате замка
 	if ($tclan) {
-		$k1=array_keys($tclan["g"]);
+		$k1=array_keys((array)($tclan["g"]));
 		$tclan["m"][$k1[0]]=1;//глава
-		$tclan["m"] = array_merge($tclan["m"], $tclan["v"], $tclan["s"]);
-		foreach(array_keys($tclan["m"]) as $k) if (file_exists("online/".$k) && filesize("online/".$k)!=1) {
+		$tclan["m"] = array_merge((array)($tclan["m"]), (array)($tclan["v"]), (array)($tclan["s"]));
+		foreach(array_keys((array)($tclan["m"])) as $k) if (file_exists("online/".$k) && filesize("online/".$k)!=1) {
 			$tmp=file("online/".$k);
 			$tmp[0]=trim($tmp[0]);
 			loadloc($tmp[0]);
@@ -89,6 +89,6 @@ if (substr($loc,3,5)==".gate" && $b && $clan && $clanc!=$clan && strpos($d[0],":
 	if ($clanc) $d[0]=substr($d[0],0,strpos($d[0],"*"))."*".$clan."*()"."#".(time()+60*60*2)."#";
 		else $d[0].="*".$clan."*()"."#".(time()+60*60*2)."#";
 	addjournal($loc,$login,"Вы захватили замок!");
-	$l_tt[$gate]["d"]=implode("|",$d);
+	$l_tt[$gate]["d"]=implode("|",(array)($d));
 	$l_tt[$gate]["save"]=1;
 	}

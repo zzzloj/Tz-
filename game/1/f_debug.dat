@@ -8,7 +8,7 @@ echo "<a onclick=javascript:void(document.all.loc.style.display=document.all.loc
 echo "<p id=loc style='display:none'><a name=edit><form name=fmeval action=$PHP_SELF><input type=hidden name=sid value=$sid><input type=hidden name=adm value=locsave><input type=hidden name=look value=1>
 Описание:
 <textarea rows=8 cols=80 name=desc>";
-if (file_exists("l_f/".$loc)) $desc=implode("",file("l_f/".$loc)); else $desc="";
+if (file_exists("l_f/".$loc)) $desc=implode("",(array)(file("l_f/".$loc))); else $desc="";
 echo $desc."</textarea>
 Выходы:
 <textarea rows=13 cols=80 name=exits>".str_replace("|","\n",$l_tt[$loc]["d"])."</textarea>

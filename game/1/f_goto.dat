@@ -16,15 +16,15 @@
 					$tc=explode("|",$l_i[$locai[$k]][$char[7]]["char"]);
 					if ($tc[8]) {
 						$char[7]="";
-						$l_i[$i][$j]["char"]=implode("|",$char);
+						$l_i[$i][$j]["char"]=implode("|",(array)($char));
 						$b=0;
 						}
 					}
 
 				if ($b) {	// погоня
-					$l_i[$i][$j]["char"]=implode("|",$char);
+					$l_i[$i][$j]["char"]=implode("|",(array)($char));
 					addnpc($j,$i,$locai[$k]);
 					} else $tfound=0;
 				break;
 				}
-			if (!$tfound) {$char[7]="";$l_i[$i][$j]["char"]=implode("|",$char);}
+			if (!$tfound) {$char[7]="";$l_i[$i][$j]["char"]=implode("|",(array)($char));}

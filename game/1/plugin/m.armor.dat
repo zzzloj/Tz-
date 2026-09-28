@@ -7,7 +7,7 @@ if (isset($l_i[$loc][$to]) && substr($to,0,2)=='u.') {
 	$skills=explode("|",$l_i[$loc][$login]["skills"]);
 
 	$twar[5]+=$skills[2];
-	$l_i[$loc][$to]["war"]=implode("|",$twar);
+	$l_i[$loc][$to]["war"]=implode("|",(array)($twar));
 	addjournal($loc,$to,"Броня +".$skills[2]);
 	if ($to!=$login) addjournal($loc,$login,$tchar[0].": броня +".$skills[2]);
 	} else addjournal($loc,$login,"Действует только на людей");

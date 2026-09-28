@@ -4,7 +4,7 @@
 				if ($died[4]) {
 					if ($died[3]) $died[3].=",".$died[4]; else $died[3]=$died[4];
 					$died[4]="";
-					$l_i[$loc][$to]=implode("|",$died);
+					$l_i[$loc][$to]=implode("|",(array)($died));
 					addjournal($loc,$login,"Вы освежевали ".$died[0]);
 					if (rand(1,100)<5) addexp($loc,$login,1);
 					} else addjournal($loc,$login,"На трупе нет трофеев");

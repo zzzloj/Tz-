@@ -16,7 +16,7 @@
 				$items[$i-1]=$items[$i];
 				$items[$i]=$tc;
 				}
-		$l_i[$loc][$login]["magic"]=implode("|",$items);
+		$l_i[$loc][$login]["magic"]=implode("|",(array)($items));
 		msg("Заклинание передвинуто вверх.");
 		}
 	if ($down) {
@@ -31,16 +31,16 @@
 				$items[$i+1]=$items[$i];
 				$items[$i]=$tc;
 				}
-		$l_i[$loc][$login]["magic"]=implode("|",$items);
+		$l_i[$loc][$login]["magic"]=implode("|",(array)($items));
 		msg("Заклинание передвинуто вниз.");
 		}
 	if ($macro==1) $m="&macros=list&num=$num&name=$name&act=$act#add"; else $m='';
 	$stmp="<p>Ваши заклинания:";
 	if (!$start) $start=0;
-	$keys=array_keys($items);
+	$keys=array_keys((array)($items));
 	for ($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) {
 		$k=explode(":",$items[$keys[$i]]);
-		if (file_exists("items/".$k[0])) $item=explode("|",implode("",file("items/".$k[0]))); else die("err: no items/".$k[0]);		
+		if (file_exists("items/".$k[0])) $item=explode("|",implode("",(array)(file("items/".$k[0])))); else die("err: no items/".$k[0]);		
 		if (time()<$k[1]) $item=$item[0]." [осталось ".(round(($k[1]-time())/60)+1)." минут]"; else $item=$item[0];
 		if ($to) {
 			$stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&to=$to&use=".$k[0].$m."\">".$item."</a>";

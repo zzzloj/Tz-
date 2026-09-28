@@ -9,13 +9,13 @@
 	$equip=explode("|",$l_i[$loc][$login]["equip"]);
 	
 	if (!$start) $start=0;
-	$keys=array_keys($equip);
+	$keys=array_keys((array)($equip));
 
 	for ($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) if ($equip[$keys[$i]]) {
 		$k=explode(":",$equip[$keys[$i]]);
 		if (strpos($k[0],"_")!==false) $tk=substr($k[0],0,strpos($k[0],"_")); else
 		if (strpos($k[0],"-")!==false) $tk=substr($k[0],0,strpos($k[0],"-")); else $tk=$k[0];
-		if (substr($k[0],0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$tk)) $item=explode("|",implode("",file("items/".$tk))); else die("err: no items/".$k[0]);
+		if (substr($k[0],0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$tk)) $item=explode("|",implode("",(array)(file("items/".$tk)))); else die("err: no items/".$k[0]);
 		$item=$item[0];
 		if (strpos($k[0],"..")!==false) $item.=" *";
 		if ($k[1]>1) $item.=" (".$k[1].")";

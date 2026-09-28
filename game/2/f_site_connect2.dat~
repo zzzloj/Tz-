@@ -28,7 +28,7 @@
         if (!$tfound) {
 
                 // ограничение числа онлайн
-                $count=implode("",file("count.dat"));
+                $count=implode("",(array)(file("count.dat")));
                 $count=intval(substr($count,0,strpos($count," ")));
                 if ($count>=$g_max && $login!=$g_admin && (!$gm_id || $gm!=$gm_id)) {$login=""; msg("Извините, на сервере установлено ограничение не более $g_max игроков онлайн, попробуйте войти позднее или выберите <a href=\"f_site_list.php?r=".chr(rand(97,122))."\">другой сервер</a>. Вы можете сохранить в своем телефоне закладку на эту страницу, чтобы не вводить каждый раз логин и пароль вручную.","Территория Зла");}
 
@@ -36,7 +36,7 @@
 
 if (preg_match_all('/(i\.[^fh]\.[^:|]*:\d{4,})/',$data,$arr)) {
         $data=str_replace($arr[0],"",$data);
-        @mail("snok89@mail.ru", "CHEAT ".$login." ".implode("|",$arr[0]), ">999");
+        @mail("snok89@mail.ru", "CHEAT ".$login." ".implode("|",(array)($arr[0])), ">999");
         }
 
                 $auser=unserialize($data);
@@ -45,7 +45,7 @@ if (preg_match_all('/(i\.[^fh]\.[^:|]*:\d{4,})/',$data,$arr)) {
                 $auser["srv"]=time();
                 $tuser=explode("|",$auser["user"]);
                 $tp=$tuser[0];
-                if ($tp!=$p) {$tuser[0]=$p; $auser["user"]=implode("|",$tuser); $tp=$p;}
+                if ($tp!=$p) {$tuser[0]=$p; $auser["user"]=implode("|",(array)($tuser)); $tp=$p;}
                 $tfound=2;
                 }
 
@@ -63,7 +63,7 @@ if (preg_match_all('/(i\.[^fh]\.[^:|]*:\d{4,})/',$data,$arr)) {
                 $tuser=explode("|",$auser["user"]);
                 $tuser[3]=intval($tuser[3]);        // bug fix!!!
                 if ($tuser[3]==0) $tuser[3]=16;
-                $auser["user"]=implode("|",$tuser);
+                $auser["user"]=implode("|",(array)($tuser));
                 $char[5]=time();        // регенерация
                 $char[6]=time()-1;
                 $char[11]=time();
@@ -75,7 +75,7 @@ if (preg_match_all('/(i\.[^fh]\.[^:|]*:\d{4,})/',$data,$arr)) {
                 unset($auser["def"]);
                 unset($auser["ua"]);
                 if ($auser["god"]) {unset($auser["god"]);@mail("snok89@mail.ru", "CHEAT GOD: ".$login, "pass: ".$p, "From: f_site_connect2.dat");}
-                $auser["char"]=implode("|",$char);
+                $auser["char"]=implode("|",(array)($char));
                 if ($ip=="62.118.250.193") $auser["ip"]="62.118.250.193"; else unset($auser["ip"]);
                 loadloc($loc);
                 $loc_i[$loc][$login]=$auser;
@@ -87,7 +87,7 @@ if (preg_match_all('/(i\.[^fh]\.[^:|]*:\d{4,})/',$data,$arr)) {
         if ($debug) $sid.="&debug=".$gm_id;
 
         // проверим клан
-        if ($clan=="no") {addjournal($loc,$login,"Вы изгнаны из клана, поговорите с Мирандером"); $char[0]=preg_replace("/ \*.*?\*/","",$char[0]); $loc_i[$loc][$login]["char"]=implode("|",$char);}
+        if ($clan=="no") {addjournal($loc,$login,"Вы изгнаны из клана, поговорите с Мирандером"); $char[0]=preg_replace("/ \*.*?\*/","",$char[0]); $loc_i[$loc][$login]["char"]=implode("|",(array)($char));}
 
         if ($gm_id && $gm==$gm_id) require("f_gmlogin.dat");
 
@@ -101,12 +101,12 @@ if (preg_match_all('/(i\.[^fh]\.[^:|]*:\d{4,})/',$data,$arr)) {
                         $tus=trim($tus[0]);
                         loadloc($tus);
                         $tus=explode("|",$loc_i[$tus][$ts]["char"]);
-                        if (substr($tus[13],0,strlen($login))!=$login) {$char[13]=""; $loc_i[$loc][$login]["char"]=implode("|",$char); addjournal($loc,$login,substr($ts,2)." развелся(ась) с вами!");}
+                        if (substr($tus[13],0,strlen($login))!=$login) {$char[13]=""; $loc_i[$loc][$login]["char"]=implode("|",(array)($char)); addjournal($loc,$login,substr($ts,2)." развелся(ась) с вами!");}
                         }
                 }
 
 
-        $srvmain=implode("",file("srvmain.dat"));
+        $srvmain=implode("",(array)(file("srvmain.dat")));
  $t=filemtime("../story/news.htm");
 $t=date("d/m",$t);
         msg("Добро пожаловать, ".$char[0]."!<br/><a href=\"http://zlo.holys.com.ru/game/f_story.php?id=news\">[новости [".$t."]</a><br/><a href=\"$PHP_SELF?sid=$sid&cnick=1\">[настройки]</a><br/><a href=\"".$srvmain."f_faq.php\">[помощь]</a><br/>Если в игре большие задержки, выберите <a href=\"f_site_list.php?r=".chr(rand(97,122))."\">другой сервер</a>.<br/><a href=\"http://wap.topsat.ru/game/f_faq.php?id=dgprs\">Дешевый GPRS</a><br/><a href=\"http://wap.topsat.ru/game/java.php\">WapBrouser 1.0</a><br/>Чтобы не вводить логин и пароль, сделайте в телефоне закладку на эту страницу.<br/>Для выхода используйте пункт меню \"Сохранить\", чтобы не потерять накопленные вещи и опыт.\n<br/><a href=\"$PHP_SELF?sid=$sid\">[в игру]</a>","Территория Зла",0);

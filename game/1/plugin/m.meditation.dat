@@ -8,5 +8,5 @@
 	$char[1]=1;
 	$char[3]+=$heal;
 	$char[5]=time();
-	$l_i[$loc][$login]["char"]=implode("|",$char);
+	$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 	addjournal($loc,$login,"Мана +".$heal);

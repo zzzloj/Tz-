@@ -8,8 +8,8 @@ $clanc=substr($d[0],strpos($d[0],"*")+1,strrpos($d[0],"*")-strpos($d[0],"*")-1);
 // слушается только клановцев, владеющих замком, гостей нет
 if (strpos($char[0],"*")===false) $clan=""; else $clan=substr($char[0],strpos($char[0],"*")+1,strrpos($char[0],"*")-strpos($char[0],"*")-1);
 if ($clanc!=$clan) msg("Вы не состоите в клане, которому принадлежит этот замок, поэтому мне нечего вам сказать. ");
-$tmp=unserialize(implode("",file("../clans/".$clan)));
-$keys=array_keys($tmp["g"]);
+$tmp=unserialize(implode("",(array)(file("../clans/".$clan))));
+$keys=array_keys((array)($tmp["g"]));
 $a=substr($keys[0],2);
 	$l=explode("|", $l_i[$loc][$speak]["qv"]);
 	if (time()>$l[1]) unset($l_i[$loc][$speak]["qv"]);

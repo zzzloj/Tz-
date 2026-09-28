@@ -5,7 +5,7 @@ if (isset($l_i[$loc]["i.log"])) {
 $skills=explode("|",$l_i[$loc][$login]["skills"]);
 if ($skills[30]>0) {
 	$char[6]=time()+6;
-	$l_i[$loc][$login]["char"]=implode("|",$char);
+	$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 
 	additem($loc,$login,"","i.spichka",1);	// удаляем одну спичку
 	additem($loc,"loc","","i.log",1);		// удаляем одну ветку

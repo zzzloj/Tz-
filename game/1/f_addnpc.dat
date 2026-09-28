@@ -11,7 +11,7 @@ if ($from && $from!=$to) {
 		$floc=explode('|',$l_tt[$from]['d']);
 		$tnpc=$l_i[$from][$id];
 		$tchar=explode('|',$tnpc['char']);
-		if ($to && array_search($to,$floc)) addjournal($from,'all',$tchar[0].' ушел '.$floc[array_search($to,$floc)-1],$id); else addjournal($from,'all',$tchar[0].' исчез',$id);
+		if ($to && array_search($to,(array)($floc))) addjournal($from,'all',$tchar[0].' ушел '.$floc[array_search($to,(array)($floc))-1],$id); else addjournal($from,'all',$tchar[0].' исчез',$id);
  		unset($l_i[$from][$id]);
 		}
 	}
@@ -21,15 +21,15 @@ if ($to && $from!=$to) {
 	if (isset($l_i[$to][$id])) {$tnpc=$l_i[$to][$id]; $tchar=explode('|',$tnpc['char']);}
 	if ($tnpc) {
 		$tloc=explode('|',$l_tt[$to]['d']);
-		if ($from && array_search($from,$tloc)) {
+		if ($from && array_search($from,(array)($tloc))) {
 
 			addjournal($to,'all','Пришел '.$tchar[0],$id);
 			if (substr($id,0,2)=='n.') {	// история следов npc
 				$steps=explode(':',$tchar[12]);
 				if (count((array)($steps))==0) $steps[]=$from; 
 					else {if ($steps[count((array)($steps))-1]==$to) unset($steps[count((array)($steps))-1]); else $steps[]=$from;}
-				$tchar[12]=implode(':',$steps);
-				$tnpc['char']=implode('|',$tchar);
+				$tchar[12]=implode(':',(array)($steps));
+				$tnpc['char']=implode('|',(array)($tchar));
 				}
 			} else addjournal($to,'all','Появился '.$tchar[0],$id);
 		$l_i[$to][$id]=$tnpc;

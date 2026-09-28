@@ -3,7 +3,7 @@
 
 	$tc=explode("|",$l_i[$loc][$login]["char"]); 
 	if (strpos($tc[0],"*")===false) $clan=""; else $clan=substr($tc[0],strpos($tc[0],"*")+1,strrpos($tc[0],"*")-strpos($tc[0],"*")-1);
-	if ($clan && file_exists("../clans/".$clan)) $tmp=unserialize(implode("",file("../clans/".$clan))); else $tmp=array();
+	if ($clan && file_exists("../clans/".$clan)) $tmp=unserialize(implode("",(array)(file("../clans/".$clan)))); else $tmp=array();
 
 if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 	if ($to) {
@@ -96,31 +96,31 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 				if ($tmp["m"] || $tmp["v"] || $tmp["s"] && isset($tmp["g"][$login])) {
 				if ($tmp["m"]) {$stmp.="<br/>Неофиты:";
 					if (!$start) $start=0;
-					$keys=array_keys($tmp["m"]);
+					$keys=array_keys((array)($tmp["m"]));
 					for($i=$start;$i<count((array)($keys)) && $i<$start+$g_list;$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&me=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
 					$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=i.guildstone&start=".($start+$g_list)."\">+</a>"; }
 				if ($tmp["s"]) {$stmp.="<br/>Сенешали:";
 					if (!$start) $start=0;
-					$keys=array_keys($tmp["s"]);
+					$keys=array_keys((array)($tmp["s"]));
 					for($i=$start;$i<count((array)($keys)) && $i<$start+$g_list;$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&me=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
 					$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=i.guildstone&start=".($start+$g_list)."\">+</a>"; }
 				if ($tmp["v"]) {$stmp.="<br/>Вассалы:";
 					if (!$start) $start=0;
-					$keys=array_keys($tmp["v"]);
+					$keys=array_keys((array)($tmp["v"]));
 					for($i=$start;$i<count((array)($keys)) && $i<$start+$g_list;$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&me=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
 					$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=i.guildstone&start=".($start+$g_list)."\">+</a>"; }
 					} elseif (isset($tmp["g"][$login])) $stmp.="<br/>В вашем клане, кроме вас, никого нет.";
 				if ($tmp["wg"] && isset($tmp["g"][$login])) {
 					$stmp.="<br/><br/>Ожидают, чтобы стать главой вашего клана:";
 					if (!$start) $start=0;
-					$keys=array_keys($tmp["wg"]);
+					$keys=array_keys((array)($tmp["wg"]));
 					for($i=$start;$i<count((array)($keys)) && $i<$start+$g_list;$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&del=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
 					$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=i.guildstone&start=".($start+$g_list)."\">+</a>";
 					}
 				if ($tmp["w"] ) {
 					$stmp.="<br/><br/>Рекруты (ожидают вступления):";
 					if (!$start) $start=0;
-					$keys=array_keys($tmp["w"]);
+					$keys=array_keys((array)($tmp["w"]));
 					for($i=$start;$i<count((array)($keys)) && $i<$start+$g_list;$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&del=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
 					$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=i.guildstone&start=".($start+$g_list)."\">+</a>";
 					} else $stmp.="<br/>Список рекрутов пуст.";
@@ -135,7 +135,7 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 
 			$tc=explode("|",$l_i[$loc][$to]["char"]); 
 			if (strpos($tc[0],"*")===false) $clan=""; else $clan=substr($tc[0],strpos($tc[0],"*")+1,strrpos($tc[0],"*")-strpos($tc[0],"*")-1);
-			if ($clan && file_exists("../clans/".$clan)) $tmp=unserialize(implode("",file("../clans/".$clan))); else $tmp=array();
+			if ($clan && file_exists("../clans/".$clan)) $tmp=unserialize(implode("",(array)(file("../clans/".$clan)))); else $tmp=array();
 			if (!isset($tmp["g"][$to]) && !isset($tmp["s"][$to])) {msg("Выбирать можно только главу клана");}
 			if (!isset($tmp["w"][$login]) && !isset($tmp["wg"][$login])) msg("Вы не числитесь в списках рекрутов клана ".$clan.", обратитесь к главе этого клана");
 
@@ -143,7 +143,7 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 			if (isset($tmp["wg"][$login])) $b=1; else $b=0;
 			if ($b) {
 				unset($tmp["wg"][$login]);
-				$keys=array_keys($tmp["g"]);
+				$keys=array_keys((array)($tmp["g"]));
 				$tmp["m"][$keys[0]]=$tmp["g"][$keys[0]];// бывший глава рядовым
 				unset($tmp["g"]);	// удаляем старого главу клана
 				$tmp["g"][$login]=$p;
@@ -156,7 +156,7 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 			$tc=explode("|",$l_i[$loc][$login]["char"]); 
 			if(strpos($tc[0],"*")!==false) $tc[0]=substr($tc[0],0,strpos($tc[0],"*")-1);
 			$tc[0].=" *".$clan."*";
-			$l_i[$loc][$login]["char"]=implode("|",$tc);
+			$l_i[$loc][$login]["char"]=implode("|",(array)($tc));
 			if ($b) addjournal($loc,$to,$tc[0]." теперь глава вашего клана!"); else addjournal($loc,$to,$tc[0]." вступил в ваш клан!");
 			if ($b) msg("Поздравляем, вы теперь глава клана ".$clan.", рекомендуем <a href=\"$PHP_SELF?sid=$sid&logout=1\">сохранить персонажа</a>."); else msg("Поздравляем, вы зачислены в клан ".$clan.", рекомендуем <a href=\"$PHP_SELF?sid=$sid&logout=1\">сохранить персонажа</a>.");
 			} else $list='all';

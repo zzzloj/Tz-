@@ -5,7 +5,7 @@ if (isset($l_i[$loc]["i.s.tree"])) {
 $skills=explode("|",$l_i[$loc][$login]["skills"]);
 if ($skills[26]>0) {
 	$char[6]=time()+4;
-	$l_i[$loc][$login]["char"]=implode("|",$char);
+	$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 
 	$tree=explode("|",$l_i[$loc]["i.s.tree"]);
 	if ($tree[1]==0 && time()>$tree[5]) $tree[1]=$tree[4];
@@ -13,10 +13,10 @@ if ($skills[26]>0) {
 	if (rand(1,100)<$skills[26]*10) {
 		$tree[1]--;
 		if ($tree[1]==0) $tree[5]=time()+$tree[3];
-		$l_i[$loc]["i.s.tree"]=implode("|",$tree);
+		$l_i[$loc]["i.s.tree"]=implode("|",(array)($tree));
 					$st=explode("|",$l_i[$loc][$login]["st"]);
 					$st[5]++; // +1 игрок
-					$l_i[$loc][$login]["st"]=implode("|",$st);
+					$l_i[$loc][$login]["st"]=implode("|",(array)($st));
 		addjournal($loc,$login,"Вы срубили ветку"); 
 		addjournal($loc,"all",$char[0]." срубил ветку",$login);
 		additem($loc,"",$login,"i.log",1);

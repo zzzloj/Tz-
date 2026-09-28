@@ -7,17 +7,17 @@ $g_list=10;
 
 if ($clan) {
 	if (!file_exists("clans/".$clan)) msg("Клан $clan не существует");
-	$tmp=unserialize(implode("",file("clans/".$clan)));
+	$tmp=unserialize(implode("",(array)(file("clans/".$clan))));
 	if (!isset($tmp["g"])) msg("Ошибка при загрузке клана $clan, сообщите разработчику.");
 	if ($info) {if ($tmp["i"]) msg($tmp["i"]."<br/><anchor>[Назад]<prev/></anchor>","Инфо о клане ".$clan); else msg("Нет описания");}
-	$keys=array_keys($tmp["g"]);
+	$keys=array_keys((array)($tmp["g"]));
 	$stmp="Глава клана: ".substr($keys[0],2);
 	if($tmp["i"]) $stmp.="<br/><a href=\"f_clans.php?clan=$clan&info=1\">Инфо о клане</a>";
 	$stmp.="<br/>Состав:";
 
 	if (count((array)($tmp["m"]))>0) {
 	if (!$start) $start=0;
-	$keys=array_keys($tmp["m"]);
+	$keys=array_keys((array)($tmp["m"]));
 	for($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) {
 			$stmp.="<br/>".substr($keys[$i],2);
 			}
@@ -33,7 +33,7 @@ if ($clan) {
 	$arr=array();
 	$dh = opendir("clans"); 
 	while (($fname = readdir($dh))!== false) if ($fname!="." && $fname!=".." && $fname!="1.htaccess" && $fname!=".htaccess") {
-		$tmp=unserialize(implode("",file("clans/".$fname)));
+		$tmp=unserialize(implode("",(array)(file("clans/".$fname))));
 		$arr[$fname]=count((array)($tmp["m"]))+1;
 		}
 	closedir($dh);
@@ -42,7 +42,7 @@ if ($clan) {
 		$stmp="<p>Всего кланов: ".count((array)($arr));
 		arsort($arr);
 		if (!$start) $start=0;
-		$keys=array_keys($arr);
+		$keys=array_keys((array)($arr));
 		for($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) {
 			$stmp.="<br/><a href=\"f_clans.php?clan=".$keys[$i]."\">".$keys[$i]."</a> (".$arr[$keys[$i]]." чел.)";
 			}

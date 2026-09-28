@@ -73,9 +73,9 @@ if ($trade=="cancel") {	// отказ
 
 // подготовим списки вещей
 if ($l_i[$loc][$login]["trade"]["i"]) $i=explode("|",$l_i[$loc][$login]["trade"]["i"]); else $i=array();
-foreach(array_keys($i) as $j) $i[$j]=explode(":",$i[$j]);
+foreach(array_keys((array)($i)) as $j) $i[$j]=explode(":",$i[$j]);
 if ($l_i[$loc][$login]["trade"]["ito"]) $ito=explode("|",$l_i[$loc][$login]["trade"]["ito"]); else $ito=array();
-foreach(array_keys($ito) as $j) $ito[$j]=explode(":",$ito[$j]);
+foreach(array_keys((array)($ito)) as $j) $ito[$j]=explode(":",$ito[$j]);
 
 if ($trade=="agry" && $b) {	// согласен, если список предметов равен у обоих и тот согласен, то обмен
 	$l_i[$loc][$login]["trade"]["a"]=1;
@@ -85,11 +85,11 @@ if ($trade=="agry" && $b) {	// согласен, если список предметов равен у обоих и т
 	if ($l_i[$loc][$login]["trade"]["a"] && $l_i[$loc][$to]["trade"]["a"]) {	// обмен
 		// проверим наличие предметов
 		$b=0;
-		foreach(array_keys($i) as $j) if (intval(preg_replace('/.*'.$i[$j][0].':(\d+).*/',"\\1",$l_i[$loc][$login]["items"]))<$i[$j][1]) {$b=1; if (strpos($i[$j][0],"_")!==false) $ti=substr($i[$j][0],0,strpos($i[$j][0],"_")); else $ti=$i[$j][0]; if (substr($i[$j][0],0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$ti)) $item=explode("|",implode("",file("items/".$ti))); else die("err: no items/".$i[$j][0]);addjournal($loc,$login,"У вас нет: ".$i[$j][1]." ".$item[0]); break;}
-		foreach(array_keys($ito) as $j) if (intval(preg_replace('/.*'.$ito[$j][0].':(\d+).*/',"\\1",$l_i[$loc][$to]["items"]))<$ito[$j][1]) {$b=1; if (strpos($ito[$j][0],"_")!==false) $ti=substr($ito[$j][0],0,strpos($ito[$j][0],"_")); else $ti=$ito[$j][0]; if (substr($ito[$j][0],0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$ti)) $item=explode("|",implode("",file("items/".$ti))); else die("err: no items/".$ito[$j][0]);addjournal($loc,$login,"У ".$tchar." нет: ".$ito[$j][1]." ".$item[0]); break;}
+		foreach(array_keys((array)($i)) as $j) if (intval(preg_replace('/.*'.$i[$j][0].':(\d+).*/',"\\1",$l_i[$loc][$login]["items"]))<$i[$j][1]) {$b=1; if (strpos($i[$j][0],"_")!==false) $ti=substr($i[$j][0],0,strpos($i[$j][0],"_")); else $ti=$i[$j][0]; if (substr($i[$j][0],0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$ti)) $item=explode("|",implode("",(array)(file("items/".$ti)))); else die("err: no items/".$i[$j][0]);addjournal($loc,$login,"У вас нет: ".$i[$j][1]." ".$item[0]); break;}
+		foreach(array_keys((array)($ito)) as $j) if (intval(preg_replace('/.*'.$ito[$j][0].':(\d+).*/',"\\1",$l_i[$loc][$to]["items"]))<$ito[$j][1]) {$b=1; if (strpos($ito[$j][0],"_")!==false) $ti=substr($ito[$j][0],0,strpos($ito[$j][0],"_")); else $ti=$ito[$j][0]; if (substr($ito[$j][0],0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$ti)) $item=explode("|",implode("",(array)(file("items/".$ti)))); else die("err: no items/".$ito[$j][0]);addjournal($loc,$login,"У ".$tchar." нет: ".$ito[$j][1]." ".$item[0]); break;}
 		if ($b==0) {	// передаем вещи
-			foreach(array_keys($i) as $j) additem($loc,$login,$to,$i[$j][0],$i[$j][1],"items","items",1,-1,1);
-			foreach(array_keys($ito) as $j) additem($loc,$to,$login,$ito[$j][0],$ito[$j][1],"items","items",1,-1,1);
+			foreach(array_keys((array)($i)) as $j) additem($loc,$login,$to,$i[$j][0],$i[$j][1],"items","items",1,-1,1);
+			foreach(array_keys((array)($ito)) as $j) additem($loc,$to,$login,$ito[$j][0],$ito[$j][1],"items","items",1,-1,1);
 			unset($l_i[$loc][$login]["trade"]);
 			unset($l_i[$loc][$to]["trade"]);
 			}
@@ -100,20 +100,20 @@ if ($trade=="agry" && $b) {	// согласен, если список предметов равен у обоих и т
 if ($b) {
 	$stmp=$tchar." предлагает:";
 	if (count((array)($ito))==0) $stmp.="<br/>[пусто]";
-	foreach(array_keys($ito) as $j) {
+	foreach(array_keys((array)($ito)) as $j) {
 		if (strpos($ito[$j][0],"_")!==false) $ti=substr($ito[$j][0],0,strpos($ito[$j][0],"_")); else
 		if (strpos($ito[$j][0],"-")!==false) $ti=substr($ito[$j][0],0,strpos($ito[$j][0],"-")); else $ti=$ito[$j][0];
-		if (substr($ito[$j][0],0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$ti)) $item=explode("|",implode("",file("items/".$ti))); else die("err: no items/".$ito[$j][0]);
+		if (substr($ito[$j][0],0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$ti)) $item=explode("|",implode("",(array)(file("items/".$ti)))); else die("err: no items/".$ito[$j][0]);
 		$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&look=".$ito[$j][0]."\">".$item[0];
 		if ($ito[$j][1]>1) $stmp.=" (".$ito[$j][1].")";
 		$stmp.="</a>";
 		}
 	$stmp.="<br/>Вы за это отдаете:";
 	if (count((array)($i))==0) $stmp.="<br/>[пусто]";
-	foreach(array_keys($i) as $j) {
+	foreach(array_keys((array)($i)) as $j) {
 		if (strpos($i[$j][0],"_")!==false) $ti=substr($i[$j][0],0,strpos($i[$j][0],"_")); else
 		if (strpos($i[$j][0],"-")!==false) $ti=substr($i[$j][0],0,strpos($i[$j][0],"-")); else $ti=$i[$j][0];
-		if (substr($i[$j][0],0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$ti)) $item=explode("|",implode("",file("items/".$ti))); else die("err: no items/".$i[$j][0]);
+		if (substr($i[$j][0],0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$ti)) $item=explode("|",implode("",(array)(file("items/".$ti)))); else die("err: no items/".$i[$j][0]);
 		$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&trade=del&id=".$i[$j][0]."\">".$item[0];
 		if ($i[$j][1]>1) $stmp.=" (".$i[$j][1].")";
 		$stmp.="</a>";

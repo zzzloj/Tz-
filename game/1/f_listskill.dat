@@ -83,14 +83,14 @@ $arr_title_v=array(
 
 	if (!$start) $start=0;
 
-	$keys=array_keys($arr_skills);
+	$keys=array_keys((array)($arr_skills));
 	for ($i=$start;$i<$start+99 && $i<count((array)($keys));$i++) { //вместо 99 было $g_list
 		if ($to) {
 			if ($keys[$i]=="meditation" ||$keys[$i]=="animaltaming" || $keys[$i]=="steal")
 			$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&to=$to&use=skill.".$keys[$i].$m."\">".$arr_title_v[$keys[$i]]."</a>";
 			} else {	// в след. экране all выберем цель $to для использования
 
-$sk=array_sum($skills);
+$sk=array_sum((array)($skills));
 $sk1=$sk-$skills[3]-$skills[4]-$skills[2]-$skills[1]-$skills[0];
 if ($sk1>"0") {
 if ($skills[$arr_skills[$keys[$i]]]>"0") { $stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&look=skill.".$keys[$i]."\">".$arr_title_v[$keys[$i]]."</a>: ".intval($skills[$arr_skills[$keys[$i]]]); }

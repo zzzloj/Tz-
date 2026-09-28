@@ -12,7 +12,7 @@ if ($mocr) {						//mocr=obj|objv|to|tov|name_x/..., mocrl=obj|objv|to|tov
 		$name_x=substr(preg_replace('/\W/',"",$name_x),0,9);
 		$m[$num-1]="$obj|$objv|$to|$tov|$name_x";
             if(strlen($l_i[$loc][$login]["mocr"])>300) msg("Слишком много или слишком длинные макросы");
-		$l_i[$loc][$login]["mocr"]=implode("/",$m);
+		$l_i[$loc][$login]["mocr"]=implode("/",(array)($m));
 		msg("Макрос с именем $name_x сохранен.","Макросы",0);
             
 		}
@@ -21,7 +21,7 @@ if ($mocr) {						//mocr=obj|objv|to|tov|name_x/..., mocrl=obj|objv|to|tov
 		if ($num<1 || $num>8) msg("Диапазон номера от 1 до 8");
 		if (!isset($l_i[$loc][$login]["mocr"])) $m=array("","","","","","","",""); else $m=explode("/",$l_i[$loc][$login]["mocr"]);
 		unset($m[$num-1]);
-		$l_i[$loc][$login]["mocr"]=implode("/",$m);
+		$l_i[$loc][$login]["mocr"]=implode("/",(array)($m));
 		msg("Макрос с номером $num удален.","Макросы",0);
 		}
 

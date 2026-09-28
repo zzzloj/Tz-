@@ -14,7 +14,7 @@
 				$items[$i-1]=$items[$i];
 				$items[$i]=$tc;
 				}
-		$l_i[$loc][$login]["priem"]=implode("|",$items);
+		$l_i[$loc][$login]["priem"]=implode("|",(array)($items));
 		msg("Прием передвинут вверх.");
 		}
 	if ($down) {
@@ -29,15 +29,15 @@
 				$items[$i+1]=$items[$i];
 				$items[$i]=$tc;
 				}
-		$l_i[$loc][$login]["priem"]=implode("|",$items);
+		$l_i[$loc][$login]["priem"]=implode("|",(array)($items));
 		msg("Прием передвинут вниз.");
 		}
 	$stmp="<p>Ваши приемы:";
 	if (!$start) $start=0;
-	$keys=array_keys($items);
+	$keys=array_keys((array)($items));
 	for ($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) {
 		$k=explode(":",$items[$keys[$i]]);
-		if (file_exists("items/".$k[0])) $item=explode("|",implode("",file("items/".$k[0]))); else die("err: no items/".$k[0]);		
+		if (file_exists("items/".$k[0])) $item=explode("|",implode("",(array)(file("items/".$k[0])))); else die("err: no items/".$k[0]);		
 		if (time()<$k[1]) $item=$item[0]." [осталось ".(round(($k[1]-time())/60)+1)." минут]"; else $item=$item[0];
 		if ($to) {
 			$stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&to=$to&use=".$k[0]."\">".$item."</a>";

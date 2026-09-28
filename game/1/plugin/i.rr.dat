@@ -11,7 +11,7 @@ $words="Tira Ruen";
 			if ($cast>0 && $skills[13]) {
 				$char[3]-=$manacost;
 				$char[6]=time()+10; // 10 сек отдыхаем
-				$l_i[$loc][$login]["char"]=implode("|",$char);
+				$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 				// произносим заклинание
 				addjournal($loc,"all",$char[0].": ".$words);
 				if (rand(0,100)<=$cast) { 	// удалось

@@ -15,6 +15,6 @@
 			additem($loc,$take,$login,$id,$num,"items","items",1,-1,1);
 			$char = explode("|",$l_i[$loc][$login]["char"]);
 			$char[6]=time()+2;
-			$l_i[$loc][$login]["char"]=implode("|",$char);
+			$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 			//$id=0;	// чтобы вывести список оставшихся
 			} else addjournal($loc,$login,"Нет такого предмета");

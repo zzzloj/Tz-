@@ -1,5 +1,5 @@
 <?php
-$srvmain=implode("",file("srvmain.dat"));
+$srvmain=implode("",(array)(file("srvmain.dat")));
 $stmp="<p align=\"center\">
 <a href=\"$PHP_SELF?site=online&r=".rand(1,99)."\">Кто онлайн?</a>
 <br/><a href=\"$PHP_SELF?site=flag&r=".rand(1,99)."\">Флаг лидерства</a>
@@ -13,5 +13,5 @@ if ($pi) {
 	require($GLOBALS["DOCUMENT_ROOT"]."/javainc.ssp");
 	$stmp.="</p><p align=\"center\"><br/><small><a href=\"$homeurl\">$home </a> 2004<br/></small>\n";
 	}
-$srv=implode("",file("server.dat"));
+$srv=implode("",(array)(file("server.dat")));
 msg($stmp,"Статистика (Cервер ".$srv.")",0,'none');

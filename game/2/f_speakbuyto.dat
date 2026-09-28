@@ -1,7 +1,7 @@
 <?php
 		if (strpos($to,"_")!==false) $ti=substr($to,0,strpos($to,"_")); else
 		if (strpos($to,"-")!==false) $ti=substr($to,0,strpos($to,"-")); else $ti=$to;
-		if (substr($to,0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$ti)) $item=explode("|",implode("",file("items/".$ti))); else die("err: no items/".$to);
+		if (substr($to,0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$ti)) $item=explode("|",implode("",(array)(file("items/".$ti)))); else die("err: no items/".$to);
 		if (strpos($l_i[$loc][$speak]["bank"],$to.":")===false) msg("У меня нет ".$item[0]);
 		$count=intval(preg_replace('/.*'.$to.':(\d+).*/',"\\1",$l_i[$loc][$speak]["bank"]));
 		if ($count==0) msg($item[0]." у меня нет, попробуйте заглянуть в другой раз.",$tchar[0]);

@@ -13,7 +13,7 @@ parse_str($tmp, $legacy_qs); extract($legacy_qs);
 if ($newstime) die(@date("d/m",@filemtime("story/news.htm")));
 
 // список у Санчеса
-if ($gwanted) die(@implode("",@file("wanted.dat")));
+if ($gwanted) die(@implode("",(array)(@file("wanted.dat"))));
 if ($swanted) {
         $file = fopen ("wanted.dat", "w");
         if($file!==false) {fputs($file,str_replace("\\","",$swanted));fclose($file);}
@@ -21,13 +21,13 @@ if ($swanted) {
 
 // кланы
 
-if ($gclan) {if(!file_exists("clans/".$gclan)) die("none"); else die(@implode("",@file("clans/".$gclan)));}
+if ($gclan) {if(!file_exists("clans/".$gclan)) die("none"); else die(@implode("",(array)(@file("clans/".$gclan))));}
 if ($inclan) {
                 $dh = opendir("clans");
                 while (($fname = readdir($dh))!== false) if ($fname!="." && $fname!=".." && $fname!="1.htaccess" && $fname!=".htaccess") {
                         if(strtolower($fname)==strtolower($inclan)) {
                                 closedir($dh);
-                                $tmp=@unserialize(@implode("",@file("clans/".$fname)));
+                                $tmp=@unserialize(@implode("",(array)(@file("clans/".$fname))));
                                 if (gettype($tmp)=="array" && !isset($tmp["m"][$login]) && !isset($tmp["v"][$login]) && !isset($tmp["s"][$login]) && !isset($tmp["g"][$login])) die("no"); else die("yes");
                                 }
                         }
@@ -53,7 +53,7 @@ if ($eclan) {
 if ($payed) {
         if (file_exists("payed.dat")) {
                 $all=0;
-                $all=@implode("",@file("payed.dat"));
+                $all=@implode("",(array)(@file("payed.dat")));
                 if ($all) {$all++;$file=fopen("payed.dat","w");if($file!==false){fputs($file,$all);fclose($file);}}
                  } else {$file=fopen("payed.dat","w");if($file!==false){fputs($file,"1");fclose($file);}}
         die("ok");
@@ -61,7 +61,7 @@ if ($payed) {
 if ($reg2) {
         if (file_exists("all.dat")) {
                 $all=0;
-                $all=@implode("",@file("all.dat"));
+                $all=@implode("",(array)(@file("all.dat")));
                 if ($all) {$all++;$file=fopen("all.dat","w");if($file!==false){fputs($file,$all);fclose($file);}}
                  } else {$file=fopen("all.dat","w");if($file!==false){fputs($file,"1");fclose($file);}}
         die("ok");

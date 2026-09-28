@@ -5,14 +5,14 @@
 $skills=explode("|",$l_i[$loc][$login]["skills"]);
 if ($skills[22]>0) {
 	$char[6]=time()+5;
-	$l_i[$loc][$login]["char"]=implode("|",$char);
+	$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 	additem($loc,$login,"","i.bint",1);	
 
 	if (rand(1,100)<40+$skills[22]*10) {
 		$heal=rand(5,5+$skills[22]*2);
 		if ($char[1]+$heal>$char[2]) $heal=$char[2]-$char[1];
 		$char[1]+=$heal;
-		$l_i[$loc][$login]["char"]=implode("|",$char);
+		$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 		addjournal($loc,$login,"Жизнь +".$heal);
 
 		addjournal($loc,$login,"Вы забинтовываете раны"); 

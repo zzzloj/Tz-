@@ -6,7 +6,7 @@
 		if ($char[8]) {
 			$char[8]=0;
 			$char[5]=time();
-			$l_i[$loc][$to]["char"]=implode("|",$char);
+			$l_i[$loc][$to]["char"]=implode("|",(array)($char));
 			addjournal($loc,"all", $char[0]." воскрес!",$to);
 			addjournal($loc,$to,"Вы воскресли!");
 			} else addjournal($loc,$to,"Вы не призрак");

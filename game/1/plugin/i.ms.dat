@@ -17,7 +17,7 @@
 	addjournal($loc,"all",$char[0]." призвал ".$tc[0],$login);
 
 	$tc[0]="призванный ".$tc[0];
-	$npc["char"]=implode("|",$tc);
+	$npc["char"]=implode("|",(array)($tc));
 	$npc["owner"]=$login."|".$login."||0";
 	$id="n.a.".rand(99,9999);
 	$l_i[$loc][$id]=$npc;

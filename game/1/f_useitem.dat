@@ -5,14 +5,14 @@
 			if(!$char[12]) msg("Вы не на коне");
 			$tc=explode(":",$char[12]);
 			$char[12]="";
-			$l_i[$loc][$login]["char"]=implode("|",$char);
+			$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 			calcparam($loc,$login);
 			include("npc/n.a.losh");
 			$tc1=explode("|",$npc["char"]);
 			$tc1[5]=time();
 			if($tc[1]<$tc1[1]) $tc1[1]=$tc[1]; 
 			if (isset($l_i[$loc][$login]["name"])) {$tc1[0].=" ".$l_i[$loc][$login]["name"]; $npc["name"]=$l_i[$loc][$login]["name"]; unset($l_i[$loc][$login]["name"]);}
-			$npc["char"]=implode("|",$tc1);
+			$npc["char"]=implode("|",(array)($tc1));
 			$npc["owner"]=$login."|".$login."|0|".(time()+60*60)."|1";
 			$l_i[$loc]["n.a.losh.".rand(99,9999)]=$npc;
 			addjournal($loc,"all",$char[0]." спешился",$login);
@@ -32,7 +32,7 @@
 				$use="m.".substr($use,4);	// ниже исп. магию
 				if (strpos($use,"_")!==false) $ti=substr($use,0,strpos($use,"_")); else 
 				if (strpos($use,"-")!==false) {$ti=substr($use,0,strpos($use,"-")); echo $ti;} else $ti=$use;
-				if (file_exists("items/".$ti)) $m=explode("|",implode("",file("items/".$ti))); else die("err: no items/".$use);
+				if (file_exists("items/".$ti)) $m=explode("|",implode("",(array)(file("items/".$ti)))); else die("err: no items/".$use);
 				if ($m[6] && !$to) {$use=$scroll;$list='all';} else require "f_usemagic.dat";	// чтобы вывести список целей
 			}else 
 			if (substr($use,0,4)=='i.w.' || substr($use,0,4)=='i.a.') include "plugin/i.w.dat";

@@ -50,7 +50,7 @@ $l_tt=array();
 if ($debug==$zero || $zxf==$zero) $debug=1; else $debug=0;
 if ($sid && substr($sid,0,2)!='u.') $sid='u.'.$sid;
 if ((!$sid && !$site) || !$tmp) $site='main';
-$glast=@implode('',@file('glast.dat'));
+$glast=@implode('',(array)(@file('glast.dat')));
 $glast=trim($glast); //$sl=rand(3,20); sleep($sl);
 $tlast=time().$_SERVER['HTTP_USER_AGENT'].substr($sid,0,10);
 $file=fopen('glast.dat','w');@fputs($file,$tlast);@fclose($file);
@@ -253,7 +253,7 @@ if ($go) {
       if ($loc=="x154x1540" && $go=="x155x1540") msg("Ангел сверхестественной силой не дает вам двигаться дальше");
 
         $loc_c = explode("|",$l_tt[$loc]["d"]);
-        $b=array_search($go,$loc_c);
+        $b=array_search($go,(array)($loc_c));
         if ($b) {
                 $tgo=$loc_c[$b-1];
                 loadloc($go);
@@ -261,7 +261,7 @@ if ($go) {
                 $char = explode("|",$l_i[$loc][$login]["char"]);
             	$skills = explode("|",$l_i[$loc][$login]["skills"]);
                 if (rand(1,100)<=$skills[17]*8) $hide=1; else $hide=0;
-                if ($gal && $char[12]) {$loc_c = explode("|",$l_tt[$go]["d"]); $b=array_search($tgo,$loc_c);}
+                if ($gal && $char[12]) {$loc_c = explode("|",$l_tt[$go]["d"]); $b=array_search($tgo,(array)($loc_c));}
                 if (!$b) $tgo="";
                 addnpc($login,$loc,$go,$tgo,$hide);
                 if ($b) addnpc($login,$loc,$loc_c[$b+1],1,$hide);
@@ -308,7 +308,7 @@ if ($mod && file_exists('f_mod.dat')) if ($login=='u.ogir' || $login=='u.scream'
 if ($speak || $speak=$cs) if (substr($speak,0,2)=='i.') $take=$speak; else require 'f_speak.dat';
 if ($take) require 'f_take.dat';
 if ($say) require 'f_say.dat';
-if ($ca) {$l_i[$loc][$login]['macrol']="ca|$ca||"; $char[7]=$ca; $l_i[$loc][$login]['char']=implode('|',$char); attack($loc,$login,$ca); $char = explode('|',$l_i[$loc][$login]['char']);}
+if ($ca) {$l_i[$loc][$login]['macrol']="ca|$ca||"; $char[7]=$ca; $l_i[$loc][$login]['char']=implode('|',(array)($char)); attack($loc,$login,$ca); $char = explode('|',$l_i[$loc][$login]['char']);}
 if ($drop) require 'f_drop.dat';
 if ($dn) require 'd.dat';
 if ($blogid) require 'c.dat';
@@ -348,7 +348,7 @@ $stmp='';
 			$inf[0]=$brouzer;
 			$inf[0]=htmlspecialchars(stripslashes($inf[0]));
 			$inf[1]=htmlspecialchars(stripslashes($inf[1]));
-			$l_i[$loc][$login]["inf"]=implode(":||:",$inf);
+			$l_i[$loc][$login]["inf"]=implode(":||:",(array)($inf));
 
 if ($l_i[$loc][$login]['msgt']) $stmp.="<a href=\"$PHP_SELF?sid=$sid&msg=1\">[л/с].</a><br/>";
 $stmp.=$char[1].'/'.$char[2].' ('.$char[3].'/'.$char[4].')';
@@ -376,7 +376,7 @@ if (!$g_sounds) {
 // OBJECTS
 $ti=explode('x',$loc);
 if (!$start) $start=0;
-$keys=array_keys($l_i[$loc]);
+$keys=array_keys((array)($l_i[$loc]));
 for ($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) if ($keys[$i]!=$login && $l_i[$loc][$keys[$i]]['god']!='1')  {  //режим невидимки
         if (substr($keys[$i],0,2)=='i.') {
                 $tmp=explode('|',$l_i[$loc][$keys[$i]]);
@@ -545,8 +545,8 @@ function msg($msg,$title_v='Территория Зла',$journal=1,$menu='',$vname='',$vval=
         $t_g1 = $t_g1[1]+$t_g1[0];
         $game["tmid"]=($game["tmid"]+$t_g1-$t_g)/2;
         savegame();
-        if ($page_j && $journal) {$page_j = explode("<br/>",$page_j); if (count((array)($page_j))>$g_list) array_splice($page_j,0,count((array)($page_j))-$g_list); $page_j = implode("<br/>",$page_j);}
-        if ($page_d && file_exists("l_f/".$loc)) $page_j.="<br/>".implode("",file("l_f/".$loc));
+        if ($page_j && $journal) {$page_j = explode("<br/>",$page_j); if (count((array)($page_j))>$g_list) array_splice($page_j,0,count((array)($page_j))-$g_list); $page_j = implode("<br/>",(array)($page_j));}
+        if ($page_d && file_exists("l_f/".$loc)) $page_j.="<br/>".implode("",(array)(file("l_f/".$loc)));
         strlen($wml.$msg.$page_j)<$g_size?$bsize=1:$bsize=0;
         if ($page_j && substr($page_j,0,5)=="<br/>") $page_j=substr($page_j,5);
         if ($page_j && $journal) {
@@ -732,7 +732,7 @@ if (time()>$char[17]) { $char[1]=min($char[1]+=round($tm/($g_regen-$skills[16]*4
                         if (substr($j,0,4)=="n.o." && substr($i,0,2)=="c." && substr($i,3)!=".in" && (!$char[7] || !isset($l_i[$i][$char[7]]))) require "f_no.dat";
                         if (!$char[7] && !$owner[1] && ($char[10] || (!$char[10] && $char[12])) && substr($j,0,4)!="n.o.") {require "f_na.dat"; if($b) continue;}
                         }
-                $l_i[$i][$j]["char"]=implode("|",$char);
+                $l_i[$i][$j]["char"]=implode("|",(array)($char));
                 if ($char[7] && substr($j,0,2)!="u.") attack($i,$j,$char[7]);
                 } else {unset($l_i[$i][$j]); continue;}
                 }
@@ -741,7 +741,7 @@ if (time()>$char[17]) { $char[1]=min($char[1]+=round($tm/($g_regen-$skills[16]*4
 function attack($loc,$from,$to,$magic='',$answer=1,$rmagic=0,$priem="",$ptitle_v="") {
         global $attackf;
         if (!$attackf)
-        eval(implode('',file("f_attackf.dat")));
+        eval(implode('',(array)(file("f_attackf.dat"))));
         }
 
 function loadloc($loc) {
@@ -749,10 +749,10 @@ function loadloc($loc) {
         if ($loc==".") return;
         if (!isset($l_tt[$loc])) {
                 if (!$loc || !file_exists("l_i/".$loc)) return;
-                $tmp=implode("",file("l_i/".$loc));
+                $tmp=implode("",(array)(file("l_i/".$loc)));
                 $l_tt[$loc]=unserialize($tmp);
                 if (!$l_tt[$loc]["d"]) {$tmp=preg_replace_callback('/s:(?:\d+):"(.*?)";/',function ($m) { return calcser($m[1]); },$tmp); $l_tt[$loc]=unserialize($tmp);}
-                if (!$l_tt[$loc]["d"]) $l_tt[$loc]=unserialize(implode("",file("l_t/".$loc)));
+                if (!$l_tt[$loc]["d"]) $l_tt[$loc]=unserialize(implode("",(array)(file("l_t/".$loc))));
                 if (!$l_tt[$loc]["d"]) die("err: loadloc($loc)");
                 if (isset($l_tt[$loc]["i"])) $l_i[$loc]=$l_tt[$loc]["i"]; else $l_i[$loc]=array();
                 if (isset($l_tt[$loc]["t"])) $l_t[$loc]=$l_tt[$loc]["t"];
@@ -773,22 +773,22 @@ function addnpc($id,$from="",$to="",$gal=0,$hide=0) {
                 $floc=explode("|",$l_tt[$from]["d"]);
                 $tnpc=$l_i[$from][$id];
                 $tchar=substr($tnpc["char"],0,strpos($tnpc["char"],"|"));
-                if (!$hide) if ($to && array_search($to,$floc)) {if($gal && $gal!=1) addjournal($from,"all",$tchar." ".$ars[5]." галопом ".$gal,$id); else if (!$gal) addjournal($from,"all",$tchar." ".$ars[3]." ".$floc[array_search($to,$floc)-1],$id);} else addjournal($from,"all",$tchar." ".$ars[1],$id);
+                if (!$hide) if ($to && array_search($to,(array)($floc))) {if($gal && $gal!=1) addjournal($from,"all",$tchar." ".$ars[5]." галопом ".$gal,$id); else if (!$gal) addjournal($from,"all",$tchar." ".$ars[3]." ".$floc[array_search($to,(array)($floc))-1],$id);} else addjournal($from,"all",$tchar." ".$ars[1],$id);
                  unset($l_i[$from][$id]);
                 }
         if ($to && isset($l_i[$to])) {
                 if (!$tnpc && isset($l_i[$to][$id])) {$tnpc=$l_i[$to][$id]; $tchar=substr($tnpc["char"],0,strpos($tnpc["char"],"|"));}
                 if ($tnpc) {
                         $tloc=explode("|",$l_tt[$to]["d"]);
-                        if ($from && array_search($from,$tloc)) {
+                        if ($from && array_search($from,(array)($tloc))) {
                                 if($gal && $gal!=1) addjournal($to,"all",$tchar." ".$ars[6]." галопом ".$gal,$id); else if($gal==1) addjournal($to,"all",$tchar." ".$ars[4]." галопом",$id); else addjournal($to,"all",$ars[2]." ".$tchar,$id);
                                 if (substr($id,0,2)=="n.") {        // история следов npc
                                         $tchar=explode("|",$tnpc["char"]);
                                         $steps=explode(":",$tchar[12]);
                                         if (count((array)($steps))==0) $steps[]=$from;
                                                 else {if ($steps[count((array)($steps))-1]==$to) unset($steps[count((array)($steps))-1]); else $steps[]=$from;}
-                                        $tchar[12]=implode(":",$steps);
-                                        $tnpc["char"]=implode("|",$tchar);
+                                        $tchar[12]=implode(":",(array)($steps));
+                                        $tnpc["char"]=implode("|",(array)($tchar));
                                         }
                                 } else addjournal($to,"all",$ars[0]." ".$tchar,$id);
                         $l_i[$to][$id]=$tnpc;

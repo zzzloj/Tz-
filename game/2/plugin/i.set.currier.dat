@@ -16,14 +16,14 @@ $skills=explode("|",$l_i[$loc][$login]["skills"]);
 function tsret($s) {if($s>0) return $s; else return 0;}
 if (!$to || !isset($arr[$to])) {
 	$sher="Выберите что сделать:";
-	foreach(array_keys($arr) as $i) $sher.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&to=$i\">".$arr[$i][1]." (".$arr[$i][3]." ".$arr[$i][4].", шанс: ".tsret($skills[32]*20-$arr[$i][2])."%)</a>";
+	foreach(array_keys((array)($arr)) as $i) $sher.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&to=$i\">".$arr[$i][1]." (".$arr[$i][3]." ".$arr[$i][4].", шанс: ".tsret($skills[32]*20-$arr[$i][2])."%)</a>";
 	msg($sher);
 	}
 
 if ($skills[32]*20-$arr[$to][2]>0) {
 	if (additem($loc,$login,"","i.acid","count")==0) msg("Необходима кислота");
 	$char[6]=time();
-	$l_i[$loc][$login]["char"]=implode("|",$char);
+	$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 
 	additem($loc,$login,"",$arr[$to][5],$arr[$to][3],"items","items",1,0,1);	// удаляем ингридиенты
 	additem($loc,$login,"","i.acid",1,"items","items",1,0,1);			// кислоту

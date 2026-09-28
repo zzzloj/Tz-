@@ -22,7 +22,7 @@ list($zapis)=mysql_fetch_array(mysql_query("select text from blogs where id='".$
 
 $onpage=7;
 $stmp.= '<small><b>Коментарии к теме:</b><br/>'.$zapis;
-$tmp=unserialize(implode("",file("../clans/".$clan))); 
+$tmp=unserialize(implode("",(array)(file("../clans/".$clan)))); 
 	if (isset($tmp["g"][$login]) || isset($tmp["s"][$login]) || isset($tmp["v"][$login]) || isset($tmp["m"][$login])) { 
 if(empty($_SESSION["press_kod"])){
 $press_kod=rand(1000,9999);

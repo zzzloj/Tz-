@@ -3,5 +3,5 @@
 if ($l_i[$loc]) foreach($l_i[$loc] as $i=>$val) if (substr($i,0,2)=='n.') {
 	$tchar=explode("|",$l_i[$loc][$i]["char"]);
 	$tchar[7]="";
-	$l_i[$loc][$i]["char"]=implode("|",$tchar);
+	$l_i[$loc][$i]["char"]=implode("|",(array)($tchar));
 	}

@@ -21,7 +21,7 @@ if ($pi) {
 
          //   echo "1";
 
-$srv=implode("",file("server.dat"));
+$srv=implode("",(array)(file("server.dat")));
 if($srv==1 && $pi=="001") {
 $stmp.="
 

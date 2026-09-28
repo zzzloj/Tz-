@@ -8,7 +8,7 @@
 		$tc=explode("|",$l_i[$loc][$take]["char"]);
 		$char[12]="1:".$tc[1];
 		$char[6]=time()+3;
-		$l_i[$loc][$login]["char"]=implode("|",$char);
+		$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 		calcparam($loc,$login);
 		addjournal($loc,"all",$char[0]." сел на лошадь",$login);
 		if (isset($l_i[$loc][$take]["name"])) $l_i[$loc][$login]["name"]=$l_i[$loc][$take]["name"];

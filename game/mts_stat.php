@@ -174,10 +174,10 @@ if ($rep==2) {
 	for($i=$from;$i<=$to;$i+=60*60*24) {
 		$fname=date ("Y.m.d", $i);
 		$num=0;
-		if (@file_exists("1/mts/".$fname)) $num+=@implode("",file("1/mts/".$fname));
-		if (@file_exists("2/mts/".$fname)) $num+=@implode("",file("2/mts/".$fname));
-		if (@file_exists("3/mts/".$fname)) $num+=@implode("",file("3/mts/".$fname));
-		if (@file_exists("4/mts/".$fname)) $num+=@implode("",file("4/mts/".$fname));
+		if (@file_exists("1/mts/".$fname)) $num+=@implode("",(array)(file("1/mts/".$fname)));
+		if (@file_exists("2/mts/".$fname)) $num+=@implode("",(array)(file("2/mts/".$fname)));
+		if (@file_exists("3/mts/".$fname)) $num+=@implode("",(array)(file("3/mts/".$fname)));
+		if (@file_exists("4/mts/".$fname)) $num+=@implode("",(array)(file("4/mts/".$fname)));
 		echo date ("d/m", $i).": ".$num."<br/>";
 		$count+=$num;
 		}

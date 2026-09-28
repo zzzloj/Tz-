@@ -2,12 +2,12 @@
 msg("Обновите ссылку");
 
 $tmp=file("servers.dat");
-$srv=implode("",file("server.dat"));
+$srv=implode("",(array)(file("server.dat")));
 
 $stmp="Выберите сервер для игры:";
 for($i=1;$i<count((array)($tmp));$i++) {
 	$stmp.="<br/><a href=\"".trim($tmp[$i])."g.php?pi=$pi\">Сервер ".$i." (";
-	$s=@implode("",@file(trim($tmp[$i])."f_site_common.php?count=1"));
+	$s=@implode("",(array)(@file(trim($tmp[$i])."f_site_common.php?count=1")));
 	if ($s && strlen($s)<11) $stmp.=$s; else $stmp.="неизв";
 	$stmp.=")</a>";
 	}
@@ -20,4 +20,4 @@ if ($pi) {
 	$stmp.="</p><p align=\"center\"><br/><small><a href=\"$homeurl\">$home </a> 2004<br/></small>\n";
 	}
 
-msg($stmp,"Территория Зла (Cервер ".implode("",file("server.dat")).")",0,'none');
+msg($stmp,"Территория Зла (Cервер ".implode("",(array)(file("server.dat"))).")",0,'none');

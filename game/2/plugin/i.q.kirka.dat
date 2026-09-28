@@ -22,17 +22,17 @@ if (isset($l_i[$loc]["i.s.rudnik"])) {
 $skills=explode("|",$l_i[$loc][$login]["skills"]);
 if ($skills[24]>0) {
 	$char[6]=time()+3;
-	$l_i[$loc][$login]["char"]=implode("|",$char);
+	$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 	$tree=explode("|",$l_i[$loc]["i.s.rudnik"]);
 	if ($tree[1]==0 && time()>$tree[5]) $tree[1]=$tree[4];
 	if ($tree[1]>0) {
 	if (rand(1,100)<$skills[24]*10+10) {
 		$tree[1]--;
 		if ($tree[1]==0) $tree[5]=time()+$tree[3];
-		$l_i[$loc]["i.s.rudnik"]=implode("|",$tree);
+		$l_i[$loc]["i.s.rudnik"]=implode("|",(array)($tree));
 					$st=explode("|",$l_i[$loc][$login]["st"]);
 					$st[6]++; // +1 игрок
-					$l_i[$loc][$login]["st"]=implode("|",$st);	
+					$l_i[$loc][$login]["st"]=implode("|",(array)($st));	
 		addjournal($loc,$login,"Вы добыли немного руды"); 
 		addjournal($loc,"all",$char[0]." добыл немного руды",$login);
 		additem($loc,"",$login,"i.ruda",1);
@@ -43,7 +43,7 @@ if ($skills[24]>0) {
 			if(rand(0,100)<$art[$rnd][2]+10) {
 					$st=explode("|",$l_i[$loc][$login]["st"]);
 					$st[9]++; // +1 игрок
-					$l_i[$loc][$login]["st"]=implode("|",$st);	
+					$l_i[$loc][$login]["st"]=implode("|",(array)($st));	
 				addjournal($loc,$login,"Вы нашли ".$art[$rnd][1]."!"); 
 				addjournal($loc,"all",$char[0]." нашел ".$art[$rnd][1]."!",$login);
 				additem($loc,"",$login,$art[$rnd][0],1);

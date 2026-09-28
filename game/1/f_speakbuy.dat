@@ -8,7 +8,7 @@ if (time()>$tchar[11]) {
 		$l_i[$loc][$speak]["bank"]=str_replace($regF[1][$i],$regF[2][$i].":".$regF[3][$i].":".$regF[4][$i]."=".$regF[5][$i].":".$tmp,$l_i[$loc][$speak]["bank"]);
 		}
 	$tchar[11]=time()+round($trader[1]*(rand(70,130)/100));
-	$l_i[$loc][$speak]["char"]=implode("|",$tchar);
+	$l_i[$loc][$speak]["char"]=implode("|",(array)($tchar));
 	}
 
 	$stmp="";
@@ -18,7 +18,7 @@ if (time()>$tchar[11]) {
 	for ($i=$start;$i<$start+$g_list && $i<$xF;$i++) {
 		if (strpos($regF[1][$i],"_")!==false) $ti=substr($regF[1][$i],0,strpos($regF[1][$i],"_")); else
 		if (strpos($regF[1][$i],"-")!==false) $ti=substr($regF[1][$i],0,strpos($regF[1][$i],"-")); else $ti=$regF[1][$i];
-		if (substr($regF[1][$i],0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$ti)) $item=explode("|",implode("",file("items/".$ti))); else die("err: no items/".$ti);
+		if (substr($regF[1][$i],0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$ti)) $item=explode("|",implode("",(array)(file("items/".$ti)))); else die("err: no items/".$ti);
 		$tmp=$item[0];
 		if (strpos($regF[1][$i],"..")!==false) $tmp.=" *";
 	//require "f_time.dat";

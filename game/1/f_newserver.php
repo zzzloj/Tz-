@@ -13,7 +13,7 @@ parse_str($tmp, $legacy_qs); extract($legacy_qs);
 	$login=strtolower($login);
 	if (file_exists("online/".$login)) msg("Ваш персонаж сейчас в игре, подождите 10 минут или зайдите и сохранитесь вручную, чтобы персонаж покинул игру.");
 
-	$srv=@implode("",@file("server.dat"));
+	$srv=@implode("",(array)(@file("server.dat")));
 	$tmp=@file("servers.dat");
 	if (!$newsrv) {	// выведем список серверов
 		$stmp="Выберите сервер:";

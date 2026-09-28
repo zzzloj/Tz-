@@ -21,7 +21,7 @@ if (!$id) $stmp="<p>
 if ($id) {
 $id=str_replace('/','',$id);
 if (!file_exists("story/".$id.".htm")) msg("<p>Нет текста, сообщите название рассказа разработчику");
-$stmp=implode("",file("story/".$id.".htm"));
+$stmp=implode("",(array)(file("story/".$id.".htm")));
 
 $stmp=str_replace("|",":",$stmp);
 $stmp=wordwrap($stmp,500,"|");

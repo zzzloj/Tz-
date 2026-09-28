@@ -34,10 +34,10 @@ $PHP_SELF = "g.php";
 
         // проверим на других серверах
         $tmp=file("servers.dat");
-        $srv=implode("",file("server.dat"));
+        $srv=implode("",(array)(file("server.dat")));
         for($i=1;$i<count((array)($tmp));$i++) if ($srv!=$i) {
                 $s="";
-                $s=@implode("",@file(trim($tmp[$i])."f_site_common.php?login=".$login));
+                $s=@implode("",(array)(@file(trim($tmp[$i])."f_site_common.php?login=".$login)));
                 if ($s=="yes") {$loc=""; msg("Ваш персонаж находится на <a href=\"".trim($tmp[$i])."g.php?site=connect2&login=$login&p=$p&r=".rand(1,99)."\">сервере ".$i."</a>, чтобы играть на этом (сервер ".$srv."), подождите 10 минут и попробуйте войти заново.","Территория Зла");}
                 if ($s!="no") {$loc=""; msg("Сервер не отвечает, попробуйте зайти на <a href=\"f_newserver.php?login=$login&amp;p=$p\">другой сервер</a> или повторите через несколько минут.","Территория Зла");}
                 }
@@ -73,13 +73,13 @@ $PHP_SELF = "g.php";
         if ($tuser[6]>$t) $tacc=$tuser[6]; else $tacc=$t;
         if ($_SERVER["REMOTE_ADDR"]!="62.118.250.193" && $login!=$g_admin && (!$zx || $zx!=$zero) && time()>$tacc) msg("Срок действия вашего аккаунта истек, вы можете заплатить (для абонентов моск. МТС и МЕГАФОН <a href=\"$PHP_SELF?site=accmts&sid=$login.$p\">бесплатно</a>) и продолжить игру.\n<br/><a href=\"http://mag.su/magmail/pay.php?login=".substr($login,2)."\">Оплатить аккаунт</a>\n<br/>Или обнулить персонажа (при этом потеряете весь накопленный опыт, навыки и предметы) и играть бесплатно еще три дня.<br/><a href=\"$PHP_SELF?site=accobn&login=$login&p=$p\">Обнулить персонажа</a><br/>Внимание! После обнуления персонаж восстановлению не подлежит!<br/><a href=\"$PHP_SELF\">На главную</a>","Территория Зла");
 
-        $srvmain=implode("",file("srvmain.dat"));
+        $srvmain=implode("",(array)(file("srvmain.dat")));
 
         // проверим клан
 	//print_r($auser);
         if (strpos($auser["char"],"*")===false) $clan=""; else $clan=substr($auser["char"],strpos($auser["char"],"*")+1,strrpos($auser["char"],"*")-strpos($auser["char"],"*")-1);
 	//echo $clan;
-	if ($clan && @implode("",@file($srvmain."f_common.php?inclan=$clan&login=$login"))=="no") $clan="no"; else $clan="yes";
+	if ($clan && @implode("",(array)(@file($srvmain."f_common.php?inclan=$clan&login=$login")))=="no") $clan="no"; else $clan="yes";
                                  //  echo 1;
         // ок, получили данные, пробуем войти в игру
 
@@ -92,10 +92,10 @@ $PHP_SELF = "g.php";
 //echo "aa";
         ob_start("translate");
         if ($zx==$zero) $p.="&zx=".$zx;
-        $tnews=@implode("",@file($srvmain."f_common.php?newstime=1"));
+        $tnews=@implode("",(array)(@file($srvmain."f_common.php?newstime=1")));
        // echo 1;
         if(strlen($tnews)>5) $tnews="";
-        $s=@implode("",@file(@implode("",@file("serverurl.dat")).$srv."/g.php?site=connect2&sid=$login&login=$login&p=$p&f_c=$f_c&clan=$clan&tacc=$tacc&tnews=$tnews&ip=".$_SERVER["REMOTE_ADDR"]."&data=".urlencode($data)));
+        $s=@implode("",(array)(@file(@implode("",(array)(@file("serverurl.dat"))).$srv."/g.php?site=connect2&sid=$login&login=$login&p=$p&f_c=$f_c&clan=$clan&tacc=$tacc&tnews=$tnews&ip=".$_SERVER["REMOTE_ADDR"]."&data=".urlencode($data))));
       //   echo 1;
         echo $s;
         ob_end_flush();

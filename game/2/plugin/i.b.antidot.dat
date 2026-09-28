@@ -1,10 +1,10 @@
 <?php
-				if (file_exists("items/".$use)) $item=explode("|",implode("",file("items/".$use))); else die("err: no items/".$use);
+				if (file_exists("items/".$use)) $item=explode("|",implode("",(array)(file("items/".$use)))); else die("err: no items/".$use);
 				$char[6]=time()+4;
-				$l_i[$loc][$login]["char"]=implode("|",$char);
+				$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 				if ($item[2]) {
 					$char[17]-=300;
-					$l_i[$loc][$login]["char"]=implode("|",$char);
+					$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 					addjournal($loc,$login,'Вы исцелились');
 					}
 				// удаляем

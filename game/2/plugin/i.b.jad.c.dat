@@ -8,13 +8,13 @@
 	if (!isset($l_i[$loc][$to])) msg("Нет цели");
 	$tchar=explode("|",$l_i[$loc][$to]["char"]);
 	$tchar[17]=time()+300;
-	if ($to!="u.ogir" && $to!="u.ascorun" && $to!="u.askorun") $l_i[$loc][$to]["char"]=implode("|",$tchar);
+	if ($to!="u.ogir" && $to!="u.ascorun" && $to!="u.askorun") $l_i[$loc][$to]["char"]=implode("|",(array)($tchar));
 	$war=explode("|",$l_i[$loc][$login]["war"]);
 	$war[0]=100; $war[1]=""; $war[2]=""; $war[3]=""; $war[4]="";  $war[12]="ядом"; $war[14]=""; 
-	$war=implode("|",$war);
+	$war=implode("|",(array)($war));
 
 	$char[6]=time()+8;
-	if ($l_i[$loc][$to]!="u.ascorun" && $l_i[$loc][$to]!="u.askorun") { $l_i[$loc][$login]["char"]=implode("|",$char); }
+	if ($l_i[$loc][$to]!="u.ascorun" && $l_i[$loc][$to]!="u.askorun") { $l_i[$loc][$login]["char"]=implode("|",(array)($char)); }
 
 	additem($loc,$login,"","i.b.jad.c",1,"items","items",1,0,1);
 	attack($loc,$login,$to,$war,0,1);

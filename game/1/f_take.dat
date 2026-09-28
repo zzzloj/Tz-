@@ -19,7 +19,7 @@ if ($take) {			//linkПоднять
 	if (substr($take,0,2)!='i.') msg("<p>И как вы себе это представляете? :-)");
 	if (isset($l_i[$loc][$take])) {
 	if ($take=="i.s.lodka") include "f_uselodka.dat";
-	if ($take=="i.s.arena") {$b=0; if ($char[8]) $b=1; if(!$b) {$b=1;foreach(array_keys($l_i[$loc]) as $i) if(substr($i,0,2)=="u." && $i!=$login) {$tc=explode("|",$l_i[$loc][$i]["char"]); if(!$tc[8]) {$b=0; break;}}} if($b) {addnpc($login,$loc,"x1086x501");msg("Вы покинули арену");} else msg("Покинуть арену можно либо призраком, либо оставшись единственным в живых.");}
+	if ($take=="i.s.arena") {$b=0; if ($char[8]) $b=1; if(!$b) {$b=1;foreach(array_keys((array)($l_i[$loc])) as $i) if(substr($i,0,2)=="u." && $i!=$login) {$tc=explode("|",$l_i[$loc][$i]["char"]); if(!$tc[8]) {$b=0; break;}}} if($b) {addnpc($login,$loc,"x1086x501");msg("Вы покинули арену");} else msg("Покинуть арену можно либо призраком, либо оставшись единственным в живых.");}
 	if (substr($take,0,4)=='i.s.' && substr($take,0,6)!='i.s.d.' && substr($take,0,7)!='i.s.res' && substr($take,0,11)!='i.s.portal_') msg("<p>Этот предмет нельзя взять");
 	if ($char[8]) if (substr($take,0,7)=='i.s.res') ressurect($loc,$login); else msg("<p>Вы призрак и поэтому не можете ничего передать, поднять или бросить, найдите лекаря или камень воскрешения");
 $tdef=explode("|",$l_i[$loc][$login]["def"]);

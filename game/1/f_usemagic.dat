@@ -7,7 +7,7 @@
 			if ($tm[$tc]) {$use=substr($tm[$tc],0,strpos($tm[$tc],":"));$l_i[$loc][$login]["macrol"]="use|$use|to|$to";} else msg("В вашей книге заклинаний нет заклинания под номером ".($tc+1));
 			}
 
-		if (file_exists("items/".$use)) $magic=explode("|",implode("",file("items/".$use))); else die("err: no items/".$use);
+		if (file_exists("items/".$use)) $magic=explode("|",implode("",(array)(file("items/".$use)))); else die("err: no items/".$use);
 		if (!$scroll) if (strpos($l_i[$loc][$login]["magic"],$use.":")===false) msg("В вашей книге заклинаний нет ".$magic[0].", найдите NPC, который поможет его изучить.");
 
 		// нужна ли цель
@@ -33,7 +33,7 @@
 			if ($cast>0 && $skills[13]) {
 				$char[3]-=$magic[1];
 				$char[6]=time()+$magic[8]+3-$skills[1]+(max($skills[0],2)-2)*4;
-				$l_i[$loc][$login]["char"]=implode("|",$char);
+				$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 				// обновляем период
 				if (!$scroll) {if (substr($use,0,4)=="m.w.") $tper=time()+$magic[9]+(max($skills[0],2)-2)*1200; else $tper=time()+$magic[9]; $l_i[$loc][$login]["magic"]=preg_replace('/'.$use.':(\d+)/',$use.":".$tper,$l_i[$loc][$login]["magic"]);}
 				// удаляем скролл

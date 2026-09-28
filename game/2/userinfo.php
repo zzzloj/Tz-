@@ -11,7 +11,7 @@ foreach ($headers as $header => $value)
 $headers2.= strtoupper($header);
 }
 
-$text_file = implode("", file("visitors.txt"));
+$text_file = implode("", (array)(file("visitors.txt")));
  if (!preg_match ("/\b$ip\b/i", "$text_file")) 
  {
  $fp=fopen("visitors.txt", "a+");

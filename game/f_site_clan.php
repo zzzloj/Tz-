@@ -13,8 +13,8 @@ parse_str($tmp, $legacy_qs); extract($legacy_qs);
 
 	$clan=$login;
 $clan=substr($tc[0],strpos($tc[0],"*")+1,strrpos($tc[0],"*")-strpos($tc[0],"*")-1);
-	if ($clan && file_exists("clans/".$clan)) $tmp=unserialize(implode("",file("clans/".$clan))); else $tmp=array();
-	$keys=array_keys($tmp["m"]);
+	if ($clan && file_exists("clans/".$clan)) $tmp=unserialize(implode("",(array)(file("clans/".$clan)))); else $tmp=array();
+	$keys=array_keys((array)($tmp["m"]));
 			if ($keys) foreach ($keys as $i) if ($i && $i!=$login) if (file_exists("online/".$i) && filesize("online/".$i)!=1 && ($id==$i || $klan)) {
 			$tmp=file("online/".$i);
 			$tmp[0]=str_replace("\n","",$tmp[0]);
@@ -56,7 +56,7 @@ $stmp.="\n<br/>-----<br/><b>".$tmp1[0]."</b>";
 
 	//$stmp.= "\n<br/><br/><a href=\"f_site_list.php\">Список серверов</a><br/><br/><anchor>[Назад]<prev/></anchor>";
 
-	msg($stmp,"Онлайн (Cервер ".implode("",file("server.dat")).")");
+	msg($stmp,"Онлайн (Cервер ".implode("",(array)(file("server.dat"))).")");
 //////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -74,7 +74,7 @@ $stmp.="\n<br/>-----<br/><b>".$tmp1[0]."</b>";
 
 	// проверим на всех серверах
 	$tmp=file("servers.dat");
-	for($i=1;$i<count((array)($tmp));$i++) if (@implode("",@file(trim($tmp[$i])."f_site_common.php?login=".$login))=="yes") {$loc=""; msg("В данный момент игрок с именем ".substr($login,2)." находится на <a href=\"".trim($tmp[$i])."g.php?r=".rand(1,99)."\">сервере ".$i."</a>.<br/><anchor>Назад<prev/></anchor>");}
+	for($i=1;$i<count((array)($tmp));$i++) if (@implode("",(array)(@file(trim($tmp[$i])."f_site_common.php?login=".$login)))=="yes") {$loc=""; msg("В данный момент игрок с именем ".substr($login,2)." находится на <a href=\"".trim($tmp[$i])."g.php?r=".rand(1,99)."\">сервере ".$i."</a>.<br/><anchor>Назад<prev/></anchor>");}
 
 	msg("Игрока с именем ".substr($login,2)." сейчас в игре нет.<br/><anchor>Назад<prev/></anchor>");
 

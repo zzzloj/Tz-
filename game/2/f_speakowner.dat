@@ -21,7 +21,7 @@
 				if ($char[6]>=time()) msg("Вы должны отдохнуть");
 				$char[12]="1:".$tc[1];
 				$char[6]=time()+3;
-				$l_i[$loc][$login]["char"]=implode("|",$char);
+				$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 				calcparam($loc,$login);
 				addjournal($loc,"all",$char[0]." сел на лошадь",$login);
 				if (isset($l_i[$loc][$speak]["name"])) $l_i[$loc][$login]["name"]=$l_i[$loc][$speak]["name"];
@@ -39,7 +39,7 @@
 				}
 			if ($id=='guardlist') {	// список кого защищать
 				$stmp="<p>Выберите кого защищать:";
-				foreach (array_keys($l_i[$loc]) as $i) if ($i!=$login && $i!=$speak) if (substr($i,0,2)=='n.' || substr($i,0,2)=='u.' && $l_i[$loc][$i]["god"]!="1") {
+				foreach (array_keys((array)($l_i[$loc])) as $i) if ($i!=$login && $i!=$speak) if (substr($i,0,2)=='n.' || substr($i,0,2)=='u.' && $l_i[$loc][$i]["god"]!="1") {
 					$tto=explode("|",$l_i[$loc][$i]["char"]);
 					$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&speak=$speak&id=guard&who=".$i."\">".$tto[0]."</a>";
 					}
@@ -61,7 +61,7 @@
 			if ($id=='attacklist') {	// список кого атаковать
 			if ($loc=='x1092x474') msg("Нет цели");
 				$stmp="<p>Выберите кого атаковать:";
-				foreach (array_keys($l_i[$loc]) as $i) if ($i!=$login && $i!=$speak) if (substr($i,0,2)=='n.' || substr($i,0,2)=='u.' && $l_i[$loc][$i]["god"]!="1") {
+				foreach (array_keys((array)($l_i[$loc])) as $i) if ($i!=$login && $i!=$speak) if (substr($i,0,2)=='n.' || substr($i,0,2)=='u.' && $l_i[$loc][$i]["god"]!="1") {
 					$tto=explode("|",$l_i[$loc][$i]["char"]);
 					$stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&speak=$speak&id=attack&who=".$i."\">".$tto[0]."</a>";
 					}
@@ -78,7 +78,7 @@
 				$fcrim = $fchar[9];
 				$tcrim = $tc[9] || substr($who,0,4)=="n.c.";
 				if (!$fcrim && $tc[7]!=$login && ((!$tcrim && substr($who,0,4)!="n.a.") || ($loc_c[1]==1 && substr($who,0,4)=="n.a."))) {docrim($loc,$login); if ($loc_c[1]==1) {$tchar[9]="преступник"; $tchar[10]=time()+$g_crim;}}
-				$l_i[$loc][$speak]["char"]=implode("|",$tchar);
+				$l_i[$loc][$speak]["char"]=implode("|",(array)($tchar));
 				}
 			if ($id=='followme') {	// следуй за мной
 				$owner[1]=$login;
@@ -90,7 +90,7 @@
 				}
 			if ($id=='followlist') {	// список за кем следовать
 				$stmp="<p>Выберите за кем следовать:";
-				foreach (array_keys($l_i[$loc]) as $i) if ($i!=$login && $i!=$speak) if (substr($i,0,2)=='u.' && $l_i[$loc][$i]["god"]!="1") {
+				foreach (array_keys((array)($l_i[$loc])) as $i) if ($i!=$login && $i!=$speak) if (substr($i,0,2)=='u.' && $l_i[$loc][$i]["god"]!="1") {
 					$tto=explode("|",$l_i[$loc][$i]["char"]);
 					$stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&speak=$speak&id=follow&who=".$i."\">".$tto[0]."</a>";
 					}
@@ -129,7 +129,7 @@
 					if (isset($l_i[$loc][$speak]["name"])) $tchar[0]=substr($tchar[0],0,-strlen($l_i[$loc][$speak]["name"])-1);
 					$tchar[0].=" ".$new;
 					$l_i[$loc][$speak]["name"]=$new;
-					$l_i[$loc][$speak]["char"]=implode("|",$tchar);
+					$l_i[$loc][$speak]["char"]=implode("|",(array)($tchar));
 					$stmp.="Имя изменено на ".$tchar[0];
 					} else $stmp.="<input name=\"new\" emptyok=\"true\" type=\"text\" value=\"".$l_i[$loc][$speak]["name"]."\"/><br/><select name=\"tr\" multiple=\"true\" value=\"1\"><option value=\"1\">Транслит</option></select><br/><a href=\"$PHP_SELF?sid=$sid&speak=$speak&id=name&new=$(new)&tr=$(tr)\">Изменить имя</a>";
 				}
@@ -138,7 +138,7 @@
 				$skills=explode("|",$l_i[$loc][$login]["skills"]);
 				if ($owner[3]>time()+240) msg($tchar[0]." не собирается покидать вас в ближайшие несколько минут, нет смысла уговаривать его остаться еще (попробуйте повторить когда срок службы будет на исходе)."); 
 				$char[6]=time()+10;
-				$l_i[$loc][$login]["char"]=implode("|",$char);
+				$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 				if (rand(0,100)<$skills[7]*10) {
 					if ($owner[3]) {
 						$owner[3]+=rand(60,60+$skills[20]*60);
@@ -167,5 +167,5 @@
 				msg($tchar[0]." покинул вас");
 				}
 
-		if ($owner) $l_i[$loc][$speak]["owner"]=implode("|",$owner);
+		if ($owner) $l_i[$loc][$speak]["owner"]=implode("|",(array)($owner));
 		msg($stmp,$tchar[0]);

@@ -36,9 +36,9 @@ if ($cnick=="1") {
 	if ($jflud) $jflud="f"; else $jflud="0";
 	$l_i[$loc][$login]["o"]=intval($list)."|".intval($size)."|".intval($j2loc)."|".intval($j2go)."|".intval($menu)."|".intval($sounds)."|".intval($joff)."|".intval($smenu)."|".intval($map)."|".intval($smf)."|".intval($ch);
 	$char[0]=$cnick.$clan; 
-	$l_i[$loc][$login]["char"]=implode("|",$char); 
+	$l_i[$loc][$login]["char"]=implode("|",(array)($char)); 
 	$tus[3]=intval($age);
-	$l_i[$loc][$login]["user"]=implode("|",$tus); 
+	$l_i[$loc][$login]["user"]=implode("|",(array)($tus)); 
 	$stmp="Настройки сохранены.";
 	}
 

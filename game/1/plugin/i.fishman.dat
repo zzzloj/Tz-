@@ -6,7 +6,7 @@ $skills=explode("|",$l_i[$loc][$login]["skills"]);
 if ($skills[29]>0) {
 	$char[6]=time()+6;
       
-	$l_i[$loc][$login]["char"]=implode("|",$char);
+	$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 	addjournal($loc,"all",$char[0]. " ловит рыбу",$login);
 	$b=0;	// сколько поймали
 	$rnd=rand(1,200);
@@ -60,7 +60,7 @@ if ($skills[29]>0) {
 	if ($b) { 
 						$st=explode("|",$l_i[$loc][$login]["st"]);
 					$st[4]++; // +1 игрок
-					$l_i[$loc][$login]["st"]=implode("|",$st);	
+					$l_i[$loc][$login]["st"]=implode("|",(array)($st));	
 	addjournal($loc,"all",$char[0]. " поймал ".$t." ",$login);	if (rand(1,100)<10) addexp($loc,$login,1);}  else {addjournal($loc,$login,"Вам не удалось ничего поймать"); addjournal($loc,"all",$char[0]. " ничего не поймал",$login);}
 
 	// удочка может сломаться, фиксированная вероятность 5%

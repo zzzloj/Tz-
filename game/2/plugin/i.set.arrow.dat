@@ -7,7 +7,7 @@ if (intval(preg_replace('/.*'."i.log".':(\d+).*/',"\\1",$l_i[$loc][$login]["item
 $skills=explode("|",$l_i[$loc][$login]["skills"]);
 if ($skills[27]>0) {
 	$char[6]=time()+6;
-	$l_i[$loc][$login]["char"]=implode("|",$char);
+	$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 
 	additem($loc,$login,"",preg_replace('/.*(i\.h\.p\.[^:]+):\d+.*/',"\\1",$l_i[$loc][$login]["items"]),5,"items","items",1,0,1);		// удаляем 5 перьев
 

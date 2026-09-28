@@ -107,11 +107,11 @@ if ($skill=='str' || $skill=='dex' || $skill=='int') {	//АТТР
 		if ($skilldown && ($skilldown=="str" || $skilldown=="dex" || $skilldow=="int")) msg("Неверный навык");
 		if ($skilldown && $skills[$arr_skills[$skilldown]]<=0) msg("<p>Невозможно понизить, т.к. навык уже на минимальном уровне 0, выберите другой");
 		$sum=0;
-		foreach (array_keys($arr_skills) as $i) if ($i!='str' && $i!='dex' && $i!='int') $sum+=$skills[$arr_skills[$i]];
+		foreach (array_keys((array)($arr_skills)) as $i) if ($i!='str' && $i!='dex' && $i!='int') $sum+=$skills[$arr_skills[$i]];
 		if (!$skilldown) if ($sum>=$g_skills) {
 			$stmp="<p>Превышен предел суммы очков (".$g_skills.") для навыков, выберите что уменьшить: ";
 			if (!$start) $start=0;
-			$keys=array_keys($arr_skills);
+			$keys=array_keys((array)($arr_skills));
 			for ($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) if ($keys[$i]!='str' && $keys[$i]!='dex' && $keys[$i]!='int') 
 			$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&speak=$speak&id=$id&skilldown=".$keys[$i]."\">".$arr_title_v[$keys[$i]].": ".$skills[$arr_skills[$keys[$i]]]."</a>";
 			if (count((array)($keys))>1 && $start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&speak=$speak&id=$id\">^ </a>";}
@@ -138,7 +138,7 @@ if (!$skills[33]) $skills[33]=0;
 $skills[$arr_skills[$skill]]+=1;
 if ($skilldown) $skills[$arr_skills[$skilldown]]-=1;
 $skills[4]-=1;	// очки опыта
-$l_i[$loc][$login]["skills"]=implode("|",$skills);
+$l_i[$loc][$login]["skills"]=implode("|",(array)($skills));
 calcparam($loc,$login);
 $stmp.="<p>".$arr_title_v[$skill].": +1";
 if ($skilldown) $stmp.="<br/>".$arr_title_v[$skilldown].": -1";

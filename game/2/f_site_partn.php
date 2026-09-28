@@ -37,7 +37,7 @@ if ($id=="login") {			// вход в акк
 	if ($res && $res!="Данные не найдены") msg($res);
 	if ($res=="Данные не найдены") {
 		// сохр. в список партнеров
-		$partn=implode("",file("../partn.dat"));
+		$partn=implode("",(array)(file("../partn.dat")));
 		if (!$partn) msg("Ошибка регистрации нового партнера, сообщите об этом администрации");
 		$partn.="|".$nn;
 		$file = fopen ("../partn.dat", "w");

@@ -1,5 +1,5 @@
 <?php
-		if (file_exists("items/".$look)) $m=explode("|",implode("",file("items/".$look))); else die("err: no items/".$look);
+		if (file_exists("items/".$look)) $m=explode("|",implode("",(array)(file("items/".$look)))); else die("err: no items/".$look);
 		$skills=explode("|",$l_i[$loc][$login]["skills"]);
 		function tsret($s) {if($s>95) $s=95; if($s>0) return $s; else return 0;}
 		$stmp="<p>".$m[10];

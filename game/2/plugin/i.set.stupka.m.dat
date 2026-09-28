@@ -6,7 +6,7 @@ if (intval(preg_replace('/.*'."i.f.fileroot".':(\d+).*/',"\\1",$l_i[$loc][$login
 $skills=explode("|",$l_i[$loc][$login]["skills"]);
 if ($skills[23]>0) {
 	$char[6]=time()+6;
-	$l_i[$loc][$login]["char"]=implode("|",$char);
+	$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 
 	// трава пропадает
 	additem($loc,$login,"","i.f.fileroot",1);

@@ -1,7 +1,7 @@
 <?php
 
 if ($l_i[$loc]) {
-	$keys = array_keys($l_i[$loc]);
+	$keys = array_keys((array)($l_i[$loc]));
 	$id = $keys[rand(0,count((array)($keys))-1)];
 	if ($loc_c[1]==1 && rand(0,100)<80) {
 		$id=$login;
@@ -13,7 +13,7 @@ if ($l_i[$loc]) {
 			$tchar=explode("|",$l_i[$loc][$id]["char"]);
 			addjournal($loc,"all","Безумие завладело ".$tchar[0]."!");
 			$tchar[7]=$idto;
-			$l_i[$loc][$id]["char"]=implode("|",$tchar);
+			$l_i[$loc][$id]["char"]=implode("|",(array)($tchar));
 			attack($loc,$id,$idto);
 			}else addjournal($loc,"all","Безумие прошло, никого не тронув");
 		}else addjournal($loc,"all","Безумие никого не тронуло");

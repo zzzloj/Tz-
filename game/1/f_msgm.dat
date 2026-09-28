@@ -12,7 +12,7 @@
 				$items[$i-1]=$items[$i];
 				$items[$i]=$tc;
 				}
-		$l_i[$loc][$login]["msg"]=implode("|",$items);
+		$l_i[$loc][$login]["msg"]=implode("|",(array)($items));
 		msg("Пользователь передвинут вверх.");
 		}
 	if ($msg=="down") {
@@ -27,6 +27,6 @@
 				$items[$i]=$tc;
 				}
 
-		$l_i[$loc][$login]["msg"]=implode("|",$items);
+		$l_i[$loc][$login]["msg"]=implode("|",(array)($items));
 		msg("Пользователь передвинут вниз.");
 		}

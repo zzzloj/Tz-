@@ -11,13 +11,13 @@ if ($clanc) {	// инфа
 	if ($stuk) {	// стук в ворота
 		if (strpos($d[0],"[")!==false) $tmp=substr($d[0],strpos($d[0],"[")+1,strpos($d[0],"]")-strpos($d[0],"[")-1); else $tmp=time()-1;
 		if (time()<$tmp) msg("Стучать можно не чаще чем раз в 3 минуты");
-			$tclan=unserialize(implode("",file("../clans/".$clanc)));
+			$tclan=unserialize(implode("",(array)(file("../clans/".$clanc))));
 			if ($tclan) {
-				$k1=array_keys($tclan["g"]);
+				$k1=array_keys((array)($tclan["g"]));
 				$tclan["m"][$k1[0]]=1;//глава
-				$tclan["m"] = array_merge($tclan["m"], $tclan["v"], $tclan["s"]);
+				$tclan["m"] = array_merge((array)($tclan["m"]), (array)($tclan["v"]), (array)($tclan["s"]));
 				$ctitle_v=preg_replace('/Замок ([А-я]+).*/',"\\1",$d[0]);
-				foreach(array_keys($tclan["m"]) as $k) if (file_exists("online/".$k) && filesize("online/".$k)!=1) {
+				foreach(array_keys((array)($tclan["m"])) as $k) if (file_exists("online/".$k) && filesize("online/".$k)!=1) {
 					$tmp=file("online/".$k);
 					$tmp[0]=trim($tmp[0]);
 					loadloc($tmp[0]);
@@ -25,7 +25,7 @@ if ($clanc) {	// инфа
 					addjournal($tmp[0],$k, $char[0]." стучит в ворота вашего замка ".$ctitle_v."!");
 					}
 				if (strpos($d[0],"[")===false) $d[0].="[".(time()+60*3)."]"; else $d[0]=preg_replace("/\[\d+\]/","[".(time()+60*3)."]",$d[0]);
-				$l_tt[$gate]["d"]=implode("|",$d);
+				$l_tt[$gate]["d"]=implode("|",(array)($d));
 				$l_tt[$gate]["save"]=1;
 				}
 		msg("Вы постучали в ворота, все кто состоит в клане, которому принадлежит замок, извещены об этом.");
@@ -48,7 +48,7 @@ if ($clanc) {	// инфа
 				if (strpos($d[0],"{")!==false) $d[0]=substr($d[0],0,strpos($d[0],"{")).substr($d[0],strpos($d[0],"}")+1);
 				if (strpos($d[0],"#")!==false) $d[0]=substr($d[0],0,strpos($d[0],"#")).substr($d[0],strrpos($d[0],"#")+1);
 				$d[0].="#".(time()+60*60*8)."#";
-				$l_tt[$gate]["d"]=implode("|",$d);
+				$l_tt[$gate]["d"]=implode("|",(array)($d));
 				$l_tt[$gate]["save"]=1;
 				msg("Вы открыли ворота, чтобы запереть их снова поговорите со стражниками");
 				}
@@ -62,7 +62,7 @@ if ($clanc) {	// инфа
 			$ctext=str_replace("{","",$ctext);
 			$ctext=str_replace("}","",$ctext);
 			$d[0]=str_replace("(".$ttext.")","(".$ctext.")",$d[0]);
-			$l_tt[$gate]["d"]=implode("|",$d);
+			$l_tt[$gate]["d"]=implode("|",(array)($d));
 			$l_tt[$gate]["save"]=1;
 			}
 		else $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&ctext=1\">[Вывеска]</a>";

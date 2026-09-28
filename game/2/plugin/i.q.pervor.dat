@@ -9,11 +9,11 @@ if ($to) {
 					if (!$l_i[$loc][$to]["items"]) msg("<p>У ".$tchar[0]." нет ни одного предмета.");
 					$sher="<p>Предметы:";
 					$items=explode("|",$l_i[$loc][$to]["items"]);
-					foreach(array_keys($items) as $i) if ($items[$i]) {
+					foreach(array_keys((array)($items)) as $i) if ($items[$i]) {
 						$k=explode(":",$items[$i]);
 						if (strpos($k[0],"_")!==false) $ti=substr($k[0],0,strpos($k[0],"_")); else
 						if (strpos($k[0],"-")!==false) $ti=substr($k[0],0,strpos($k[0],"-")); else $ti=$k[0];
-						if (substr($k[0],0,5)=="i.rr.") $tirle_z_z=explode("|","руна|50"); else if (file_exists("items/".$ti)) {$tirle_z_z=explode("|",implode("",file("items/".$ti)));} else continue;
+						if (substr($k[0],0,5)=="i.rr.") $tirle_z_z=explode("|","руна|50"); else if (file_exists("items/".$ti)) {$tirle_z_z=explode("|",implode("",(array)(file("items/".$ti))));} else continue;
 //***мод***//
         $zakladka=time()+60;
 						$sher.="<br/><a href=\"$PHP_SELF?sid=$sid&use=skill.steal&to=".$to."&id=".$k[0]."&vk=".$zakladka."\">";

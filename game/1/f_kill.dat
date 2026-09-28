@@ -1,6 +1,6 @@
 <?php
 // если убили
-					$fchar[7]=""; $l_i[$loc][$from]["char"]=implode("|",$fchar);
+					$fchar[7]=""; $l_i[$loc][$from]["char"]=implode("|",(array)($fchar));
 					addjournal($loc,"all",$tchar[0]." погиб",$to);
 					// труп
 
@@ -26,7 +26,7 @@
 					$l_i[$loc][$id]=$item;
 	// убийца
 	if (substr($to,0,2)=="u." && substr($from,0,2)=="u." && $from!=$to && $tchar[7]!=$from && !$tcrim && (!$clan1 || ($clan1 && $clan1!=$clan)) && !$wife) {
-		$l_i[$loc][$from]["char"]=implode("|",$fchar);
+		$l_i[$loc][$from]["char"]=implode("|",(array)($fchar));
 		docrim($loc,$from,"убийца");
 		$fchar=explode("|",$l_i[$loc][$from]["char"]);
 		}
@@ -34,7 +34,7 @@
 					if (substr($to,0,2)=='u.') {
 					$st=explode("|",$l_i[$loc][$from]["st"]);
 					$st[1]++; // +1 игрок
-					$l_i[$loc][$from]["st"]=implode("|",$st);
+					$l_i[$loc][$from]["st"]=implode("|",(array)($st));
 						if ($game["floc"]==$loc && $game["fid"]==$to) {addjournal($loc,"all",$tchar[0]." потерял флаг!",$to); $l_i[$loc]["i.flag"]="флаг лидерства|1|0"; $game["fid"]="";}
 						$l_i[$loc][$to]["equip"]="";
 						if(!$pjpt) $l_i[$loc][$to]["items"]="";
@@ -47,30 +47,30 @@
 							$tc1[5]=time();
 							if($tc[1]<$tc1[1]) $tc1[1]=$tc[1]; 
 							if (isset($l_i[$loc][$to]["name"])) {$tc1[0].=" ".$l_i[$loc][$to]["name"]; $npc["name"]=$l_i[$loc][$to]["name"]; unset($l_i[$loc][$to]["name"]);}
-							$npc["char"]=implode("|",$tc1);
+							$npc["char"]=implode("|",(array)($tc1));
 							$npc["owner"]=$to."|".$to."|0|0|0";
 							$l_i[$loc]["n.a.losh.".rand(99,9999)]=$npc;
 							}
 						$tchar[12]="";
-						$l_i[$loc][$to]["char"]=implode("|",$tchar);
+						$l_i[$loc][$to]["char"]=implode("|",(array)($tchar));
 						if (!$tcrim && $fcrim && substr($from,0,2)=="u." && $from!=$to) {	//killedby
 							if ($twar[15]) {$tmp=explode(":",$twar[15]); $twar[15]=$from.":".$tmp[1];} else $twar[15]=$from.":";
-							$l_i[$loc][$to]["war"]=implode("|",$twar);
+							$l_i[$loc][$to]["war"]=implode("|",(array)($twar));
 							}
 					$st=explode("|",$l_i[$loc][$to]["st"]);
 					$st[2]++; // +1 монстр
-					$l_i[$loc][$to]["st"]=implode("|",$st);
+					$l_i[$loc][$to]["st"]=implode("|",(array)($st));
 						calcparam($loc,$to);	// пересчитаем параметры
 						addjournal($loc,$to,"Вы погибли!");
 						} else {	// npc респавн
 					$st=explode("|",$l_i[$loc][$from]["st"]);
 					$st[0]++; // +1 монстр
-					$l_i[$loc][$from]["st"]=implode("|",$st);
+					$l_i[$loc][$from]["st"]=implode("|",(array)($st));
 							if ($twar[15]) {
 								$resp=explode(":",$twar[15]);
 								if ($resp[3]) {
 									$tchar[1]=$tchar[2]; $tchar[3]=$tchar[4]; $tchar[7]=""; $tchar[12]=""; 
-									$l_i[$loc][$to]["char"]=implode("|",$tchar); 
+									$l_i[$loc][$to]["char"]=implode("|",(array)($tchar)); 
 									$l_i[$loc][$to]["id"]=$to; 
 									$npc="";
 									include "npc/".$to;
@@ -90,7 +90,7 @@
 							}
 					// призрака не преследует
 					$fchar[7]="";
-					$l_i[$loc][$from]["char"]=implode("|",$fchar);
+					$l_i[$loc][$from]["char"]=implode("|",(array)($fchar));
 
 					// экспа и уровень
 					if (substr($from,0,2)=='u.') {
@@ -100,14 +100,14 @@
 							if (!$fcrim && $tcrim && substr($to,0,2)=="u." && $from!=$to) {	//killedto
 								if ($fwarr[15]) {$tmp=explode(":",$fwarr[15]); $fwarr[15]=$tmp[0].":".$to;} else $fwarr[15]=":".$to;
 								}
-							$l_i[$loc][$from]["war"]=implode("|",$fwarr);
+							$l_i[$loc][$from]["war"]=implode("|",(array)($fwarr));
 							}
 						if (substr($to,0,2)!="u.") {	//killedto
 							$skills=explode("|",$l_i[$loc][$from]["skills"]);
 							$skills[3]+=$twar[13];
 							addjournal($loc,$from,"Опыт +".intval($twar[13]));
 							if ($skills[3]>$fwar[13]*$g_exp) {$skills[3]=0; $skills[4]+=1; addjournal($loc,$from,"Вы получили 1 очко опыта!");}
-							$l_i[$loc][$from]["skills"]=implode("|",$skills);
+							$l_i[$loc][$from]["skills"]=implode("|",(array)($skills));
 							if ($skills[3]==0) calcparam($loc,$from); //levelup
 							}
 						
@@ -119,7 +119,7 @@
 							if (!$fcrim && $tcrim && substr($to,0,2)=='u.' && $from!=$to) {	//killedto
 								if ($fwarr[15]) {$tmp=explode(':',$fwarr[15]); $fwarr[15]=$tmp[0].':'.$to;} else $fwarr[15]=':'.$to;
 								}
-							$l_i[$loc][$from]['war']=implode('|',$fwarr);
+							$l_i[$loc][$from]['war']=implode('|',(array)($fwarr));
 							}
 						if (substr($to,0,2)!='u.') {	//killedto
 						$us=explode("|",$l_i[$loc][$from]['owner']);
@@ -130,7 +130,7 @@
 							$sk[3]+=$exp;
 							addjournal($loc,$usr,'Onыт +'.intval($exp));
 							if ($sk[3]>$fw[13]*$g_exp) {$sk[3]=0; $sk[4]+=1; addjournal($loc,$usr,'Bы noлyчuлu 1 oчko onытa!');}
-							$l_i[$loc][$usr]['skills']=implode('|',$sk);
+							$l_i[$loc][$usr]['skills']=implode('|',(array)($sk));
 							if ($sk[3]==0) calcparam($loc,$usr); //levelup
 							}
 						}

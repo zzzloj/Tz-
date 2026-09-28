@@ -5,9 +5,9 @@
 					$loc1=explode("|",$l_tt[$k]["d"]);
 					if ($locai[1]==$loc1[1]) {
 						addjournal($loc,"all",$char[0]." убегает");
-						if ($char[10]) {$move=explode(":",$char[10]); $move[3]=time()+rand($move[1],$move[2]); $char[10]=implode(":",$move);}
+						if ($char[10]) {$move=explode(":",$char[10]); $move[3]=time()+rand($move[1],$move[2]); $char[10]=implode(":",(array)($move));}
 						$char[7]="";
-						$l_i[$i][$j]["char"]=implode("|",$char);
+						$l_i[$i][$j]["char"]=implode("|",(array)($char));
 						addnpc($j,$i,$k); 
 						$b=1;
 						}

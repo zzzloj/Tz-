@@ -21,7 +21,7 @@ global $l_i,$l_tt,$g_destroy,$g_crim,$g_exp,$PHP_SELF,$game;
 	if ($ptitle_v) $ptitle_v=" (".$ptitle_v.")";
 	$tloc=explode("x",$loc);
 	if ($magic) $fwar=explode("|",$magic); else $fwar=explode("|",$l_i[$loc][$from]["war"]);
-	if ($answer) {$fchar[6]=time()+$fwar[3]; $l_i[$loc][$from]["char"]=implode("|",$fchar);}
+	if ($answer) {$fchar[6]=time()+$fwar[3]; $l_i[$loc][$from]["char"]=implode("|",(array)($fchar));}
 	if ($fwar[12]=="мaгиeй") $fwar[12]="магией";	//eng a,e
 	if (substr($from,0,2)!='u.' && rand(0,100)>"92" && $fwar[12]!="молнией") $fwar[12]="магией";
 	if ($rmagic || $fwar[12]=="магией" || $fwar[12]=="молнией") {
@@ -120,14 +120,14 @@ global $l_i,$l_tt,$g_destroy,$g_crim,$g_exp,$PHP_SELF,$game;
 							if($tup[2]=="m") $ts="Ваша жена (".$aloct[0].") ранена!"; else $ts="Ваш муж (".$aloct[0].") ранен!";
 							addjournal($tmf,$tm[0],"<a href=\"$PHP_SELF?sid=".$tm[0]."&p=".$tup[0]."&stele=1\">".$ts."</a>");
 							$tm[1]=time()+300;
-							$tchar[13]=implode(":",$tm);
+							$tchar[13]=implode(":",(array)($tm));
 							}
 						}
 					}
 				// если убили, добавим труп
 				if ($tchar[1]<1) {
 					include "f_kill.dat";
-					} else $l_i[$loct][$to]["char"]=implode("|",$tchar); // иначе сохраним в f_kill.dat
+					} else $l_i[$loct][$to]["char"]=implode("|",(array)($tchar)); // иначе сохраним в f_kill.dat
 
 				} else {if (!$answer) {
 					if (!$rmagic && $fwar[12]!="магией" && $fwar[12]!="молнией") {
@@ -160,8 +160,8 @@ global $l_i,$l_tt,$g_destroy,$g_crim,$g_exp,$PHP_SELF,$game;
 			}// заклинание сорвалось
 
 	// если npc свободен, то атакует
-	if(isset($l_i[$loc][$from]) && ($answer || $rmagic)) {$fchar[7]=$to; $l_i[$loc][$from]["char"]=implode("|",$fchar);}
+	if(isset($l_i[$loc][$from]) && ($answer || $rmagic)) {$fchar[7]=$to; $l_i[$loc][$from]["char"]=implode("|",(array)($fchar));}
 	if(isset($l_i[$loc][$from]) && isset($l_i[$loct][$to]) && $from!=$to && ($fwar[0] || !$fwar[0] && !$rmagic && $fwar[12]!="магией" && $fwar[12]!="молнией")) {
-		if (substr($to,0,2)=="n." && !$tсhar[7]) {$tchar[7]=$from; $l_i[$loct][$to]["char"]=implode("|",$tchar);}
+		if (substr($to,0,2)=="n." && !$tсhar[7]) {$tchar[7]=$from; $l_i[$loct][$to]["char"]=implode("|",(array)($tchar));}
 		if ($answer) attack($loct,$to,$from,0,0);
 		}

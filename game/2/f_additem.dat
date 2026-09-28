@@ -8,7 +8,7 @@ if ($count!='count') {
 if ($time_delete==-1) $time_delete=$g_destroy;
 if (strpos($item,'_')!==false) $tk=substr($item,0,strpos($item,'_')); else
 if (strpos($item,'-')!==false) $tk=substr($item,0,strpos($item,'-')); else $tk=$item;
-if (substr($item,0,5)=='i.rr.') $title_v=explode('|','руна|50'); else if (!file_exists('items/'.$tk)) {$res=0; return 0;} else {$title_v=explode('|',implode('',file('items/'.$tk)));}
+if (substr($item,0,5)=='i.rr.') $title_v=explode('|','руна|50'); else if (!file_exists('items/'.$tk)) {$res=0; return 0;} else {$title_v=explode('|',implode('',(array)(file('items/'.$tk))));}
 $title_v=$title_v[0];
 if ($from && $from!='loc' && !isset($l_i[$loc][$from])) {if ($journal && $to) addjournal($loc,$to,'Не от кого забрать '.$title_v); $res=0; return 0;}
 if ($to && $to!='loc' && !isset($l_i[$loc][$to])) {if ($journal && $from) addjournal($loc,$from,'Некому передать '.$title_v); $res=0; return 0;}
@@ -35,7 +35,7 @@ if ($from) {
 				$tmp=explode('|',$l_i[$loc][$item]);
 				if ($tmp[1]<$count) {if ($journal && $to) addjournal($loc,$to,'Количество '.$title_v.' меньше, чем '.$count); $res=0; return 0;}
 				$tmp[1]-=$count;
-				if ($tmp[1]==0) unset($l_i[$loc][$item]); else $l_i[$loc][$item]=implode('|',$tmp);
+				if ($tmp[1]==0) unset($l_i[$loc][$item]); else $l_i[$loc][$item]=implode('|',(array)($tmp));
 				}
 		}
 
@@ -83,7 +83,7 @@ if(substr($equip,strlen($equip)-1,1)=='|') $equip=substr($equip,0,strlen($equip)
 						$tcount-=$count;
 						$items=preg_replace('/'.$item.':(\d+)/',$item.':'.$tcount,$items);
 						}
-				if (!$d) $l_i[$loc][$from][$ft]=$items; else {if (strpos($tdied[0],'*')===false) $clan=''; else $clan=substr($tdied[0],strpos($tdied[0],'*')+1,strrpos($tdied[0],'*')-strpos($tdied[0],'*')-1); if ($to) $tc=explode('|',$l_i[$loc][$to]['char']); else $tc[0]=''; if (strpos($tc[0],'*')===false) $clan1=''; else $clan1=substr($tc[0],strpos($tc[0],'*')+1,strrpos($tc[0],'*')-strpos($tc[0],'*')-1); if($tc[13]) $wife=substr($from,6,strrpos($from,'.')-6)==substr($tc[13],0,strlen(substr($from,6,strrpos($from,'.')-6))); else $wife=0; if (!$tdied[1] && $to && substr($from,0,strlen('i.s.d.'.$to))!='i.s.d.'.$to && (!$clan1 || ($clan1 && $clan1!=$clan)) && !$wife && substr($from,0,11)!='i.s.d.u.qv.') docrim($loc,$to,'мародер'); $tdied[3]=str_replace('|',',',$items); $l_i[$loc][$from]=implode('|',$tdied);}
+				if (!$d) $l_i[$loc][$from][$ft]=$items; else {if (strpos($tdied[0],'*')===false) $clan=''; else $clan=substr($tdied[0],strpos($tdied[0],'*')+1,strrpos($tdied[0],'*')-strpos($tdied[0],'*')-1); if ($to) $tc=explode('|',$l_i[$loc][$to]['char']); else $tc[0]=''; if (strpos($tc[0],'*')===false) $clan1=''; else $clan1=substr($tc[0],strpos($tc[0],'*')+1,strrpos($tc[0],'*')-strpos($tc[0],'*')-1); if($tc[13]) $wife=substr($from,6,strrpos($from,'.')-6)==substr($tc[13],0,strlen(substr($from,6,strrpos($from,'.')-6))); else $wife=0; if (!$tdied[1] && $to && substr($from,0,strlen('i.s.d.'.$to))!='i.s.d.'.$to && (!$clan1 || ($clan1 && $clan1!=$clan)) && !$wife && substr($from,0,11)!='i.s.d.u.qv.') docrim($loc,$to,'мародер'); $tdied[3]=str_replace('|',',',$items); $l_i[$loc][$from]=implode('|',(array)($tdied));}
 				if ($journal && $to=='loc') {if ($journal && !$d) addjournal($loc,$from,'Вы бросили '.$count.' '.$title_v); if ($journal && !$d) addjournal($loc,'all',$ftitle_v. ' бросил '.$count.' '.$title_v,$from);}
 				if ($journal && $to!='loc') if ($journal && !$d) addjournal($loc,$from,'Вы потеряли '.$count.' '.$title_v);
 				}
@@ -121,7 +121,7 @@ if(substr($items,strlen($items)-1,1)=='|') $items=substr($items,0,strlen($items)
 					$tcount+=$count;
 					$items=preg_replace('/'.$item.':(\d+)/',$item.':'.$tcount,$items);
 					}
-			if (!$d) $l_i[$loc][$to][$tt]=$items; else {$tdied[3]=str_replace('|',',',$items); $l_i[$loc][$to]=implode('|',$tdied);}
+			if (!$d) $l_i[$loc][$to][$tt]=$items; else {$tdied[3]=str_replace('|',',',$items); $l_i[$loc][$to]=implode('|',(array)($tdied));}
 			if ($journal && $from=='loc') {if ($journal && !$d) addjournal($loc,$to,'Вы подняли '.$count.' '.$title_v); if ($journal && !$d) addjournal($loc,'all',$ftitle_v. ' поднял '.$count.' '.$title_v,$to);}
 			if ($journal && $from!='loc') if ($journal && !$d) addjournal($loc,$to,'Вы получили '.$count.' '.$title_v);
 			}
@@ -134,7 +134,7 @@ if(substr($items,strlen($items)-1,1)=='|') $items=substr($items,0,strlen($items)
 				$tmp=explode('|',$l_i[$loc][$item]);
 				$tmp[1]+=$count;
 				$tmp[2]=time()+$time_delete;
-				$l_i[$loc][$item]=implode('|',$tmp);
+				$l_i[$loc][$item]=implode('|',(array)($tmp));
 				}
 		}
 	}

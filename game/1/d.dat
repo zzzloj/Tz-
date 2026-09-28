@@ -39,7 +39,7 @@ $stmp.= pages($base_url, $num_items, $onpage, $start);
 
   default:
  $blog_text=htmlspecialchars(stripslashes(trim($blog_text)));
-		$tmp=unserialize(implode("",file("../clans/".$clan))); 
+		$tmp=unserialize(implode("",(array)(file("../clans/".$clan)))); 
 	if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {
 $s=$blog_text;
 	// UTF-8 русские буквы

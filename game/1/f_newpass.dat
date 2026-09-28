@@ -11,7 +11,7 @@ if ($newp=="1") {
 } else  {
 if(preg_match("/[^\da-zA-Z_]+/",$newp)) msg("Недопустимые символы в пароле! Пароль должен быть на латинице!<br/><anchor>назад<prev/></anchor>",$game_title,0,'none');
 	$char[1]="$newp"; 
-	$l_i[$loc][$login]["char"]=implode("|",$char); 
+	$l_i[$loc][$login]["char"]=implode("|",(array)($char)); 
 	$stmp="Пароль успешно изменен!";
 	}
 

@@ -47,7 +47,7 @@
 	$fntmp="../all.dat";
 	if (file_exists($fntmp)) {
 		$all=0;
-		$all=@implode("",@file($fntmp));
+		$all=@implode("",(array)(@file($fntmp)));
 		if ($all) {$all++;$file=fopen($fntmp,"w");if($file!==false){fputs($file,$all);fclose($file);}}
  		} else {$file=fopen($fntmp,"w");if($file!==false){fputs($file,"1");fclose($file);}}
 

@@ -92,11 +92,11 @@ global $names,$Values,$NOT_SET;
   {
     $Vlist = explode(":",$Values);
     $Vlist[$i] = $Value;
-    $Values = implode(":",$Vlist);
+    $Values = implode(":",(array)($Vlist));
     if ($Value == $NOT_SET) 
     { // Удаление имени и значения
       $Nlist[$i] = $NOT_SET;
-      $names = implode(":",$Nlist);
+      $names = implode(":",(array)($Nlist));
       $names = str_replace(":$NOT_SET","",$names);
       $Values = str_replace(":$NOT_SET","",$Values);
     }  

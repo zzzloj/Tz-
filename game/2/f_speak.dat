@@ -19,7 +19,7 @@ if ($speak) {
 			if ($tchar[7]==$login) msg("<p>Вы не можете разговаривать с ".$tchar[0].", т.к. он вас атакует");
 			// диалог загрузится в $dialog (у стражи тоже)
 			if (substr($speak,0,4)=="n.g.") include "speak/n.g.guard"; else include "speak/".$speak; 
-			if ($char[7]==$speak) {$char[7];$l_i[$loc][$login]["char"]=implode("|",$char);};
+			if ($char[7]==$speak) {$char[7];$l_i[$loc][$login]["char"]=implode("|",(array)($char));};
 
 			if ($id=='buy' || $id=='sell') {
 				if (!$dialog[$id]) msg($tchar[0]." торговать не будет");

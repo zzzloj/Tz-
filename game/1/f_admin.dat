@@ -31,17 +31,17 @@ if ($login=="u.sn0k" || $login=="u.admin" || $login=="u.scream" || $login=="u.ps
 	<br/><a href=\"$PHP_SELF?sid=$sid&adm=journal&inp=$(inp)\">journal (text)</a>
 	<br/><a href=\"$PHP_SELF?sid=$sid&adm=msg&inp=$(inp)\">msg (text)</a>
 	<br/><a href=\"$PHP_SELF?sid=$sid&adm=blank\">обновить мир</a>
-	<br/>all: ".@implode("",@file("../all.dat"))."
-	<br/>payed: ".@implode("",@file("../payed.dat"))."
+	<br/>all: ".@implode("",(array)(@file("../all.dat")))."
+	<br/>payed: ".@implode("",(array)(@file("../payed.dat")))."
 	\n</p>\n</card>\n<card id=\"tele\" title=\"Телепорт\">\n<p>\n<a href=\"$PHP_SELF?sid=$sid&adm=tln&inp=_begin\">Начало</a><br/><a href=\"$PHP_SELF?sid=$sid&adm=tln&inp=x1092x474\">Банк</a><br/><a href=\"$PHP_SELF?sid=$sid&adm=tln&inp=x1284x393\">Кладбище</a><br/><a href=\"$PHP_SELF?sid=$sid&adm=tln&inp=x902x254\">Замок</a><br/><a href=\"$PHP_SELF?sid=$sid&adm=tln&inp=x1486x247\">Пещера</a><br/><a href=\"$PHP_SELF?sid=$sid&adm=tln&inp=x2169x273\">Ансалон</a><br/><a href=\"$PHP_SELF?sid=$sid&adm=tln&inp=x1778x493\">Крепость</a><br/><a href=\"$PHP_SELF?sid=$sid&adm=tln&inp=x2247x786\">Подземелье</a><br/><a href=\"$PHP_SELF?sid=$sid&adm=tln&inp=qv\">База</a><br/>
 <a href=\"$PHP_SELF?sid=$sid&adm=tln&inp=x3099x100\">Египет</a>",$loc,0);}
 if ($adm=='calk') calcparam($loc,$login);
-	if ($adm=='rsn') {$char[1]=$char[2];$char[3]=$char[4];$char[8]=0;$char[9]=0;$l_i[$loc][$login]["char"]=implode("|",$char);$char=explode("|",$l_i[$loc][$login]["char"]);$l_i[$loc][$login]["magic"]=preg_replace('/:(\d+)/',":0",$l_i[$loc][$login]["magic"]);$l_i[$loc][$login]["priem"]=preg_replace('/:(\d+)/',":0",$l_i[$loc][$login]["priem"]);}
+	if ($adm=='rsn') {$char[1]=$char[2];$char[3]=$char[4];$char[8]=0;$char[9]=0;$l_i[$loc][$login]["char"]=implode("|",(array)($char));$char=explode("|",$l_i[$loc][$login]["char"]);$l_i[$loc][$login]["magic"]=preg_replace('/:(\d+)/',":0",$l_i[$loc][$login]["magic"]);$l_i[$loc][$login]["priem"]=preg_replace('/:(\d+)/',":0",$l_i[$loc][$login]["priem"]);}
 	if ($adm=='tln') if($inp) {addnpc($login,$loc,strtolower($inp)); $loc_c=explode("|",$l_tt[$loc]["d"]);}
 	if ($adm=='mnn' && $inp) additem($loc,"",$login,"i.money",$inp);
 	if ($adm=='gtp') {$field=explode("|",$l_i[$loc][$login][strtolower($inp)]); msg($field[strtolower($val)]);}
-	if ($adm=='unset') {$field=explode("|",$l_i[$loc][$login][strtolower($inp)]); unset($field[strtolower($val)]); $l_i[$loc][$login][strtolower($inp)]=implode("|",$field); if ($val=="items") calcparam($loc,$login);}
-	if ($adm=='stn') {$field=explode("|",$l_i[$loc][$login][strtolower($inp)]); $field[strtolower($val)]=$new; $l_i[$loc][$login][strtolower($inp)]=implode("|",$field); }
+	if ($adm=='unset') {$field=explode("|",$l_i[$loc][$login][strtolower($inp)]); unset($field[strtolower($val)]); $l_i[$loc][$login][strtolower($inp)]=implode("|",(array)($field)); if ($val=="items") calcparam($loc,$login);}
+	if ($adm=='stn') {$field=explode("|",$l_i[$loc][$login][strtolower($inp)]); $field[strtolower($val)]=$new; $l_i[$loc][$login][strtolower($inp)]=implode("|",(array)($field)); }
 	if ($adm=='adni' && $inp && $val) {if ($new=="loc") $to="loc"; else $to=$login; if ($new!="bank") $new="items"; additem($loc,"",$to,$inp,$val."items",$new);}
 	if ($adm=='del' && $inp && $val) {if ($new!="bank") $new="items"; if ($val=="all") $l_i[$loc][$login][$new]=""; else additem($loc,$login,"",strtolower($inp),$val,"items",$new); calcparam($loc,$login);}
 	if ($adm=='gdn') {if ($l_i[$loc][$login]["god"]) unset($l_i[$loc][$login]["god"]); else $l_i[$loc][$login]["god"]=1;}
@@ -56,14 +56,14 @@ if ($adm=='calk') calcparam($loc,$login);
 	if ($adm=='skillinfo') {msg("skills = 0:str|1:dex|2:int|3:level|4:points|5:meditation|6:steal|7:animaltaming|8:hand|9:coldweapon|10:ranged|11:parring|12:uklon|13:magic|14:magic_resist|15:magic_uklon|16:regeneration|17:hiding|18:look|19:steallook|20:animallore|21:spirit|22:healing|23:alchemy|24:mine|25:smith|26:lumb|27:bow|28:stone|29:fish|30:food");}
 	if ($adm=='stop') {$game["stop"]=time()+300; if($inp) $game["stopmsg"]=$inp; msg("Остановка через 5 минут");}//$tmp=file("servers.dat");for($it=0;$it<count($tmp);$it++) {$tmp[$it]=str_replace("\n","",$tmp[$it]);$tmp[$it]=str_replace("\r","",$tmp[$it]);} $srv=implode("",file("server.dat")); $all=count($tmp); $count=1; for($i=0;$i<count($tmp);$i++) if ($srv!=$tmp[$i]) if (@implode("",@file("http://mag.su/game/".$tmp[$i]."/game.php?zxf=$zero&adm=stop"))=="ok") $count++; msg("Остановка через 5 минут на $count из $all серверах");}
 	if ($adm=='play') {unset($game["journal"]);unset($game["info"]);unset($game["stop"]);unset($game["msg"]);msg("Игра запущена");}//$tmp=file("servers.dat");for($it=0;$it<count($tmp);$it++) {$tmp[$it]=str_replace("\n","",$tmp[$it]);$tmp[$it]=str_replace("\r","",$tmp[$it]);} $srv=implode("",file("server.dat")); $all=count($tmp); $count=1; for($i=0;$i<count($tmp);$i++) if ($srv!=$tmp[$i]) if (implode("",file("http://mag.su/game/".$tmp[$i]."/game.php?zxf=$zero&adm=play"))=="ok") $count++; msg("Игра запущена на $count из $all серверах");}
-	if ($adm=='journal') {$game["journal"]=$inp; $tmp=file("servers.dat");for($it=0;$it<count((array)($tmp));$it++) {$tmp[$it]=str_replace("\n","",$tmp[$it]);$tmp[$it]=str_replace("\r","",$tmp[$it]);} $srv=implode("",file("server.dat")); $all=count((array)($tmp)); $count=1; for($i=0;$i<count((array)($tmp));$i++) if ($srv!=$tmp[$i]) if (implode("",file("http://mag.su/game/".$tmp[$i]."/game.php?zxf=$zero&adm=journal&inp=$inp"))=="ok") $count++; msg("Журнал добавлен на $count из $all серверах");}
-	if ($adm=='msg') {if ($inp) $game["msg"]=$inp; else unset($game["msg"]); $tmp=file("servers.dat");for($it=0;$it<count((array)($tmp));$it++) {$tmp[$it]=str_replace("\n","",$tmp[$it]);$tmp[$it]=str_replace("\r","",$tmp[$it]);} $srv=implode("",file("server.dat")); $all=count((array)($tmp)); $count=1; for($i=0;$i<count((array)($tmp));$i++) if ($srv!=$tmp[$i]) if (implode("",file("http://mag.su/game/".$tmp[$i]."/game.php?zxf=$zero&adm=msg&inp=$inp"))=="ok") $count++; msg("MSG утановлен на $count из $all серверах");}
-	if ($adm=='guard') {$d=explode("|",$l_tt[$loc]["d"]); if ($inp) $d[1]=1; else $d[1]=0; $l_tt[$loc]["d"]=implode("|",$d); $l_tt[$loc]["save"]=1;}
+	if ($adm=='journal') {$game["journal"]=$inp; $tmp=file("servers.dat");for($it=0;$it<count((array)($tmp));$it++) {$tmp[$it]=str_replace("\n","",$tmp[$it]);$tmp[$it]=str_replace("\r","",$tmp[$it]);} $srv=implode("",(array)(file("server.dat"))); $all=count((array)($tmp)); $count=1; for($i=0;$i<count((array)($tmp));$i++) if ($srv!=$tmp[$i]) if (implode("",(array)(file("http://mag.su/game/".$tmp[$i]."/game.php?zxf=$zero&adm=journal&inp=$inp")))=="ok") $count++; msg("Журнал добавлен на $count из $all серверах");}
+	if ($adm=='msg') {if ($inp) $game["msg"]=$inp; else unset($game["msg"]); $tmp=file("servers.dat");for($it=0;$it<count((array)($tmp));$it++) {$tmp[$it]=str_replace("\n","",$tmp[$it]);$tmp[$it]=str_replace("\r","",$tmp[$it]);} $srv=implode("",(array)(file("server.dat"))); $all=count((array)($tmp)); $count=1; for($i=0;$i<count((array)($tmp));$i++) if ($srv!=$tmp[$i]) if (implode("",(array)(file("http://mag.su/game/".$tmp[$i]."/game.php?zxf=$zero&adm=msg&inp=$inp")))=="ok") $count++; msg("MSG утановлен на $count из $all серверах");}
+	if ($adm=='guard') {$d=explode("|",$l_tt[$loc]["d"]); if ($inp) $d[1]=1; else $d[1]=0; $l_tt[$loc]["d"]=implode("|",(array)($d)); $l_tt[$loc]["save"]=1;}
 	if ($adm=='filter' && $inp) {
 		$stmp="<p>Добавить предмет:";
 		$dh = opendir("items/");
 		while (($fname = readdir($dh))!== false) if ($fname!="." && $fname!=".." && substr($fname,0,strlen($inp))==$inp) {
-			$item=explode("|",implode("",file("items/".$fname)));
+			$item=explode("|",implode("",(array)(file("items/".$fname))));
 			$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&adm=adni&inp=$fname&val=1\">".$item[0]."</a>";
 			$count++;
 			}
@@ -71,7 +71,7 @@ if ($adm=='calk') calcparam($loc,$login);
 		msg($stmp,"Предметы",0);
 		}
 	if ($adm=='settime' && $inp) {require_once("datafunc.php"); $t=time()+intval($inp)*24*3600; $res=SetGameTime(substr($login,2), $p, $t); if ($res) msg($res,"Ошибка",0,"none"); else msg("Аккаунт продлен на ".$inp." дня");}
-	if ($adm=='setgclan' && $inp && $val) {if (file_exists("../clans/".$inp)) $tmp=unserialize(implode("",file("../clans/".$inp))); else msg("нет клана"); if(substr($val,0,2)!="u.") $val="u.".$val; $tmp["g"]=array($val=>""); $file = fopen ("../clans/".$inp, "w");if ($file!==false) {fputs($file,serialize($tmp));fclose($file);} msg("Глава клана установлен");}
+	if ($adm=='setgclan' && $inp && $val) {if (file_exists("../clans/".$inp)) $tmp=unserialize(implode("",(array)(file("../clans/".$inp)))); else msg("нет клана"); if(substr($val,0,2)!="u.") $val="u.".$val; $tmp["g"]=array($val=>""); $file = fopen ("../clans/".$inp, "w");if ($file!==false) {fputs($file,serialize($tmp));fclose($file);} msg("Глава клана установлен");}
 	if ($adm=='unset' && $to) {if(isset($l_i[$loc][$to])) {unset($l_i[$loc][$to]); msg("Объект удален");} else msg("Нет объекта");}
 	if ($adm=='reploc' && $inp) {if (substr($inp,0,2)!=="n.") msg("npc должен начинаться на n. и быть в локации в вами"); if(!isset($l_i[$loc][$inp])) msg("рядом с вами нет npc с id ".$inp." (регистр учитывается)"); include("npc/".$inp); if (gettype($npc)!=="array") msg("ошибка загрузки npc/".$inp); $l_i[$loc][$inp]["bank"]=$npc["bank"]; msg("Банк у $inp загружен из файла npc/$inp");}//if($inp==1) $inp=$loc; if(!file_exists("l_t/".$inp)) msg("Нет локации $inp"); copy("l_t/".$inp,"l_i/".$inp); msg("Локация восстановлена");}
 if ($adm=='online') {
@@ -114,7 +114,7 @@ if ($adm=='online') {
 
 	//$stmp.= "\n<br/><br/><a href=\"f_site_list.php\">Список серверов</a><br/><br/><anchor>[Назад]<prev/></anchor>";
 
-	msg($stmp,"Онлайн (Cервер ".implode("",file("server.dat")).")");
+	msg($stmp,"Онлайн (Cервер ".implode("",(array)(file("server.dat"))).")");
 
 }
 

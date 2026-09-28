@@ -8,7 +8,7 @@ $rF=explode("..",$to);
 $skills=explode("|",$l_i[$loc][$login]["skills"]);
 if ($skills[28]>0) {
 	$char[6]=time()+5;
-	$l_i[$loc][$login]["char"]=implode("|",$char);
+	$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 if ($k && ($k==$rF[1] || $k==$rF[2] || $k==$rF[3] || $k==$rF[4])) {
 if ($rF[1]) $shans=$skills[28]*10-5;
 if ($rF[2]) $shans=$skills[28]*10+15;

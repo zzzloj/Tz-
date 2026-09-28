@@ -4,7 +4,7 @@
 
 // проверим, чтобы в локации не было более 3 призванных существ, остальных отпустим
 $counther=0;
-foreach (array_keys($l_i[$loc]) as $i) if (isset($l_i[$loc][$i]["owner"]) && substr($i,0,4)=="n.s.") {
+foreach (array_keys((array)($l_i[$loc])) as $i) if (isset($l_i[$loc][$i]["owner"]) && substr($i,0,4)=="n.s.") {
 	$owner=explode("|",$l_i[$loc][$i]["owner"]);
 	if ($owner[0]==$login && substr($i,0,4)!="n.o.") {
 		$counther++; 

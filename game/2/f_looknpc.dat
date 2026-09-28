@@ -30,7 +30,7 @@
 			if (strpos($i,"_")!==false) $ti=substr($i,0,strpos($i,"_")); else
 			if (strpos($i,"-")!==false) $ti=substr($i,0,strpos($i,"-")); else $ti=$i;
 			if (file_exists("items/".$ti)) {
-				$item=explode("|",implode("",file("items/".$ti)));
+				$item=explode("|",implode("",(array)(file("items/".$ti))));
 				if (substr($i,0,4)=="i.a.") {if (!$sto) $sto=$item[0]; else $sto.=", ".$item[0];}
 					else {if (!$str) $str=$item[0]; else $str.=", ".$item[0];}
 				} else die("err: no items/".$i);

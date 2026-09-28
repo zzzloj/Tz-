@@ -5,5 +5,5 @@ $tmp=urldecode($tmp);
 parse_str($tmp, $legacy_qs); extract($legacy_qs);
 
 if ($login) if (file_exists("online/".$login)) die("yes"); else die("no");
-if ($count) die(@implode("",@file("count.dat")));
+if ($count) die(@implode("",(array)(@file("count.dat"))));
 echo 1;

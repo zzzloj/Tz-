@@ -17,7 +17,7 @@ $clanc=substr($d[0],strpos($d[0],"*")+1,strrpos($d[0],"*")-strpos($d[0],"*")-1);
 // слушается только клановцев, владеющих замком, гостей нет
 if (strpos($char[0],"*")===false) $clan=""; else $clan=substr($char[0],strpos($char[0],"*")+1,strrpos($char[0],"*")-strpos($char[0],"*")-1);
 if ($clan && file_exists("../clans/".$clan)) {
-$tmp=unserialize(implode("",file("../clans/".$clan))); }
+$tmp=unserialize(implode("",(array)(file("../clans/".$clan)))); }
 if ($clanc!=$clan) msg("Вы не состоите в клане, которому принадлежит этот замок, поэтому мне нечего вам сказать. Найдите в замке барона Дитриха моего командира, стражника Лансета, он знает все о крепостях, о том как их захватывать и защищать.");
 
 			if (!$id) {			// основной диалог
@@ -39,7 +39,7 @@ if(substr($loc,3)==".sklad") $stmp.="<a href=\"$PHP_SELF?sid=$sid&speak=$speak&i
 				$stmp="";
 				$in=substr($loc,0,4)."in";
 				loadloc($in);
-				if ($l_i[$in]) foreach (array_keys($l_i[$in]) as $i) if (substr($i,0,2)=='u.') {
+				if ($l_i[$in]) foreach (array_keys((array)($l_i[$in])) as $i) if (substr($i,0,2)=='u.') {
 					$tto=explode("|",$l_i[$in][$i]["char"]);
 					$stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&speak=$speak&id=add&who=".$i."\">".$tto[0]."</a>";
 					}
@@ -49,7 +49,7 @@ if(substr($loc,3)==".sklad") $stmp.="<a href=\"$PHP_SELF?sid=$sid&speak=$speak&i
 			if ($id=='add' && $who && !isset($tmp["m"][$login])) { // добавить гостя $who
 				if (strpos($l_tt[$gate]["d"],":".$who.":")!==false) msg(substr($who,2)." и так является гостем этого замка, сир.");
 				$d[0].=":".$who.":";
-				$l_tt[$gate]["d"]=implode("|",$d);
+				$l_tt[$gate]["d"]=implode("|",(array)($d));
 				$l_tt[$gate]["save"]=1;
 				$stmp.=substr($who,2)." с этого момента является гостем этого замка и может беспрепятственно входить и выходить из него.";
 				}
@@ -65,7 +65,7 @@ if(substr($loc,3)==".sklad") $stmp.="<a href=\"$PHP_SELF?sid=$sid&speak=$speak&i
 			if ($id=='del' && $who && !isset($tmp["m"][$login])) { // удалить гостя $who
 				if (strpos($l_tt[$gate]["d"],":".$who.":")===false) msg(substr($who,2)." не является гостем этого замка, сир.");
 				$d[0]=str_replace(":".$who.":","",$d[0]);
-				$l_tt[$gate]["d"]=implode("|",$d);
+				$l_tt[$gate]["d"]=implode("|",(array)($d));
 				$l_tt[$gate]["save"]=1;
 				$stmp.=$tchar[0]." с этого момента больше не является гостем замка, если попытается проникнуть внутрь, будет немедленно атакован стражниками.";
 				}
@@ -91,14 +91,14 @@ if(substr($loc,3)==".sklad") $stmp.="<a href=\"$PHP_SELF?sid=$sid&speak=$speak&i
 				if (substr($speak,0,11)=="n.o.castle4") $tc=100;
 				additem($loc,$login,"","i.money",$tc*$val,"items","items",1,0,1);
 				$owner[3]+=$val*60*60*24;
-				$l_i[$loc][$speak]["owner"]=implode("|",$owner);
+				$l_i[$loc][$speak]["owner"]=implode("|",(array)($owner));
 				$stmp.="Контракт продлен на ".$val." дней. Клянусь защищать этот замок от любого, кто посмеет оспаривать ваши права на него, будь то человек или зверь.";
 				}
 
 			if ($id=='move' && $to) {	// идти
 				if(!isset($l_tt[substr($loc,0,4).$to])) msg("Сожалею, сир, но в вашем замке нет такого места");
 				$count=0;
-				if($l_i[substr($loc,0,4).$to]) foreach(array_keys($l_i[substr($loc,0,4).$to]) as $i) if (substr($i,0,4)=="n.o.") $count++;
+				if($l_i[substr($loc,0,4).$to]) foreach(array_keys((array)($l_i[substr($loc,0,4).$to])) as $i) if (substr($i,0,4)=="n.o.") $count++;
 				if ($count>=5) msg("Сожалею, сир, но там уже полно стражников, во время боя мы будем только мешать друг другу.");
 				addjournal($loc,"all",$tchar[0]." говорит: слушаюсь, сир");
 				addnpc($speak,$loc,substr($loc,0,4).$to);
@@ -118,7 +118,7 @@ if(substr($loc,3)==".sklad") $stmp.="<a href=\"$PHP_SELF?sid=$sid&speak=$speak&i
 					$b=0;
 					foreach($arr as $i) {
 						loadloc($tc.$i);
-						if ($l_i[$tc.$i]) foreach(array_keys($l_i[$tc.$i]) as $k) if($k!=$login && substr($k,0,2)=="u.") {
+						if ($l_i[$tc.$i]) foreach(array_keys((array)($l_i[$tc.$i])) as $k) if($k!=$login && substr($k,0,2)=="u.") {
 							$tchar=explode("|",$l_i[$tc.$i][$k]["char"]);
 							if (strpos($tchar[0],"*")===false) $tclan=""; else $tclan=substr($tchar[0],strpos($tchar[0],"*")+1,strrpos($tchar[0],"*")-strpos($tchar[0],"*")-1);
 							if (!$tchar[8] && $tclan!=$clanc && strpos($d[0],":".$k.":")===false) $b=1;
@@ -129,7 +129,7 @@ if(substr($loc,3)==".sklad") $stmp.="<a href=\"$PHP_SELF?sid=$sid&speak=$speak&i
 					if (strpos($d[0],"{")!==false) $d[0]=substr($d[0],0,strpos($d[0],"{")).substr($d[0],strpos($d[0],"}")+1);
 					if (strpos($d[0],"#")!==false) $d[0]=substr($d[0],0,strpos($d[0],"#")).substr($d[0],strrpos($d[0],"#")+1);
 					$d[0].="{".(time()+60*60*10)."}";
-					$l_tt[$gate]["d"]=implode("|",$d);
+					$l_tt[$gate]["d"]=implode("|",(array)($d));
 					$l_tt[$gate]["save"]=1;
 					addjournal($loc,$login,"Вы заперли ворота замка на ближайшие 10 часов");
 					} else $stmp="Вы действительно хотите закрыть ворота замка на ближайшие 10 часов?<br/><a href=\"$PHP_SELF?sid=$sid&speak=$speak&id=close&rclose=1\">Да, опускайте решетку прямо сейчас!</a><br/><a href=\"$PHP_SELF?sid=$sid&speak=$speak\">Нет, я передумал</a><br/><a href=\"$PHP_SELF?sid=$sid&speak=$speak&id=iclose\">Расскажи подробнее об этом</a>";

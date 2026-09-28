@@ -26,12 +26,12 @@ $hits=0;
 $art='';
 if ($auser['equip']) {
 	$equip=explode('|',$auser['equip']);
-	foreach(array_keys($equip) as $i) if ($equip[$i]) {
+	foreach(array_keys((array)($equip)) as $i) if ($equip[$i]) {
 		if (strpos($equip[$i],'_')!==false) $tid=substr($equip[$i],0,strpos($equip[$i],'_')); else
 		if (strpos($equip[$i],'-')!==false) $tid=substr($equip[$i],0,strpos($equip[$i],'-')); else $tid=$equip[$i];
-		if (!$equip[$i] || strpos($auser['items'],$equip[$i].':')===false || !file_exists('items/'.$tid) || !$tid) {unset($equip[$i]); $auser['equip']=implode('|',$equip); continue;}
+		if (!$equip[$i] || strpos($auser['items'],$equip[$i].':')===false || !file_exists('items/'.$tid) || !$tid) {unset($equip[$i]); $auser['equip']=implode('|',(array)($equip)); continue;}
 		// загружаем предмет
-		$item=explode('|',implode('',file('items/'.$tid)));
+		$item=explode('|',implode('',(array)(file('items/'.$tid))));
 		$str='0:0:0';
 		if (substr($equip[$i],0,4)=='i.a.' && $item[3]) $str=$item[3];
 		if (substr($equip[$i],0,4)=='i.w.' && $item[4]) $str=$item[4];
@@ -74,7 +74,7 @@ if ($auser['equip']) {
 		if ($tid!=$equip[$i] || strpos($equip[$i],'..')!==false) {
 			$xF = preg_match_all('/\.\.(\w+)/',$equip[$i],$regF);
 			for($j=0;$j<$xF;$j++) {
-				$ti=explode('|',implode(file('items/i.i.'.$regF[1][$j]))); 
+				$ti=explode('|',implode((array)(file('items/i.i.'.$regF[1][$j])))); 
 				$ti=explode(',',$ti[2]);
 				for($k=0;$k<count((array)($ti));$k++) {
 					$tir=explode(':',$ti[$k]);
@@ -126,7 +126,7 @@ if (strpos($auser['equip'],'i.a.l.ogr')!==false && strpos($auser['equip'],'i.a.p
 	if ($char[3]>$char[4]) $char[3]=$char[4];
 
 	// ок, сохраняем...
-	$auser['char']=implode('|',$char);
+	$auser['char']=implode('|',(array)($char));
 	if ($auser['war']) {$killd=explode('|',$auser['war']); $twar[15]=$killd[15]; $twar[16]=$killd[16]; }
-	$auser['war']=implode('|',$twar);
+	$auser['war']=implode('|',(array)($twar));
 	$l_i[$loc][$login]=$auser;

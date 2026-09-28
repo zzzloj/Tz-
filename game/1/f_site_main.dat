@@ -1,5 +1,5 @@
 <?php
-$srvmain=implode("",file("srvmain.dat"));
+$srvmain=implode("",(array)(file("srvmain.dat")));
 $stmp="<p align=\"center\"><a href=\"../f_story.php?id=news&amp;pi=$pi\">Новости ";
 $t=filemtime("../story/news.htm");
 if ($t) $stmp.=date("d/m",$t);
@@ -24,7 +24,7 @@ $stmp.="</a></p><p>
 <br/><a href=\"http://worldwap.info\">[Главная]</a>";
 
 
-$srv=implode("",file("server.dat"));
+$srv=implode("",(array)(file("server.dat")));
 if($srv==1 && $pi=="001") {
 $stmp.="
 

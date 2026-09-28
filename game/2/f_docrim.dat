@@ -7,5 +7,5 @@
 		$char=explode("|",$l_i[$loc][$login]["char"]);
 		$char[9]=$title_v;
 		$char[10]=time()+$g_crim-$crim;
-		$l_i[$loc][$login]["char"]=implode("|",$char);
+		$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 		}

@@ -112,7 +112,7 @@ $stmp.="<br/><b>Фото:</b> <a href=\"fr.php?img=".$inf['img']."\">[просмотр]</a>"
 
 		$maxid=8;
 		$maxval=0;
-		foreach(array_keys($arr_best) as $i) if ($sk[$i]>=$maxval) {$maxid=$i;$maxval=$sk[$i];}
+		foreach(array_keys((array)($arr_best)) as $i) if ($sk[$i]>=$maxval) {$maxid=$i;$maxval=$sk[$i];}
 		if ($maxval==0) $stmp.=" боец"; else $stmp.=" ".$arr_best[$maxid];
 
 		// сильный и т.д.
@@ -139,7 +139,7 @@ $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&look=$look&st=1\">Статистика</a>";
 
 	if (strpos($char[0],"*")===false) $clan=""; else $clan=substr($char[0],strpos($char[0],"*")+1,strrpos($char[0],"*")-strpos($char[0],"*")-1);
 	if ($clan && file_exists("../clans/".$clan)) {
-		$tmp=unserialize(implode("",file("../clans/".$clan))); 
+		$tmp=unserialize(implode("",(array)(file("../clans/".$clan)))); 
 	if (isset($tmp["g"][$look])) { 
 		$stmp.="<br/>Ceньop клана <a href=\"$PHP_SELF?sid=$sid&site=clans&clan=$clan\">".$clan."</a>"; }
 	elseif (isset($tmp["m"][$look])) {
@@ -165,7 +165,7 @@ $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&look=$look&st=1\">Статистика</a>";
 			if (strpos($i,"_")!==false) $ti=substr($i,0,strpos($i,"_")); else
 			if (strpos($i,"-")!==false) $ti=substr($i,0,strpos($i,"-")); else $ti=$i;
 			if (file_exists("items/".$ti)) {
-				$item=explode("|",implode("",file("items/".$ti)));
+				$item=explode("|",implode("",(array)(file("items/".$ti))));
 				if (strpos($i,"..")!==false) $item[0].=" *";
 				if (substr($i,0,4)=="i.a.") {if (!$sto) $sto=$item[0]; else $sto.=", ".$item[0];}
 					else {if (!$str) $str=$item[0]; else $str.=", ".$item[0];}

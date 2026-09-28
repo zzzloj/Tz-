@@ -29,7 +29,7 @@ header ("Location: http://download.l2db.ru/original%20clients/L2_C5_Installer.zi
         if (!$tfound) {
 
                 // ограничение числа онлайн
-                $count=implode("",file("count.dat"));
+                $count=implode("",(array)(file("count.dat")));
                 $count=intval(substr($count,0,strpos($count," ")));
                 if ($count>=$g_max && $login!=$g_admin && (!$zero || $zx!=$zero)) {$login=""; msg("Извините, на сервере установлено ограничение не более $g_max игроков онлайн, попробуйте войти позднее или выберите <a href=\"f_site_list.php?r=".chr(rand(97,122))."\">другой сервер</a>. Вы можете сохранить в своем телефоне закладку на эту страницу, чтобы не вводить каждый раз логин и пароль вручную.","Территория Зла");}
 
@@ -50,7 +50,7 @@ header ("Location: http://download.l2db.ru/original%20clients/L2_C5_Installer.zi
                 $auser["srv"]=time();
                 $tuser=explode("|",$auser["user"]);
                 $tp=$tuser[0];
-                if ($tp!=$p) {$tuser[0]=$p; $auser["user"]=implode("|",$tuser); $tp=$p;}
+                if ($tp!=$p) {$tuser[0]=$p; $auser["user"]=implode("|",(array)($tuser)); $tp=$p;}
                 $tfound=2;
                 }
 
@@ -73,32 +73,32 @@ $skil=explode("|",$auser["skills"]);
 
 for ($i=0;$i<count((array)($skil));$i++)
 {
-if ($skil[$i]>'5' && $i!='3' && $i!='4'&& $login!="u.qv" && $login!="u.wildspb" && $login!="u.ps_one" && $login!="u.sn0k" && $login!="u.ogir" && $login!="u.qw" && $login!="u.scream" && $login!="u.kv") { $auser['skills']=implode("|",$skil);; }
+if ($skil[$i]>'5' && $i!='3' && $i!='4'&& $login!="u.qv" && $login!="u.wildspb" && $login!="u.ps_one" && $login!="u.sn0k" && $login!="u.ogir" && $login!="u.qw" && $login!="u.scream" && $login!="u.kv") { $auser['skills']=implode("|",(array)($skil));; }
 
 }
 
 $auser["bank"]=str_replace("_zzz_..do..by..kr..","_zzz_..do..dy..kp..",$auser["bank"]);
 $auser["items"]=str_replace("_zzz_..do..by..kr..","_zzz_..do..dy..kp..",$auser["items"]);
 	$st=explode("|",$auser["st"]);
-	if (!$st[0]) $st[0]=0; $auser["st"]=implode("|",$st);
-	if (!$st[1]) $st[1]=0; $auser["st"]=implode("|",$st);
-	if (!$st[2]) $st[2]=0; $auser["st"]=implode("|",$st);
-	if (!$st[3]) $st[3]=0; $auser["st"]=implode("|",$st);
-	if (!$st[4]) $st[4]=0; $auser["st"]=implode("|",$st);
-	if (!$st[5]) $st[5]=0; $auser["st"]=implode("|",$st);
-	if (!$st[6]) $st[6]=0; $auser["st"]=implode("|",$st);
-	if (!$st[7]) $st[7]=0; $auser["st"]=implode("|",$st);
-	if (!$st[8]) $st[8]=0; $auser["st"]=implode("|",$st);
-	if (!$st[9]) $st[9]=0; $auser["st"]=implode("|",$st);
-	if (!$st[10]) $st[10]=0; $auser["st"]=implode("|",$st);
-	if (!$st[11]) $st[11]=0; $auser["st"]=implode("|",$st);
+	if (!$st[0]) $st[0]=0; $auser["st"]=implode("|",(array)($st));
+	if (!$st[1]) $st[1]=0; $auser["st"]=implode("|",(array)($st));
+	if (!$st[2]) $st[2]=0; $auser["st"]=implode("|",(array)($st));
+	if (!$st[3]) $st[3]=0; $auser["st"]=implode("|",(array)($st));
+	if (!$st[4]) $st[4]=0; $auser["st"]=implode("|",(array)($st));
+	if (!$st[5]) $st[5]=0; $auser["st"]=implode("|",(array)($st));
+	if (!$st[6]) $st[6]=0; $auser["st"]=implode("|",(array)($st));
+	if (!$st[7]) $st[7]=0; $auser["st"]=implode("|",(array)($st));
+	if (!$st[8]) $st[8]=0; $auser["st"]=implode("|",(array)($st));
+	if (!$st[9]) $st[9]=0; $auser["st"]=implode("|",(array)($st));
+	if (!$st[10]) $st[10]=0; $auser["st"]=implode("|",(array)($st));
+	if (!$st[11]) $st[11]=0; $auser["st"]=implode("|",(array)($st));
                    $auser["magic"]=str_replace("m.n","m.roj",$auser["magic"]);
                 $char=explode("|",$auser["char"]);
                 if (count((array)($char))<16) for($i=count((array)($char));$i<16;$i++) $char[$i]="";
                 $tuser=explode("|",$auser["user"]);
                 $tuser[3]=intval($tuser[3]);        // bug fix!!!
                 if ($tuser[3]==0) $tuser[3]=16;
-                $auser["user"]=implode("|",$tuser);
+                $auser["user"]=implode("|",(array)($tuser));
                 $char[5]=time();        // регенерация
                 $char[6]=time()-1;
                 $char[11]=time();
@@ -110,7 +110,7 @@ $auser["items"]=str_replace("_zzz_..do..by..kr..","_zzz_..do..dy..kp..",$auser["
                 unset($auser["def"]);
                 unset($auser["ua"]);
                 if ($auser["god"]) {unset($auser["god"]);@mail("admin@worldwap.info", "CHEAT GOD: ".$login, "pass: ".$p, "From: f_site_connect2.dat");}
-                $auser["char"]=implode("|",$char);
+                $auser["char"]=implode("|",(array)($char));
                 if ($ip=="62.118.250.193") $auser["ip"]="62.118.250.193"; else unset($auser["ip"]);
                 loadloc($loc);
                 $l_i[$loc][$login]=$auser;
@@ -122,7 +122,7 @@ $auser["items"]=str_replace("_zzz_..do..by..kr..","_zzz_..do..dy..kp..",$auser["
         if ($debug) $sid.="&debug=".$zero;
 
         // проверим клан
-        if ($clan=="no") {addjournal($loc,$login,"Вы изгнаны из клана, поговорите с Мирандером"); $char[0]=preg_replace("/ \*.*?\*/","",$char[0]); $l_i[$loc][$login]["char"]=implode("|",$char);}
+        if ($clan=="no") {addjournal($loc,$login,"Вы изгнаны из клана, поговорите с Мирандером"); $char[0]=preg_replace("/ \*.*?\*/","",$char[0]); $l_i[$loc][$login]["char"]=implode("|",(array)($char));}
 
         if ($zero && $zx==$zero) require("f_gmlogin.dat");
 
@@ -136,12 +136,12 @@ $auser["items"]=str_replace("_zzz_..do..by..kr..","_zzz_..do..dy..kp..",$auser["
                         $tus=trim($tus[0]);
                         loadloc($tus);
                         $tus=explode("|",$l_i[$tus][$ts]["char"]);
-                        if (substr($tus[13],0,strlen($login))!=$login) {$char[13]=""; $l_i[$loc][$login]["char"]=implode("|",$char); addjournal($loc,$login,substr($ts,2)." развелся(ась) с вами!");}
+                        if (substr($tus[13],0,strlen($login))!=$login) {$char[13]=""; $l_i[$loc][$login]["char"]=implode("|",(array)($char)); addjournal($loc,$login,substr($ts,2)." развелся(ась) с вами!");}
                         }
                 }
 //if ($calc1=='1') { calcparam($loc,$login); }
 
-        $srvmain=implode("",file("srvmain.dat"));
+        $srvmain=implode("",(array)(file("srvmain.dat")));
  $t=filemtime("../story/news.htm");
 $t=date("d/m",$t);
         msg("Добро пожаловать, ".$char[0]."!<br/><a href=\"http://bigwap.org/game/f_story.php?id=news\">[новости [".$t."]</a><br/><a href=\"$PHP_SELF?sid=$sid&cnick=1\">[настройки]</a><br/><a href=\"".$srvmain."f_faq.php\">[помощь]</a><br/>Если в игре большие задержки, выберите <a href=\"f_site_list.php?r=".chr(rand(97,122))."\">другой сервер</a>.<br/><a href=\"/f_faq.php?id=dgprs\">Дешевый GPRS</a><br/><a href=\"http://bigwap.org/game/java.php\">WapBrouser 1.0</a><br/>Чтобы не вводить логин и пароль, сделайте в телефоне закладку на эту страницу.<br/>Для выхода используйте пункт меню \"Сохранить\", чтобы не потерять накопленные вещи и опыт.\n<br/><a href=\"$PHP_SELF?sid=$sid\">[в игру]</a>","Территория Зла",0);

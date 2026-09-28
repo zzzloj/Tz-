@@ -11,7 +11,7 @@
 			if ($tm[$tc]) {$use=substr($tm[$tc],0,strpos($tm[$tc],":"));$l_i[$loc][$login]["macrol"]="use|$use|to|$to";} else msg("У вас нет приема под номером ".($tc+1));
 			}
 
-		if (file_exists("items/".$use)) $priem=explode("|",implode("",file("items/".$use))); else die("err: no items/".$use);
+		if (file_exists("items/".$use)) $priem=explode("|",implode("",(array)(file("items/".$use)))); else die("err: no items/".$use);
 		if (strpos($l_i[$loc][$login]["priem"],$use.":")===false) msg("Вы не знаете прием ".$magic[0].", найдите NPC, который поможет его изучить.");
 		if ($to==$login || !$to) msg("Нельзя применять прием к самому себе");
 
@@ -48,24 +48,24 @@
 				if($magic[1]<0) $magic[1]=0;
 				if($magic[2]<0) $magic[2]=0;
 
-				attack($loc,$login,$to,implode("|",$magic),1,0,$use,$priem[0]);
+				attack($loc,$login,$to,implode("|",(array)($magic)),1,0,$use,$priem[0]);
 				$char=explode("|",$l_i[$loc][$login]["char"]);
-				if ($use=="p.d") {attack($loc,$login,$to,implode("|",$magic),1,0,$use,$priem[0]);$char=explode("|",$l_i[$loc][$login]["char"]); $char[6]=time()+$war[3];$l_i[$loc][$login]["char"]=implode("|",$char);}
-				if ($use=="p.me") {foreach($l_i[$loc] as $key=>$i) if($key!=$login && $key!=$to) {attack($loc,$login,$key,implode("|",$magic),1,0,$use,$priem[0]);} $char=explode("|",$l_i[$loc][$login]["char"]); $char[6]=time()+$war[3]*2;$l_i[$loc][$login]["char"]=implode("|",$char);}
+				if ($use=="p.d") {attack($loc,$login,$to,implode("|",(array)($magic)),1,0,$use,$priem[0]);$char=explode("|",$l_i[$loc][$login]["char"]); $char[6]=time()+$war[3];$l_i[$loc][$login]["char"]=implode("|",(array)($char));}
+				if ($use=="p.me") {foreach($l_i[$loc] as $key=>$i) if($key!=$login && $key!=$to) {attack($loc,$login,$key,implode("|",(array)($magic)),1,0,$use,$priem[0]);} $char=explode("|",$l_i[$loc][$login]["char"]); $char[6]=time()+$war[3]*2;$l_i[$loc][$login]["char"]=implode("|",(array)($char));}
 
 				// проверки на выбивание
 				if (isset($l_i[$loc][$to])) {
 					if ($l_i[$loc][$to]["def"]) $tdef=explode("|",$l_i[$loc][$to]["def"]); else $tdef=array(0,"","");
-					if($use=="p.n") {if(rand(0,100)<=$magic[0]-40 && ($tdef[0]!="p.d.n" || $tdef[0]=="p.d.n" && rand(0,100)>$tdef[3])) {addjournal($loc,$to,"Вас оглушили!"); addjournal($loc,"all",substr($to,2)." оглушен!",$to); $tc=explode("|",$l_i[$loc][$to]["char"]);$tc[6]=time()+15;$l_i[$loc][$to]["char"]=implode("|",$tc);} if ($tdef[0]=="p.d.n") $l_i[$loc][$to]["def"]="";}
-					if($use=="p.r") {if(rand(0,100)<=$magic[0]-70 && ($tdef[0]!="p.d.r" || $tdef[0]=="p.d.r" && rand(0,100)>$tdef[3]) && strpos($l_i[$loc][$to]["equip"],"i.w.")!==false) {addjournal($loc,$to,"У вас выбито оружие!"); addjournal($loc,"all","У ".substr($to,2)." выбито оружие!",$to); additem($loc,$to,'loc',preg_replace('/.*?(i\.w\.[^\|]+).*/',"\\1",$l_i[$loc][$to]["equip"]),1,"items","items",1,-1,1); $tc=explode("|",$l_i[$loc][$to]["char"]);$tc[6]=time()+5;$l_i[$loc][$to]["char"]=implode("|",$tc);}  if ($tdef[0]=="p.d.r") $l_i[$loc][$to]["def"]="";}
-					if($use=="p.vw") {if(rand(0,100)<=$magic[0]-40 && strpos($l_i[$loc][$to]["equip"],"i.a.s.")!==false) {addjournal($loc,$to,"У вас выбит щит!"); addjournal($loc,"all","У ".substr($to,2)." выбит щит!",$to); additem($loc,$to,'loc',preg_replace('/.*?(i\.a\.s\.[^\|]+).*/',"\\1",$l_i[$loc][$to]["equip"]),1,"items","items",1,-1,1); $tc=explode("|",$l_i[$loc][$to]["char"]);$tc[6]=time()+5;$l_i[$loc][$to]["char"]=implode("|",$tc);}}
+					if($use=="p.n") {if(rand(0,100)<=$magic[0]-40 && ($tdef[0]!="p.d.n" || $tdef[0]=="p.d.n" && rand(0,100)>$tdef[3])) {addjournal($loc,$to,"Вас оглушили!"); addjournal($loc,"all",substr($to,2)." оглушен!",$to); $tc=explode("|",$l_i[$loc][$to]["char"]);$tc[6]=time()+15;$l_i[$loc][$to]["char"]=implode("|",(array)($tc));} if ($tdef[0]=="p.d.n") $l_i[$loc][$to]["def"]="";}
+					if($use=="p.r") {if(rand(0,100)<=$magic[0]-70 && ($tdef[0]!="p.d.r" || $tdef[0]=="p.d.r" && rand(0,100)>$tdef[3]) && strpos($l_i[$loc][$to]["equip"],"i.w.")!==false) {addjournal($loc,$to,"У вас выбито оружие!"); addjournal($loc,"all","У ".substr($to,2)." выбито оружие!",$to); additem($loc,$to,'loc',preg_replace('/.*?(i\.w\.[^\|]+).*/',"\\1",$l_i[$loc][$to]["equip"]),1,"items","items",1,-1,1); $tc=explode("|",$l_i[$loc][$to]["char"]);$tc[6]=time()+5;$l_i[$loc][$to]["char"]=implode("|",(array)($tc));}  if ($tdef[0]=="p.d.r") $l_i[$loc][$to]["def"]="";}
+					if($use=="p.vw") {if(rand(0,100)<=$magic[0]-40 && strpos($l_i[$loc][$to]["equip"],"i.a.s.")!==false) {addjournal($loc,$to,"У вас выбит щит!"); addjournal($loc,"all","У ".substr($to,2)." выбит щит!",$to); additem($loc,$to,'loc',preg_replace('/.*?(i\.a\.s\.[^\|]+).*/',"\\1",$l_i[$loc][$to]["equip"]),1,"items","items",1,-1,1); $tc=explode("|",$l_i[$loc][$to]["char"]);$tc[6]=time()+5;$l_i[$loc][$to]["char"]=implode("|",(array)($tc));}}
 					if($use=="p.vs") {if(rand(0,100)<=$magic[0]-50 && ($tdef[0]!="p.d.s" || $tdef[0]=="p.d.s" && rand(0,100)>$tdef[3])) {$tatk=1; require("plugin/m.kon.dat");}  if ($tdef[0]=="p.d.s") $l_i[$loc][$to]["def"]="";}
 					}
 
 				} else {	// защитные
 					if ($use=="p.d.p" && strpos($l_i[$loc][$login]["equip"],"i.a.s.")===false) msg("Щит должен находиться у вас в руках");
 					$l_i[$loc][$login]["def"]=$use."|".$priem[0]."|".(time()+$priem[1])."|".($use=="p.d.c"?$skills[2]*16:($war[0]-$ihit));
-					if ($use=="p.d.o") {$char[6]=time()+$priem[1];$l_i[$loc][$login]["char"]=implode("|",$char);}
+					if ($use=="p.d.o") {$char[6]=time()+$priem[1];$l_i[$loc][$login]["char"]=implode("|",(array)($char));}
 					}
 
 			}else addjournal($loc,$login,"Период ".$priem[0]." не истек (еще ".(round((intval(preg_replace('/.*'.$use.':(\d+).*/',"\\1",$l_i[$loc][$login]["priem"]))-time())/60)+1)." минут)");

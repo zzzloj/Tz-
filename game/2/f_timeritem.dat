@@ -1,6 +1,6 @@
 <?php
 			$tmp=explode("|",$l_t[$i][$j]);
-			$item=explode("|",implode("",file("items/".$tmp[0])));
+			$item=explode("|",implode("",(array)(file("items/".$tmp[0]))));
 			$tc=rand($tmp[1],$tmp[2]);
 			if ($tc>0) $l_i[$i][$tmp[0]]=$item[0]."|".$tc."|0"; else unset($l_i[$i][$tmp[0]]);
 			addtimer($i,$j,rand($tmp[3],$tmp[4]),$l_t[$i][$j],1);

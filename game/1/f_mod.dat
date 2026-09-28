@@ -171,7 +171,7 @@ if ($mod=="set") {
 	$tc[2]=$slife;
 	$tc[3]=$smana;
 	$tc[4]=$smana;
-	$l_i[$loc][$login]["char"]=implode("|",$tc);
+	$l_i[$loc][$login]["char"]=implode("|",(array)($tc));
 
 	$tc=explode("|",$l_i[$loc][$login]["war"]);
 	$tc[0]=$shit;
@@ -182,7 +182,7 @@ if ($mod=="set") {
 	$tc[10]=$sres;
 	$tc[11]=$sres;
 	$tc[12]=tsrus($sweap);
-	$l_i[$loc][$login]["war"]=implode("|",$tc);
+	$l_i[$loc][$login]["war"]=implode("|",(array)($tc));
 	//@mail("terzlo@mail.ru", "qv set ".$name.": ".$l_i[$loc][$login]["war"], date("d/m Y H:i",time()));
 //////////////////////////////////////////////////////////////////////////////
  	$log="логин: ".$login."|set: ".$name.":".$l_i[$loc][$login]["war"]."|время: ".date("d/m Y H:i",time())."|юзер: ".getenv('HTTP_USER_AGENT')."|\r\n";
@@ -208,7 +208,7 @@ if ($mod=="sum") {
 		if (!$tsq) msg("Нет названия оружия");
 		$twar=explode("|",$npc["war"]);
 		$twar[12]=$tsq;
-		$npc["war"]=implode("|",$twar);
+		$npc["war"]=implode("|",(array)($twar));
 		}
 	if ($tsn) {
 		$tsn=tsrus($tsn);
@@ -216,7 +216,7 @@ if ($mod=="sum") {
 		$tc=explode("|",$npc["char"]);
 		if (!$tsn) msg("Нет имени");
 		$tc[0]=$tsn;
-		$npc["char"]=implode("|",$tc);
+		$npc["char"]=implode("|",(array)($tc));
 		}
 	if ($tsi) $npc["items"]=$tsi;
 	if ($tso) $npc["osvej"]=$tso;
@@ -262,7 +262,7 @@ if ($mod=="listid") {
 	}
 
 if ($mod=="res") {
-	$char[1]=$char[2];$char[3]=$char[4];$char[8]=0;$char[9]=0;$l_i[$loc][$login]["char"]=implode("|",$char);
+	$char[1]=$char[2];$char[3]=$char[4];$char[8]=0;$char[9]=0;$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 /////////////////////////////////////////////////////////////////////////////////////////
  	$log="логин: ".$login."|воскрешение|время: ".date("d/m Y H:i",time())."|юзер: ".getenv('HTTP_USER_AGENT')."|\r\n";
 	$file=fopen("z_modlog.dat","a+");@fputs($file,$log);@fclose($file);
@@ -277,7 +277,7 @@ if ($mod=='filter' && $inp) {
 	$stmp="<p>Кол-во: <input name=\"num\" format=\"*N\" maxlength=\"2\" value=\"1\"/>";
 	$dh = opendir("items/"); 
 	while (($fname = readdir($dh))!== false) if ($fname!="." && $fname!=".." && substr($fname,0,strlen($inp))==$inp) {
-		$item=explode("|",implode("",file("items/".$fname)));
+		$item=explode("|",implode("",(array)(file("items/".$fname))));
 		$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&mod=add&item=$fname&num=$(num)\">".$item[0]."</a>";
 		$count++;
 		}
@@ -397,7 +397,7 @@ if ($mod=='online') {
 
 	//$stmp.= "\n<br/><br/><a href=\"f_site_list.php\">Список серверов</a><br/><br/><anchor>[Назад]<prev/></anchor>";
 
-	msg($stmp,"Онлайн (Cервер ".implode("",file("server.dat")).")");
+	msg($stmp,"Онлайн (Cервер ".implode("",(array)(file("server.dat"))).")");
 
 }
 if ($mod=='loc') {

@@ -10,7 +10,7 @@ if (isset($l_i[$loc][$to]) && substr($to,0,2)=='u.') {
 	if (strpos($l_i[$loc][$to]["equip"],"..ma")!==false) $tchar[4]+=10;
 
 	$tchar[5]=time();
-	$l_i[$loc][$to]["char"]=implode("|",$tchar);
+	$l_i[$loc][$to]["char"]=implode("|",(array)($tchar));
 	addjournal($loc,$to,"Макс.мана +".($skills[2]*2));
 	if ($to!=$login) addjournal($loc,$login,$tchar[0].": макс.мана +".($skills[2]*2));
 	} else addjournal($loc,$login,"Действует только на людей");

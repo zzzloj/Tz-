@@ -4,7 +4,7 @@
 		require_once("datafunc.php");
 
 		$tuser[9]=1;
-		$l_i[$loc][$login]["user"]=implode("|",$tuser);
+		$l_i[$loc][$login]["user"]=implode("|",(array)($tuser));
 		addjournal($loc,$login,"Спасибо, что вы выбрали эт игру! Если вы тут впервые поговорите с Уином он вам всё объяснит и ответит на вопросы, также прочтите помощь на входе! Добро пожаловать в этот увлекательный мир ;)");
 
 		$auser = $l_i[$loc][$login];
@@ -22,6 +22,6 @@
 		$fntmp="../payed.dat";
 		if (file_exists($fntmp)) {
 			$all=0;
-			$all=@implode("",@file($fntmp));
+			$all=@implode("",(array)(@file($fntmp)));
 			if ($all) {$all++;$file=fopen($fntmp,"w");if($file!==false){fputs($file,$all);fclose($file);}}
  			} else {$file=fopen($fntmp,"w");if($file!==false){fputs($file,"1");fclose($file);}}

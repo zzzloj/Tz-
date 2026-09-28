@@ -9,7 +9,7 @@ parse_str($tmp, $legacy_qs); extract($legacy_qs);
 
 	// проверим на всех серверах
 	$tmp=file("servers.dat");
-	for($i=1;$i<count((array)($tmp));$i++) if (@implode("",@file(trim($tmp[$i])."f_site_common.php?login=".$login))=="yes") {$loc=""; msg("В данный момент игрок с именем ".substr($login,2)." находится на <a href=\"".trim($tmp[$i])."g.php?r=".rand(1,99)."\">сервере ".$i."</a>.<br/><anchor>Назад<prev/></anchor>");}
+	for($i=1;$i<count((array)($tmp));$i++) if (@implode("",(array)(@file(trim($tmp[$i])."f_site_common.php?login=".$login)))=="yes") {$loc=""; msg("В данный момент игрок с именем ".substr($login,2)." находится на <a href=\"".trim($tmp[$i])."g.php?r=".rand(1,99)."\">сервере ".$i."</a>.<br/><anchor>Назад<prev/></anchor>");}
 
 	msg("Игрока с именем ".substr($login,2)." сейчас в игре нет.<br/><anchor>Назад<prev/></anchor>");
 

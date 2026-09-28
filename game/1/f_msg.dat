@@ -72,7 +72,7 @@ $count++;}
 		if (strlen($l_i[$loc][$login]["msg"])>500) msg("В контактах нет места, удалите кого-нибудь","Ошибка");
 		if (!$id) {
 			$stmp="";
-			foreach(array_keys($l_i[$loc]) as $i) if ($i!=$login && substr($i,0,2)=="u."  && $l_i[$loc][$i]["god"]!="1") $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&msg=add&id=$i\">".substr($i,2)."</a>";
+			foreach(array_keys((array)($l_i[$loc])) as $i) if ($i!=$login && substr($i,0,2)=="u."  && $l_i[$loc][$i]["god"]!="1") $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&msg=add&id=$i\">".substr($i,2)."</a>";
 			if ($stmp) $stmp="<p>Кого добавить:".$stmp; else $stmp="<p>Рядом с вами никого нет";
 			} else {
 				if (isset($l_i[$loc][$id])) {if(strpos($l_i[$loc][$login]["msg"],$id."|")===false) if (!$l_i[$loc][$login]["msg"]) $l_i[$loc][$login]["msg"]=$id; else $l_i[$loc][$login]["msg"].="|".$id; $stmp=substr($id,2)." добавлен";}
@@ -102,7 +102,7 @@ $count++;}
   if ($klan) {
 	$tc=explode("|",$l_i[$loc][$login]["char"]);
 	if (strpos($tc[0],"*")===false) $clan=""; else $clan=substr($tc[0],strpos($tc[0],"*")+1,strrpos($tc[0],"*")-strpos($tc[0],"*")-1);
-	if ($clan && file_exists("../clans/".$clan)) $tmp=unserialize(implode("",file("../clans/".$clan))); else $tmp=array();
+	if ($clan && file_exists("../clans/".$clan)) $tmp=unserialize(implode("",(array)(file("../clans/".$clan)))); else $tmp=array();
 
 	   if (!$text) msg("Нет текста для отправки");
 		if (strpos($text,"/g.php?sid=")!==false) $text=substr($text,0,strpos($text,"/g.php?sid="));
@@ -124,8 +124,8 @@ $count++;}
 
 	//$text = iconv("cp1251","Utf-8",$text);ceнeшaль-3,ceньop-4,вaccaл-2,нeoфит
 			//соединяем массивы
-			$arTemplates = array_merge($tmp["m"], $tmp["v"], $tmp["s"], $tmp["g"]);
-			$keys=array_keys($arTemplates);
+			$arTemplates = array_merge((array)($tmp["m"]), (array)($tmp["v"]), (array)($tmp["s"]), (array)($tmp["g"]));
+			$keys=array_keys((array)($arTemplates));
 			if ($keys) foreach ($keys as $i) if ($i && $i!=$login) if (file_exists("online/".$i) && filesize("online/".$i)!=1 && ($id==$i || $klan)) {
 			$tmp=file("online/".$i);
 			$tmp[0]=str_replace("\n","",$tmp[0]);
