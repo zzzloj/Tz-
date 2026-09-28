@@ -3,8 +3,8 @@
 
 $game = array("lastai"=>1);
 $file = fopen ("game.dat", "w");
-fputs($file,serialize($game));
-fclose ($file);
+legacy_fputs($file,serialize($game));
+legacy_fclose ($file);
 
 	$dh = opendir("l_i/"); 
 	while (($fname = readdir($dh))!== false) if ($fname!="." && $fname!=".." && $fname!=".htaccess" && $fname!="1.htaccess" && substr($fname,0,2)!="c.") {

@@ -39,7 +39,7 @@ if($_sInMsg) {
  $all = @file ("./playfon/u.".strtolower($_sInMsg));
  $fil=legacy_num(returnkn($_sInSrv))+legacy_num($all[0]);
  $file = @fopen ("./playfon/u.".strtolower($_sInMsg), "w");
- fwrite($file,$fil);fclose($file);
+ legacy_fwrite($file,$fil);legacy_fclose($file);
 } else $_sOutMsg='Error';
 // здесь добавьте программный код обработки SMS от пользователей, присущий Вашему проекту
 

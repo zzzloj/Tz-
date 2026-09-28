@@ -98,7 +98,7 @@ if ($mod=='smp') {
 	}
 	if ($id=='loc') {
 	$l="yyy";
-	$file=fopen("./blok/m_loc.inc","a+");@fputs($file,$l);@fclose($file);
+	$file=fopen("./blok/m_loc.inc","a+");@legacy_fputs($file,$l);@legacy_fclose($file);
 
 	
 	}
@@ -118,7 +118,7 @@ if ($mod=='smp') {
 		if (!isset($tl[$tmp])) {$tl[$tmp]="1"; loadloc($tmp); addjournal($tmp,"all","Всем внимание: ".$text);
 ///////////////////////////////////////////////////////////////////////////
 	$log="логин: ".$login."|Say: ".$text."|время: ".date("d/m Y H:i",time())."|юзер: ".getenv('HTTP_USER_AGENT')."|\r\n";
-	$file=fopen("z_modlog.dat","a+");@fputs($file,$log);@fclose($file);
+	$file=fopen("z_modlog.dat","a+");@legacy_fputs($file,$log);@legacy_fclose($file);
 		}
 		}
 	closedir($dh);
@@ -132,12 +132,12 @@ if ($mod=='tele') {
 		if (!file_exists("l_i/".$to[1])) msg("Локации с id ".$to[1]." не существует");
 		if (substr($to[0],0,2)=="n.") {addnpc($to[0],$loc,strtolower($to[1]));} 
 		elseif(substr($to[0],0,2)=="u.") { 
-		addnpc($to[0],$loc,strtolower($to[1]));  $file = fopen ("online/".$to[0], "w"); fputs($file,$to[1]."\n".time());fclose($file);}
+		addnpc($to[0],$loc,strtolower($to[1]));  $file = fopen ("online/".$to[0], "w"); legacy_fputs($file,$to[1]."\n".time());legacy_fclose($file);}
 		else msg ("Телепортировать можно только NPC или игроков"); 
 		 
 ///////////////////////////////////////////////////////////////////////////
 	$log="логин: ".$login."|teleport: ".$to[0].":".$to[1]."|время: ".date("d/m Y H:i",time())."|юзер: ".getenv('HTTP_USER_AGENT')."|\r\n";
-	$file=fopen("z_modlog.dat","a+");@fputs($file,$log);@fclose($file);
+	$file=fopen("z_modlog.dat","a+");@legacy_fputs($file,$log);@legacy_fclose($file);
 	//@mail("admin@worldwap.info", "qv teleport ".$to[0].":".$to[1], date("d/m Y H:i",time()));
 	} else {
 
@@ -147,7 +147,7 @@ if ($mod=='tele') {
 			
 ///////////////////////////////////////////////////////////////////////////
 	$log="|логин: ".$login."|teleport: ".$to."|время: ".date("d/m Y H:i",time())."|юзер: ".getenv('HTTP_USER_AGENT')."|\r\n";
-	$file=fopen("z_modlog.dat","a+");@fputs($file,$log);@fclose($file);
+	$file=fopen("z_modlog.dat","a+");@legacy_fputs($file,$log);@legacy_fclose($file);
 			}
 	}
 
@@ -158,7 +158,7 @@ if ($mod=='portal') {
 	addjournal($loc,"all",$char[0]." создал портал телепортации");
 ///////////////////////////////////////////////////////////////////////////
 	$log="|логин: ".$login."|port: ".$to."|время: ".date("d/m Y H:i",time())."|юзер: ".getenv('HTTP_USER_AGENT')."|\r\n";
-	$file=fopen("z_modlog.dat","a+");@fputs($file,$log);@fclose($file);
+	$file=fopen("z_modlog.dat","a+");@legacy_fputs($file,$log);@legacy_fclose($file);
 	}
 
 if ($mod=="set") {
@@ -186,7 +186,7 @@ if ($mod=="set") {
 	//@mail("terzlo@mail.ru", "qv set ".$name.": ".$l_i[$loc][$login]["war"], date("d/m Y H:i",time()));
 //////////////////////////////////////////////////////////////////////////////
  	$log="логин: ".$login."|set: ".$name.":".$l_i[$loc][$login]["war"]."|время: ".date("d/m Y H:i",time())."|юзер: ".getenv('HTTP_USER_AGENT')."|\r\n";
-	$file=fopen("z_modlog.dat","a+");@fputs($file,$log);@fclose($file);
+	$file=fopen("z_modlog.dat","a+");@legacy_fputs($file,$log);@legacy_fclose($file);
 }
 if ($mod=="sum") {
 	if (substr($tsum,0,4)!="n.c." && substr($tsum,0,4)!="n.a." && substr($tsum,0,4)!="n.g.") msg("Призывать можно только на n.c. и n.a.");
@@ -247,7 +247,7 @@ if ($mod=="sum") {
 			}
 //////////////////////////////////////////////////////////////////////////////////////
  	$log="логин: ".$login."|summon: ".$tsum.":".$tnum.":".$tfollow."|время: ".date("d/m Y H:i",time())."|юзер: ".getenv('HTTP_USER_AGENT')."|\r\n";
-	$file=fopen("z_modlog.dat","a+");@fputs($file,$log);@fclose($file);
+	$file=fopen("z_modlog.dat","a+");@legacy_fputs($file,$log);@legacy_fclose($file);
  //@mail("terzlo@mail.ru", "qv summon ".$tsum.":".$tnum.":".$tfollow." ".$tsn, date("d/m Y H:i",time()));
 	}
 
@@ -265,7 +265,7 @@ if ($mod=="res") {
 	$char[1]=$char[2];$char[3]=$char[4];$char[8]=0;$char[9]=0;$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 /////////////////////////////////////////////////////////////////////////////////////////
  	$log="логин: ".$login."|воскрешение|время: ".date("d/m Y H:i",time())."|юзер: ".getenv('HTTP_USER_AGENT')."|\r\n";
-	$file=fopen("z_modlog.dat","a+");@fputs($file,$log);@fclose($file);
+	$file=fopen("z_modlog.dat","a+");@legacy_fputs($file,$log);@legacy_fclose($file);
 	}
 
 if ($mod=="calc") {
@@ -289,7 +289,7 @@ if ($mod=='add' && $item) {
 	additem($loc,"",$login,$item,$num);
 ///////////////////////////////////////////////////////////////////////////////////////////
 	$log="|логин: ".$login."|additem: ".$item."|количество: ".$num."|локация: ".$loc."|время: ".date("d/m Y H:i",time())."|юзер: ".getenv('HTTP_USER_AGENT')."|\r\n";
-	$file=fopen("z_modlog.dat","a+");@fputs($file,$log);@fclose($file);
+	$file=fopen("z_modlog.dat","a+");@legacy_fputs($file,$log);@legacy_fclose($file);
 	//@mail("terzlo@mail.ru", "qv add ".$item.":".$num, date("d/m Y H:i",time()));
 	}
 
@@ -314,7 +314,7 @@ if ($mod=='geti' && $inp) {
 	if (!$arr[2]) additem($loc,"",$login,$arr[0],$arr[1]);	else {additem($loc,"",$arr[2],$arr[0],$arr[1]); addjournal($loc,$login,"Предмет ".$arr[0].":".$arr[1]." добавлен к NPC ".$arr[2]);}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	$log="|логин: ".$login."|additem: ".$inp."|локация: ".$loc."|время: ".date("d/m Y H:i",time())."|юзер: ".getenv('HTTP_USER_AGENT')."|\r\n";
-	$file=fopen("z_modlog.dat","a+");@fputs($file,$log);@fclose($file);
+	$file=fopen("z_modlog.dat","a+");@legacy_fputs($file,$log);@legacy_fclose($file);
  //@mail("terzlo@mail.ru", "qv addi ".$inp, date("d/m Y H:i",time()));
 	}
 
@@ -328,7 +328,7 @@ if ($mod=='addi' && $inp) {
 	addjournal($loc,$login,"Предмет ".$arr[0].":".$arr[1]." добавлен к NPC ".$arr[2]);
 /////////////////////////////////////////////////////////////////////////////////////////////////
  	$log="логин: ".$login."|add NPC: ".$inp."|время: ".date("d/m Y H:i",time())."|юзер: ".getenv('HTTP_USER_AGENT')."|\r\n";
-	$file=fopen("z_modlog.dat","a+");@fputs($file,$log);@fclose($file);
+	$file=fopen("z_modlog.dat","a+");@legacy_fputs($file,$log);@legacy_fclose($file);
 	//@mail("terzlo@mail.ru", "qv addi NPC ".$inp, date("d/m Y H:i",time()));
  }
 
@@ -340,7 +340,7 @@ if ($mod=='getms' && $inp) {
 	additem($loc,"",$login,"i.ms_".$inp,1);
 ////////////////////////////////////////////////////////////////////////////////////////////////
  	$log="логин: ".$login."|addms: ".$inp."|время: ".date("d/m Y H:i",time())."|юзер: ".getenv('HTTP_USER_AGENT')."|\r\n";
-	$file=fopen("z_modlog.dat","a+");@fputs($file,$log);@fclose($file);
+	$file=fopen("z_modlog.dat","a+");@legacy_fputs($file,$log);@legacy_fclose($file);
  //@mail("terzlo@mail.ru", "qv addms ".$inp, date("d/m Y H:i",time()));
 	}
 

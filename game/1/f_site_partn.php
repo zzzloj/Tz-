@@ -42,8 +42,8 @@ if ($id=="login") {			// вход в акк
 		$partn.="|".$nn;
 		$file = fopen ("../partn.dat", "w");
 		if ($file===false) msg("Ошибка записи, попробуйте еще раз");
-		fputs($file,$partn);
-		fclose($file);
+		legacy_fputs($file,$partn);
+		legacy_fclose($file);
 		$data=array("pi"=>"", "wm"=>"","email"=>"","time"=>time(), "reg"=>0, "stat"=>"","t1"=>0,"t2"=>0,"t3"=>0);
 		$res=SetDataPartner($nn,$pass,serialize($data));
 		if ($res) msg($res);

@@ -34,7 +34,7 @@ $dialog=array(
 	if (isset($tmp["v"][$login])) unset($tmp["v"][$login]);
 	if (isset($tmp["s"][$login])) unset($tmp["s"][$login]);
 		$file = fopen ("../clans/".$clan, "w"); 
-		if ($file!==false) {fputs($file,serialize($tmp));fclose($file);} 
+		if ($file!==false) {legacy_fputs($file,serialize($tmp));legacy_fclose($file);} 
 		$tc[0]=str_replace(" *".$clan."*","",$tc[0]); 
 		$l_i[$loc][$login]["char"]=implode("|",(array)($tc)); 
 		$title_v="Ты больше не состоишь в клане ".$clan.".";
@@ -62,7 +62,7 @@ $dialog=array(
 		additem($loc,$login,"","i.money",50000,"items","items",1,0,1);
 		$tmp=array("m"=>array(),"g"=>array($login=>$p)); 
 		$file = fopen ("../clans/".$cname, "w"); 
-		if ($file!==false) {fputs($file,serialize($tmp));fclose($file);chmod ("../clans/".$cname, 0777);} 
+		if ($file!==false) {legacy_fputs($file,serialize($tmp));legacy_fclose($file);chmod ("../clans/".$cname, 0777);} 
 		$tc[0].=" *".$cname."*"; 
 		$l_i[$loc][$login]["char"]=implode("|",(array)($tc)); 
 		additem($loc,"",$login,"i.guildstone",1); 

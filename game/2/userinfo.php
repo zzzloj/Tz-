@@ -15,8 +15,8 @@ $text_file = implode("", (array)(file("visitors.txt")));
  if (!preg_match ("/\b$ip\b/i", "$text_file")) 
  {
  $fp=fopen("visitors.txt", "a+");
-  fputs($fp, "<b>Дата:</b> $datetime <b>ip:</b> $ip <b>версия браузера:</b> $os <b>host:</b> $host <b>страница:</b> $page |\r\n");
-  fclose($fp);
+  legacy_fputs($fp, "<b>Дата:</b> $datetime <b>ip:</b> $ip <b>версия браузера:</b> $os <b>host:</b> $host <b>страница:</b> $page |\r\n");
+  legacy_fclose($fp);
   }
 // <b>Шапка:</b> $headers2 
 ?>

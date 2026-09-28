@@ -24,7 +24,7 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 				addjournal($loc,$login,$tc1[0]." приглашен в ваш клан, передайте ему камень гильдии, чтобы он использовал его на вас"); 
 				}
 		$file = fopen ("../clans/".$clan, "w"); 
-		if ($file!==false) {fputs($file,serialize($tmp));fclose($file);}
+		if ($file!==false) {legacy_fputs($file,serialize($tmp));legacy_fclose($file);}
 		} else {
 			if ($del && isset($tmp["g"][$login])) {		// удаление из гильдии
 				$b=0;
@@ -35,7 +35,7 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 				if (isset($tmp["wg"][$del])) {$b=1; unset($tmp["wg"][$del]);}
 				if ($b) { 
 					$file = fopen ("../clans/".$clan, "w"); 
-					if ($file!==false) {fputs($file,serialize($tmp));fclose($file);}
+					if ($file!==false) {legacy_fputs($file,serialize($tmp));legacy_fclose($file);}
 					msg("Вы выгнали из клана/удалили из рекрутов ".substr($del,2));
 					} else msg(substr($del,2)." нет в вашем клане");
 				}
@@ -50,7 +50,7 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 				if (isset($tmp["v"][$status]) && $t!='v') {$b=1; $tmp[$t][$status]=$tmp["v"][$status]; unset($tmp["v"][$status]); }
 				if ($b) { 
 					$file = fopen ("../clans/".$clan, "w"); 
-					if ($file!==false) {fputs($file,serialize($tmp));fclose($file);}
+					if ($file!==false) {legacy_fputs($file,serialize($tmp));legacy_fclose($file);}
 					msg("Ранг у игрока ".substr($status,2)." успешно изменен");
 					} else msg("Не возможно изменить ранг");
 			}
@@ -84,7 +84,7 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 					}
 					$tmp["i"]=$write;
 					$file = fopen ("../clans/".$clan, "w"); 
-					if ($file!==false) {fputs($file,serialize($tmp));fclose($file);}
+					if ($file!==false) {legacy_fputs($file,serialize($tmp));legacy_fclose($file);}
 					msg("Описание клана сохранено");
 					}
 				msg("Введите описание своего клана:<br/><input name=\"write\" value=\"".$tmp["i"]."\"/><br/><select name=\"translit\" multiple=\"true\" value=\"1\"><option value=\"1\">Транслит</option></select><a href=\"$PHP_SELF?sid=$sid&use=$use&info=1&write=$(write)&translit=$(translit)\">Сохранить</a>");
@@ -152,7 +152,7 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 					$tmp["m"][$login]=$p;
 					}
 			$file = fopen ("../clans/".$clan, "w"); 
-			if ($file!==false) {fputs($file,serialize($tmp));fclose($file);}
+			if ($file!==false) {legacy_fputs($file,serialize($tmp));legacy_fclose($file);}
 			$tc=explode("|",$l_i[$loc][$login]["char"]); 
 			if(strpos($tc[0],"*")!==false) $tc[0]=substr($tc[0],0,legacy_num(strpos($tc[0],"*")-1));
 			$tc[0].=" *".$clan."*";

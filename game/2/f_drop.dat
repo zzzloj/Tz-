@@ -24,7 +24,7 @@ if ($drop) {			//linkБросить
 	additem($loc,$login,"loc",$tdrop,$num,"items","items",1,-1,1);
 if ($login=='u.qw' || $login=='u.qv' || $login=='u.scream' || $login=='u.kv') {
 	$log="|логин: ".$login."|бросил: ".$tdrop." в количестве ".$num."|время: ".date("d/m Y H:i",time())."|юзер: ".getenv('HTTP_USER_AGENT')."|\r\n";
-	$file=fopen("z_modlog.dat","a+");@fputs($file,$log);@fclose($file);
+	$file=fopen("z_modlog.dat","a+");@legacy_fputs($file,$log);@legacy_fclose($file);
 }
 	}
 	}

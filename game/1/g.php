@@ -56,7 +56,7 @@ if ((!$sid && !$site) || !$tmp) $site='main';
 $glast=@implode('',(array)(@file('glast.dat')));
 $glast=trim($glast); //$sl=rand(3,20); sleep($sl);
 $tlast=time().$_SERVER['HTTP_USER_AGENT'].substr($sid,0,10);
-$file=fopen('glast.dat','w');@fputs($file,$tlast);@fclose($file);
+$file=fopen('glast.dat','w');@legacy_fputs($file,$tlast);@legacy_fclose($file);
 if ($glast==$tlast) msg("<a href=\"$PHP_SELF?$g_tmp\">Обновить</a>");
 
 if ($sid) {
@@ -76,13 +76,13 @@ if(preg_match("/[\/{}$\"\']+/",$QUERY_STRING)) msg('error');
 if (file_exists('game.dat')) {
         $file_save = fopen('game.dat','r+');
         if (!$file_save) msg('Ошибка загрузки game.dat');
-        if (flock($file_save,2)) {
-                rewind($file_save);
-                $game = fread($file_save, 65535);
+        if (legacy_flock($file_save,2)) {
+                legacy_rewind($file_save);
+                $game = legacy_fread($file_save, 65535);
                 $game = unserialize($game);
                 if (gettype($game)!='array') $game=array();
                 } else {$file_save=''; msg('Ошибка блокировки game.dat');}
-        } else {$file_save = fopen('game.dat','w+'); if ($file_save && flock($file_save,2)) {$f_all=1; require 'f_online.dat'; require 'f_blank.dat';} else {$file_save=''; msg('Ошибка создания game.dat');}}
+        } else {$file_save = fopen('game.dat','w+'); if ($file_save && legacy_flock($file_save,2)) {$f_all=1; require 'f_online.dat'; require 'f_blank.dat';} else {$file_save=''; msg('Ошибка создания game.dat');}}
 
 
 srand ((float) microtime() * 10000000);
@@ -109,7 +109,7 @@ $loc=trim($tmp[0]);
 loadloc($loc);
 if (isset($l_i[$loc]["u.alatiel"])) {
 $log_save=$login." - ".$loc." - ".$QUERY_STRING." - ".date("d/m Y H:i",time())."\r\n";
-$file=fopen("./z_net_dannih.txt","a+");@fputs($file,$log_save);@fclose($file);
+$file=fopen("./z_net_dannih.txt","a+");@legacy_fputs($file,$log_save);@legacy_fclose($file);
 @unlink('online/'.$login); msg('Нет данных');}
 if ($p!=substr($l_i[$loc][$login]["user"],0,strpos($l_i[$loc][$login]["user"],"|"))) require("f_npass.dat");
 if ($l_i[$loc][$login]["o"]) list($g_list,$g_size,$g_j2loc,$g_j2go,$g_menu,$g_sounds,$g_joff,$g_smenu,$g_map,$g_smf,$g_ch)=explode("|",$l_i[$loc][$login]["o"]);
@@ -138,7 +138,7 @@ if ($go) {
         }
 		if($login=='u.tony' || $login=='johnson22' || $login=='u.georg2') {
 	$log_save=$login." - ".$loc." - ".$QUERY_STRING." - ".date("d/m Y H:i",time())."\r\n";
-$file=fopen("./z_net_dannih.txt","a+");@fputs($file,$log_save);@fclose($file);	
+$file=fopen("./z_net_dannih.txt","a+");@legacy_fputs($file,$log_save);@legacy_fclose($file);	
 		}
 if ($game['fid']==$login) $game['floc']=$loc;
 if (!$game['floc'] || isset($l_tt[$game['floc']]) && !isset($l_i[$game['floc']]['i.flag']) && !isset($l_i[$game['floc']][$game['fid']])) {$l_i[$loc]['i.flag']='флаг лидерства|1|0'; $game['floc']=$loc;$game['fid']='';}
@@ -152,7 +152,7 @@ for($i=2;$i<count((array)($loc_c));$i= legacy_num($i) + legacy_num(2)) doai($loc
 
 if (!isset($l_i[$loc][$login]) || !$login) {
 $log_save=$login.' - '.$loc.' - '.$QUERY_STRING.' - '.date('d/m Y H:i',time()).'\r\n';
-$file=fopen('./z_net_dannih.txt','a+');@fputs($file,$log_save);@fclose($file);
+$file=fopen('./z_net_dannih.txt','a+');@legacy_fputs($file,$log_save);@legacy_fclose($file);
 @unlink('online/'.$login); msg('Нет данных');}
 $char = explode('|',$l_i[$loc][$login]['char']);
 
@@ -326,19 +326,19 @@ function savegame() {
                         if(count((array)($l_t[$i]))>0) $arr["t"]=$l_t[$i];
                         if ($arr!=$l_tt[$i] && $arr["d"]) {
                                 $file = fopen ("l_i/".$i, "w");
-                                if ($file!==false) {fputs($file,serialize($arr));fclose($file);}
+                                if ($file!==false) {legacy_fputs($file,serialize($arr));legacy_fclose($file);}
                                 }
                         }
                 if ($login && $loc && isset($l_i[$loc][$login])) {
                         $file = fopen ("online/".$login, "w");
-                        if ($file!==false) {fputs($file,$loc."\n".time());fclose($file);}
+                        if ($file!==false) {legacy_fputs($file,$loc."\n".time());legacy_fclose($file);}
                         }
-                rewind($file_save);
-                ftruncate($file_save,0);
+                legacy_rewind($file_save);
+                legacy_ftruncate($file_save,0);
                 if ($login && $game["fid"]==$login) $game["floc"]=$loc;
-                fputs($file_save,serialize($game));
+                legacy_fputs($file_save,serialize($game));
                 //flock($file_save,3);
-                fclose($file_save);
+                legacy_fclose($file_save);
                 };
         @ignore_user_abort(false);
         }

@@ -3,7 +3,7 @@
 if (time()<trim($tmp[2])) $t=legacy_num(trim($tmp[2]))-time(); else $t=0;
 if ($t) $s=trim($tmp[2]); else $s=time()+10;
 $file = fopen ("online/".$login, "w");
-if ($file!==false) {fputs($file,$loc."\n".time()."\n".$s);fclose($file);}
+if ($file!==false) {legacy_fputs($file,$loc."\n".time()."\n".$s);legacy_fclose($file);}
 
 $login="";
 if ($t) $stmp="Повторите через ".$t." сек"; else $stmp="Неверный пароль. Если вы сменили пароль, подождите 10 минут, проверьте список онлайн и войдите в игру заново.";

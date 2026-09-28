@@ -24,12 +24,12 @@ $dialog=array(
     $title_v="Ты ввел не верный код! <a href=\\"http://wap.smszamok.ru/iget.php?pid=9182&url=bigwap.org?sid=".$sid."\\">Узнать как получить код</a>";
     return false;
   }
-  $line = fgets ($file, 1024);
-  fclose($file);
+  $line = legacy_fgets ($file, 1024);
+  legacy_fclose($file);
 
   if((substr($line, 0, 4) == "true") && (!file_exists("../sms/".$pass))){
      $file = fopen ("../sms/".$pass, "w");
-     if ($file!==false) {fwrite($file,".");fclose($file);} else msg("Ошибка создания файла");
+     if ($file!==false) {legacy_fwrite($file,".");legacy_fclose($file);} else msg("Ошибка создания файла");
     $title_v="Держи в благодарность немного дублончиков!";
 	additem($loc,"",$login,"i.q.dublon",200);
     $life_time = substr($line, 5);

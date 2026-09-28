@@ -16,8 +16,8 @@ $l_i[$randl]["n.c.demogn"]=$npc;
 addnpc("n.c.demogn","",$loc);
 $demon=".";
 $fp=fopen("quest/quest.demon","w+");
-fputs($fp,"$demon"); 
-fclose($fp);
+legacy_fputs($fp,"$demon"); 
+legacy_fclose($fp);
 chmod ("quest/quest.demon", 0777);
 }
 }else msg("Чтобы разбить пузырек используйте его на черный алтарь!");

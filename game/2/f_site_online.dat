@@ -28,15 +28,15 @@
     		$gmtTime = gmdate("H:i");
 
       $ons=fopen("on.dat", "r+");
-   $onn=fread($ons, filesize("on.dat"));
+   $onn=legacy_fread($ons, filesize("on.dat"));
            $on=explode("|", $onn);
-          fclose($ons); 
+          legacy_fclose($ons); 
      if ((legacy_num($i)+1)>$on[0]) {
 $onli="".(legacy_num($i)+1)."|".$gmtDate."|".$gmtTime."|";
      $onl=fopen("on.dat", "w+");
         chmod("on.dat", 0777);
-        fwrite($onl, $onli);
-          fclose($onl); 
+        legacy_fwrite($onl, $onli);
+          legacy_fclose($onl); 
  }
 
 	if (legacy_cmp($i)>-1) $stmp="<p>Сейчас в игре ".(legacy_num($i)+1)." (на этом сервере разрешено не более $g_max) игроков:".$stmp;

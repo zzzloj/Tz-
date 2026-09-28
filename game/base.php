@@ -16,8 +16,8 @@ ini_set("default_socket_timeout",120);
 $fp = @fopen($tmp, "r");
 if($fp) {
 	stream_set_timeout($fp, 6);
-    	$s=fread($fp, 15000);	//max 15кб
-	fclose ($fp);
+    	$s=legacy_fread($fp, 15000);	//max 15кб
+	legacy_fclose ($fp);
 	} else $s="Сервер не найден:<br/>".$tmp;
 if(!$s) $s="Сервер не отвечает:<br/>".$tmp;
 if(strpos($s,"<card")===false) $s="<card>".$s."</card>";

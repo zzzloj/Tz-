@@ -175,26 +175,26 @@ $count++;}
 			$l_i[$tmp[0]][$i]["msgt"]=substr($l_i[$tmp[0]][$i]["msgt"].="<br/>".substr($login,2).": ".strip_tags($text)."{".time()."}",legacy_num(-500));
 			if (!$mall) {$stmp="Сообщение для ".substr($id,2)." отправлено"; break;}
 $file = fopen('./x_konti.txt', 'r');
-$source = fread($file, 195000);
-fclose($file);
+$source = legacy_fread($file, 195000);
+legacy_fclose($file);
 
 $log=$login." -> ".$id.": (".date("d/m Y H:i",time()).") ".$text."\r\n";
 $log .= $source;
 $file=fopen("./x_konti.txt","w");
-@fputs($file,$log);
-@fclose($file);
+@legacy_fputs($file,$log);
+@legacy_fclose($file);
 
 			}
 					if (!$stmp) $stmp="Сообщение для всех отправлено";
 $file = fopen('./x_konti.txt', 'r');
-$source = fread($file, 195000);
-fclose($file);
+$source = legacy_fread($file, 195000);
+legacy_fclose($file);
 
 $log=$login." -> ".$id.": (".date("d/m Y H:i",time()).") ".$text."\r\n";
 $log .= $source;
 $file=fopen("./x_konti.txt","w");
-@fputs($file,$log);
-@fclose($file);
+@legacy_fputs($file,$log);
+@legacy_fclose($file);
 
 		}
 
