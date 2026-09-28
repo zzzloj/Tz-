@@ -8,19 +8,12 @@
 		}
 	closedir($dh);
 	
-	$arr2=array();
-	$dh2 = opendir('../2/online/'); 
-	while (($fname2 = readdir($dh2))!== false) if ($fname2!='.' && $fname2!='..' && $fname2!='1.htaccess' && $fname2!='.htaccess') {
-		$tmp2=unserialize(implode('',(array)(file('../2/online/'.$fname2))));
-		$arr2[$fname2]=1;
-		}
-	closedir($dh2);
+	// Второй мир (game/2) закрыт: один мир на время тестов, см. README.
 
 $stmp="";
 
 	$stmp.="<br/><a href=\"g.php\">Сервер 1 (".count((array)($arr))." из 100)</a>";
-	$stmp.="<br/><a href=\"../2/g.php\">Сервер 2 (".count((array)($arr2))." из 100)</a>";
-	$count=count((array)($arr))+count((array)($arr2));
+	$count=count((array)($arr));
 	
 	
 $stmp="Сейчас в игре ".$count." человек:".$stmp;
