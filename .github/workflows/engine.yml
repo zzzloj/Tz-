@@ -1,0 +1,65 @@
+name: engine
+
+on:
+  push:
+    paths: ["engine/**", "content/**", ".github/workflows/engine.yml"]
+  pull_request:
+    paths: ["engine/**", "content/**", ".github/workflows/engine.yml"]
+  workflow_dispatch:
+
+jobs:
+  jvm-android:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: engine
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build server, shared (JVM) and Android app, run tests
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon --stacktrace :shared:jvmTest :server:test :androidApp:assembleDebug 2>&1 | tee build.log
+      - name: Report errors
+        if: failure()
+        run: python3 ci/annotate.py build.log "$GITHUB_WORKSPACE"
+      - name: Content problems
+        if: success()
+        run: |
+          grep -A40 "content problems" server/build/test-results/test/*.xml | sed 's/^.*xml-//' | head -45 || true
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: android-debug-apk
+          path: engine/androidApp/build/outputs/apk/debug/*.apk
+
+  ios:
+    runs-on: macos-15
+    defaults:
+      run:
+        working-directory: engine
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Shared XCFramework and iOS tests
+        run: |
+          set -o pipefail
+          ./gradlew --no-daemon :shared:iosSimulatorArm64Test :shared:assembleSharedDebugXCFramework 2>&1 | tee build.log
+      - name: iOS app (simulator build)
+        run: |
+          set -o pipefail
+          brew install xcodegen
+          cd iosApp && xcodegen
+          xcodebuild -project Tz.xcodeproj -scheme Tz -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build 2>&1 | tee ../build.log | tail -40
+      - name: Report errors
+        if: failure()
+        run: python3 ci/annotate.py build.log "$GITHUB_WORKSPACE"

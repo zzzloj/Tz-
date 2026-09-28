@@ -1,0 +1,31 @@
+# Xcode project for the iOS app, generated with XcodeGen:
+#   cd engine && ./gradlew :shared:assembleSharedDebugXCFramework
+#   cd iosApp && xcodegen && open Tz.xcodeproj
+name: Tz
+options:
+  bundleIdPrefix: ru.territoriyazla
+  deploymentTarget:
+    iOS: "16.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    SERVER_URL: "http://localhost:8080"
+targets:
+  Tz:
+    type: application
+    platform: iOS
+    sources: [Tz]
+    dependencies:
+      - framework: ../shared/build/XCFrameworks/debug/Shared.xcframework
+        embed: false
+    info:
+      path: Tz/Info.plist
+      properties:
+        CFBundleDisplayName: Территория Зла
+        UILaunchScreen: {}
+        ServerURL: $(SERVER_URL)
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ru.territoriyazla.app

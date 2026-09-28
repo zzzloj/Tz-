@@ -1,0 +1,100 @@
+package tz.server
+
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import tz.shared.ContentReport
+import tz.shared.ExitView
+import tz.shared.LocationView
+import tz.shared.NpcView
+import java.io.File
+
+/**
+ * The world as described by content/ (see content/README.md). Only what the
+ * current API needs is typed; the rest stays as JSON until its rules move
+ * to this engine.
+ */
+class Content(
+    val locations: Map<String, Location>,
+    val items: Map<String, JsonObject>,
+    val npcs: Map<String, JsonObject>,
+    val dialogs: Map<String, JsonObject>,
+    val problems: List<String>,
+) {
+    data class Location(
+        val id: String,
+        val name: String,
+        val zone: Int,
+        val description: String?,
+        val exits: List<ExitView>,
+        val npcs: List<NpcView>,
+    ) {
+        fun view() = LocationView(id, name, zone, description, exits, npcs)
+    }
+
+    fun report() = ContentReport(locations.size, items.size, npcs.size, dialogs.size, problems)
+
+    companion object {
+        private val json = Json { ignoreUnknownKeys = true }
+
+        fun load(dir: File): Content {
+            require(dir.isDirectory) { "content directory not found: $dir" }
+            val problems = mutableListOf<String>()
+            fun objects(sub: String): Map<String, JsonObject> =
+                (dir.resolve(sub).listFiles { f -> f.name.endsWith(".json") } ?: emptyArray())
+                    .sortedBy { it.name }
+                    .associate { f -> f.name.removeSuffix(".json") to json.parseToJsonElement(f.readText()).jsonObject }
+
+            val locations = objects("locations").mapValues { (id, o) -> location(id, o) }
+            val items = objects("items")
+            val npcs = objects("npcs")
+            val dialogs = objects("dialogs")
+
+            for (loc in locations.values) for (exit in loc.exits) {
+                if (exit.target !in locations) problems += "location ${loc.id}: exit \"${exit.label}\" leads to missing ${exit.target}"
+            }
+            for ((id, d) in dialogs) {
+                val topics = d["topics"] as? JsonObject ?: continue
+                for ((topic, value) in topics) {
+                    val options = (value as? JsonObject)?.get("options") as? JsonArray ?: continue
+                    for (option in options) {
+                        val goto = (option as? JsonObject)?.get("goto")?.jsonPrimitive?.contentOrNull ?: continue
+                        if (goto.isNotEmpty() && goto !in topics) problems += "dialog $id/$topic: goto missing topic \"$goto\""
+                    }
+                }
+            }
+            return Content(locations, items, npcs, dialogs, problems)
+        }
+
+        private fun location(id: String, o: JsonObject): Location {
+            // Castle gates keep state after '*' in the name; it is never shown.
+            val name = (o["name"] as? JsonPrimitive)?.contentOrNull?.substringBefore('*') ?: id
+            val zone = (o["zone"] as? JsonPrimitive)?.intOrNull ?: 0
+            val exits = (o["exits"] as? JsonArray).orEmpty().mapNotNull { e ->
+                val x = e as? JsonObject ?: return@mapNotNull null
+                val target = x["target"]?.jsonPrimitive?.contentOrNull ?: return@mapNotNull null
+                ExitView(x["label"]?.jsonPrimitive?.contentOrNull ?: target, target)
+            }
+            val npcs = (o["objects"] as? JsonObject).orEmpty().mapNotNull { (key, value) ->
+                npcName(value)?.let { NpcView(key, it) }
+            }
+            return Location(id, name, zone, (o["description"] as? JsonPrimitive)?.contentOrNull, exits, npcs)
+        }
+
+        /** NPC entries are objects with "char"; items are plain strings. */
+        private fun npcName(value: JsonElement): String? {
+            val char = (value as? JsonObject)?.get("char") ?: return null
+            return when (char) {
+                is JsonObject -> char["name"]?.jsonPrimitive?.contentOrNull
+                is JsonPrimitive -> char.contentOrNull?.substringBefore('|')
+                else -> null
+            }?.takeIf { it.isNotBlank() }
+        }
+    }
+}
