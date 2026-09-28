@@ -59,7 +59,7 @@ if (preg_match_all('/(i\.[^fh]\.[^:|]*:\d{4,})/',$data,$arr)) {
                 $auser["journal"]="";
                    $auser["magic"]=str_replace("m.n","m.roj",$auser["magic"]);
                 $char=explode("|",$auser["char"]);
-                if (count($char)<16) for($i=count($char);$i<16;$i++) $char[$i]="";
+                if (count((array)($char))<16) for($i=count((array)($char));$i<16;$i++) $char[$i]="";
                 $tuser=explode("|",$auser["user"]);
                 $tuser[3]=intval($tuser[3]);        // bug fix!!!
                 if ($tuser[3]==0) $tuser[3]=16;

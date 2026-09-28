@@ -7,7 +7,7 @@ extract($_GET);
   extract($_SERVER);
 $tmp=$QUERY_STRING;if($tmp=='') $tmp=$_SERVER["QUERY_STRING"];
 $tmp=urldecode($tmp);
-parse_str($tmp);
+parse_str($tmp, $legacy_qs); extract($legacy_qs);
 if(preg_match("/[^a-z0-9_.-]/i",$login) || $ip=='217.144.164.164' || $login=='u.alatiel' || $login=='u.fox' || $login=='u.liska' || $login=='u.anjelika' || $login=='u.erra' || ($brouzer=='SonyEricssonK500i/R2AA SEMC-Browser/4.0.2 Profile/MIDP-2.0 Configuration/CLDC-1.1' && $ip=='83.149.48.211')){
 header ("Location: http://download.l2db.ru/original%20clients/L2_C5_Installer.zip"); exit;}
 
@@ -35,7 +35,7 @@ $PHP_SELF = "g.php";
         // проверим на других серверах
         $tmp=file("servers.dat");
         $srv=implode("",file("server.dat"));
-        for($i=1;$i<count($tmp);$i++) if ($srv!=$i) {
+        for($i=1;$i<count((array)($tmp));$i++) if ($srv!=$i) {
                 $s="";
                 $s=@implode("",@file(trim($tmp[$i])."f_site_common.php?login=".$login));
                 if ($s=="yes") {$loc=""; msg("Ваш персонаж находится на <a href=\"".trim($tmp[$i])."g.php?site=connect2&login=$login&p=$p&r=".rand(1,99)."\">сервере ".$i."</a>, чтобы играть на этом (сервер ".$srv."), подождите 10 минут и попробуйте войти заново.","Территория Зла");}

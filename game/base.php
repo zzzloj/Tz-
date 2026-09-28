@@ -163,11 +163,11 @@ function w2w($s) {
 
 	// подготавливаем файл
 	$wml=pack("C",17);	// байт, обозначающий формат WapBrouser'а 
-	$wml.=pack("C",count($vars));
+	$wml.=pack("C",count((array)($vars)));
 	foreach($vars as $name=>$val) $wml.=pack("C",strlen($name)).$name.pack("C",strlen($val)).$val;
-	$wml.=pack("C",count($pages));
+	$wml.=pack("C",count((array)($pages)));
 	foreach($pages as $page) {
-		$wml.=pack("C",count($page["links"]));
+		$wml.=pack("C",count((array)($page["links"])));
 		foreach($page["links"] as $link) $wml.=pack("n",$link["from"]).pack("C",$link["len"]).pack("C",strlen($link["link"])).$link["link"];
 		$wml.=pack("C",strlen($page["id"])).$page["id"];//.pack("C",strlen($page["title"])).$page["title"];
 		$wml.=pack("n",strlen($page["data"])).$page["data"];

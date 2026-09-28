@@ -69,7 +69,7 @@ $stmp.="<br/><b>Фото:</b> <a href=\"fr.php?img=".$inf['img']."\">[просмотр]</a>"
 		$war=explode("|",$l_i[$loc][$look]["war"]);
 		$sk=explode("|",$l_i[$loc][$look]["skills"]);
 		$lev=0;
-		for($i=0;$i<count($sk);$i++) if ($i!=3 && $i!=4) $lev+=$sk[$i];
+		for($i=0;$i<count((array)($sk));$i++) if ($i!=3 && $i!=4) $lev+=$sk[$i];
 		$lev=round(($lev-5)*100/($g_attr+$g_skills));
 
 
@@ -124,16 +124,16 @@ $stmp.="<br/><b>Фото:</b> <a href=\"fr.php?img=".$inf['img']."\">[просмотр]</a>"
 		if ($sk[1]==1) $bad[]="медлительный";
 		if ($sk[2]>3) $good[]="умный";
 		if ($sk[2]==1) $bad[]="не очень умный";
-		if (count($bad)>0 || count($good)>0) $stmp.="<br/>";
-		if (count($good)==3) $stmp.=$good[0].", ".$good[1]." и ".$good[2];
-		if (count($good)==2) $stmp.=$good[0]." и ".$good[1];
-		if (count($good)==1) $stmp.=$good[0];
-		if (count($good)>0 && count($bad)>0) $stmp.=", но ";
-		if (count($bad)==3) $stmp.=$bad[0].", ".$bad[1]." и ".$bad[2];
-		if (count($bad)==2) $stmp.=$bad[0]." и ".$bad[1];
-		if (count($bad)==1) $stmp.=$bad[0];
+		if (count((array)($bad))>0 || count((array)($good))>0) $stmp.="<br/>";
+		if (count((array)($good))==3) $stmp.=$good[0].", ".$good[1]." и ".$good[2];
+		if (count((array)($good))==2) $stmp.=$good[0]." и ".$good[1];
+		if (count((array)($good))==1) $stmp.=$good[0];
+		if (count((array)($good))>0 && count((array)($bad))>0) $stmp.=", но ";
+		if (count((array)($bad))==3) $stmp.=$bad[0].", ".$bad[1]." и ".$bad[2];
+		if (count((array)($bad))==2) $stmp.=$bad[0]." и ".$bad[1];
+		if (count((array)($bad))==1) $stmp.=$bad[0];
 
-		if (count($bad)==0 && count($good)==0) $stmp.="<br/>Телосложение среднее";
+		if (count((array)($bad))==0 && count((array)($good))==0) $stmp.="<br/>Телосложение среднее";
 		$st=explode("|",$l_i[$loc][$look]["st"]);
 $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&look=$look&st=1\">Статистика</a>";
 

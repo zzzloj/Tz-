@@ -2,7 +2,7 @@
 
 $tmp=$QUERY_STRING;if($tmp=='') $tmp=$_SERVER["QUERY_STRING"];
 $tmp=urldecode($tmp);
-parse_str($tmp);
+parse_str($tmp, $legacy_qs); extract($legacy_qs);
 
 if (!$id) $stmp="<p align=\"center\">
 Ваше имя:
@@ -86,7 +86,7 @@ if ($id=="stat") {			// статистика $nn, $pass
 	$stat=explode(":",$data["stat"]);
 	$stmp="<p>Вам было переведено:";
 	$sum=0;
-	for($i=0;$i<count($stat);$i+=2) {$stmp.="<br/><b>".date("d/m Y H:i",$stat[$i])."</b>: ".$stat[$i+1]."$$"; $sum+=$stat[$i+1];} 
+	for($i=0;$i<count((array)($stat));$i+=2) {$stmp.="<br/><b>".date("d/m Y H:i",$stat[$i])."</b>: ".$stat[$i+1]."$$"; $sum+=$stat[$i+1];} 
 	$stmp.="<br/>***<br/>Итого: ".$sum."$$";
 	msg($stmp);
 	}

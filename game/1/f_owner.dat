@@ -33,7 +33,7 @@ addjournal($loc,$owner[0],$tchar[0].": жизнь +".$htmp); if ($tc[1]>$tc[2]) $tc[1
 			}
 		if (!$b) {
 				// следуем
-				if ($owner[1] && !isset($l_i[$i][$owner[1]])) for ($k=3;$k<count($locai);$k+=2) if (isset($l_i[$locai[$k]][$owner[1]])) {
+				if ($owner[1] && !isset($l_i[$i][$owner[1]])) for ($k=3;$k<count((array)($locai));$k+=2) if (isset($l_i[$locai[$k]][$owner[1]])) {
 					$bc=1;
 					if (substr($j,0,4)=="n.o.") {
 						if (substr($i,0,2)=="c." && substr($i,3)!=".in") $bc=0;

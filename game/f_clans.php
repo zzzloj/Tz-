@@ -1,7 +1,7 @@
 <?php
 $tmp=$QUERY_STRING;if($tmp=='') $tmp=$_SERVER["QUERY_STRING"];
 $tmp=urldecode($tmp);
-parse_str($tmp);
+parse_str($tmp, $legacy_qs); extract($legacy_qs);
 
 $g_list=10;
 
@@ -15,14 +15,14 @@ if ($clan) {
 	if($tmp["i"]) $stmp.="<br/><a href=\"f_clans.php?clan=$clan&info=1\">Инфо о клане</a>";
 	$stmp.="<br/>Состав:";
 
-	if (count($tmp["m"])>0) {
+	if (count((array)($tmp["m"]))>0) {
 	if (!$start) $start=0;
 	$keys=array_keys($tmp["m"]);
-	for($i=$start;$i<$start+$g_list && $i<count($keys);$i++) {
+	for($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) {
 			$stmp.="<br/>".substr($keys[$i],2);
 			}
 		if ($start) {$stmp.= "\n<br/><a href=\"f_clans.php?clan=$clan\">^ </a>";}
-		if ($start+$g_list<count($keys)) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"f_clans.php?clan=$clan&start=".($start+$g_list)."\">+ (".(count($keys)+1-$start-$g_list).")</a>";}
+		if ($start+$g_list<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"f_clans.php?clan=$clan&start=".($start+$g_list)."\">+ (".(count((array)($keys))+1-$start-$g_list).")</a>";}
 		} else $stmp.="<br/>Больше никого в клане нет."; 
 
 	msg($stmp,"Клан *".$clan."*",0,"none");
@@ -34,20 +34,20 @@ if ($clan) {
 	$dh = opendir("clans"); 
 	while (($fname = readdir($dh))!== false) if ($fname!="." && $fname!=".." && $fname!="1.htaccess" && $fname!=".htaccess") {
 		$tmp=unserialize(implode("",file("clans/".$fname)));
-		$arr[$fname]=count($tmp["m"])+1;
+		$arr[$fname]=count((array)($tmp["m"]))+1;
 		}
 	closedir($dh);
 
-	if (count($arr)>0) {
-		$stmp="<p>Всего кланов: ".count($arr);
+	if (count((array)($arr))>0) {
+		$stmp="<p>Всего кланов: ".count((array)($arr));
 		arsort($arr);
 		if (!$start) $start=0;
 		$keys=array_keys($arr);
-		for($i=$start;$i<$start+$g_list && $i<count($keys);$i++) {
+		for($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) {
 			$stmp.="<br/><a href=\"f_clans.php?clan=".$keys[$i]."\">".$keys[$i]."</a> (".$arr[$keys[$i]]." чел.)";
 			}
 		if ($start) {$stmp.= "\n<br/><a href=\"f_clans.php?\">^ </a>";}
-		if ($start+$g_list<count($keys)) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"f_clans.php?start=".($start+$g_list)."\">+ (".(count($keys)+1-$start-$g_list).")</a>";}
+		if ($start+$g_list<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"f_clans.php?start=".($start+$g_list)."\">+ (".(count((array)($keys))+1-$start-$g_list).")</a>";}
 		} else $stmp="<p>Нет ни одного клана"; 
 
 	msg($stmp,"Список кланов",0,'none');

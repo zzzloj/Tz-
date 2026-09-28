@@ -12,7 +12,7 @@
 
 		// нужна ли цель
 		if (($magic[6] && $to) || !$magic[6]) {
-			if ($magic[6] && $to && !isset($l_i[$loc][$to]) && strpos($l_i[$loc][$login]["items"],$to.":")===false || substr($use,0,6)=="m.w.a." && count($l_i[$loc])==1) addjournal($loc,$login,"Нет цели");
+			if ($magic[6] && $to && !isset($l_i[$loc][$to]) && strpos($l_i[$loc][$login]["items"],$to.":")===false || substr($use,0,6)=="m.w.a." && count((array)($l_i[$loc]))==1) addjournal($loc,$login,"Нет цели");
 			else {
 			// хватает ли маны
 			if ($char[3]>=$magic[1]) {

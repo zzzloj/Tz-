@@ -9,11 +9,11 @@ $stmp="<p>$nas";
 
 
 // по всем предметам в локации
-if (count($l_i[$loc])>1) {
+if (count((array)($l_i[$loc]))>1) {
 $stmp.="Объекты:";
 if (!$start) $start=0;
 $keys=array_keys($l_i[$loc]);
-for ($i=$start;$i<$start+$g_list && $i<count($keys);$i++) if ($keys[$i]!=$login  && $l_i[$loc][$keys[$i]]["god"]!="1") {
+for ($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) if ($keys[$i]!=$login  && $l_i[$loc][$keys[$i]]["god"]!="1") {
 	$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&to=".$keys[$i]."&use=$use";
 	if ($glava==1) $stmp.="&glava=1";
 	$stmp.="\">";
@@ -41,8 +41,8 @@ for ($i=$start;$i<$start+$g_list && $i<count($keys);$i++) if ($keys[$i]!=$login 
 		}
 	$stmp.="</a>";
 	}
-if (count($keys)>1 && $start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&list=all&use=$use\">^ </a>";}
-if ($start+$g_list<count($keys)) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&list=all&use=$use&start=".($start+$g_list)."\">+ (".(count($keys)-$start-$g_list).")</a>";}
+if (count((array)($keys))>1 && $start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&list=all&use=$use\">^ </a>";}
+if ($start+$g_list<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&list=all&use=$use&start=".($start+$g_list)."\">+ (".(count((array)($keys))-$start-$g_list).")</a>";}
 }
 
 
@@ -52,7 +52,7 @@ if ($l_i[$loc][$login]["items"]!="") {
 
 	if (!$start) $start=0;
 	$keys=array_keys($items);
-	for ($i=$start;$i<$start+$g_list && $i<count($keys);$i++) if($items[$keys[$i]]){
+	for ($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) if($items[$keys[$i]]){
 		$k=explode(":",$items[$keys[$i]]);
 		if (strpos($k[0],"_")!==false) $tk=substr($k[0],0,strpos($k[0],"_")); else
 		if (strpos($k[0],"-")!==false) $tk=substr($k[0],0,strpos($k[0],"-")); else $tk=$k[0];
@@ -66,6 +66,6 @@ if ($l_i[$loc][$login]["items"]!="") {
 		$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&to=".$k[0]."&use=$use"."\">".$item."</a>";
 		}
 	if ($start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&list=all\">^ </a>";}
-	if ($start+$g_list<count($keys)) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&list=all&use=$use&start=".($start+$g_list)."\">+ (".(count($keys)-$start-$g_list).")</a>";}
+	if ($start+$g_list<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&list=all&use=$use&start=".($start+$g_list)."\">+ (".(count((array)($keys))-$start-$g_list).")</a>";}
 	}
 	msg($stmp,"Укажите цель");

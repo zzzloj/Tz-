@@ -40,7 +40,7 @@ else if ($look=='i.q.keykrep1') $stmp.="Ключ на столько начищен что в нем отчетл
 			$stmp.="<br/>Чтобы одеть или снять, выберите в меню \"Использовать\".";
 			}
 		else if (substr($look,0,6)=='i.note' || substr($look,0,8)=='i.s.note') $stmp.=$item[2];
-		else if (substr($look,0,6)=='i.book' || substr($look,0,8)=='i.s.book') {$book=explode("[page]",$item[2]); if(!$page) $page=0; if ($page>count($book)-1) $page=count($book)-1; $stmp.=$book[$page]; if (count($book)>1) $stmp.="<br/>Стр. ".($page+1)." из ".count($book)."<br/><a href=\"$PHP_SELF?sid=$sid&look=$look\">[Начало]</a>"; if ($page<count($book)-1) $stmp.="<a href=\"$PHP_SELF?sid=$sid&look=$look&page=".($page+1)."\">[След. стр.]</a>";}
+		else if (substr($look,0,6)=='i.book' || substr($look,0,8)=='i.s.book') {$book=explode("[page]",$item[2]); if(!$page) $page=0; if ($page>count((array)($book))-1) $page=count((array)($book))-1; $stmp.=$book[$page]; if (count((array)($book))>1) $stmp.="<br/>Стр. ".($page+1)." из ".count((array)($book))."<br/><a href=\"$PHP_SELF?sid=$sid&look=$look\">[Начало]</a>"; if ($page<count((array)($book))-1) $stmp.="<a href=\"$PHP_SELF?sid=$sid&look=$look&page=".($page+1)."\">[След. стр.]</a>";}
 		else if (substr($look,0,4)=='i.m.') $stmp.="Cвиток с заклинанием, исчезает после прочтения.<br/><a href=\"$PHP_SELF?sid=$sid&look=m.".substr($look,4)."\">Описание</a>";
 		else if (substr($look,0,4)=='i.r.') $stmp.="Руна с заклинанием, после использования не исчезает.<br/><a href=\"$PHP_SELF?sid=$sid&look=m.".substr($look,4)."\">Описание</a>";
 		else if (substr($look,0,4)=='i.f.') $stmp.="Пища восстанавливает здоровье и иногда ману<br/>Здоровье +".intval($item[2])."<br/>Мана +".intval($item[3]);

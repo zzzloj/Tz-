@@ -68,8 +68,8 @@ function GetParam($Name)
 global $Names,$Values,$NOT_SET;
   $Name = strtolower($Name);
   $Nlist = explode(":",$Names);
-  for ($i=0; $i<count($Nlist); $i++) if ($Nlist[$i] == $Name) break;
-  if ($i == count($Nlist)) return $NOT_SET;
+  for ($i=0; $i<count((array)($Nlist)); $i++) if ($Nlist[$i] == $Name) break;
+  if ($i == count((array)($Nlist))) return $NOT_SET;
   $Vlist = explode(":",$Values);
   return stripslashes(str_replace("!~!",":",$Vlist[$i]));
 }
@@ -81,9 +81,9 @@ global $Names,$Values,$NOT_SET;
   $Nlist = explode(":",$Names);
   $Name = strtolower($Name);
   $Value = addslashes(str_replace(":","!~!",$Value));
-  for ($i=0; $i<count($Nlist); $i++) if ($Nlist[$i] == $Name) break;
+  for ($i=0; $i<count((array)($Nlist)); $i++) if ($Nlist[$i] == $Name) break;
 
-  if ($i == count($Nlist) and ($Value != $NOT_SET))
+  if ($i == count((array)($Nlist)) and ($Value != $NOT_SET))
   { // Добавляем имя и значение
     $Names .= ":$Name";
     $Values .= ":$Value";

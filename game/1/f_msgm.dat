@@ -2,8 +2,8 @@
 // перемещение в контактах
 	$items=explode("|",$l_i[$loc][$login]["msg"]);
 	if ($msg=="up") {
-		for($i=0;$i<count($items);$i++) if ($items[$i]==$id) break;
-		if ($i==count($items)) msg("Нет такого");
+		for($i=0;$i<count((array)($items));$i++) if ($items[$i]==$id) break;
+		if ($i==count((array)($items))) msg("Нет такого");
 		if($i==0) {
 			array_push($items, $items[$i]);
 			array_shift($items);
@@ -16,9 +16,9 @@
 		msg("Пользователь передвинут вверх.");
 		}
 	if ($msg=="down") {
-		for($i=0;$i<count($items);$i++) if ($items[$i]==$id) break;
-		if ($i==count($items)) msg("Нет такого");
-		if($i==count($items)-1) {
+		for($i=0;$i<count((array)($items));$i++) if ($items[$i]==$id) break;
+		if ($i==count((array)($items))) msg("Нет такого");
+		if($i==count((array)($items))-1) {
 			array_unshift($items, $items[$i]);
 			array_pop($items);
 			}else {

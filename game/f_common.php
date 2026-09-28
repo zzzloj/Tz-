@@ -9,7 +9,7 @@ extract($_GET);
 // возвращает -1 если есть $login в папке online
 $tmp=$QUERY_STRING;if($tmp=='') $tmp=$_SERVER["QUERY_STRING"];
 $tmp=urldecode($tmp);
-parse_str($tmp);
+parse_str($tmp, $legacy_qs); extract($legacy_qs);
 if ($newstime) die(@date("d/m",@filemtime("story/news.htm")));
 
 // список у Санчеса

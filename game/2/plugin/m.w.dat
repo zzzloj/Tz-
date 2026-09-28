@@ -12,7 +12,7 @@ if (substr($use,0,6)=="m.w.a.") {
 	} else if (isset($l_i[$loc][$to]) && substr($to,0,2)!='i.') $arr[$to]="";
 
 
-if (count($arr)>0) {
+if (count((array)($arr))>0) {
 $keys=array_keys($arr);
 foreach($keys as $to)  {
 		$tchar=explode("|",$l_i[$loc][$to]["char"]);

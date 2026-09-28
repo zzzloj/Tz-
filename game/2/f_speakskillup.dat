@@ -12,7 +12,7 @@ if (substr($skill,0,2)=="m.") include "f_speakskillupm.dat";
 if (substr($skill,0,2)=="p.") include "f_speakskillupp.dat";
 
 	$lev=0;
-	for($i=0;$i<count($skills);$i++) if ($i!=3) $lev+=$skills[$i];
+	for($i=0;$i<count((array)($skills));$i++) if ($i!=3) $lev+=$skills[$i];
 
 $arr_skills=array(
 "str"=>0,
@@ -112,10 +112,10 @@ if ($skill=='str' || $skill=='dex' || $skill=='int') {	//АТТР
 			$stmp="<p>Превышен предел суммы очков (".$g_skills.") для навыков, выберите что уменьшить: ";
 			if (!$start) $start=0;
 			$keys=array_keys($arr_skills);
-			for ($i=$start;$i<$start+$g_list && $i<count($keys);$i++) if ($keys[$i]!='str' && $keys[$i]!='dex' && $keys[$i]!='int') 
+			for ($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) if ($keys[$i]!='str' && $keys[$i]!='dex' && $keys[$i]!='int') 
 			$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&speak=$speak&id=$id&skilldown=".$keys[$i]."\">".$arr_title_v[$keys[$i]].": ".$skills[$arr_skills[$keys[$i]]]."</a>";
-			if (count($keys)>1 && $start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&speak=$speak&id=$id\">^ </a>";}
-			if ($start+$g_list<count($keys)) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&speak=$speak&id=$id&start=".($start+$g_list)."\">+ (".(count($keys)-$start-$g_list).")</a>";}
+			if (count((array)($keys))>1 && $start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&speak=$speak&id=$id\">^ </a>";}
+			if ($start+$g_list<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&speak=$speak&id=$id&start=".($start+$g_list)."\">+ (".(count((array)($keys))-$start-$g_list).")</a>";}
 			msg($stmp,$tchar[0]);
 			}
 		}

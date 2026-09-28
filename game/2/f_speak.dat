@@ -46,13 +46,13 @@ if ($speak) {
 			if (substr($title_v,0,6)=="eval: ") eval(substr($title_v,6));
 			if (substr($title_v,0,5)=="skill") include "f_speakskillup.dat";
 			$stmp="<p>".$title_v;
-			for($i=1;$i<count($dialog);$i+=2) {
+			for($i=1;$i<count((array)($dialog));$i+=2) {
 				$title_v=$dialog[$i];
 				$id=$dialog[$i+1];
 				if (substr($title_v,0,6)=="eval: ") eval(substr($title_v,6));
 				if ($title_v)	$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&speak=$speak&id=".$id."\">".$title_v."</a>";
 				}
-			if (count($dialog)==1) $stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid\">[Конец диалога]</a>";
+			if (count((array)($dialog))==1) $stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid\">[Конец диалога]</a>";
 			$stmp=str_replace("<imja>",$char[0],$stmp);	// заменяем <imja> на имя игрока
 			msg($stmp,$tchar[0],1);
 

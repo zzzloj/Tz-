@@ -11,7 +11,7 @@
 	if (!$start) $start=0;
 	$keys=array_keys($equip);
 
-	for ($i=$start;$i<$start+$g_list && $i<count($keys);$i++) if ($equip[$keys[$i]]) {
+	for ($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) if ($equip[$keys[$i]]) {
 		$k=explode(":",$equip[$keys[$i]]);
 		if (strpos($k[0],"_")!==false) $tk=substr($k[0],0,strpos($k[0],"_")); else
 		if (strpos($k[0],"-")!==false) $tk=substr($k[0],0,strpos($k[0],"-")); else $tk=$k[0];
@@ -26,7 +26,7 @@
 				}
 		}
 	if ($start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&list=eq\">^ </a>";}
-	if ($start+$g_list<count($keys)) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&list=eq&start=".($start+$g_list)."\">+ (".(count($keys)-$start-$g_list).")</a>";}
+	if ($start+$g_list<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&list=eq&start=".($start+$g_list)."\">+ (".(count((array)($keys))-$start-$g_list).")</a>";}
 	$stmp.="<br/>-<br/><a href=\"$PHP_SELF?sid=$sid\">В игру</a>";
 
 	// меню

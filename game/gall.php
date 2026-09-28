@@ -65,7 +65,7 @@ $ret .= '<wml><card title="'.$title.'"><p>';
         else
         {
         $array = DIR_ARRAY($DIR);
-        $count = sizeof($array);
+        $count = sizeof((array)($array));
         
         if($DIR == $dir_games && !empty($dir_games))
         {
@@ -109,7 +109,7 @@ $rus=array('А','Б','В','Г','Д','Е','Ж','З','И','Й','К','Л','М','Н'
            'а','б','в','г','д','е','ж','з','и','й','к','л','м','н','о','п','р','с','т','у','ф','х','ц','ч','ш','щ','ъ','ы','ь','э','ю','я');
 $string = str_replace('Ё','&#1025;',$string);
 $string = str_replace('ё','&#1105;',$string);
-for($i=0; $i<count($rus); $i++)
+for($i=0; $i<count((array)($rus)); $i++)
    {
    $s=1040;
    $d = '&#'.($s+$i).';';

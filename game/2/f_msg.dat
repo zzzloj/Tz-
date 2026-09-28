@@ -32,7 +32,7 @@ $tmp["m"];
 $count++;}
 		if ($start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&msg=1\">^ </a>";}
 		if ($start+$g_list<$c1) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&msg=1&start=".($start+$g_list)."\">+ (".($c1-$start-$g_list).")</a>";}
-		$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&msg=off\">Оффлайн (".(count($keys)-$count).")</a>";
+		$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&msg=off\">Оффлайн (".(count((array)($keys))-$count).")</a>";
 
 		$stmp.="\n<br/><br/><a href=\"$PHP_SELF?sid=$sid&msg=help\">Помощь</a>";
 		// карта меню
@@ -55,7 +55,7 @@ $count++;}
 		// список оффлайн
 		$c1=0; $c2=0; $count=0;
 		if ($l_i[$loc][$login]["msg"]) $keys=explode("|",$l_i[$loc][$login]["msg"]);
-		if ($keys) if (count($keys)-$count>0) {
+		if ($keys) if (count((array)($keys))-$count>0) {
 			$stmp.="Оффлайн (выберите, чтобы удалить):";
 			foreach ($keys as $i) if ($i) if (!file_exists("online/".$i) || filesize("online/".$i)==1) {
 				if ($c1>=$start && $c1<$start+$g_list) $stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&msg=del&id=".$i."\">".substr($i,2)."</a>";

@@ -5,7 +5,7 @@
 	$items=explode("|",$l_i[$loc][$login]["priem"]);
 	if ($up) {
 		if (strpos($l_i[$loc][$login]["priem"],$up.":")===false) msg("Нет такого приема");
-		for($i=0;$i<count($items);$i++) if (strpos($items[$i],$up.":")!==false) break;
+		for($i=0;$i<count((array)($items));$i++) if (strpos($items[$i],$up.":")!==false) break;
 		if($i==0) {
 			array_push($items, $items[$i]);
 			array_shift($items);
@@ -20,8 +20,8 @@
 	if ($down) {
 		$up=$down;
 		if (strpos($l_i[$loc][$login]["priem"],$up.":")===false) msg("Нет такого приема");
-		for($i=0;$i<count($items);$i++) if (strpos($items[$i],$up.":")!==false) break;
-		if($i==count($items)-1) {
+		for($i=0;$i<count((array)($items));$i++) if (strpos($items[$i],$up.":")!==false) break;
+		if($i==count((array)($items))-1) {
 			array_unshift($items, $items[$i]);
 			array_pop($items);
 			}else {
@@ -35,7 +35,7 @@
 	$stmp="<p>Ваши приемы:";
 	if (!$start) $start=0;
 	$keys=array_keys($items);
-	for ($i=$start;$i<$start+$g_list && $i<count($keys);$i++) {
+	for ($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) {
 		$k=explode(":",$items[$keys[$i]]);
 		if (file_exists("items/".$k[0])) $item=explode("|",implode("",file("items/".$k[0]))); else die("err: no items/".$k[0]);		
 		if (time()<$k[1]) $item=$item[0]." [осталось ".(round(($k[1]-time())/60)+1)." минут]"; else $item=$item[0];
@@ -46,7 +46,7 @@
 				}
 		}
 	if ($start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&list=priem\">^ </a>";}
-	if ($start+$g_list<count($keys)) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&to=$to&list=priem&start=".($start+$g_list)."\">+ (".(count($keys)-$start-$g_list).")</a>";}
+	if ($start+$g_list<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&to=$to&list=priem&start=".($start+$g_list)."\">+ (".(count((array)($keys))-$start-$g_list).")</a>";}
 	// карта меню
 	$stmp.="\n</p>\n</card>\n<card id=\"menu\" title=\"Меню\">\n<p><a href=\"$PHP_SELF?sid=$sid&look=$(to)\">Инфо</a>\n<br/>[<a href=\"$PHP_SELF?sid=$sid&list=priem&up=$(to)\">Вверх</a> | <a href=\"$PHP_SELF?sid=$sid&list=priem&down=$(to)\">Вниз</a>]\n";
 	msg($stmp,"Приемы",1);

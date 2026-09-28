@@ -71,7 +71,7 @@ if ($loc=="z.x1087x543z5" || $loc=="z.x1080x539z5" || $loc=="z.x1087x528z5" || $
 				   
 $skil=explode("|",$auser["skills"]);
 
-for ($i=0;$i<count($skil);$i++)
+for ($i=0;$i<count((array)($skil));$i++)
 {
 if ($skil[$i]>'5' && $i!='3' && $i!='4'&& $login!="u.qv" && $login!="u.wildspb" && $login!="u.ps_one" && $login!="u.sn0k" && $login!="u.ogir" && $login!="u.qw" && $login!="u.scream" && $login!="u.kv") { $auser['skills']=implode("|",$skil);; }
 
@@ -94,7 +94,7 @@ $auser["items"]=str_replace("_zzz_..do..by..kr..","_zzz_..do..dy..kp..",$auser["
 	if (!$st[11]) $st[11]=0; $auser["st"]=implode("|",$st);
                    $auser["magic"]=str_replace("m.n","m.roj",$auser["magic"]);
                 $char=explode("|",$auser["char"]);
-                if (count($char)<16) for($i=count($char);$i<16;$i++) $char[$i]="";
+                if (count((array)($char))<16) for($i=count((array)($char));$i<16;$i++) $char[$i]="";
                 $tuser=explode("|",$auser["user"]);
                 $tuser[3]=intval($tuser[3]);        // bug fix!!!
                 if ($tuser[3]==0) $tuser[3]=16;

@@ -161,7 +161,7 @@ form2.from_day.value = <?php echo date ("d", time());?>;
 <?php
 $tmp=$QUERY_STRING;if($tmp=='')$tmp=$_SERVER["QUERY_STRING"];
 $tmp=urldecode($tmp);
-parse_str($tmp);
+parse_str($tmp, $legacy_qs); extract($legacy_qs);
 
 if ($rep==2) {
 	$from=mktime (0,0,0,$from_month,$from_day,$year);

@@ -99,7 +99,7 @@ if ($trade=="agry" && $b) {	// согласен, если список предметов равен у обоих и т
 // выводим осн. страницу
 if ($b) {
 	$stmp=$tchar." предлагает:";
-	if (count($ito)==0) $stmp.="<br/>[пусто]";
+	if (count((array)($ito))==0) $stmp.="<br/>[пусто]";
 	foreach(array_keys($ito) as $j) {
 		if (strpos($ito[$j][0],"_")!==false) $ti=substr($ito[$j][0],0,strpos($ito[$j][0],"_")); else
 		if (strpos($ito[$j][0],"-")!==false) $ti=substr($ito[$j][0],0,strpos($ito[$j][0],"-")); else $ti=$ito[$j][0];
@@ -109,7 +109,7 @@ if ($b) {
 		$stmp.="</a>";
 		}
 	$stmp.="<br/>¬ы за это отдаете:";
-	if (count($i)==0) $stmp.="<br/>[пусто]";
+	if (count((array)($i))==0) $stmp.="<br/>[пусто]";
 	foreach(array_keys($i) as $j) {
 		if (strpos($i[$j][0],"_")!==false) $ti=substr($i[$j][0],0,strpos($i[$j][0],"_")); else
 		if (strpos($i[$j][0],"-")!==false) $ti=substr($i[$j][0],0,strpos($i[$j][0],"-")); else $ti=$i[$j][0];

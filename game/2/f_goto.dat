@@ -2,7 +2,7 @@
 // преследуем цель
 
 			$tfound=0;
-			for ($k=3;$k<count($locai);$k+=2) if (isset($l_i[$locai[$k]][$char[7]])) {
+			for ($k=3;$k<count((array)($locai));$k+=2) if (isset($l_i[$locai[$k]][$char[7]])) {
 				$tfound=1;
 				$loc1=explode("|",$l_tt[$locai[$k]]["d"]);
 				if ($locai[1]==$loc1[1] || substr($j,0,4)=="n.g.") $b=1;

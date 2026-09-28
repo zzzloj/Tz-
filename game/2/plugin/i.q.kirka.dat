@@ -39,7 +39,7 @@ if ($skills[24]>0) {
 		// самоцветы
 		$tc=explode("x",$loc);
             if ($tc[2]>=1099 || $loc=="c.5.main" || $loc=="c.4.main" || $loc=="c.3.main" || $loc=="c.2.main" || $loc=="c.1.main") {
-			$rnd=rand(0,count($art)-1);
+			$rnd=rand(0,count((array)($art))-1);
 			if(rand(0,100)<$art[$rnd][2]+10) {
 					$st=explode("|",$l_i[$loc][$login]["st"]);
 					$st[9]++; // +1 игрок

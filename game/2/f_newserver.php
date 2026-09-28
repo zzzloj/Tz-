@@ -2,7 +2,7 @@
 
 $tmp=$QUERY_STRING;if($tmp=='') $tmp=$_SERVER["QUERY_STRING"];
 $tmp=urldecode($tmp);
-parse_str($tmp);
+parse_str($tmp, $legacy_qs); extract($legacy_qs);
 
 	if (!$login) msg("Не указан логин, введите его на предыдущем экране");
 	if (!$p) msg("Не указан пароль, введите его на предыдущем экране");
@@ -17,14 +17,14 @@ parse_str($tmp);
 	$tmp=@file("servers.dat");
 	if (!$newsrv) {	// выведем список серверов
 		$stmp="Выберите сервер:";
-		for($i=1;$i<count($tmp);$i++){
+		for($i=1;$i<count((array)($tmp));$i++){
 			$stmp.="<br/><a href=\"".trim($tmp[$i])."f_connect.php?login=$login&p=$p\">Сервер $i</a>";
 			}
 		msg($stmp);
 		}
 
 	// проверка
-	if ($newsrv<1 || $newsrv>count($tmp)-1) msg("Неверный номер сервера","Ошибка");	
+	if ($newsrv<1 || $newsrv>count((array)($tmp))-1) msg("Неверный номер сервера","Ошибка");	
 
 
 function calcser($s) {return "s:".strlen($s).":\"".$s."\";";}

@@ -2,7 +2,7 @@
 // перемещение в инвентори
 	if ($up) {
 		if (strpos($l_i[$loc][$login]["items"],$up.":")===false) msg("Нет такого предмета");
-		for($i=0;$i<count($items);$i++) if (strpos($items[$i],$up.":")!==false) break;
+		for($i=0;$i<count((array)($items));$i++) if (strpos($items[$i],$up.":")!==false) break;
 		if($i==0) {
 			array_push($items, $items[$i]);
 			array_shift($items);
@@ -17,8 +17,8 @@
 	if ($down) {
 		$up=$down;
 		if (strpos($l_i[$loc][$login]["items"],$up.":")===false) msg("Нет такого предмета");
-		for($i=0;$i<count($items);$i++) if (strpos($items[$i],$up.":")!==false) break;
-		if($i==count($items)-1) {
+		for($i=0;$i<count((array)($items));$i++) if (strpos($items[$i],$up.":")!==false) break;
+		if($i==count((array)($items))-1) {
 			array_unshift($items, $items[$i]);
 			array_pop($items);
 			}else {

@@ -2,7 +2,7 @@
 
 $tmp=$QUERY_STRING;if($tmp=='') $tmp=$_SERVER["QUERY_STRING"];
 $tmp=urldecode($tmp);
-parse_str($tmp);
+parse_str($tmp, $legacy_qs); extract($legacy_qs);
 
 	if (!$login || !$p || !$oldsrv || !$newsrv) die("ok:Неверные параметры");
 	if ($oldsrv==$newsrv) die("ok:Неверный сервер");
@@ -17,7 +17,7 @@ parse_str($tmp);
 
 	$tmp=@file("servers.dat");
 	if (!$auser["srv"]) $auser["srv"]=$oldsrv;
-	if ($auser["srv"]>count($tmp)-1) $auser["srv"]=1;
+	if ($auser["srv"]>count((array)($tmp))-1) $auser["srv"]=1;
 	if ($auser["srv"]!=$oldsrv) die("ok:Извините, но сменить сервер вы можете только находясь на <a href=\"".trim($tmp[$auser["srv"]])."g.php\">сервере ".$auser["srv"]."</a> (либо сохранитесь на нем - персонаж должен покинуть игру, либо через Опции аккаунта, а дальше Сменить сервер).");
 
 	// все ок, меням сервер

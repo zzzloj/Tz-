@@ -380,7 +380,7 @@ if ($mod=='online') {
 				$tmp5=explode(":||:",$l_i[$tmp[0]][$fname]["inf"]);
 				$tt2=explode('|',$l_i[$tmp[0]][$fname]['skills']);
 				$ur=0;
-				for($g=0;$g<count($tt2);$g++) if ($g!=3) $ur+=$tt2[$g];
+				for($g=0;$g<count((array)($tt2));$g++) if ($g!=3) $ur+=$tt2[$g];
 				$ur=round(($ur-5)*100/($g_attr+$g_skills));
 	if ($fname!="u.ogir" && $fname!="u.wildspb" && $fname!="u.nevermore") $stmp.="\n<br/>-----<br/><b>[".$ur."] ".$tmp1[0]."</b> ".$tmp1[9]."<br/>ip: ".$tmp5[0]."<br/>браузер: ".$tmp5[1]."<small><br/><a href=\"$PHP_SELF?sid=$sid&mod=tele&to=".$tmp4[0]."\">".$tmp4[0]."</a></small>";
 				} else {$i--;@unlink("online/".$fname);}

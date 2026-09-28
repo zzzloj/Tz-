@@ -2,7 +2,7 @@
 
 $tmp=$QUERY_STRING;if($tmp=='') $tmp=$_SERVER["QUERY_STRING"];	// в зависимости от настроек сервера
 $tmp=urldecode($tmp);
-parse_str($tmp);									// теперь появятся переменные $url, $p и т.д.
+parse_str($tmp, $legacy_qs); extract($legacy_qs);									// теперь появятся переменные $url, $p и т.д.
 
 srand ((float) microtime() * 10000000);
 
@@ -28,9 +28,9 @@ $stmp=wordwrap($stmp,500,"|");
 $stmp=explode("|",$stmp);
 
 if (!$start || $start<0) $start=1;
-if ($start>count($stmp)) $start=count($stmp);
-$stmp[$start-1]="<p>Стр. ".$start." из ".count($stmp)." [<a href=\"#page\">изм.</a>]<br/>".$stmp[$start-1];
-if ($start<count($stmp)) $stmp[$start-1].="<br/><a href=\"f_story.php?pi=$pi&amp;id=$id&amp;r=".chr(rand(97,122)).chr(rand(97,122))."&amp;start=".($start+1)."\">[след. стр.]</a>";
+if ($start>count((array)($stmp))) $start=count((array)($stmp));
+$stmp[$start-1]="<p>Стр. ".$start." из ".count((array)($stmp))." [<a href=\"#page\">изм.</a>]<br/>".$stmp[$start-1];
+if ($start<count((array)($stmp))) $stmp[$start-1].="<br/><a href=\"f_story.php?pi=$pi&amp;id=$id&amp;r=".chr(rand(97,122)).chr(rand(97,122))."&amp;start=".($start+1)."\">[след. стр.]</a>";
 $stmp[$start-1].="<br/><br/><a href=\"f_story.php?pi=$pi\">[В начало]</a>";
 $stmp[$start-1].="<br/></p></card><card id=\"page\" title=\"Перейти\">\n<p>Введите номер страницы:<br/><input name=\"start\"  format=\"*N\" value=\"1\" maxlength=\"3\"/><br/><a href=\"f_story.php?pi=$pi&amp;id=$id&amp;start=$(start)\">Перейти</a>";
 } else {$start=1; $stmp=array($stmp);}

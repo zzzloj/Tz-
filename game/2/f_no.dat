@@ -11,4 +11,4 @@
 					foreach($l_i[$i] as $k=>$v) if (substr($k,0,2)=="u." && strpos($l_i[$i][$k]["char"],"*".$clanc."*")===false && strpos($d[0],":".$k.":")===false) {$tct=explode("|",$l_i[$i][$k]["char"]); if (!$tct[8]) $lcen[]=$k;}
 					}
 				}
-			if (count($lcen)>0) $char[7]=$lcen[rand(0,count($lcen)-1)]; 
+			if (count((array)($lcen))>0) $char[7]=$lcen[rand(0,count((array)($lcen))-1)]; 

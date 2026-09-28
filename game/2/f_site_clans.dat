@@ -17,7 +17,7 @@ $clan=str_replace('.','',$clan);
 	//if (count($arTemplates)>0) {
 	if (!$start) $start=0;
 	$keys=array_keys($arTemplates);
-	for($i=$start;$i<$start+$g_list && $i<count($keys);$i++) {
+	for($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) {
 			$stmp.="<br/><b>".substr($keys[$i],2)."</b>";
 			if (isset($tmp["m"][$keys[$i]]) && !isset($tmp["g"][$keys[$i]])) $stmp.=" [неофит]";
 			if (isset($tmp["v"][$keys[$i]]) && !isset($tmp["g"][$keys[$i]])) $stmp.=" [вассал]";
@@ -27,7 +27,7 @@ $clan=str_replace('.','',$clan);
 	
 
 		if ($start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&site=clans&clan=$clan\">^ </a>";}
-		if ($start+$g_list<count($keys)) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&site=clans&clan=$clan&start=".($start+$g_list)."\">+ (".(count($keys)+1-$start-$g_list).")</a>";}
+		if ($start+$g_list<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&site=clans&clan=$clan&start=".($start+$g_list)."\">+ (".(count((array)($keys))+1-$start-$g_list).")</a>";}
 		//} else $stmp.="<br/>Больше никого в клане нет."; 
 
 	msg($stmp,"Клан *".$clan."*",0,"none");
@@ -39,20 +39,20 @@ $clan=str_replace('.','',$clan);
 	$dh = opendir("../clans"); 
 	while (($fname = readdir($dh))!== false) if ($fname!="." && $fname!=".." && $fname!="1.htaccess" && $fname!=".htaccess") {
 		$tmp=unserialize(implode("",file("../clans/".$fname)));
-		$arr[$fname]=count($tmp["m"])+1+count($tmp["s"])+count($tmp["v"]);
+		$arr[$fname]=count((array)($tmp["m"]))+1+count((array)($tmp["s"]))+count((array)($tmp["v"]));
 		}
 	closedir($dh);
 
-	if (count($arr)>0) {
-		$stmp="<p>Всего кланов: ".count($arr);
+	if (count((array)($arr))>0) {
+		$stmp="<p>Всего кланов: ".count((array)($arr));
 		arsort($arr);
 		if (!$start) $start=0;
 		$keys=array_keys($arr);
-		for($i=$start;$i<$start+$g_list && $i<count($keys);$i++) {
+		for($i=$start;$i<$start+$g_list && $i<count((array)($keys));$i++) {
 			$stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&site=clans&clan=".$keys[$i]."\">".$keys[$i]."</a> (".$arr[$keys[$i]]." чел.)";
 			}
 		if ($start) {$stmp.= "\n<br/><a href=\"$PHP_SELF?sid=$sid&site=clans\">^ </a>";}
-		if ($start+$g_list<count($keys)) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&site=clans&start=".($start+$g_list)."\">+ (".(count($keys)+1-$start-$g_list).")</a>";}
+		if ($start+$g_list<count((array)($keys))) {if (!$start) $stmp.="\n<br/>"; $stmp.= "<a href=\"$PHP_SELF?sid=$sid&site=clans&start=".($start+$g_list)."\">+ (".(count((array)($keys))+1-$start-$g_list).")</a>";}
 		} else $stmp="<p>Нет ни одного клана"; 
 
 	msg($stmp,"Онлайн (Cервер ".implode("",file("server.dat")).")",0,'none');

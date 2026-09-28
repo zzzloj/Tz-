@@ -1,7 +1,7 @@
 <?php
 
 $tmp=$QUERY_STRING;if($tmp=='') $tmp=$_SERVER["QUERY_STRING"];	// в зависимости от настроек сервера
-parse_str($tmp);									// теперь появятся переменные $url, $p и т.д.
+parse_str($tmp, $legacy_qs); extract($legacy_qs);									// теперь появятся переменные $url, $p и т.д.
 
 if (!$id) $stmp="<p>1. <a href=\"f_site_story.php?id=about\">Введение</a>
 <br/><b>Игровые вопросы</b>

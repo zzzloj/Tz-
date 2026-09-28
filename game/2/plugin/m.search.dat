@@ -1,9 +1,9 @@
 <?php
 // по всем соседним локациям
 $arr=array();
-for ($i=2;$i<count($loc_c);$i+=2) if ($loc_c[$i+1]!=$loc){
+for ($i=2;$i<count((array)($loc_c));$i+=2) if ($loc_c[$i+1]!=$loc){
 	$arr[$loc_c[$i]]=array("na"=>0,"nc"=>0,"n"=>0,"u"=>0,"i"=>0,"uc"=>0,"ug"=>0);
-	if (count($l_i[$loc_c[$i+1]])>0) {
+	if (count((array)($l_i[$loc_c[$i+1]]))>0) {
 		$keys=array_keys($l_i[$loc_c[$i+1]]);
 		foreach($keys as $j)
 		if (substr($j,0,4)=='n.a.') $arr[$loc_c[$i]]["na"]+=1;

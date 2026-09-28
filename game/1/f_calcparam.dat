@@ -18,7 +18,7 @@
 	$twar[10]=10*($skills[2]+$skills[14]-$skills[0]);
 	$twar[11]=15*($skills[14]+$skills[2]-$skills[0]);
 	// считаем крутость exp
-	for($i=0;$i<count($skills);$i++) if ($i!=3) $twar[13]+=$skills[$i];	// кроме level
+	for($i=0;$i<count((array)($skills));$i++) if ($i!=3) $twar[13]+=$skills[$i];	// кроме level
 
 // что одето
 $b=0;
@@ -76,7 +76,7 @@ if ($auser['equip']) {
 			for($j=0;$j<$xF;$j++) {
 				$ti=explode('|',implode(file('items/i.i.'.$regF[1][$j]))); 
 				$ti=explode(',',$ti[2]);
-				for($k=0;$k<count($ti);$k++) {
+				for($k=0;$k<count((array)($ti));$k++) {
 					$tir=explode(':',$ti[$k]);
 					if (strpos($art,'|'.$regF[1][$j])===false) {
 						if($tir[0]>50) $char[$tir[0]-50]+=$tir[1]; else $twar[$tir[0]]+=$tir[1];

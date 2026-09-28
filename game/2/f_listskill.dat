@@ -84,7 +84,7 @@ $arr_title_v=array(
 	if (!$start) $start=0;
 
 	$keys=array_keys($arr_skills);
-	for ($i=$start;$i<$start+99 && $i<count($keys);$i++) { //גלוסעמ 99 בûכמ $g_list
+	for ($i=$start;$i<$start+99 && $i<count((array)($keys));$i++) { //גלוסעמ 99 בûכמ $g_list
 		if ($to) {
 			if ($keys[$i]=="meditation" ||$keys[$i]=="animaltaming" || $keys[$i]=="steal")
 			$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&to=$to&use=skill.".$keys[$i].$m."\">".$arr_title_v[$keys[$i]]."</a>";

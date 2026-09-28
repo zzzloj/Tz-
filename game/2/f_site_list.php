@@ -18,9 +18,9 @@
 
 $stmp="";
 
-	$stmp.="<br/><a href=\"../2/g.php\">Сервер 1 (".count($arr2)." из 100)</a>";
-	$stmp.="<br/><a href=\"g.php\">Сервер 2 (".count($arr)." из 100)</a>";
-	$count=count($arr)+count($arr2);
+	$stmp.="<br/><a href=\"../2/g.php\">Сервер 1 (".count((array)($arr2))." из 100)</a>";
+	$stmp.="<br/><a href=\"g.php\">Сервер 2 (".count((array)($arr))." из 100)</a>";
+	$count=count((array)($arr))+count((array)($arr2));
 	
 	
 $stmp="Сейчас в игре ".$count." человек:".$stmp;

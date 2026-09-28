@@ -26,7 +26,7 @@
                         if (substr($j,0,4)=="n.g.") $guard=1;
                         }
                 }
-        if ($locai[1]==1 && count($crim)>0 && !$guard) require "f_addguard.dat";
+        if ($locai[1]==1 && count((array)($crim))>0 && !$guard) require "f_addguard.dat";
 
         // по всем объектам
         if ($l_i[$i]) foreach ($l_i[$i] as $j=>$val) if (isset($l_i[$i][$j])) {
@@ -56,7 +56,7 @@ if (time()>$char[17]) { $char[1]=min($char[1]+=round($tm/($g_regen-$skills[16]*4
                 if (substr($j,0,2)=='n.') {
                         if ($loc==$i && time()>$char[6] && $char[1]<$char[2]/4 && rand(0,100)<50 && substr($j,0,4)!='n.s.' && substr($j,0,4)!='n.o.' && substr($j,0,4)!='n.z.') {require "f_run.dat"; if($b) continue;}
                         if ($char[7] && isset($l_i[$i][$char[7]]) && substr($char[7],0,2)=="u.") {$tc=explode("|",$l_i[$i][$char[7]]["char"]); if ($tc[8]) $char[7]="";}
-                        if ($j=="n.a.b.jarpt.1") {$b=0; foreach ($l_i[$i] as $k=>$v) if(substr($k,0,2)=="u.") {addnpc($j,$i,$locai[2+2*rand(0,(count($locai)-2)/2-1)+1]); $b=1; break;} if ($b) continue;}
+                        if ($j=="n.a.b.jarpt.1") {$b=0; foreach ($l_i[$i] as $k=>$v) if(substr($k,0,2)=="u.") {addnpc($j,$i,$locai[2+2*rand(0,(count((array)($locai))-2)/2-1)+1]); $b=1; break;} if ($b) continue;}
                         if (substr($j,0,4)=="n.g." && time()>$char[11]) {addnpc($j,$i,""); continue;}
                         if (isset($l_i[$i][$j]["owner"])) {require "f_owner.dat"; if ($b) continue;} else {$owner[1]="";}
                         if ($char[7] && !$owner[1] && !isset($l_i[$i][$char[7]])) {
@@ -65,8 +65,8 @@ if (time()>$char[17]) { $char[1]=min($char[1]+=round($tm/($g_regen-$skills[16]*4
                                 if ($b) continue; else $char[7]="";
                                 }
                         if (!$char[7]) {
-                                if (count($crim)>0 && (substr($j,0,4)=="n.g." || substr($j,0,4)=="n.t." || substr($j,0,4)=="n.p.")) $char[7]=$crim[rand(0,count($crim)-1)];
-                                if (($char[9] || substr($j,0,4)=='n.c.') && count($users)>0) $char[7]=$users[rand(0,count($users)-1)];
+                                if (count((array)($crim))>0 && (substr($j,0,4)=="n.g." || substr($j,0,4)=="n.t." || substr($j,0,4)=="n.p.")) $char[7]=$crim[rand(0,count((array)($crim))-1)];
+                                if (($char[9] || substr($j,0,4)=='n.c.') && count((array)($users))>0) $char[7]=$users[rand(0,count((array)($users))-1)];
                                 }
                         if (substr($j,0,4)=="n.o." && substr($i,0,2)=="c." && substr($i,3)!=".in" && (!$char[7] || !isset($l_i[$i][$char[7]]))) require "f_no.dat";
                         if (!$char[7] && !$owner[1] && ($char[10] || (!$char[10] && $char[12])) && substr($j,0,4)!="n.o.") {require "f_na.dat"; if($b) continue;}

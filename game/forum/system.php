@@ -137,7 +137,7 @@ function ChangeSt ($text)
 	function checkcode($text)
 {
 	global $ru_utf8, $ru;
-	$cru=count($ru);
+	$cru=count((array)($ru));
 for ( $b=0; $b<$cru; $b++) 
        {
        if(strstr($text,$ru[$b])!== false){$utf="ok";}

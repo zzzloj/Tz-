@@ -1,7 +1,7 @@
 <?php
 // убегаем
 					$b=0;
-					$k=$locai[2+2*rand(0,(count($locai)-2)/2-1)+1];
+					$k=$locai[2+2*rand(0,(count((array)($locai))-2)/2-1)+1];
 					$loc1=explode("|",$l_tt[$k]["d"]);
 					if ($locai[1]==$loc1[1]) {
 						addjournal($loc,"all",$char[0]." убегает");

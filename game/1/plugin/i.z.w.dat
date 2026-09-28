@@ -18,7 +18,7 @@ if ($to) {
 		additem($loc,$login,"",$use,1);
 		if ($m[1]) {
 		$k="..".$m[1];
-		for ($i=2; $i<count($m); $i++) {
+		for ($i=2; $i<count((array)($m)); $i++) {
 		$k.="..".$m[$i];
 		}
 		}

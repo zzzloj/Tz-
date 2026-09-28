@@ -46,7 +46,7 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 				if ($t=='s' && !isset($tmp["s"][$status])) addjournal($loc,$status,"Глава клана ".$clan." изменил ваш ранг на Сeнeшaль!");
 				if ($t=='v' && !isset($tmp["v"][$status])) addjournal($loc,$status,"Глава клана ".$clan." изменил ваш ранг на Вассал!");
 				if (isset($tmp["m"][$status]) && $t!='m') {$b=1; $tmp[$t][$status]=$tmp["m"][$status]; unset($tmp["m"][$status]); }
-				if (isset($tmp["s"][$status]) && $t!='s' && count($tmp["s"]<'2')) {$b=1; $tmp[$t][$status]=$tmp["s"][$status]; unset($tmp["s"][$status]); }
+				if (isset($tmp["s"][$status]) && $t!='s' && count((array)($tmp["s"]<'2'))) {$b=1; $tmp[$t][$status]=$tmp["s"][$status]; unset($tmp["s"][$status]); }
 				if (isset($tmp["v"][$status]) && $t!='v') {$b=1; $tmp[$t][$status]=$tmp["v"][$status]; unset($tmp["v"][$status]); }
 				if ($b) { 
 					$file = fopen ("../clans/".$clan, "w"); 
@@ -97,31 +97,31 @@ if (isset($tmp["g"][$login]) || isset($tmp["s"][$login])) {	// гилдмастер
 				if ($tmp["m"]) {$stmp.="<br/>Неофиты:";
 					if (!$start) $start=0;
 					$keys=array_keys($tmp["m"]);
-					for($i=$start;$i<count($keys) && $i<$start+$g_list;$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&me=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
+					for($i=$start;$i<count((array)($keys)) && $i<$start+$g_list;$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&me=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
 					$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=i.guildstone&start=".($start+$g_list)."\">+</a>"; }
 				if ($tmp["s"]) {$stmp.="<br/>Сенешали:";
 					if (!$start) $start=0;
 					$keys=array_keys($tmp["s"]);
-					for($i=$start;$i<count($keys) && $i<$start+$g_list;$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&me=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
+					for($i=$start;$i<count((array)($keys)) && $i<$start+$g_list;$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&me=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
 					$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=i.guildstone&start=".($start+$g_list)."\">+</a>"; }
 				if ($tmp["v"]) {$stmp.="<br/>Вассалы:";
 					if (!$start) $start=0;
 					$keys=array_keys($tmp["v"]);
-					for($i=$start;$i<count($keys) && $i<$start+$g_list;$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&me=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
+					for($i=$start;$i<count((array)($keys)) && $i<$start+$g_list;$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&me=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
 					$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=i.guildstone&start=".($start+$g_list)."\">+</a>"; }
 					} elseif (isset($tmp["g"][$login])) $stmp.="<br/>В вашем клане, кроме вас, никого нет.";
 				if ($tmp["wg"] && isset($tmp["g"][$login])) {
 					$stmp.="<br/><br/>Ожидают, чтобы стать главой вашего клана:";
 					if (!$start) $start=0;
 					$keys=array_keys($tmp["wg"]);
-					for($i=$start;$i<count($keys) && $i<$start+$g_list;$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&del=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
+					for($i=$start;$i<count((array)($keys)) && $i<$start+$g_list;$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&del=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
 					$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=i.guildstone&start=".($start+$g_list)."\">+</a>";
 					}
 				if ($tmp["w"] ) {
 					$stmp.="<br/><br/>Рекруты (ожидают вступления):";
 					if (!$start) $start=0;
 					$keys=array_keys($tmp["w"]);
-					for($i=$start;$i<count($keys) && $i<$start+$g_list;$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&del=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
+					for($i=$start;$i<count((array)($keys)) && $i<$start+$g_list;$i++) $stmp.="<br/><a href=\"$PHP_SELF?sid=$sid&use=$use&del=".$keys[$i]."\">".substr($keys[$i],2)."</a>";
 					$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=i.guildstone&start=".($start+$g_list)."\">+</a>";
 					} else $stmp.="<br/>Список рекрутов пуст.";
 				$stmp.="\n<br/><a href=\"$PHP_SELF?sid=$sid&use=i.guildstone\">^</a>";

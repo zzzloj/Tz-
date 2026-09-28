@@ -5,7 +5,7 @@ $tmp=file("servers.dat");
 $srv=implode("",file("server.dat"));
 
 $stmp="Выберите сервер для игры:";
-for($i=1;$i<count($tmp);$i++) {
+for($i=1;$i<count((array)($tmp));$i++) {
 	$stmp.="<br/><a href=\"".trim($tmp[$i])."g.php?pi=$pi\">Сервер ".$i." (";
 	$s=@implode("",@file(trim($tmp[$i])."f_site_common.php?count=1"));
 	if ($s && strlen($s)<11) $stmp.=$s; else $stmp.="неизв";

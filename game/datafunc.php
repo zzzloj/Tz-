@@ -68,8 +68,8 @@ function GetParam($Name)
 global $names,$Values,$NOT_SET;
   $Name = strtolower($Name);
   $Nlist = explode(":",$names);
-  for ($i=0; $i<count($Nlist); $i++) if ($Nlist[$i] == $Name) break;
-  if ($i == count($Nlist)) return $NOT_SET;
+  for ($i=0; $i<count((array)($Nlist)); $i++) if ($Nlist[$i] == $Name) break;
+  if ($i == count((array)($Nlist))) return $NOT_SET;
   $Vlist = explode(":",$Values);
   return stripslashes(str_replace("!~!",":",$Vlist[$i]));
 }
@@ -81,9 +81,9 @@ global $names,$Values,$NOT_SET;
   $Nlist = explode(":",$names);
   $Name = strtolower($Name);
   $Value = addslashes(str_replace(":","!~!",$Value));
-  for ($i=0; $i<count($Nlist); $i++) if ($Nlist[$i] == $Name) break;
+  for ($i=0; $i<count((array)($Nlist)); $i++) if ($Nlist[$i] == $Name) break;
     
-  if ($i == count($Nlist) and ($Value != $NOT_SET))
+  if ($i == count((array)($Nlist)) and ($Value != $NOT_SET))
   { // Добавляем имя и значение
     $names .= ":$Name";
     $Values .= ":$Value";
@@ -270,7 +270,7 @@ function calcser($s) {return "s:".strlen($s).":\"".$s."\";";}
 
 // передаем в функции и возвращаем результат начинающийся на "ok:" если успешно или текст ошибки
 $tmp=$QUERY_STRING;if($tmp=='') $tmp=$_SERVER["QUERY_STRING"];
-parse_str($tmp);
+parse_str($tmp, $legacy_qs); extract($legacy_qs);
 
 if($f=="getgametime") {
 	$time=0;

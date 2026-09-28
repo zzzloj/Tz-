@@ -1,5 +1,6 @@
 <?php
 // The 2007 dump uses TYPE=MyISAM, rejected by current MySQL versions.
+require_once (getenv('LEGACY_GAME_ROOT') ?: '/data/game') . '/lib/mysql_compat.php';
 $host = getenv('MYSQLHOST');
 $user = getenv('MYSQLUSER');
 $pass = getenv('MYSQLPASSWORD');

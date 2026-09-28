@@ -2,7 +2,7 @@
 
 $tmp=$QUERY_STRING;if($tmp=='') $tmp=$_SERVER["QUERY_STRING"];
 $tmp=urldecode($tmp);
-parse_str($tmp);
+parse_str($tmp, $legacy_qs); extract($legacy_qs);
 $PHP_SELF="f_ip.php";
 
 if($info) $stmp="Так как gprs работает медленнее, чем обычный интернет, то игроки с компьютера имеют в игре слишком большое преимущество по скорости, поэтому на сервера 1, 3 и 4 вход разрешен только с мобильных телефонов, а на сервер 2 и с телефонов, и с компьютерных вап-эмуляторов.<br/><anchor>Назад<prev/></anchor>";

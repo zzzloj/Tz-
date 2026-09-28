@@ -19,7 +19,7 @@ if ($use=="m.heal.all") {
 		}
 	} else if (isset($l_i[$loc][$to]) && substr($to,0,2)!='i.') $arr=array($to=>"");
 
-if (count($arr)>0) {
+if (count((array)($arr))>0) {
 foreach(array_keys($arr) as $to) {
 	$tchar=explode("|",$l_i[$loc][$to]["char"]);
 	$heal=rand(tsret($magic[4]-10+$skills[2]*2),$magic[5]+$skills[2]*2);	// только не повреждает, а лечит
