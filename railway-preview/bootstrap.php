@@ -1,6 +1,6 @@
 <?php
 // Prepended to every request (auto_prepend_file). Deployment glue only: the
-// game code itself runs on PHP 8 without shims except lib/mysql_compat.php.
+// game code runs on PHP 8 with the helpers in lib/ (legacy.php).
 
 $legacyGameRoot = getenv('LEGACY_GAME_ROOT') ? getenv('LEGACY_GAME_ROOT') : '/data/game';
 // PHP 5/7 numeric semantics and the transitional mysql_* API (see lib/).

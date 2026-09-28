@@ -3,14 +3,13 @@ COPY game/ /tmp/src/game/
 COPY railway-preview/fix-game.py /tmp/fix-game.py
 RUN python /tmp/fix-game.py /tmp/src /opt/legacy
 
-FROM php:5.6-apache
-# Debian stretch is archived; GD draws the in-game map (m.php).
-RUN sed -i -e 's|deb.debian.org|archive.debian.org|g' -e 's|security.debian.org|archive.debian.org|g' -e '/stretch-updates/d' /etc/apt/sources.list \
-    && apt-get -o Acquire::Check-Valid-Until=false update \
-    && apt-get install -y --no-install-recommends --allow-unauthenticated libpng-dev libjpeg-dev \
+FROM php:8.4-apache
+# mysqli backs lib/mysql_compat.php; GD draws the in-game map (m.php).
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libpng-dev libjpeg62-turbo-dev \
     && rm -rf /var/lib/apt/lists/* \
-    && docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
-    && docker-php-ext-install mysql gd
+    && docker-php-ext-configure gd --with-jpeg \
+    && docker-php-ext-install mysqli gd
 COPY --from=archive /opt/legacy/game/ /opt/legacy-game/
 COPY railway-preview/php.ini /usr/local/etc/php/conf.d/legacy-preview.ini
 COPY railway-preview/apache.conf /etc/apache2/conf-enabled/legacy-preview.conf

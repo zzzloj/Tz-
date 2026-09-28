@@ -1,10 +1,10 @@
 <?php
 $dialog=array(
 'begin'=>'#[Осмотреть дерево]#inf#[Уйти...]#end',
-'inf'=>'Дерево сильно обгорело, но кое-где видны вырезаные на стволе символы.#[осмотреть надписи]#simvol#eval: if(additem($loc,$login,"","i.q.kse","count")>0 && additem($loc,$login,"","i.q.klever","count")>0 && additem($loc,$login,"","i.f.b.kv","count")>0) $title_v="[вложить компоненты в трещину у комля дерева]"; else $title_v="";#qvok#[прекратить осмотр]#end',
+'inf'=>'Дерево сильно обгорело, но кое-где видны вырезаные на стволе символы.#[осмотреть надписи]#simvol#eval: if(legacy_cmp(additem($loc,$login,"","i.q.kse","count"))>0 && legacy_cmp(additem($loc,$login,"","i.q.klever","count"))>0 && legacy_cmp(additem($loc,$login,"","i.f.b.kv","count"))>0) $title_v="[вложить компоненты в трещину у комля дерева]"; else $title_v="";#qvok#[прекратить осмотр]#end',
 'simvol'=>'Вниматльно вглядываясь вы замечаете надписи: Сдесь был Вася., Оля, я тебя люблю., Х(часть слова выгорело)Й!!!#[cмотреть дальше]#simvol2#[прекратить осмотр]#end',
 'simvol2'=>'Текста почти не видно, но вам удается разгледеть следующую надпись: ...сможет только... се... лист... и креп... и лишь тогда... На этом надпись обрывается.#[прекратить осмотр]#end',
-'qvok'=>'eval: if(additem($loc,$login,"","i.q.kse","count")>0 && additem($loc,$login,"","i.q.klever","count")>0 && additem($loc,$login,"","i.f.b.kv","count")>0) {additem($loc,$login,"","i.f.b.kv",1); additem($loc,$login,"","i.q.kse",1); additem($loc,$login,"","i.q.klever",1); additem($loc,"",$login,"i.q.kris",1); $title_v="[ствол раскалывается на две части и вы замечаете кристал, в нутри которого играют разноцветные огоньки]";} else $title_v="";#[забрать кристал]#end2',
+'qvok'=>'eval: if(legacy_cmp(additem($loc,$login,"","i.q.kse","count"))>0 && legacy_cmp(additem($loc,$login,"","i.q.klever","count"))>0 && legacy_cmp(additem($loc,$login,"","i.f.b.kv","count"))>0) {additem($loc,$login,"","i.f.b.kv",1); additem($loc,$login,"","i.q.kse",1); additem($loc,$login,"","i.q.klever",1); additem($loc,"",$login,"i.q.kris",1); $title_v="[ствол раскалывается на две части и вы замечаете кристал, в нутри которого играют разноцветные огоньки]";} else $title_v="";#[забрать кристал]#end2',
 'end'=>'Дерево издает чуть слышный стон...',
 'end2'=>''
 );

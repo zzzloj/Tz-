@@ -1,20 +1,31 @@
 # Территория Зла (WAP RPG)
 
-Исходники старой WAP-игры «Территория Зла» (PHP, ~2007 г., движок на базе «Амулета Дракона»).
+Исходники старой WAP-игры «Территория Зла» (PHP, ~2007 г., движок на базе «Амулета Дракона»), перенесённые на PHP 8.4.
 
 Источник: архив «Территория Зла» с masteram.us (раздел «Скрипты → Онлайн игры», файл №96,
-`KODERAM.INFO_1721_Zlo_2.zip`), залит на сайт пользователем Mayk 30.04.2014. Содержимое архива сохранено как есть.
+`KODERAM.INFO_1721_Zlo_2.zip`), залит на сайт пользователем Mayk 30.04.2014. Первый коммит репозитория — архив как есть.
 
 ## Структура
-- `game/` — скрипты игры (точка входа `game/index.php`), данные мира в `*.dat`
-- `sql/table.sql` — схема таблицы из архива (`teritoria_zla_table.zip`)
-- `Readme_Bydem.ru.txt` — readme из исходного архива
-- `railway-preview/` — сборка для Railway (PHP 5.6 + Apache, адаптер WML→HTML), подробности в `railway-preview/README.md`
+- `game/` — скрипты игры: портал в корне, серверы `1/` и `2/` (движок `g.php`), данные мира в `*.dat`, NPC/диалоги/плагины в `npc/`, `speak/`, `plugin/`
+- `game/lib/` — переходный слой для PHP 8 (см. ниже)
+- `sql/table.sql` — схема таблицы из архива
+- `railway-preview/` — сборка для Railway (PHP 8.4 + Apache, WML-рендерер), подробности в `railway-preview/README.md`
+
+## Перенос на PHP 8
+Код переведён механически, инструментами на токенизаторе PHP, с проверкой на эталоне (оригинал на PHP 5.6):
+- `$s{0}` → `$s[0]`, `preg_replace(.../e)` → `preg_replace_callback`, `ereg*`/`split`/`each`/`session_register`/`convert_cyr_string` → современные аналоги, `$HTTP_*_VARS` → суперглобальные массивы, `parse_str($x)` → `parse_str($x, $arr); extract($arr)`, короткие теги `<?` → `<?php`;
+- `count()`, `implode()`, `in_array()`, `array_*()` получают `(array)(...)`: PHP 8 бросает `TypeError` на `null`/`false`;
+- `lib/legacy.php`: `legacy_num()` и `legacy_cmp()` возвращают числовую семантику PHP 5/7. Движок считает на пустых полях персонажей (`"a||c"`), а PHP 8 бросает `TypeError` на `"" + 1` и считает `"" == 0` ложью. Операнды арифметики, составные присваивания, сравнения с числами и числовые параметры функций обёрнуты автоматически;
+- `lib/mysql_compat.php`: API `mysql_*` поверх `mysqli` (соединение в `cp1251`, как таблицы).
+
+`legacy_num()`/`legacy_cmp()` и `mysql_compat.php` — временные: при рефакторинге их заменят настоящие типы и PDO.
+
+Не перенесено: форум (`forum/`) — нет дампа базы, и он не работал уже на PHP 5.6. Также не работали и в оригинале: `f_newpass.dat` (смена пароля), `2/f_say1.dat`, `f_site_clan.php`, `f_site_list.php` — синтаксические ошибки в исходном архиве.
 
 ## Предупреждения
 - Файлы в кодировке windows-1251.
-- Код рассчитан на PHP 4/5: используются `mysql_*` и модификатор `/e` в `preg_replace`, на PHP 7+/8 без доработки не запустится.
-- Пароль БД в `config.ssp` (×3) и `forum/config.inc.php`, а также пароль админа форума в `forum/system.php` заменены на `CHANGE_ME`; остальное совпадает с оригинальным архивом. На Railway `config.ssp` перезаписывается из переменных окружения при старте.
+- Пароль БД в `config.ssp` (×3) и `forum/config.inc.php`, а также пароль админа форума в `forum/system.php` заменены на `CHANGE_ME`. На Railway `config.ssp` перезаписывается из переменных окружения при старте.
+- Мастер-ключ админки (`zx=mda`) и захардкоженные админские ники оставлены для тестирования — см. `claude/todo.md` в проекте перед открытием доступа.
 
 ## Запуск
-Сервис `territory-evil-php` в Railway-проекте `territory-evil-legacy-preview` собирается из этой ветки по `railway-preview/Dockerfile` (build context — корень репозитория). Нужны MariaDB 10.11 и том `/data`, см. `railway-preview/README.md`.
+Сервис `territory-evil-php` в Railway-проекте `territory-evil-legacy-preview` собирается из ветки `main` по `railway-preview/Dockerfile` (build context — корень репозитория). Нужны MariaDB 10.11 и том `/data`, см. `railway-preview/README.md`.

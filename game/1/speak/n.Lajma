@@ -12,8 +12,8 @@ $dialog=array(
 'teach3'=>'Вообще-то это довольно трудное заклинание, доступное магу не менее 4 ступени. Но это не иллюзия, а настоящие живые цветы, [проникновенно] понимаешь в чем разница? Но зато представь, как обрадуется твоя возлюбленная, если ты при ней скастуешь роскошный букет! Уверена, это будет лучшим подарком, а сложность заклинания подтвердит искренность твоих чувств!#А руны или свитки продаются?#rune#И сколько оно стоит?#teach2#Я хочу выучить это заклинание#teachnow#У меня нет возлюбленной, зато есть много дел, пока#end',
 'teachnow'=>'skill|m.buket|0',
 'rune'=>'[улыбается] Нет, ни рун ни свитков с этим заклинанием ты нигде не найдешь. Можно сказать, владение этим заклинанием отмечает тех, кто удостоен благосклонности богини любви. А это, как ты понимаешь, не каждому дано...#Ясно#teach3',
-'heal'=>'eval: if(time()>$l_i[$loc][$speak]["qv"]) {$l_i[$loc][$speak]["qv"]=time()+rand(1200,1800); $title_v="[делает несколько движений руками и произносит мелодичные слова] Пусть Синтерис будет к тебе благосклонная, <imja>!";$b=1;$char[1]=$char[2];$char[3]=$char[4];$char[14]="";$l_i[$loc][$login]["char"]=implode("|",$char);} else {$title_v="Извини, <imja>, мне нужно отдохнуть после последнего заклинания, хотя бы минут ".round(($l_i[$loc][$speak]["qv"]-time())/60+1);$b=0;}#eval: if ($b) $title_v="Спасибо, Лайма!"; else $title_v="Нет проблем, я все понимаю";#who#Тогда я пошел#end',
-'get'=>'eval: additem($loc,$login,"","i.money",100,"items","items",1,0,1); $r=rand(0,100); if ($r<5) {addexp($loc,$login,20);} else if ($r>=5 && $r<10) {addexp($loc,$login,40);} else if ($r>=10 && $r<20) {additem($loc,"",$login,"i.f.b.life",1);} else if ($r>=20 && $r<30) {additem($loc,"",$login,"i.f.b.mana",1);} else if ($r>=30 && $r<35) {additem($loc,"",$login,"i.buket",1);} $title_v="Сентерис благославляет тебя, <imja>.";#Я хочу пожертвовать еще 100 монет#get#У меня есть другие вопросы#who#Мне пора#end',
+'heal'=>'eval: if(time()>$l_i[$loc][$speak]["qv"]) {$l_i[$loc][$speak]["qv"]=time()+rand(1200,1800); $title_v="[делает несколько движений руками и произносит мелодичные слова] Пусть Синтерис будет к тебе благосклонная, <imja>!";$b=1;$char[1]=$char[2];$char[3]=$char[4];$char[14]="";$l_i[$loc][$login]["char"]=implode("|",(array)($char));} else {$title_v="Извини, <imja>, мне нужно отдохнуть после последнего заклинания, хотя бы минут ".round(legacy_num((legacy_num($l_i[$loc][$speak]["qv"])-time())/60+1));$b=0;}#eval: if ($b) $title_v="Спасибо, Лайма!"; else $title_v="Нет проблем, я все понимаю";#who#Тогда я пошел#end',
+'get'=>'eval: additem($loc,$login,"","i.money",100,"items","items",1,0,1); $r=rand(0,100); if (legacy_cmp($r)<5) {addexp($loc,$login,20);} else if (legacy_cmp($r)>=5 && legacy_cmp($r)<10) {addexp($loc,$login,40);} else if (legacy_cmp($r)>=10 && legacy_cmp($r)<20) {additem($loc,"",$login,"i.f.b.life",1);} else if (legacy_cmp($r)>=20 && legacy_cmp($r)<30) {additem($loc,"",$login,"i.f.b.mana",1);} else if (legacy_cmp($r)>=30 && legacy_cmp($r)<35) {additem($loc,"",$login,"i.buket",1);} $title_v="Сентерис благославляет тебя, <imja>.";#Я хочу пожертвовать еще 100 монет#get#У меня есть другие вопросы#who#Мне пора#end',
 'sv'=>'Да, от имени богини любви я наделена правом скреплять узами брака молодоженов#Расскажи об этом подробней#svinfo#Где достать свадебный наряд?#odezhda#eval: $tu=explode("|",$l_i[$loc][$login]["user"]);if($char[13]) {$tt=explode(":",$char[13]);$tt=$tt[0];} else $tt=""; if($tt) $title_v="Я хочу развестись с ".substr($tt,2); else if($tu[2]=="m") $title_v="Я хочу жениться..."; else $title_v="Я хочу выйти замуж...";#svnow#Понял, меня это не привлекает#who',
 'svinfo'=>'Любой человек имеет право жениться (или выйти замуж, если это девушка). Молодожены должны принести золотые кольца и привести с собой не менее двух свидетелей, после чего поговорить со мной, чтобы дать свое согласие на свадьбу. После церемонии в информации о супругах будет указано их семейное положение.#И какая мне от этого польза?#svinfo2#А как развестись?#razv#Понятно#sv',
 'svinfo2'=>'Гм... ты меня удивляешь, <imja>! Зачем, по-твоему женятся или выходят замуж? Кроме само собой разумеющихся плюсов, супруги не становятся преступниками, когда берут вещи с трупа или наносят друг другу урон, например, массовыми заклинаниями. А главное - если кто ранит одного, то супруг(а) тут же узнает об этом (но не чаще чем раз в 5 минут) и сможет телепортироваться к нему.#А как развестись?#razv#Понятно#sv',
@@ -26,16 +26,16 @@ if($char[13]){
 	$tu[10]=$tu[10][0];
 	additem($loc,$login,"","i.money",500,"items","items",1,0,1);
 	$char[13]=""; 
-	$l_i[$loc][$login]["char"]=implode("|",$char);
+	$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 	$title_v="Вы развелись с ".substr($tu[10],2).", отныне вы не муж и жена, мне очень жаль... Ваш(а) супруг(а) будет уведомлен(а) об этом при следующем входе в игру."; 
 	} else {
 		if($tu[2]=="m" && $l_i[$loc][$speak]["f"]!=$login || $tu[2]=="f" && $l_i[$loc][$speak]["m"]!=$login) {
 			$title_v="Выберите свою любовь:";
-			foreach(array_keys($l_i[$loc]) as $i) if(substr($i,0,2)=="u." && $i!=$login) $title_v.="<br/><a href=\"$PHP_SELF?sid=$sid&p=$p&speak=$speak&id=svadd&to=$i\">".substr($i,2)."</a>";
+			foreach(array_keys((array)($l_i[$loc])) as $i) if(substr($i,0,2)=="u." && $i!=$login) $title_v.="<br/><a href=\\"$PHP_SELF?sid=$sid&p=$p&speak=$speak&id=svadd&to=$i\\">".substr($i,2)."</a>";
 			} else {
 				if($tu[2]=="m" && $l_i[$loc][$speak]["f"]==$login) $tt=$l_i[$loc][$speak]["fid"];
 				if($tu[2]=="f" && $l_i[$loc][$speak]["m"]==$login) $tt=$l_i[$loc][$speak]["mid"];
-				$title_v="Вы хотите принять предложение руки и сердца от ".substr($tt,2)."?<br/><a href=\"$PHP_SELF?sid=$sid&p=$p&speak=$speak&id=svok&to=$tt\">Да!</a><br/><a href=\"$PHP_SELF?sid=$sid&p=$p&speak=$speak&id=svno&to=$tt\">Нет, не хочу!</a>";
+				$title_v="Вы хотите принять предложение руки и сердца от ".substr($tt,2)."?<br/><a href=\\"$PHP_SELF?sid=$sid&p=$p&speak=$speak&id=svok&to=$tt\\">Да!</a><br/><a href=\\"$PHP_SELF?sid=$sid&p=$p&speak=$speak&id=svno&to=$tt\\">Нет, не хочу!</a>";
 				}
 		}',
 
@@ -48,7 +48,7 @@ if(!$char[13]) {
 			if($tu[2]=="m") {$l_i[$loc][$speak]["m"]=$to; $l_i[$loc][$speak]["mid"]=$login;} else {$l_i[$loc][$speak]["f"]=$to; $l_i[$loc][$speak]["fid"]=$login;}
  			addjournal($loc,$to,$char[0]." предлагает вам свое сердце и руку (поговорите с Лаймой)"); 
 			addjournal($loc,"all","Лайма говорит: ".$char[0]." предлагает ".substr($to,2)." свое сердце и руку",$login,$to);
-			$title_v="Вы предложили ".substr($to,2)." свое сердце и руку, теперь <a href=\"$PHP_SELF?sid=$sid&p=$p&speak=$speak&id=svok&to=$to\">ждите согласия</a>";
+			$title_v="Вы предложили ".substr($to,2)." свое сердце и руку, теперь <a href=\\"$PHP_SELF?sid=$sid&p=$p&speak=$speak&id=svok&to=$to\\">ждите согласия</a>";
 			}else $title_v="Однополые браки недопустимы";
 		}else $title_v=substr($to,2)." рядом нет";
 	} else $title_v="Извини, <imja>, но ты уже состоишь в браке, сначала нужно развестись.";',
@@ -67,18 +67,18 @@ if(!$char[13]) {
 				if ($tt==$to) {
 				if($tt) {
 					$c=0;
-					foreach(array_keys($l_i[$loc]) as $i) if (substr($i,0,2)=="u.") $c++;
-					if ($c>3) {
-						if(additem($loc,$login,"","i.ring.z","count")>0 && additem($loc,$tt,"","i.ring.z","count")>0) {
+					foreach(array_keys((array)($l_i[$loc])) as $i) if (substr($i,0,2)=="u.") $c++;
+					if (legacy_cmp($c)>3) {
+						if(legacy_cmp(additem($loc,$login,"","i.ring.z","count"))>0 && legacy_cmp(additem($loc,$tt,"","i.ring.z","count"))>0) {
 							addjournal($loc,"all","Лайма говорит: молодожены, обменяйтесь кольцами");
 							additem($loc,$login,"","i.ring.z",1);
 							additem($loc,"",$login,"i.ring.z",1);
 							additem($loc,$tt,"","i.ring.z",1);
 							additem($loc,"",$tt,"i.ring.z",1);
 							$char[13]=$tt;
-							$l_i[$loc][$login]["char"]=implode("|",$char);
+							$l_i[$loc][$login]["char"]=implode("|",(array)($char));
 							$tsc[13]=$login;
-							$l_i[$loc][$tt]["char"]=implode("|",$tsc); 
+							$l_i[$loc][$tt]["char"]=implode("|",(array)($tsc)); 
 							addjournal($loc,"all",substr($login,2)." и ".substr($tt,2).", объявляю вас мужем и женой! Жених, можете поцеловать невесту. Поздравляю!");
 							additem($loc,"",$login,"i.buket",1);
 							additem($loc,"",$tt,"i.buket",1);
@@ -88,7 +88,7 @@ if(!$char[13]) {
 							unset($l_i[$loc][$speak]["mid"]);
 							}else {addjournal($loc,"all","Лайма говорит: а где же золотые кольца, молодожены? Без колец свадьба не может состояться!"); $title_v="У каждого из молодоженов должно быть по золотому кольцу";}
 						}else $title_v="Недостаточно свидетелей, надо минимум два человека, кроме молодоженов";
-					}else $title_v=substr($to,2)." все еще не дал(а) согласие на брак с вами.<br/><a href=\"$PHP_SELF?sid=$sid&p=$p&speak=$speak&id=svok&to=$to\">Подождать еще</a><br/><a href=\"$PHP_SELF?sid=$sid&p=$p&speak=$speak&id=svno&to=$to\">Отменить церемонию</a>";
+					}else $title_v=substr($to,2)." все еще не дал(а) согласие на брак с вами.<br/><a href=\\"$PHP_SELF?sid=$sid&p=$p&speak=$speak&id=svok&to=$to\\">Подождать еще</a><br/><a href=\\"$PHP_SELF?sid=$sid&p=$p&speak=$speak&id=svno&to=$to\\">Отменить церемонию</a>";
 					}else $title_v="Статус изменился, кто-то рядом с вами тоже пытается сыграть свадьбу и поэтому произошла путанница?";
 				}else $title_v=substr($to,2)." уже женат(за мужем)";
 			}else $title_v="Однополые браки недопустимы";

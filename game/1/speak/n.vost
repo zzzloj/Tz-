@@ -6,7 +6,7 @@ if ($l_i[$loc][$login]["x"]) {
 $skills=explode("|",$l_i[$loc][$login]["skills"]);
 				$title_v="Сожелею, вот держи немного вещей, думаю они тебе немного помогут";
 				unset($l_i[$loc][$login]["x"]);
-if ($skills["0"]==5) {  
+if (legacy_cmp($skills["0"])==5) {  
 additem($loc,"",$login,"i.a.h.massf_set_..kc",1);
 additem($loc,"",$login,"i.w.s.farmech",1);
 additem($loc,"",$login,"i.a.s.obschit",1);
@@ -32,7 +32,7 @@ additem($loc,"",$login,"i.money",20000);
 additem($loc,"",$login,"i.q.pjpt",1);
 additem($loc,"",$login,"i.f.b.health.great",50);
 additem($loc,"",$login,"i.a.c.twar",1);
-} elseif($skills["2"]==5) {
+} elseif(legacy_cmp($skills["2"])==5) {
 additem($loc,"",$login,"i.arrow",1500);
 additem($loc,"",$login,"i.w.r.b.lset",1);
 additem($loc,"",$login,"i.a.b.troll_admin_..me..do..ag",1);

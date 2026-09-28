@@ -377,7 +377,7 @@ if (!$g_sounds) {
 $ti=explode('x',$loc);
 if (!$start) $start=0;
 $keys=array_keys((array)($l_i[$loc]));
-for ($i=$start;$i<legacy_num($start)+legacy_num($g_list) && $i<count((array)($keys));$i++) if ($keys[$i]!=$login && $l_i[$loc][$keys[$i]]['god']!='1')  {  //режим невидимки
+for ($i=$start;$i<legacy_num($start)+legacy_num($g_list) && $i<count((array)($keys));$i++) if ($keys[$i]!=$login && (!is_array($l_i[$loc][$keys[$i]]) || $l_i[$loc][$keys[$i]]['god']!='1'))  {  //режим невидимки
         if (substr($keys[$i],0,2)=='i.') {
                 $tmp=explode('|',$l_i[$loc][$keys[$i]]);
                 $k=$tmp[0];
@@ -806,7 +806,7 @@ function addnpc($id,$from="",$to="",$gal=0,$hide=0) {
 
 function rndname() {require "f_rndname.dat"; return $stmp;}
 function ressurect($loc,$to) {require"f_ressurect.dat";}
-function docrim($loc,$login,$title_v="преступник",$crim) {require "f_docrim.dat";}
+function docrim($loc,$login,$title_v="преступник",$crim=null) {require "f_docrim.dat";}
 function calcparam($loc,$login) {if ($login!="u.qv" && $login!="u.qw" && $login!="u.kv" && $login!="u.scream") require "f_calcparam.dat";}
 function additem($loc,$from,$to,$item,$count=1,$ft="items",$tt="items",$journal=1,$time_delete=-1,$msg=0) {require "f_additem.dat";  return $res;}
 function addtimer($loct,$curr,$time,$text="old",$delete=1) {require "f_addtimer.dat";}

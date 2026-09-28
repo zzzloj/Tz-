@@ -18,24 +18,24 @@ $dialog=array(
 'begin'=>'Здравствуй. Тебя зовут <imja>, верно?#Верно, кто ты?#who#Я должен идти#end',
 'who'=>'eval: $title_v="Я могу за небольшую сумму (500 монет) в течении недели телепортировать Вас и Ваш клан в место указанное главой.";
 	$tc=explode("|",$l_i[$loc][$login]["char"]); 
-	if (strpos($tc[0],"*")===false) $clan=""; else $clan=substr($tc[0],strpos($tc[0],"*")+1,strrpos($tc[0],"*")-strpos($tc[0],"*")-1);
-	if ($clan && file_exists("../clans/".$clan)) $tmp=unserialize(implode("",file("../clans/".$clan))); else $tmp=array(); 
+	if (strpos($tc[0],"*")===false) $clan=""; else $clan=substr($tc[0],legacy_num(strpos($tc[0],"*")+1),legacy_num(strrpos($tc[0],"*")-strpos($tc[0],"*")-1));
+	if ($clan && file_exists("../clans/".$clan)) $tmp=unserialize(implode("",(array)(file("../clans/".$clan)))); else $tmp=array(); 
 #eval: if (isset($tmp["g"][$login])) $title_v="Заключить контракт"; else $title_v="";#new#eval: if($l_i[$loc][$speak]["qv"]) { $title_v="Телепортироватса"; $l=explode("|", $l_i[$loc][$speak]["qv"]); loadloc($l[0]); $tt=explode("|",$l_tt[$l[0]]["d"]); if (strpos($tt[0],"*")!==false) $tt[0]=substr($tt[0],0,strpos($tt[0],"*")); $title_v.=" [".$tt[0]."]"; } else  $title_v="";#tel#Все в порядке, мне пора.#end',
 'tel'=>'eval: if(!$l_i[$loc][$speak]["qv"]) { $title_v="Глава клана не подписывал со мной контракта"; } else { $title_v="До встречи <imja>!"; $l=explode("|", $l_i[$loc][$speak]["qv"]); addnpc($login,$loc,$l[0]); }',
 'new'=>'eval: if (isset($tmp["g"][$login])) {
-	if(additem($loc,$login,"","i.money","count")>499) {
+	if(legacy_cmp(additem($loc,$login,"","i.money","count"))>499) {
 	$items=explode("|",$l_i[$loc][$login]["items"]);
 	$title_v="Выберите руну: ";
 	if ($l_i[$loc][$login]["items"]=="") $title_v.="<br/>У вас нет ни одной руны"; else {
 	$items=explode("|",$l_i[$loc][$login]["items"]);
-	$keys=array_keys($items);
-		for ($i=0;$i<count($keys);$i++) if ($items[$keys[$i]]) {
+	$keys=array_keys((array)($items));
+		for ($i=0;$i<count((array)($keys));$i++) if ($items[$keys[$i]]) {
 			$k=explode(":",$items[$keys[$i]]);
 			if(substr($k[0],0,5)=="i.rr.") {
-			if (substr($k[0],0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$tk)) $item=explode("|",implode("",file("items/".$tk))); else die("err: no items/".$k[0]);
+			if (substr($k[0],0,5)=="i.rr.") $item=explode("|","руна|50"); else if (file_exists("items/".$tk)) $item=explode("|",implode("",(array)(file("items/".$tk)))); else die("err: no items/".$k[0]);
 			$item=$item[0];
-			if ($k[1]>1) $item.=" (".$k[1].")"; } else { $tk=""; }
-			if (substr($k[0],0,5)=="i.rr." && $k[0]!="i.rr.empty")	$title_v.="\n<br/><a href=\"$PHP_SELF?sid=$sid&speak=$speak&id=tele&use=".$k[0]."\">".$item."</a>";
+			if (legacy_cmp($k[1])>1) $item.=" (".$k[1].")"; } else { $tk=""; }
+			if (substr($k[0],0,5)=="i.rr." && $k[0]!="i.rr.empty")	$title_v.="\\n<br/><a href=\\"$PHP_SELF?sid=$sid&speak=$speak&id=tele&use=".$k[0]."\\">".$item."</a>";
 			if (substr($k[0],0,5)=="i.rr." && $k[0]!="i.rr.empty") { loadloc(substr($k[0],5)); $tt=explode("|",$l_tt[substr($k[0],5)]["d"]); if (strpos($tt[0],"*")!==false) $tt[0]=substr($tt[0],0,strpos($tt[0],"*")); $title_v.=" [".$tt[0]."]"; }
 		}
 	}	
@@ -45,7 +45,7 @@ $dialog=array(
 
 
 'tele'=>'eval: if (isset($tmp["g"][$login])) {
-if(additem($loc,$login,"","i.money","count")>499) {
+if(legacy_cmp(additem($loc,$login,"","i.money","count"))>499) {
 if (strpos($l_i[$loc][$login]["items"],$use.":")===false) msg("<p>Использовать можно только те руны, что у вас в рюкзаке");
 $r=substr($use, 5);
 $t=time()+604800;

@@ -11,7 +11,7 @@ else {
 	if($l_i[$loc][$speak]["qv"]==$war[16] && $war[16]!=$login) {
 		$title_v="Чистая работа, молодец. Твоя награда за убийство  ".substr($war[16],2)." составляет 1000 монет и эти перчатки вора.";  
 		$war[16]="u.xxyz";
-		$l_i[$loc][$login]["war"]=implode("|",$war);
+		$l_i[$loc][$login]["war"]=implode("|",(array)($war));
 		addexp($loc,$login,100); 
 		additem($loc,"",$login,"i.money",1000); 
 		additem($loc,"",$login,"i.q.pervor",1); 
@@ -23,13 +23,13 @@ else {
 		$dh = opendir("online/"); 
 		while (($fname = readdir($dh))!== false) if ($fname!="." && $fname!=".." && $fname!="1.htaccess" && $fname!=".htaccess") $arr[]=$fname; 
 		closedir($dh);
-		if(count($arr)>=30) { 
+		if(count((array)($arr))>=30) { 
 			if (time()>$l_i[$loc][$speak]["qv1"]) {
-			$fname=$arr[rand(0,count($arr)-1)]; 
-			while($fname==$login) $fname=$arr[rand(0,count($arr)-1)]; 
+			$fname=$arr[rand(0,legacy_num(count((array)($arr))-1))]; 
+			while($fname==$login) $fname=$arr[rand(0,legacy_num(count((array)($arr))-1))]; 
 			$l_i[$loc][$speak]["qv"]=$fname;
       } else {
-$t1=$l_i[$loc][$speak]["qv1"]/60-time()/60;
+$t1=legacy_num($l_i[$loc][$speak]["qv1"])/60-time()/60;
 $t1=explode(".",$t1);
       msg("Сожалею, но пока нет заказов, приходи примерно через ".$t1[0]." мин",$tchar[0]); }
 			} else {

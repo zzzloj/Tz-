@@ -22,7 +22,7 @@ $dialog=array(
 'por'=>'Ну... [разводит руками в стороны с видом, как будто делает вам большое одолжение]. Вот такие пироги с котятами, как говорят у нас по вегетарианским субботам#Ладно, я еще загляну, тоже загадаю тебе какую-нибудь загадку загадаю...#end#Гм...#end',
 'end1'=>'Ты очень сильно удивишься, если узнаешь, что мы все оттуда7#Моему удивлению нет предела#end#Эй, что ты там говорил про поросят?#more',
 'end'=>'Да ладно тебе, будь проще, и к тебе потянутся... Загребущие лапы...',
-'meh'=>'[Внимательно изучет чертеж] Хм.. весьма интересно. Для таких вещей мне понадобится инструменты для изготовления луков, такие как у Аранта.#Ясно#end3#eval: if(additem($loc,$login,"","i.q.chp","count")>0 && additem($loc,$login,"","i.q.instrum","count")>0) $title_v="Вот нужные инструменты."; else $title_v="";#mehok',
-'mehok'=>'eval: if(additem($loc,$login,"","i.q.chp","count")>0 && additem($loc,$login,"","i.q.instrum","count")>0) {additem($loc,$login,"","i.q.chp",1); additem($loc,$login,"","i.q.instrum",1); additem($loc,"",$login,"i.q.zp",1); $title_v="Вполне сносно вышло. Только окуратнее, все же хрупкая вещь.";} else $title_v="Врать не хорошо!";#Спасибо!#end3',
+'meh'=>'[Внимательно изучет чертеж] Хм.. весьма интересно. Для таких вещей мне понадобится инструменты для изготовления луков, такие как у Аранта.#Ясно#end3#eval: if(legacy_cmp(additem($loc,$login,"","i.q.chp","count"))>0 && legacy_cmp(additem($loc,$login,"","i.q.instrum","count"))>0) $title_v="Вот нужные инструменты."; else $title_v="";#mehok',
+'mehok'=>'eval: if(legacy_cmp(additem($loc,$login,"","i.q.chp","count"))>0 && legacy_cmp(additem($loc,$login,"","i.q.instrum","count"))>0) {additem($loc,$login,"","i.q.chp",1); additem($loc,$login,"","i.q.instrum",1); additem($loc,"",$login,"i.q.zp",1); $title_v="Вполне сносно вышло. Только окуратнее, все же хрупкая вещь.";} else $title_v="Врать не хорошо!";#Спасибо!#end3',
 'end3'=>'Бывай!'
 );

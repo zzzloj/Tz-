@@ -9,7 +9,7 @@ $link = @mysql_pconnect ($server, $user, $dbpass)
 	 $l=substr($login,2);
 	$result = mysql_query ("select * from users where nick=\'$l\'");
     $inf=mysql_fetch_array ($result); 
-if($inf["messlim"]>0) {
+if(legacy_cmp($inf["messlim"])>0) {
 $title_v=""; $title_v="У тебя есть ".$inf["messlim"]." дублонов, забрать?";$id="qvok";}else$title_v=""; @mysql_close();#zabr#А где ж эти дублоны достать?#inf#Хм.. не спасибо#end',
 'qvok'=>'eval: 
 
@@ -21,7 +21,7 @@ $link = @mysql_pconnect ($server, $user, $dbpass)
 	 $l=substr($login,2);
 	$result = mysql_query ("select * from users where nick=\'$l\'");
     $inf=mysql_fetch_array ($result); 
-if($inf["messlim"]>0) {
+if(legacy_cmp($inf["messlim"])>0) {
 $z=mysql_query("UPDATE users SET messlim=0 WHERE nick=\'$l\'");
 @mysql_close();
 if ($z) additem($loc,"",$login,"i.q.dublon",$inf["messlim"]);
