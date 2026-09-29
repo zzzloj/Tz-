@@ -110,6 +110,24 @@ class GameApiTest {
     }
 
     @Test
+    fun attackingAPlayerSendsTheName() = runTest {
+        var sent = ""
+        val client = server { request ->
+            when (request.url.encodedPath) {
+                "/api/game/attack" -> {
+                    sent = (request.body as io.ktor.http.content.TextContent).text
+                    json("""{"character":${character.replace("\"skillPoints\":2", "\"skillPoints\":2,\"crime\":\"бандит\",\"crimeMinutes\":30")},"location":$location}""")
+                }
+                else -> error("unexpected ${request.url}")
+            }
+        }
+        val view = GameApi("http://test", client).attackPlayer("Злодей")
+        assertEquals("""{"target":"Злодей","player":true}""", sent)
+        assertEquals("бандит", view.character.crime)
+        assertEquals(30L, view.character.crimeMinutes)
+    }
+
+    @Test
     fun attackSendsTargetAndDeathResyncs() = runTest {
         var ghost = false
         val npcs = """[{"id":"n.c.rat","name":"Крыса","hp":5,"hpMax":5,"attackable":true}]"""

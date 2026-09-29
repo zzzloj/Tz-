@@ -22,7 +22,7 @@ data class NpcView(
     val hpMax: Int = 0,
     /** This NPC is fighting you. */
     val fightingYou: Boolean = false,
-    /** Monsters and wild animals; townsfolk and traders cannot be attacked yet (no guards and crimes). */
+    /** Anyone can be attacked; striking townsfolk, traders or guards is a crime (see CharacterView.crime). */
     val attackable: Boolean = false,
     /** Has a dialog: POST /api/game/talk. */
     val canTalk: Boolean = false,
@@ -432,7 +432,7 @@ object Errors {
 
 /** Rules shared by the server (enforced) and the apps (hints before sending). */
 object Rules {
-    /** Stage 3 has no guards and crimes, so only monsters (n.c.*) and wild animals (n.a.*) can be attacked. */
+    /** Monsters (n.c.*) and wild animals (n.a.*): fair game, no crime in attacking them. */
     fun attackable(npcId: String): Boolean = npcId.startsWith("n.c.") || npcId.startsWith("n.a.")
 
     val LOGIN = Regex("^[a-z0-9_]{3,20}$")

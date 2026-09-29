@@ -135,6 +135,7 @@ fun App(session: Session, live: Boolean = true) {
                     addContact = { n -> run { session.addContact(n) } },
                     removeContact = { n -> run { session.removeContact(n) } },
                     startExchange = { person -> run { session.startExchange(person) } },
+                    attackPlayer = { person -> run { session.attackPlayer(person) } },
                     offer = { item, n -> run { session.offer(item, n) } },
                     withdraw = { item -> run { session.withdraw(item) } },
                     agree = { run { session.agree() } },
@@ -214,6 +215,7 @@ fun Playing(
     val loc = game.location
     val small = MaterialTheme.typography.bodyMedium
     Text("${c.name} · HP ${c.hp}/${c.hpMax} · мана ${c.mana}/${c.manaMax}", style = MaterialTheme.typography.labelLarge)
+    c.crime?.let { Text("Вы $it — стража ищет вас ещё ${c.crimeMinutes} мин", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.error) }
     Text(
         "удар ${c.hit}% · урон ${c.dmgMin}–${c.dmgMax} · броня ${c.armor} · уклон ${c.dodge} · опыт ${c.exp}/${c.expNext}" +
             (if (c.skillPoints > 0) " · очков ${c.skillPoints}" else "") +
@@ -359,7 +361,12 @@ fun Playing(
     }
     game.people.forEach { person ->
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(person.name + (person.clan?.let { " *$it*" } ?: "") + if (person.ghost) " (призрак)" else "", Modifier.weight(1f), style = small)
+            Text(
+                person.name + (person.clan?.let { " *$it*" } ?: "") + (person.crime?.let { " [$it]" } ?: "") + if (person.ghost) " (призрак)" else "",
+                Modifier.weight(1f), style = small,
+                color = if (person.crime != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+            )
+            if (!c.ghost && !person.ghost) TextButton(onClick = { social.attackPlayer(person) }, enabled = !busy) { Text("атаковать") }
             if (!c.ghost && !person.ghost) TextButton(onClick = { social.startExchange(person) }, enabled = !busy) { Text("обмен") }
             TextButton(onClick = { social.addContact(person.name) }, enabled = !busy) { Text("в контакты") }
             if (game.clan != null && person.clan == null) TextButton(onClick = { social.clanOp("invite", person.name, null, null) }, enabled = !busy) { Text("в клан") }
@@ -376,6 +383,7 @@ fun Playing(
             Text(corpse.name, Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
             if (corpse.canButcher && !c.ghost) TextButton(onClick = { onButcher(corpse) }, enabled = !busy) { Text("разделать") }
         }
+        if (corpse.looting && corpse.items.isNotEmpty()) Text("  взять отсюда — мародёрство", style = small, color = MaterialTheme.colorScheme.error)
         corpse.items.forEach { item ->
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("  ${item.name}${if (item.count > 1) " ×${item.count}" else ""}", Modifier.weight(1f), style = small)
@@ -426,6 +434,7 @@ class SocialActions(
     val addContact: (String) -> Unit = {},
     val removeContact: (String) -> Unit = {},
     val startExchange: (PersonView) -> Unit = {},
+    val attackPlayer: (PersonView) -> Unit = {},
     val offer: (InventoryItemView, Int) -> Unit = { _, _ -> },
     val withdraw: (ShopItemView) -> Unit = {},
     val agree: () -> Unit = {},

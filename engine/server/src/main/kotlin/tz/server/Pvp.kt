@@ -87,7 +87,8 @@ internal suspend fun Game.playerHitsPlayer(a: Game.Player, b: Game.Player, now: 
     val h = castleBonus(a, Formulas.attack(a.stats, b.stats, dice))
     if (h.outcome == Formulas.Outcome.FIZZLED) return
     val text = describe(h, a.stats.verb)
-    a.fightingPlayer = b.id
+    // Only the one who strikes first is «fighting»; answering blows are self-defence and keep the victim innocent.
+    if (answer) a.fightingPlayer = b.id
     a.log(if (answer) "Вы по ${b.name} $text" else "  вы отвечаете: $text")
     b.log(if (answer) "${a.name} по вам $text" else "  ${a.name} отвечает: $text")
     for (q in players.values) if (q.id != a.id && q.id != b.id && q.location == a.location && now - q.lastSeen < Game.ACTIVE_SECONDS) {

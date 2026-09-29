@@ -79,6 +79,8 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
 
     suspend fun attack(npc: NpcView) = action { game = api.attack(npc.id) }
 
+    suspend fun attackPlayer(person: PersonView) = action { game = api.attackPlayer(person.name) }
+
     suspend fun loot(corpse: CorpseView, item: GroundItemView) = action { game = api.loot(corpse.id, item.id) }
 
     /** Cuts meat and hides off a corpse (needs a knife in the backpack). */

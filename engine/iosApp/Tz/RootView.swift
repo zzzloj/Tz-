@@ -78,6 +78,7 @@ struct RootView: View {
                                     addContact: { n in model.run { try await $0.addContact(name: n) } },
                                     removeContact: { n in model.run { try await $0.removeContact(name: n) } },
                                     startExchange: { p in model.run { try await $0.startExchange(person: p) } },
+                                    attackPlayer: { p in model.run { try await $0.attackPlayer(person: p) } },
                                     offer: { item, n in model.run { try await $0.offer(item: item, count: Int32(n)) } },
                                     withdraw: { item in model.run { try await $0.withdraw(item: item) } },
                                     agree: { model.run { try await $0.agree() } },
@@ -203,6 +204,9 @@ struct PlayingView: View {
         Section {
             Text("\(c.name) · HP \(c.hp)/\(c.hpMax) · мана \(c.mana)/\(c.manaMax)").font(.footnote)
             Text(stats(c)).font(.caption).foregroundStyle(.secondary)
+            if let crime = c.crime {
+                Text("Вы \(crime) — стража ищет вас ещё \(c.crimeMinutes) мин").font(.caption).foregroundStyle(.red)
+            }
             if !c.skills.isEmpty {
                 Text("навыки: " + c.skills.keys.sorted().map { "\(Rules.shared.skillTitle(key: $0)) \(c.skills[$0]?.intValue ?? 0)" }.joined(separator: ", "))
                     .font(.caption).foregroundStyle(.secondary)
@@ -244,9 +248,11 @@ struct PlayingView: View {
             }
             ForEach(game.people, id: \.name) { person in
                 HStack {
-                    Text(person.name + (person.clan.map { " *\($0)*" } ?? "") + (person.ghost ? " (призрак)" : ""))
+                    Text(person.name + (person.clan.map { " *\($0)*" } ?? "") + (person.crime.map { " [\($0)]" } ?? "") + (person.ghost ? " (призрак)" : ""))
+                        .foregroundStyle(person.crime != nil ? .red : .primary)
                     Spacer()
                     if !c.ghost && !person.ghost {
+                        Button("атаковать") { social.attackPlayer(person) }.disabled(busy).buttonStyle(.borderless)
                         Button("обмен") { social.startExchange(person) }.disabled(busy).buttonStyle(.borderless)
                     }
                     Button("в контакты") { social.addContact(person.name) }.disabled(busy).buttonStyle(.borderless)
@@ -267,6 +273,9 @@ struct PlayingView: View {
         }
         ForEach(loc.corpses, id: \.id) { corpse in
             Section(corpse.name) {
+                if corpse.looting && !corpse.items.isEmpty {
+                    Text("взять отсюда — мародёрство").font(.caption).foregroundStyle(.red)
+                }
                 ForEach(corpse.items, id: \.id) { item in
                     HStack {
                         Text(label(item.name, item.count))
@@ -489,6 +498,7 @@ struct SocialActions {
     let addContact: (String) -> Void
     let removeContact: (String) -> Void
     let startExchange: (PersonView) -> Void
+    let attackPlayer: (PersonView) -> Void
     let offer: (InventoryItemView, Int) -> Void
     let withdraw: (ShopItemView) -> Void
     let agree: () -> Void

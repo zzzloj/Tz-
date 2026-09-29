@@ -65,7 +65,8 @@ class CastleTest {
             assertEquals("c.1.gate", game.move(b, "c.1.gate").character.location)
             clock[0] += 1
             game.tick(clock[0])
-            assertTrue(guard.enemies.isNotEmpty(), "the guard should go for the stranger")
+            // (A newbie may already have fallen to the first blow, leaving no enemy.)
+            assertTrue(guard.enemies.isNotEmpty() || game.view(b).journal.any { it.startsWith(guard.name) }, "the guard should go for the stranger")
             assertEquals(clan, game.view(b).castle!!.owner)
             game.place(b, "x1086x501")
 

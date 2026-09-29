@@ -96,6 +96,9 @@ class GameApi(
 
     suspend fun attack(npc: String): GameView = postJson<GameView, TargetRequest>("/api/game/attack", TargetRequest(npc))
 
+    /** Attacks another player by name. Outside the arena and castles it is a crime. */
+    suspend fun attackPlayer(name: String): GameView = postJson<GameView, TargetRequest>("/api/game/attack", TargetRequest(name, player = true))
+
     suspend fun loot(corpse: String, item: String): GameView = postJson<GameView, LootRequest>("/api/game/loot", LootRequest(corpse, item))
 
     suspend fun butcher(corpse: String): GameView = postJson<GameView, LootRequest>("/api/game/butcher", LootRequest(corpse))
