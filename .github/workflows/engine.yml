@@ -34,7 +34,7 @@ jobs:
       - name: Build server, shared (JVM) and Android app, run tests
         run: |
           set -o pipefail
-          ./gradlew --no-daemon :shared:jvmTest :server:test :androidApp:assembleDebug 2>&1 | tee build.log
+          ./gradlew --no-daemon :shared:jvmTest :server:test :androidApp:testDebugUnitTest :androidApp:assembleDebug 2>&1 | tee build.log
       - name: Server image (as Railway builds it)
         run: |
           set -o pipefail
@@ -54,7 +54,7 @@ jobs:
         run: |
           python3 - <<'PY'
           import glob, re
-          text = "".join(open(f, errors="replace").read() for f in glob.glob("server/build/test-results/test/*.xml"))
+          text = "".join(open(f, errors="replace").read() for f in glob.glob("server/build/test-results/test/*.xml") + glob.glob("androidApp/build/test-results/testDebugUnitTest/*.xml"))
           suites = re.findall(r'<testsuite name="([^"]+)" tests="(\d+)" skipped="(\d+)" failures="(\d+)"', text)
           summary = ", ".join(f"{n.split('.')[-1]} {t} (skipped {sk}, failed {f})" for n, t, sk, f in suites)
           if "skipping" in text: summary += " — DATABASE TESTS SKIPPED"

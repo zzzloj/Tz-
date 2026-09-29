@@ -69,6 +69,27 @@ class GameApiTest {
     }
 
     @Test
+    fun staleScreenIsReloadedAfterRefusal() = runTest {
+        var at = "_begin"
+        val client = server { request ->
+            when (request.url.encodedPath) {
+                "/api/auth/login" -> json("""{"token":"t1","login":"anna"}""")
+                "/api/me" -> json("""{"login":"anna","character":$character}""")
+                "/api/game" -> json("""{"character":$character,"location":${location.replace("_begin", at)}}""")
+                "/api/game/move" -> json("""{"error":"not_an_exit","message":""}""", HttpStatusCode.BadRequest)
+                else -> error("unexpected ${request.url}")
+            }
+        }
+        val session = Session(GameApi("http://test", client), MemoryTokens())
+        session.signIn("anna", "secret-123")
+        assertEquals("_begin", session.game?.location?.id)
+        at = "x1141x506"   // the character moved elsewhere (another device)
+        session.go(session.game!!.location.exits.single())
+        assertEquals(Errors.text(Errors.NOT_AN_EXIT), session.error)
+        assertEquals("x1141x506", session.game?.location?.id)
+    }
+
+    @Test
     fun expiredTokenReturnsToSignIn() = runTest {
         val client = server { json("""{"error":"unauthorized","message":""}""", HttpStatusCode.Unauthorized) }
         val tokens = MemoryTokens("old")
