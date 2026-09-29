@@ -20,5 +20,5 @@ jobs:
           fetch-depth: 50
       - name: Smoke test of tz-engine-production.up.railway.app
         run: |
-          export EXPECT_SHA=$(git log -1 --format=%H -- engine content)
+          export EXPECT_SHA=$(git log -1 --first-parent --format=%H -- engine content)
           python3 engine/ci/smoke.py https://tz-engine-production.up.railway.app
