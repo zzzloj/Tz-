@@ -55,6 +55,10 @@ jobs:
           python3 - <<'PY'
           import glob, re
           text = "".join(open(f, errors="replace").read() for f in glob.glob("server/build/test-results/test/*.xml"))
+          suites = re.findall(r'<testsuite name="([^"]+)" tests="(\d+)" skipped="(\d+)" failures="(\d+)"', text)
+          summary = ", ".join(f"{n.split('.')[-1]} {t} (skipped {sk}, failed {f})" for n, t, sk, f in suites)
+          if "skipping" in text: summary += " — DATABASE TESTS SKIPPED"
+          print("::notice title=Tests::" + summary)
           m = re.search(r"content problems: (\d+)\n((?:  .*\n){0,30})", text)
           if m:
               body = ("content problems: " + m.group(1) + "\n" + m.group(2)).replace("%", "%25").replace("\n", "%0A")
