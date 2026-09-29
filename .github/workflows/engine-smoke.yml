@@ -1,23 +1,24 @@
 name: engine-smoke
 
-# After Railway reports a successful deployment of the new server, walk the
-# live API once (engine/ci/smoke.py). Also runs on pushes to main that touch
-# the server, waiting for the new deployment.
+# After a push to main, wait until Railway serves the new server and walk the
+# live API once (engine/ci/smoke.py). Railway redeploys tz-engine only for
+# changes in engine/ or content/, so the expected version is the last commit
+# that touched them (GET /api/version reports the running commit).
 on:
-  deployment_status:
   push:
     branches: [main]
-    paths: ["engine/server/**", "engine/shared/**", "engine/ci/smoke.py", ".github/workflows/engine-smoke.yml"]
+    paths: ["engine/server/**", "engine/shared/**", "content/**", "engine/ci/smoke.py", ".github/workflows/engine-smoke.yml"]
   workflow_dispatch:
 
 jobs:
   smoke:
-    if: github.event_name != 'deployment_status' || (github.event.deployment_status.state == 'success' && contains(github.event.deployment.environment, 'tz-engine'))
     runs-on: ubuntu-24.04
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
       - name: Smoke test of tz-engine-production.up.railway.app
-        env:
-          # On a push, smoke.py waits until the server reports this commit (GET /api/version).
-          EXPECT_SHA: ${{ github.event_name == 'push' && github.sha || '' }}
-        run: python3 engine/ci/smoke.py https://tz-engine-production.up.railway.app
+        run: |
+          export EXPECT_SHA=$(git log -1 --format=%H -- engine content)
+          python3 engine/ci/smoke.py https://tz-engine-production.up.railway.app
