@@ -69,6 +69,10 @@ data class InventoryItemView(
     val equipped: Boolean,
     /** Weapon or armour: can be put on. */
     val equippable: Boolean,
+    /** Food, drink, a tool or a kit: POST /api/game/use. */
+    val usable: Boolean = false,
+    /** Used on something: "item" (a thing in the backpack) or "player" (a character here). */
+    val target: String? = null,
 )
 
 @Serializable
@@ -160,7 +164,56 @@ data class GameView(
     val canResurrect: Boolean = false,
     /** Open conversation, answer to POST /api/game/talk; null after any other action. */
     val dialog: DialogView? = null,
+    /** Trader's list (dialog choice «buy»/«sell»), answer to talk and POST /api/game/shop. */
+    val shop: ShopView? = null,
+    /** Bank cell, answer to talk («tobank»/«frombank») and POST /api/game/bank. */
+    val bank: BankView? = null,
+    /** Recipes of a crafting tool, answer to POST /api/game/use without a recipe. */
+    val craft: CraftView? = null,
 )
+
+@Serializable
+data class ShopItemView(val id: String, val name: String, val price: Int, val count: Int)
+
+@Serializable
+data class ShopView(
+    val npc: String,
+    val npcName: String,
+    /** buy — the trader sells, sell — the trader buys from you, buy2 — sells for doubloons. */
+    val mode: String,
+    /** "монет" or "дублонов". */
+    val currency: String,
+    /** buy/buy2: the trader's goods with stock; sell: your things he takes, with his price per piece. */
+    val items: List<ShopItemView> = emptyList(),
+    val message: String? = null,
+)
+
+@Serializable
+data class BankView(
+    val npc: String,
+    val npcName: String,
+    val items: List<InventoryItemView> = emptyList(),
+    /** Coins taken for each deposit (faction banks). */
+    val fee: Int = 0,
+    val message: String? = null,
+)
+
+@Serializable
+data class CraftOptionView(val key: Int, val name: String, val chance: Int, val needs: String)
+
+@Serializable
+data class CraftView(val tool: String, val title: String, val options: List<CraftOptionView> = emptyList())
+
+@Serializable
+data class ShopRequest(val npc: String, val mode: String, val item: String, val count: Int = 1)
+
+/** op: put (to the bank) or take (from it). */
+@Serializable
+data class BankRequest(val npc: String, val op: String, val item: String, val count: Int = 1)
+
+/** Uses an item: eat, drink, gather, craft ([recipe] from CraftView), or apply it to [target] (an item or a character). */
+@Serializable
+data class UseRequest(val item: String, val recipe: Int? = null, val target: String? = null)
 
 /** One answer the player can pick; [arg] carries a choice inside the topic (which attribute to lower, a stake). */
 @Serializable
@@ -222,6 +275,12 @@ object Errors {
     const val NO_SUCH_CORPSE = "no_such_corpse"
     const val PEACEFUL = "peaceful"
     const val CANNOT_TALK = "cannot_talk"
+    const val NOT_A_TRADER = "not_a_trader"
+    const val NOT_ENOUGH_MONEY = "not_enough_money"
+    const val OUT_OF_STOCK = "out_of_stock"
+    const val NOT_WANTED = "not_wanted"
+    const val BANK_FULL = "bank_full"
+    const val CANNOT_USE = "cannot_use"
     const val TOPIC_CLOSED = "topic_closed"
 
     fun text(code: String): String = when (code) {
@@ -251,6 +310,12 @@ object Errors {
         NO_SUCH_CORPSE -> "Здесь нет этого"
         PEACEFUL -> "На него нападать нельзя"
         CANNOT_TALK -> "С ним нельзя поговорить"
+        NOT_A_TRADER -> "Он этим не занимается"
+        NOT_ENOUGH_MONEY -> "У вас недостаточно денег"
+        OUT_OF_STOCK -> "Этого товара сейчас нет"
+        NOT_WANTED -> "Это ему не нужно"
+        BANK_FULL -> "В банке нет места"
+        CANNOT_USE -> "Это нельзя использовать здесь"
         TOPIC_CLOSED -> "Разговор ушёл в сторону, начните заново"
         else -> "Ошибка сервера"
     }
@@ -328,6 +393,11 @@ object Rules {
     const val SKILL_MAX = 5
     const val SKILL_SUM = 50
     const val MONEY = "i.money"
+    const val DUBLON = "i.q.dublon"
+    /** f_speaktobankto.dat: at most 70 000 coins in a bank cell. */
+    const val BANK_MONEY_MAX = 70000
+    /** The old cell held an 800-character string; here: different stacks. */
+    const val BANK_STACKS_MAX = 40
 
     fun hpMax(str: Int) = 10 + str * 10
     fun manaMax(int: Int) = 10 + int * 10

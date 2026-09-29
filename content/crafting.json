@@ -1,0 +1,3747 @@
+{
+  "recipes": {
+    "i.set.molot": {
+      "about": "Кузнечный молот: куёт оружие и броню из руды у наковальни",
+      "source": "plugin/i.set.molot.dat",
+      "skill": "smith",
+      "needSkill": true,
+      "refuseIfChanceNotPositive": true,
+      "menu": true,
+      "busy": 15,
+      "needHere": [
+        "i.s.nakov"
+      ],
+      "needHave": [],
+      "toolConsumed": "never",
+      "toolBreakPercent": 0,
+      "recipes": [
+        {
+          "key": 10,
+          "make": "i.a.k.ring",
+          "name": "кольцо",
+          "count": 1,
+          "difficulty": 0,
+          "takes": {
+            "i.ruda": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": null
+        },
+        {
+          "key": 11,
+          "make": "i.a.n.br",
+          "name": "браслет",
+          "count": 1,
+          "difficulty": 0,
+          "takes": {
+            "i.ruda": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": null
+        },
+        {
+          "key": 1,
+          "make": "i.w.k.kor",
+          "name": "короткий нож",
+          "count": 1,
+          "difficulty": 0,
+          "takes": {
+            "i.ruda": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": null
+        },
+        {
+          "key": 2,
+          "make": "i.w.s.short",
+          "name": "короткий меч",
+          "count": 1,
+          "difficulty": 20,
+          "takes": {
+            "i.ruda": 4
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 2
+          }
+        },
+        {
+          "key": 3,
+          "make": "i.w.t.plotnik",
+          "name": "плотницкий топор",
+          "count": 1,
+          "difficulty": 20,
+          "takes": {
+            "i.ruda": 4
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 2
+          }
+        },
+        {
+          "key": 4,
+          "make": "i.w.s.kach",
+          "name": "качественный меч",
+          "count": 1,
+          "difficulty": 50,
+          "takes": {
+            "i.ruda": 8
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 5
+          }
+        },
+        {
+          "key": 5,
+          "make": "i.w.s.master",
+          "name": "адамантовый меч",
+          "count": 1,
+          "difficulty": 75,
+          "takes": {
+            "i.ruda": 30
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 8
+          }
+        },
+        {
+          "key": 6,
+          "make": "i.a.s.krugl",
+          "name": "круглый щит",
+          "count": 1,
+          "difficulty": 10,
+          "takes": {
+            "i.ruda": 5
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 1
+          }
+        },
+        {
+          "key": 7,
+          "make": "i.a.s.prochn",
+          "name": "прочный щит",
+          "count": 1,
+          "difficulty": 40,
+          "takes": {
+            "i.ruda": 10
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 4
+          }
+        },
+        {
+          "key": 8,
+          "make": "i.a.b.mkol",
+          "name": "медная кольчуга",
+          "count": 1,
+          "difficulty": 50,
+          "takes": {
+            "i.ruda": 10
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 5
+          }
+        },
+        {
+          "key": 9,
+          "make": "i.a.b.sborn",
+          "name": "адамантовый доспех",
+          "count": 1,
+          "difficulty": 80,
+          "takes": {
+            "i.ruda": 40
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 8
+          }
+        },
+        {
+          "key": 13,
+          "make": "i.a.l.ms",
+          "name": "адамантовые поножи",
+          "count": 1,
+          "difficulty": 85,
+          "takes": {
+            "i.ruda": 30
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 9
+          }
+        },
+        {
+          "key": 14,
+          "make": "i.a.p.ms",
+          "name": "адамантовые поручи",
+          "count": 1,
+          "difficulty": 85,
+          "takes": {
+            "i.ruda": 30
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 9
+          }
+        },
+        {
+          "key": 15,
+          "make": "i.a.h.ms",
+          "name": "адамантовый шлем",
+          "count": 1,
+          "difficulty": 85,
+          "takes": {
+            "i.ruda": 30
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 9
+          }
+        },
+        {
+          "key": 12,
+          "make": "i.a.b.mag",
+          "name": "роба магистра",
+          "count": 1,
+          "difficulty": 75,
+          "takes": {
+            "i.ruda": 30
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 8
+          }
+        }
+      ],
+      "messages": {
+        "success": "Вы сделали {name}",
+        "fail": "Вы не смогли сделать {name}",
+        "lowSkill": "Ваш навык кузнеца слишком низок, вам нужно вначале его повысить",
+        "noFixture": "Чтобы ковать металл, рядом с вами должна быть наковальня"
+      }
+    },
+    "i.set.bow": {
+      "about": "Тетива для лука: делает луки из веток, тетива расходуется при каждой попытке",
+      "source": "plugin/i.set.bow.dat",
+      "skill": "bow",
+      "needSkill": true,
+      "refuseIfChanceNotPositive": true,
+      "menu": true,
+      "busy": 15,
+      "needHere": [],
+      "needHave": [],
+      "toolConsumed": "always",
+      "toolBreakPercent": 0,
+      "recipes": [
+        {
+          "key": 1,
+          "make": "i.w.r.b.detsk",
+          "name": "детский лук",
+          "count": 1,
+          "difficulty": 0,
+          "takes": {
+            "i.log": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": null
+        },
+        {
+          "key": 2,
+          "make": "i.w.r.b.short",
+          "name": "короткий лук",
+          "count": 1,
+          "difficulty": 10,
+          "takes": {
+            "i.log": 2
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 1
+          }
+        },
+        {
+          "key": 3,
+          "make": "i.w.r.b.samod",
+          "name": "самодельный лук",
+          "count": 1,
+          "difficulty": 20,
+          "takes": {
+            "i.log": 4
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 2
+          }
+        },
+        {
+          "key": 4,
+          "make": "i.w.r.b.prochn",
+          "name": "прочный лук",
+          "count": 1,
+          "difficulty": 40,
+          "takes": {
+            "i.log": 8
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 4
+          }
+        },
+        {
+          "key": 5,
+          "make": "i.w.r.b.kach",
+          "name": "качественный лук",
+          "count": 1,
+          "difficulty": 50,
+          "takes": {
+            "i.log": 12
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 5
+          }
+        },
+        {
+          "key": 6,
+          "make": "i.w.r.b.master",
+          "name": "лук мастера",
+          "count": 1,
+          "difficulty": 70,
+          "takes": {
+            "i.log": 20
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 7
+          }
+        },
+        {
+          "key": 7,
+          "make": "i.w.r.b.veter",
+          "name": "лук ветра",
+          "count": 1,
+          "difficulty": 97,
+          "takes": {
+            "i.log": 40
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 10
+          }
+        }
+      ],
+      "messages": {
+        "success": "Вы сделали {name}",
+        "fail": "Вы не смогли сделать {name}",
+        "lowSkill": "Ваш навык плотника слишком низок, чтобы делать луки"
+      }
+    },
+    "i.set.plotn": {
+      "about": "Набор плотника: деревянная броня, щиты, ожерелье и посох из веток",
+      "source": "plugin/i.set.plotn.dat",
+      "skill": "bow",
+      "needSkill": true,
+      "refuseIfChanceNotPositive": true,
+      "menu": true,
+      "busy": 10,
+      "needHere": [],
+      "needHave": [],
+      "toolConsumed": "never",
+      "toolBreakPercent": 0,
+      "recipes": [
+        {
+          "key": 1,
+          "make": "i.a.m.oj",
+          "name": "ожерелье",
+          "count": 1,
+          "difficulty": 10,
+          "takes": {
+            "i.log": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 1
+          }
+        },
+        {
+          "key": 2,
+          "make": "i.w.u.grom",
+          "name": "посох грома",
+          "count": 1,
+          "difficulty": 70,
+          "takes": {
+            "i.log": 15
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 7
+          }
+        },
+        {
+          "key": 3,
+          "make": "i.a.h.wood",
+          "name": "деревянный шлем",
+          "count": 1,
+          "difficulty": 5,
+          "takes": {
+            "i.log": 3
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 1
+          }
+        },
+        {
+          "key": 4,
+          "make": "i.a.p.wood",
+          "name": "деревянные поручи",
+          "count": 1,
+          "difficulty": 10,
+          "takes": {
+            "i.log": 5
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 1
+          }
+        },
+        {
+          "key": 5,
+          "make": "i.a.l.wood",
+          "name": "деревянные поножи",
+          "count": 1,
+          "difficulty": 20,
+          "takes": {
+            "i.log": 8
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 2
+          }
+        },
+        {
+          "key": 6,
+          "make": "i.a.s.wood",
+          "name": "деревянный щит",
+          "count": 1,
+          "difficulty": 30,
+          "takes": {
+            "i.log": 10
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 3
+          }
+        },
+        {
+          "key": 7,
+          "make": "i.a.s.dub",
+          "name": "дубовый щит",
+          "count": 1,
+          "difficulty": 70,
+          "takes": {
+            "i.log": 20
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 7
+          }
+        },
+        {
+          "key": 8,
+          "make": "i.a.s.jdub",
+          "name": "боевой щит",
+          "count": 1,
+          "difficulty": 97,
+          "takes": {
+            "i.log": 40
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 10
+          }
+        },
+        {
+          "key": 9,
+          "make": "i.a.s.jmdub",
+          "name": "щит железного дерева",
+          "count": 1,
+          "difficulty": 97,
+          "takes": {
+            "i.log": 40
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 10
+          }
+        }
+      ],
+      "messages": {
+        "success": "Вы сделали {name}",
+        "fail": "Вы не смогли сделать {name}",
+        "lowSkill": "Ваш навык плотника слишком низок"
+      }
+    },
+    "i.set.prjal": {
+      "about": "Прялка: шёлковые вещи из шёлковой нити у ткацкого станка",
+      "source": "plugin/i.set.prjal.dat",
+      "skill": "weaver",
+      "needSkill": true,
+      "refuseIfChanceNotPositive": true,
+      "menu": true,
+      "busy": 15,
+      "needHere": [
+        "i.s.tkach"
+      ],
+      "needHave": [],
+      "toolConsumed": "never",
+      "toolBreakPercent": 0,
+      "recipes": [
+        {
+          "key": 1,
+          "make": "i.a.c.shch",
+          "name": "шелковые черевички",
+          "count": 1,
+          "difficulty": 97,
+          "takes": {
+            "i.sh": 120
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 10
+          }
+        },
+        {
+          "key": 2,
+          "make": "i.a.c.shch1",
+          "name": "сапоги шороха",
+          "count": 1,
+          "difficulty": 97,
+          "takes": {
+            "i.sh": 120
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 10
+          }
+        },
+        {
+          "key": 3,
+          "make": "i.a.h.sh",
+          "name": "шелковая повязка",
+          "count": 1,
+          "difficulty": 97,
+          "takes": {
+            "i.sh": 150
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 10
+          }
+        },
+        {
+          "key": 4,
+          "make": "i.a.e.sh",
+          "name": "шелковый плащ",
+          "count": 1,
+          "difficulty": 97,
+          "takes": {
+            "i.sh": 150
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "fixed",
+            "value": 10
+          }
+        }
+      ],
+      "messages": {
+        "success": "Вы сделали {name}",
+        "fail": "Вы не смогли сделать {name}",
+        "lowSkill": "Ваш навык ткача слишком низок, вам нужно вначале его повысить",
+        "noFixture": "Чтобы шить вещи, нужно чтобы рядом был ткатский станок"
+      }
+    },
+    "i.set.currier": {
+      "about": "Набор для выделки кожи: одежда для магов из шкур и кислоты",
+      "source": "plugin/i.set.currier.dat",
+      "skill": "currier",
+      "needSkill": true,
+      "refuseIfChanceNotPositive": true,
+      "menu": true,
+      "busy": 0,
+      "needHere": [],
+      "needHave": [
+        "i.acid"
+      ],
+      "toolConsumed": "never",
+      "toolBreakPercent": 0,
+      "recipes": [
+        {
+          "key": 1,
+          "make": "i.a.h.wolf",
+          "name": "голова волка",
+          "count": 1,
+          "difficulty": 65,
+          "takes": {
+            "i.h.s.wolf": 1,
+            "i.acid": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 6
+          }
+        },
+        {
+          "key": 2,
+          "make": "i.a.h.whitewolf",
+          "name": "голова белого волка",
+          "count": 1,
+          "difficulty": 85,
+          "takes": {
+            "i.h.s.whitewolf": 1,
+            "i.acid": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 8
+          }
+        },
+        {
+          "key": 3,
+          "make": "i.a.p.ogr",
+          "name": "лапы огра",
+          "count": 1,
+          "difficulty": 70,
+          "takes": {
+            "i.h.s.ogr": 2,
+            "i.acid": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 7
+          }
+        },
+        {
+          "key": 4,
+          "make": "i.a.l.ogr",
+          "name": "ноги огра",
+          "count": 1,
+          "difficulty": 65,
+          "takes": {
+            "i.h.s.ogr": 2,
+            "i.acid": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 6
+          }
+        },
+        {
+          "key": 5,
+          "make": "i.a.b.troll",
+          "name": "дубленная кожа тролля",
+          "count": 1,
+          "difficulty": 80,
+          "takes": {
+            "i.h.s.troll": 3,
+            "i.acid": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": true,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 8
+          }
+        }
+      ],
+      "messages": {
+        "success": "Вы сделали {name}",
+        "fail": "у вас не получилось сделать {name}",
+        "lowSkill": "Ваш навык кожевника слишком низок",
+        "missingHave": "Необходима кислота"
+      }
+    },
+    "i.set.koptilka": {
+      "about": "Коптилка: копчёная рыба из сырой, нужна ветка как топливо",
+      "source": "plugin/i.set.koptilka.dat",
+      "skill": "food",
+      "needSkill": true,
+      "refuseIfChanceNotPositive": true,
+      "menu": true,
+      "busy": 15,
+      "needHere": [],
+      "needHave": [
+        "i.log"
+      ],
+      "toolConsumed": "never",
+      "toolBreakPercent": 0,
+      "recipes": [
+        {
+          "key": 1,
+          "make": "i.f.k.verh",
+          "name": "копченая верхоплавка",
+          "count": 1,
+          "difficulty": 10,
+          "takes": {
+            "i.f.verh": 1,
+            "i.log": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": false,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 1
+          }
+        },
+        {
+          "key": 2,
+          "make": "i.f.k.pesk",
+          "name": "копченый пескарь",
+          "count": 1,
+          "difficulty": 20,
+          "takes": {
+            "i.f.pesk": 1,
+            "i.log": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": false,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 2
+          }
+        },
+        {
+          "key": 3,
+          "make": "i.f.k.karas",
+          "name": "копченый карась",
+          "count": 1,
+          "difficulty": 10,
+          "takes": {
+            "i.f.karas": 1,
+            "i.log": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": false,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 1
+          }
+        },
+        {
+          "key": 4,
+          "make": "i.f.k.sorozh",
+          "name": "копченая сорожка",
+          "count": 1,
+          "difficulty": 20,
+          "takes": {
+            "i.f.sorozh": 1,
+            "i.log": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": false,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 2
+          }
+        },
+        {
+          "key": 5,
+          "make": "i.f.k.jaz",
+          "name": "копченый язь",
+          "count": 1,
+          "difficulty": 20,
+          "takes": {
+            "i.f.jaz": 1,
+            "i.log": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": false,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 2
+          }
+        },
+        {
+          "key": 6,
+          "make": "i.f.k.wjuka",
+          "name": "копченая щука",
+          "count": 1,
+          "difficulty": 40,
+          "takes": {
+            "i.f.wjuka": 1,
+            "i.log": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": false,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 4
+          }
+        },
+        {
+          "key": 7,
+          "make": "i.f.k.som",
+          "name": "копченый сом",
+          "count": 1,
+          "difficulty": 30,
+          "takes": {
+            "i.f.som": 1,
+            "i.log": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": false,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 3
+          }
+        }
+      ],
+      "messages": {
+        "success": "Вы приготовили {name}",
+        "fail": "У вас сгорел {name}",
+        "lowSkill": "Ваш навык повора слишком низок",
+        "missingHave": "Необходима ветка (которую вы можете срезать с любого дерева)"
+      }
+    },
+    "i.set.stupka": {
+      "about": "Ступка алхимика: зелья, яды и кислота из ингредиентов и бутылки с водой",
+      "source": "plugin/i.set.stupka.dat",
+      "skill": "alchemy",
+      "needSkill": true,
+      "refuseIfChanceNotPositive": true,
+      "menu": true,
+      "busy": 15,
+      "needHere": [],
+      "needHave": [
+        "i.f.b.water"
+      ],
+      "toolConsumed": "never",
+      "toolBreakPercent": 0,
+      "recipes": [
+        {
+          "key": 1,
+          "make": "i.f.b.heal",
+          "name": "напиток жизни",
+          "count": 1,
+          "difficulty": 10,
+          "takes": {
+            "i.f.healherb": 1,
+            "i.f.b.water": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {
+            "i.f.b.empty": 1
+          },
+          "named": false,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 1
+          }
+        },
+        {
+          "key": 2,
+          "make": "i.f.b.heal.great",
+          "name": "элексир жизни",
+          "count": 1,
+          "difficulty": 20,
+          "takes": {
+            "i.f.healherb": 3,
+            "i.f.b.water": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {
+            "i.f.b.empty": 1
+          },
+          "named": false,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 2
+          }
+        },
+        {
+          "key": 3,
+          "make": "i.f.b.mana",
+          "name": "напиток маны",
+          "count": 1,
+          "difficulty": 10,
+          "takes": {
+            "i.f.fileroot": 1,
+            "i.f.b.water": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {
+            "i.f.b.empty": 1
+          },
+          "named": false,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 1
+          }
+        },
+        {
+          "key": 4,
+          "make": "i.f.b.mana.great",
+          "name": "элексир маны",
+          "count": 1,
+          "difficulty": 20,
+          "takes": {
+            "i.f.fileroot": 3,
+            "i.f.b.water": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {
+            "i.f.b.empty": 1
+          },
+          "named": false,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 2
+          }
+        },
+        {
+          "key": 5,
+          "make": "i.f.b.health",
+          "name": "напиток исцеления",
+          "count": 1,
+          "difficulty": 20,
+          "takes": {
+            "i.f.mushroom.dark": 3,
+            "i.f.b.water": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {
+            "i.f.b.empty": 1
+          },
+          "named": false,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 2
+          }
+        },
+        {
+          "key": 6,
+          "make": "i.f.b.health.great",
+          "name": "элексир исцеления",
+          "count": 1,
+          "difficulty": 40,
+          "takes": {
+            "i.f.mushroom.dark": 6,
+            "i.f.b.water": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {
+            "i.f.b.empty": 1
+          },
+          "named": false,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 4
+          }
+        },
+        {
+          "key": 7,
+          "make": "i.b.jad",
+          "name": "бутылка с ядом",
+          "count": 1,
+          "difficulty": 30,
+          "takes": {
+            "i.h.jalo": 1,
+            "i.f.b.water": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {
+            "i.f.b.empty": 1
+          },
+          "named": false,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 3
+          }
+        },
+        {
+          "key": 8,
+          "make": "i.b.fire",
+          "name": "бутылка с огнем",
+          "count": 1,
+          "difficulty": 60,
+          "takes": {
+            "i.f.fileroot": 3,
+            "i.f.b.water": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {
+            "i.f.b.empty": 1
+          },
+          "named": false,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 6
+          }
+        },
+        {
+          "key": 9,
+          "make": "i.b.holy",
+          "name": "святая вода",
+          "count": 1,
+          "difficulty": 60,
+          "takes": {
+            "i.f.fileroot": 3,
+            "i.f.b.water": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {
+            "i.f.b.empty": 1
+          },
+          "named": false,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 6
+          }
+        },
+        {
+          "key": 10,
+          "make": "i.acid",
+          "name": "кислота",
+          "count": 1,
+          "difficulty": 60,
+          "takes": {
+            "i.f.mushroom.dark": 2,
+            "i.f.b.water": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {
+            "i.f.b.empty": 1
+          },
+          "named": false,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 6
+          }
+        },
+        {
+          "key": 11,
+          "make": "i.b.jad.c",
+          "name": "яд древесной змеи",
+          "count": 1,
+          "difficulty": 60,
+          "takes": {
+            "i.h.jalo": 2,
+            "i.f.b.water": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {
+            "i.f.b.empty": 1
+          },
+          "named": false,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 6
+          }
+        },
+        {
+          "key": 12,
+          "make": "i.b.antidot",
+          "name": "противоядие",
+          "count": 1,
+          "difficulty": 40,
+          "takes": {
+            "i.f.healherb": 4,
+            "i.f.b.water": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": true,
+            "op": "<"
+          },
+          "failGives": {
+            "i.f.b.empty": 1
+          },
+          "named": false,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 4
+          }
+        }
+      ],
+      "messages": {
+        "success": "Вы сделали {name}",
+        "fail": "Вы не смогли сделать {name}",
+        "lowSkill": "Ваш навык алхимика слишком низок",
+        "missingHave": "Нужна бутылка с чистой водой (пустую бутылку можно наполнить у любого источника воды)."
+      }
+    },
+    "i.set.stupka.h": {
+      "about": "Ступка для трав: элексир жизни из одной лечебной травы и пустой бутылки",
+      "source": "plugin/i.set.stupka.h.dat",
+      "skill": "alchemy",
+      "needSkill": true,
+      "refuseIfChanceNotPositive": false,
+      "menu": false,
+      "busy": 6,
+      "needHere": [],
+      "needHave": [
+        "i.f.healherb",
+        "i.f.b.empty"
+      ],
+      "toolConsumed": "never",
+      "toolBreakPercent": 0,
+      "recipes": [
+        {
+          "key": 1,
+          "make": "i.f.b.heal.great",
+          "name": "элексир жизни",
+          "count": 1,
+          "difficulty": 0,
+          "takes": {
+            "i.f.healherb": 1
+          },
+          "takesOnSuccess": {
+            "i.f.b.empty": 1
+          },
+          "chance": {
+            "die": [
+              1,
+              100
+            ],
+            "perLevel": 20,
+            "plus": -5,
+            "minusDifficulty": false,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": false,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 2
+          }
+        }
+      ],
+      "messages": {
+        "success": "Вы сделали элексир жизни",
+        "fail": "Вы не смогли сделать элексир жизни",
+        "lowSkill": "Ваш навык алхимика равен 0, вы не умеете делать зелья",
+        "missingHave": "Чтобы сделать элексир жизни, нужна целебная трава и пустая бутылка"
+      }
+    },
+    "i.set.stupka.m": {
+      "about": "Ступка для корней: элексир маны из одного огненного корня и пустой бутылки",
+      "source": "plugin/i.set.stupka.m.dat",
+      "skill": "alchemy",
+      "needSkill": true,
+      "refuseIfChanceNotPositive": false,
+      "menu": false,
+      "busy": 6,
+      "needHere": [],
+      "needHave": [
+        "i.f.fileroot",
+        "i.f.b.empty"
+      ],
+      "toolConsumed": "never",
+      "toolBreakPercent": 0,
+      "recipes": [
+        {
+          "key": 1,
+          "make": "i.f.b.mana.great",
+          "name": "элексир маны",
+          "count": 1,
+          "difficulty": 0,
+          "takes": {
+            "i.f.fileroot": 1
+          },
+          "takesOnSuccess": {
+            "i.f.b.empty": 1
+          },
+          "chance": {
+            "die": [
+              1,
+              100
+            ],
+            "perLevel": 20,
+            "plus": -5,
+            "minusDifficulty": false,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": false,
+          "exp": {
+            "kind": "randUpTo",
+            "max": 2
+          }
+        }
+      ],
+      "messages": {
+        "success": "Вы сделали элексир маны",
+        "fail": "Вы не смогли сделать элексир маны",
+        "lowSkill": "Ваш навык алхимика равен 0, вы не умеете делать зелья",
+        "missingHave": "Чтобы сделать элексир маны, нужен огненный корень и пустая бутылка"
+      }
+    },
+    "i.set.arrow": {
+      "about": "Набор для стрел: 5 штук из ветки и 5 перьев одного вида",
+      "source": "plugin/i.set.arrow.dat",
+      "skill": "bow",
+      "needSkill": true,
+      "refuseIfChanceNotPositive": false,
+      "menu": false,
+      "busy": 6,
+      "needHere": [],
+      "needHave": [
+        "i.log",
+        "i.h.p.*"
+      ],
+      "toolConsumed": "never",
+      "toolBreakPercent": 0,
+      "recipes": [
+        {
+          "key": 1,
+          "make": "i.arrow",
+          "name": "5 стрел",
+          "count": 5,
+          "difficulty": 0,
+          "takes": {
+            "i.h.p.*": 5
+          },
+          "takesOnSuccess": {
+            "i.log": 1
+          },
+          "chance": {
+            "die": [
+              1,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": false,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": false,
+          "exp": null
+        }
+      ],
+      "messages": {
+        "success": "Вы сделали 5 стрел",
+        "fail": "Вы не смогли сделать стрелы",
+        "lowSkill": "Ваш навык плотника равен 0, вы не умеете делать стрелы",
+        "missingHave": "Чтобы делать стрелы, нужна ветка от дерева и 5 перьев"
+      }
+    },
+    "i.set.bolt": {
+      "about": "Набор для болтов: 5 штук из ветки и 5 перьев одного вида",
+      "source": "plugin/i.set.bolt.dat",
+      "skill": "bow",
+      "needSkill": true,
+      "refuseIfChanceNotPositive": false,
+      "menu": false,
+      "busy": 6,
+      "needHere": [],
+      "needHave": [
+        "i.log",
+        "i.h.p.*"
+      ],
+      "toolConsumed": "never",
+      "toolBreakPercent": 0,
+      "recipes": [
+        {
+          "key": 1,
+          "make": "i.bolt",
+          "name": "5 болтов",
+          "count": 5,
+          "difficulty": 0,
+          "takes": {
+            "i.h.p.*": 5
+          },
+          "takesOnSuccess": {
+            "i.log": 1
+          },
+          "chance": {
+            "die": [
+              1,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": false,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": false,
+          "exp": null
+        }
+      ],
+      "messages": {
+        "success": "Вы сделали 5 болтов",
+        "fail": "Вы не смогли сделать болты",
+        "lowSkill": "Ваш навык плотника равен 0, вы не умеете делать болты",
+        "missingHave": "Чтобы делать болты, нужна ветка от дерева и 5 перьев"
+      }
+    },
+    "i.set.leska": {
+      "about": "Леска: удочка из ветки; леска расходуется только при успехе",
+      "source": "plugin/i.set.leska.dat",
+      "skill": "bow",
+      "needSkill": true,
+      "refuseIfChanceNotPositive": false,
+      "menu": false,
+      "busy": 10,
+      "needHere": [],
+      "needHave": [
+        "i.log"
+      ],
+      "toolConsumed": "success",
+      "toolBreakPercent": 0,
+      "recipes": [
+        {
+          "key": 1,
+          "make": "i.fishman",
+          "name": "удочка",
+          "count": 1,
+          "difficulty": 0,
+          "takes": {
+            "i.log": 1
+          },
+          "takesOnSuccess": {},
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "perLevel": 20,
+            "plus": 0,
+            "minusDifficulty": false,
+            "op": "<"
+          },
+          "failGives": {},
+          "named": false,
+          "exp": null
+        }
+      ],
+      "messages": {
+        "success": "Вы сделали удочку",
+        "fail": "Вы не смогли сделать удочку",
+        "lowSkill": "Ваш навык плотника равен 0, вы не умеете делать удочки",
+        "missingHave": "Чтобы сделать удочку, нужна ветка от дерева"
+      }
+    }
+  },
+  "gathering": {
+    "i.kirka": {
+      "about": "Кирка: добыча руды из рудной жилы, иногда самоцвет",
+      "source": "plugin/i.kirka.dat",
+      "skill": "mine",
+      "needSkill": true,
+      "busy": 4,
+      "requiresTarget": false,
+      "node": "i.s.rudnik",
+      "locations": null,
+      "chance": {
+        "die": [
+          1,
+          100
+        ],
+        "perLevel": 10,
+        "plus": 0,
+        "op": "<"
+      },
+      "gives": {
+        "i.ruda": 1
+      },
+      "stat": 6,
+      "exp": {
+        "kind": "chance",
+        "chance": {
+          "die": [
+            1,
+            100
+          ],
+          "plus": 30,
+          "op": "<"
+        },
+        "then": {
+          "kind": "fixed",
+          "value": 1
+        }
+      },
+      "toolBreakPercent": 0,
+      "extra": {
+        "gems": {
+          "about": "после успешной добычи: выбирается один камень равновероятно, затем бросок",
+          "where": {
+            "minY": 1099,
+            "locations": [
+              "c.1.main",
+              "c.2.main",
+              "c.3.main",
+              "c.4.main",
+              "c.5.main"
+            ]
+          },
+          "pick": [
+            "i.i.ag",
+            "i.i.az",
+            "i.i.am",
+            "i.i.do",
+            "i.i.dy",
+            "i.i.zm",
+            "i.i.ku",
+            "i.i.ma",
+            "i.i.me",
+            "i.i.ne",
+            "i.i.ob",
+            "i.i.on",
+            "i.i.sa",
+            "i.i.hr"
+          ],
+          "names": {
+            "i.i.ag": "агат",
+            "i.i.az": "амазонит",
+            "i.i.am": "аметист",
+            "i.i.do": "долерит",
+            "i.i.dy": "дымчатый кварц",
+            "i.i.zm": "змеевик",
+            "i.i.ku": "кунцит",
+            "i.i.ma": "малахит",
+            "i.i.me": "мельхиор",
+            "i.i.ne": "нефрит",
+            "i.i.ob": "обсидиан",
+            "i.i.on": "оникс",
+            "i.i.sa": "сапфир",
+            "i.i.hr": "хризолит"
+          },
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "plus": 5,
+            "op": "<"
+          },
+          "count": 1,
+          "stat": 9,
+          "message": "Вы нашли {name}!"
+        },
+        "golem": {
+          "about": "после успешной добычи в этих пещерах может проснуться голем (новый NPC n.c.gol.<rand 99..9999>)",
+          "npc": "n.c.gol",
+          "locations": [
+            "x1482x185",
+            "x1479x157",
+            "x1557x129",
+            "x1520x129",
+            "x1092x474"
+          ],
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "plus": 1,
+            "op": "<"
+          },
+          "message": "{npcName} голем: {player} как ты посмел потревожить меня?! За это ты умреш!"
+        }
+      },
+      "messages": {
+        "success": "Вы добыли немного руды",
+        "fail": "Вам не удалось добыть руду",
+        "empty": "В жиле нет больше руды! Ждите пока появится снова",
+        "lowSkill": "Ваш навык рудокопа равен 0, вы не умеете добывать руду",
+        "noNode": "Рядом нет рудной жилы"
+      }
+    },
+    "i.q.kirka": {
+      "about": "Кирка мастера (награда квеста): +10 к шансу руды и самоцвета, пауза 3 с",
+      "source": "plugin/i.q.kirka.dat",
+      "skill": "mine",
+      "needSkill": true,
+      "busy": 3,
+      "requiresTarget": false,
+      "node": "i.s.rudnik",
+      "locations": null,
+      "chance": {
+        "die": [
+          1,
+          100
+        ],
+        "perLevel": 10,
+        "plus": 10,
+        "op": "<"
+      },
+      "gives": {
+        "i.ruda": 1
+      },
+      "stat": 6,
+      "exp": {
+        "kind": "chance",
+        "chance": {
+          "die": [
+            1,
+            100
+          ],
+          "plus": 30,
+          "op": "<"
+        },
+        "then": {
+          "kind": "fixed",
+          "value": 1
+        }
+      },
+      "toolBreakPercent": 0,
+      "extra": {
+        "gems": {
+          "about": "после успешной добычи: выбирается один камень равновероятно, затем бросок",
+          "where": {
+            "minY": 1099,
+            "locations": [
+              "c.1.main",
+              "c.2.main",
+              "c.3.main",
+              "c.4.main",
+              "c.5.main"
+            ]
+          },
+          "pick": [
+            "i.i.ag",
+            "i.i.az",
+            "i.i.am",
+            "i.i.do",
+            "i.i.dy",
+            "i.i.zm",
+            "i.i.ku",
+            "i.i.ma",
+            "i.i.me",
+            "i.i.ne",
+            "i.i.ob",
+            "i.i.on",
+            "i.i.sa",
+            "i.i.hr"
+          ],
+          "names": {
+            "i.i.ag": "агат",
+            "i.i.az": "амазонит",
+            "i.i.am": "аметист",
+            "i.i.do": "долерит",
+            "i.i.dy": "дымчатый кварц",
+            "i.i.zm": "змеевик",
+            "i.i.ku": "кунцит",
+            "i.i.ma": "малахит",
+            "i.i.me": "мельхиор",
+            "i.i.ne": "нефрит",
+            "i.i.ob": "обсидиан",
+            "i.i.on": "оникс",
+            "i.i.sa": "сапфир",
+            "i.i.hr": "хризолит"
+          },
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "plus": 15,
+            "op": "<"
+          },
+          "count": 1,
+          "stat": 9,
+          "message": "Вы нашли {name}!"
+        },
+        "golem": {
+          "about": "после успешной добычи в этих пещерах может проснуться голем (новый NPC n.c.gol.<rand 99..9999>)",
+          "npc": "n.c.gol",
+          "locations": [
+            "x1482x185",
+            "x1479x157",
+            "x1557x129",
+            "x1520x129",
+            "x1092x474"
+          ],
+          "chance": {
+            "die": [
+              0,
+              100
+            ],
+            "plus": 1,
+            "op": "<"
+          },
+          "message": "{npcName} голем: {player} как ты посмел потревожить меня?! За это ты умреш!"
+        }
+      },
+      "messages": {
+        "success": "Вы добыли немного руды",
+        "fail": "Вам не удалось добыть руду",
+        "empty": "В жиле нет больше руды! Ждите пока появится снова",
+        "lowSkill": "Ваш навык рудокопа равен 0, вы не умеете добывать руду",
+        "noNode": "Рядом нет рудной жилы"
+      }
+    },
+    "i.w.t.": {
+      "about": "Любой топор i.w.t.*: рубка веток с деревьев (с целью ?to=…; без цели топор надевается как оружие)",
+      "source": "plugin/i.w.dat:7-8, plugin/i.w.t.dat",
+      "skill": "lumb",
+      "needSkill": true,
+      "busy": 4,
+      "requiresTarget": true,
+      "node": "i.s.tree",
+      "locations": null,
+      "chance": {
+        "die": [
+          1,
+          100
+        ],
+        "perLevel": 10,
+        "plus": 0,
+        "op": "<"
+      },
+      "gives": {
+        "i.log": 1
+      },
+      "stat": 5,
+      "exp": {
+        "kind": "chance",
+        "chance": {
+          "die": [
+            1,
+            100
+          ],
+          "plus": 50,
+          "op": "<"
+        },
+        "then": {
+          "kind": "randRange",
+          "min": 1,
+          "max": 3
+        }
+      },
+      "toolBreakPercent": 0,
+      "extra": {},
+      "messages": {
+        "success": "Вы срубили ветку",
+        "fail": "Вам не удалось срубить ветку",
+        "empty": "На дереве не осталось веток! Ждите пока отрастут новые",
+        "lowSkill": "Ваш навык лесоруба равен 0, вы не умеете рубить деревья",
+        "noNode": "Рядом нет деревьев, подходящих для рубки"
+      }
+    },
+    "i.fishman": {
+      "about": "Удочка: рыбалка у воды; один бросок, улов по таблице порогов",
+      "source": "plugin/i.fishman.dat",
+      "skill": "fish",
+      "needSkill": true,
+      "busy": 6,
+      "requiresTarget": false,
+      "node": null,
+      "locations": [
+        "x1121x606",
+        "x1149x602",
+        "x1173x603",
+        "x1215x603",
+        "x1237x609",
+        "x1263x641",
+        "x1301x641",
+        "x1339x641",
+        "x1377x641",
+        "x1415x611",
+        "x1098x606",
+        "x1103x618",
+        "x1070x605",
+        "x1048x601",
+        "x1023x589",
+        "x995x553",
+        "x985x520",
+        "x980x491",
+        "x970x467",
+        "x943x465",
+        "x894x429",
+        "x857x429",
+        "x819x429",
+        "x781x429",
+        "x753x439",
+        "x746x410",
+        "x717x378",
+        "x690x361",
+        "x672x336",
+        "x639x309",
+        "x621x284",
+        "x582x257",
+        "x544x257",
+        "x507x228",
+        "x504x201",
+        "x474x169",
+        "x465x140",
+        "x465x112",
+        "x461x83",
+        "x468x41",
+        "x2285x505",
+        "x2487x616",
+        "x2235x509",
+        "x2124x513",
+        "x2073x515",
+        "x2016x549",
+        "x1965x585",
+        "x1965x623",
+        "x1978x700",
+        "x73x1203",
+        "x72x1227",
+        "x70x1252",
+        "x33x1252",
+        "x249x1278",
+        "x249x1252",
+        "x249x1224",
+        "x249x1199",
+        "x287x1252",
+        "x393x1167",
+        "x435x1167"
+      ],
+      "chance": null,
+      "table": {
+        "about": "rnd = rand(die); первая строка, где rnd < S*mult, даёт 1 предмет give; если ни одна — провал",
+        "die": [
+          0,
+          199
+        ],
+        "op": "<",
+        "rows": [
+          {
+            "mult": 0.2,
+            "give": "i.q.ambroken1",
+            "count": 1,
+            "text": "часть амулета"
+          },
+          {
+            "mult": 0.4,
+            "give": "i.q.chasha",
+            "count": 1,
+            "text": "чашу из ансалона"
+          },
+          {
+            "mult": 0.6,
+            "give": "i.q.keykrep1",
+            "count": 1,
+            "text": "ключ от потайной комнаты"
+          },
+          {
+            "mult": 0.8,
+            "give": "i.q.yashik",
+            "count": 1,
+            "text": "ящик со склада"
+          },
+          {
+            "mult": 1,
+            "give": "i.q.pervor",
+            "count": 1,
+            "text": "перчатки вора"
+          },
+          {
+            "mult": 1.2,
+            "give": "i.q.fish.zerk",
+            "count": 1,
+            "text": "зеркального карпа"
+          },
+          {
+            "mult": 1.4,
+            "give": "i.a.c.tap1",
+            "count": 1,
+            "text": "тапки"
+          },
+          {
+            "mult": 1.6,
+            "give": "i.a.c.tuf1",
+            "count": 1,
+            "text": "туфли"
+          },
+          {
+            "mult": 1.8,
+            "give": "i.a.h.k1",
+            "count": 1,
+            "text": "треуголку"
+          },
+          {
+            "mult": 2,
+            "give": "i.a.o.t1",
+            "count": 1,
+            "text": "темные очки"
+          },
+          {
+            "mult": 4,
+            "give": "i.f.som",
+            "count": 1,
+            "text": "сома"
+          },
+          {
+            "mult": 6,
+            "give": "i.f.wjuka",
+            "count": 1,
+            "text": "щуку"
+          },
+          {
+            "mult": 10,
+            "give": "i.f.jaz",
+            "count": 1,
+            "text": "язя"
+          },
+          {
+            "mult": 14,
+            "give": "i.f.karas",
+            "count": 1,
+            "text": "карася"
+          },
+          {
+            "mult": 16,
+            "give": "i.f.sorozh",
+            "count": 1,
+            "text": "сорожку"
+          },
+          {
+            "mult": 18,
+            "give": "i.f.pesk",
+            "count": 1,
+            "text": "пескаря"
+          },
+          {
+            "mult": 20,
+            "give": "i.f.verh",
+            "count": 1,
+            "text": "верхоплавку"
+          }
+        ]
+      },
+      "stat": 4,
+      "exp": {
+        "kind": "chance",
+        "chance": {
+          "die": [
+            1,
+            100
+          ],
+          "plus": 10,
+          "op": "<"
+        },
+        "then": {
+          "kind": "fixed",
+          "value": 1
+        }
+      },
+      "toolBreakPercent": 5,
+      "extra": {},
+      "messages": {
+        "start": "{player} ловит рыбу",
+        "success": "{player} поймал {text}",
+        "fail": "Вам не удалось ничего поймать",
+        "broken": "Ваша удочка сломалась",
+        "lowSkill": "Ваш навык рыболовства равен 0, вы не умеете рыбачить",
+        "noWater": "Здесь нет воды, рыбачить можно только у реки или на берегу моря"
+      }
+    }
+  },
+  "nodes": {
+    "i.s.rudnik": {
+      "about": "рудная жила",
+      "fields": [
+        "name",
+        "stock",
+        "unused",
+        "regrowSeconds",
+        "stockMax",
+        "regrowAt"
+      ],
+      "stockField": 1,
+      "stockMaxField": 4,
+      "regrowField": 3,
+      "regrowAtField": 5,
+      "regrowSeconds": 300,
+      "note": "Строка объекта в локации 'имя|stock|0|regrow|max|regrow_at': [0] имя, [1] stock — текущий запас, [2] не используется (всегда 0), [3] regrowSeconds — задержка восстановления, [4] stockMax — запас после восстановления, [5] regrowAt — unix-время, когда можно восстановить. Перед попыткой: если stock == 0 и now > regrowAt, то stock = stockMax. Если stock == 0 после этого — 'пусто', бросок не делается (занятость уже поставлена). Успех: stock -= 1; если стало 0, regrowAt = now + regrowSeconds. Провал запас не тратит.",
+      "locations": {
+        "c.2.main": {
+          "stock": 0,
+          "regrowSeconds": 300,
+          "stockMax": 4
+        },
+        "c.3.main": {
+          "stock": 0,
+          "regrowSeconds": 300,
+          "stockMax": 4
+        },
+        "c.4.main": {
+          "stock": 0,
+          "regrowSeconds": 300,
+          "stockMax": 4
+        },
+        "c.5.main": {
+          "stock": 0,
+          "regrowSeconds": 300,
+          "stockMax": 4
+        },
+        "x105x1329": {
+          "stock": 0,
+          "regrowSeconds": 300,
+          "stockMax": 8
+        },
+        "x1446x60": {
+          "stock": 3,
+          "regrowSeconds": 300,
+          "stockMax": 3
+        },
+        "x1479x157": {
+          "stock": 0,
+          "regrowSeconds": 300,
+          "stockMax": 3
+        },
+        "x1482x185": {
+          "stock": 0,
+          "regrowSeconds": 300,
+          "stockMax": 3
+        },
+        "x1520x129": {
+          "stock": 0,
+          "regrowSeconds": 300,
+          "stockMax": 3
+        },
+        "x1523x472": {
+          "stock": 0,
+          "regrowSeconds": 300,
+          "stockMax": 3
+        },
+        "x1557x129": {
+          "stock": 0,
+          "regrowSeconds": 300,
+          "stockMax": 3
+        },
+        "x183x1099": {
+          "stock": 0,
+          "regrowSeconds": 300,
+          "stockMax": 4
+        },
+        "x2098x37": {
+          "stock": 0,
+          "regrowSeconds": 300,
+          "stockMax": 3
+        },
+        "x251x1125": {
+          "stock": 0,
+          "regrowSeconds": 300,
+          "stockMax": 4
+        }
+      }
+    },
+    "i.s.tree": {
+      "about": "деревья",
+      "fields": [
+        "name",
+        "stock",
+        "unused",
+        "regrowSeconds",
+        "stockMax",
+        "regrowAt"
+      ],
+      "stockField": 1,
+      "stockMaxField": 4,
+      "regrowField": 3,
+      "regrowAtField": 5,
+      "regrowSeconds": 300,
+      "note": "Строка объекта в локации 'имя|stock|0|regrow|max|regrow_at': [0] имя, [1] stock — текущий запас, [2] не используется (всегда 0), [3] regrowSeconds — задержка восстановления, [4] stockMax — запас после восстановления, [5] regrowAt — unix-время, когда можно восстановить. Перед попыткой: если stock == 0 и now > regrowAt, то stock = stockMax. Если stock == 0 после этого — 'пусто', бросок не делается (занятость уже поставлена). Успех: stock -= 1; если стало 0, regrowAt = now + regrowSeconds. Провал запас не тратит.",
+      "locations": {
+        "c.2.tron": {
+          "stock": 0,
+          "regrowSeconds": 300,
+          "stockMax": 5
+        },
+        "c.3.tron": {
+          "stock": 0,
+          "regrowSeconds": 300,
+          "stockMax": 5
+        },
+        "c.4.tron": {
+          "stock": 0,
+          "regrowSeconds": 300,
+          "stockMax": 5
+        },
+        "x1041x113": {
+          "stock": 5,
+          "regrowSeconds": 300,
+          "stockMax": 5
+        },
+        "x1049x369": {
+          "stock": 5,
+          "regrowSeconds": 300,
+          "stockMax": 5
+        },
+        "x1122x286": {
+          "stock": 0,
+          "regrowSeconds": 300,
+          "stockMax": 5
+        },
+        "x1203x341": {
+          "stock": 0,
+          "regrowSeconds": 300,
+          "stockMax": 5
+        },
+        "x2367x208": {
+          "stock": 0,
+          "regrowSeconds": 300,
+          "stockMax": 5
+        },
+        "x2368x238": {
+          "stock": 0,
+          "regrowSeconds": 300,
+          "stockMax": 5
+        },
+        "x504x170": {
+          "stock": 5,
+          "regrowSeconds": 300,
+          "stockMax": 5
+        },
+        "x967x170": {
+          "stock": 5,
+          "regrowSeconds": 300,
+          "stockMax": 5
+        }
+      }
+    }
+  },
+  "consumables": {
+    "i.f.apple": {
+      "name": "яблоко",
+      "hp": 2,
+      "mana": 0,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.b.heal.great": {
+      "name": "элексир жизни",
+      "hp": 25,
+      "mana": 0,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.b.heal": {
+      "name": "напиток жизни",
+      "hp": 15,
+      "mana": 0,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.b.health.great": {
+      "name": "элексир исцеления",
+      "hp": 25,
+      "mana": 20,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.b.health": {
+      "name": "напиток исцеления",
+      "hp": 15,
+      "mana": 10,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.b.ir": {
+      "name": "ириска",
+      "hp": 2,
+      "mana": 2,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.b.kv": {
+      "name": "крепленое вино",
+      "hp": 40,
+      "mana": 40,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.b.mana.great": {
+      "name": "элексир маны",
+      "hp": 0,
+      "mana": 25,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.b.mana": {
+      "name": "напиток маны",
+      "hp": 0,
+      "mana": 15,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.b.pmol": {
+      "name": "птичье молоко",
+      "hp": 2,
+      "mana": 2,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.b.recovering.great": {
+      "name": "элексир востановления",
+      "hp": 25,
+      "mana": 30,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.b.recovering": {
+      "name": "напиток востановления",
+      "hp": 15,
+      "mana": 20,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.b.shamp": {
+      "name": "шампанское",
+      "hp": 2,
+      "mana": 2,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.b.sht": {
+      "name": "темный шоколад",
+      "hp": 2,
+      "mana": 2,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.b.water": {
+      "name": "бутылка с водой",
+      "hp": 2,
+      "mana": 0,
+      "leaves": "i.f.b.empty",
+      "busy": 4
+    },
+    "i.f.bread": {
+      "name": "хлеб",
+      "hp": 5,
+      "mana": 0,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.fileroot": {
+      "name": "огненный корень",
+      "hp": 0,
+      "mana": 10,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.fish.big": {
+      "name": "большая рыба",
+      "hp": 10,
+      "mana": 12,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.fish": {
+      "name": "рыба",
+      "hp": 4,
+      "mana": 2,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.fish.small": {
+      "name": "маленькая рыба",
+      "hp": 2,
+      "mana": 1,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.gabbage": {
+      "name": "капуста",
+      "hp": 4,
+      "mana": 0,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.grusha": {
+      "name": "груша",
+      "hp": 3,
+      "mana": 0,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.ham": {
+      "name": "окорок",
+      "hp": 8,
+      "mana": 0,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.healherb": {
+      "name": "лечебная трава",
+      "hp": 10,
+      "mana": 0,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.jaz": {
+      "name": "язь",
+      "hp": 4,
+      "mana": 5,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.k.jaz": {
+      "name": "копченый язь",
+      "hp": 12,
+      "mana": 13,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.k.karas": {
+      "name": "копченый карась",
+      "hp": 8,
+      "mana": 10,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.k.pesk": {
+      "name": "копченый пескарь",
+      "hp": 7,
+      "mana": 8,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.k.som": {
+      "name": "копченый сом",
+      "hp": 25,
+      "mana": 30,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.k.sorozh": {
+      "name": "копченая сорожка",
+      "hp": 11,
+      "mana": 13,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.k.verh": {
+      "name": "копченая верхоплавка",
+      "hp": 5,
+      "mana": 6,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.k.wjuka": {
+      "name": "копченая щука",
+      "hp": 15,
+      "mana": 20,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.karas": {
+      "name": "карась",
+      "hp": 3,
+      "mana": 4,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.meat.fried": {
+      "name": "жаренное мясо",
+      "hp": 6,
+      "mana": 0,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.meat": {
+      "name": "мясо",
+      "hp": 5,
+      "mana": 0,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.medin": {
+      "name": "мясо единорога",
+      "hp": 6,
+      "mana": 0,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.milk": {
+      "name": "молоко",
+      "hp": 7,
+      "mana": 0,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.mushroom.dark": {
+      "name": "темный гриб",
+      "hp": 5,
+      "mana": 5,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.mushroom": {
+      "name": "гриб",
+      "hp": 2,
+      "mana": 2,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.pesk": {
+      "name": "пескарь",
+      "hp": 3,
+      "mana": 4,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.sandwich": {
+      "name": "бутерброд",
+      "hp": 3,
+      "mana": 0,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.sausage": {
+      "name": "колбаса",
+      "hp": 4,
+      "mana": 0,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.som": {
+      "name": "сом",
+      "hp": 8,
+      "mana": 10,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.sorozh": {
+      "name": "сорожка",
+      "hp": 3,
+      "mana": 5,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.verh": {
+      "name": "верхоплавка",
+      "hp": 1,
+      "mana": 2,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.vetchina": {
+      "name": "ветчина",
+      "hp": 6,
+      "mana": 0,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.wine": {
+      "name": "вино",
+      "hp": 7,
+      "mana": 5,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.wjuka": {
+      "name": "щука",
+      "hp": 6,
+      "mana": 8,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.f.yagoda": {
+      "name": "ягода",
+      "hp": 1,
+      "mana": 0,
+      "leaves": null,
+      "busy": 4
+    },
+    "i.b.antidot": {
+      "name": "противоядие",
+      "hp": 0,
+      "mana": 0,
+      "leaves": null,
+      "busy": 4,
+      "curesPoisonSeconds": 300,
+      "source": "plugin/i.b.antidot.dat",
+      "message": "Вы исцелились"
+    }
+  },
+  "special": {
+    "i.w.k.": {
+      "handler": "butcher",
+      "about": "Любой нож i.w.k.* с целью-трупом i.s.d.*: переносит butcher_loot трупа в обычную добычу. Уже реализовано в движке (World.butcher)",
+      "source": "plugin/i.w.dat:4-5, plugin/i.w.k.dat",
+      "skill": null,
+      "busy": 0,
+      "target": "i.s.d.",
+      "exp": {
+        "kind": "chance",
+        "chance": {
+          "die": [
+            1,
+            100
+          ],
+          "plus": 5,
+          "op": "<"
+        },
+        "then": {
+          "kind": "fixed",
+          "value": 1
+        }
+      },
+      "messages": {
+        "success": "Вы освежевали {corpse}",
+        "empty": "На трупе нет трофеев",
+        "badTarget": "Нож можно использовать для разделки только трупов"
+      }
+    },
+    "i.set.shlif": {
+      "handler": "polishGem",
+      "about": "Набор ювелира: шлифовка неограненного камня i.c.X в i.c.X.good",
+      "source": "plugin/i.set.shlif.dat",
+      "skill": "stone",
+      "needSkill": true,
+      "busy": 6,
+      "target": {
+        "prefix": "i.c.",
+        "notSuffix": ".good",
+        "inBackpack": true
+      },
+      "result": "{target}.good",
+      "chance": {
+        "die": [
+          0,
+          100
+        ],
+        "perLevel": 10,
+        "plus": 0,
+        "op": "<"
+      },
+      "takesOnSuccess": {
+        "{target}": 1
+      },
+      "exp": {
+        "kind": "randUpTo",
+        "max": 2
+      },
+      "toolBreakPercent": 5,
+      "toolBreakWhen": "everyAttempt",
+      "messages": {
+        "success": "Вы отшлифовали камень",
+        "fail": "Вам не удалось отшлифовать камень",
+        "broken": "Вы сломали набор для шлифования камней",
+        "badTarget": "Шлифовать можно только неограненные драгоценные камни",
+        "lowSkill": "Ваш навык ювелира равен 0, вы не умеете обрабатывать камни"
+      }
+    },
+    "i.i.": {
+      "handler": "inlayGem",
+      "about": "Самоцвет i.i.<g>: инкрустация в именной предмет (с '_'), нужен набор ювелира в рюкзаке",
+      "source": "plugin/i.i.dat",
+      "skill": "stone",
+      "needSkill": true,
+      "busy": 10,
+      "needHave": [
+        "i.set.shlif"
+      ],
+      "target": {
+        "named": true,
+        "inBackpack": true,
+        "gemNotAlreadyIn": true,
+        "maxGems": 3
+      },
+      "gemSuffix": "id самоцвета без 'i.i.' (use[4:])",
+      "firstRoll": {
+        "die": [
+          0,
+          100
+        ],
+        "perLevel": 10,
+        "plus": 20,
+        "op": "<",
+        "onFail": "ничего не тратится: 'Вам не удалось инкрустировать самоцвет, попробуйте еще раз'"
+      },
+      "takesAfterFirstRoll": {
+        "{gem}": 1,
+        "{target}": 1
+      },
+      "secondRoll": {
+        "die": [
+          0,
+          100
+        ],
+        "op": ">=",
+        "perLevel": -10,
+        "plus": 60,
+        "perGemInItem": 10,
+        "about": "успех, если rand(0,100) >= (6-S)*10 + n*10, n — камней уже в предмете"
+      },
+      "result": "{target}..{gemSuffix}",
+      "stat": 7,
+      "exp": {
+        "kind": "randUpTo",
+        "max": 10
+      },
+      "onSecondFail": "предмет и камень потеряны (все прежние камни тоже)",
+      "toolBreak": {
+        "item": "i.set.shlif",
+        "percent": 5,
+        "when": "afterFirstRollPassed"
+      },
+      "messages": {
+        "success": "Вы инкрустировали самоцвет в {name}",
+        "fail": "Вы испортили {name}",
+        "retry": "Вам не удалось инкрустировать самоцвет, попробуйте еще раз",
+        "broken": "Вы сломали набор ювелира",
+        "notNamed": "Инкрустировать самоцветы можно только в именные предметы, созданные игроками",
+        "noKit": "В вашем рюкзаке должен быть набор ювелира",
+        "already": "Этот самоцвет уже инкрустирован в {name}",
+        "tooMany": "В один предмет можно инкрустировать не более 3 самоцветов",
+        "lowSkill": "Ваш навык ювелира равен 0, вы не умеете инкрустировать самоцветы"
+      }
+    },
+    "i.set.ar": {
+      "handler": "extractGem",
+      "about": "Набор для извлечения самоцветов: достаёт выбранный камень, предмет уничтожается в любом исходе",
+      "source": "plugin/i.set.ar.dat",
+      "skill": "stone",
+      "needSkill": true,
+      "busy": 5,
+      "target": {
+        "hasGems": true,
+        "inBackpack": true
+      },
+      "param": "k — суффикс камня, один из вставленных в предмет",
+      "chance": {
+        "die": [
+          0,
+          100
+        ],
+        "op": "<",
+        "perLevel": 10,
+        "plusByGemCount": {
+          "1": -5,
+          "2": 15,
+          "3": 35
+        }
+      },
+      "onSuccess": {
+        "gives": {
+          "i.i.{k}": 1
+        },
+        "takes": {
+          "{target}": 1
+        }
+      },
+      "onFail": {
+        "takes": {
+          "{target}": 1
+        }
+      },
+      "exp": null,
+      "toolBreakPercent": 5,
+      "toolBreakWhen": "everyAttemptWithValidGem",
+      "messages": {
+        "success": "Вы извлекли самоцвет",
+        "fail": "Вы не смогли извлеч самоцвет",
+        "broken": "Вы сломали набор для извлечения камней",
+        "noSuchGem": "Нет такого самоцвета",
+        "noGems": "в {name} нет вставленых камней",
+        "lowSkill": "Ваш навык ювелира равен 0, вы не умеете обрабатывать камни"
+      }
+    },
+    "i.bint": {
+      "handler": "bandage",
+      "about": "Бинт: лечит себя, расходуется при каждой попытке",
+      "source": "plugin/i.bint.dat",
+      "skill": "healing",
+      "needSkill": true,
+      "busy": 5,
+      "target": "self",
+      "toolConsumed": "always",
+      "chance": {
+        "die": [
+          1,
+          100
+        ],
+        "perLevel": 10,
+        "plus": 40,
+        "op": "<"
+      },
+      "heal": {
+        "min": 5,
+        "maxBase": 5,
+        "maxPerLevel": 2,
+        "capToMax": true
+      },
+      "exp": null,
+      "messages": {
+        "success": "Вы забинтовываете раны",
+        "fail": "Вы не смогли забинтовать раны",
+        "lowSkill": "Ваш навык лекаря равен 0, вы не умеете пользоваться бинтами"
+      }
+    },
+    "i.ress": {
+      "handler": "resurrect",
+      "about": "Живая вода: воскрешает призрака игрока (HP не восстанавливает)",
+      "source": "plugin/i.ress.dat",
+      "skill": "healing",
+      "needSkill": true,
+      "busy": 5,
+      "target": {
+        "kind": "playerGhost",
+        "sameLocation": true
+      },
+      "toolConsumed": "always",
+      "chance": {
+        "die": [
+          1,
+          200
+        ],
+        "perLevel": 10,
+        "plus": 40,
+        "op": "<"
+      },
+      "effect": "ressurect(): снять флаг призрака char[8]",
+      "exp": null,
+      "messages": {
+        "success": "Вы воскресили {target}",
+        "fail": "Вам не удалось воскресить",
+        "notGhost": "{target} - не призрак",
+        "badTarget": "Воскресить можно только призрака игрока.",
+        "lowSkill": "Ваш навык лекаря равен 0, вы не можете использовать живую воду."
+      }
+    },
+    "i.scissors": {
+      "handler": "cutCloth",
+      "about": "Ножницы: режут ткань и одежду на бинты, без навыка и без занятости",
+      "source": "plugin/i.scissors.dat",
+      "skill": null,
+      "busy": 0,
+      "toolConsumed": "never",
+      "target": {
+        "inBackpack": true,
+        "baseItemOnly": true
+      },
+      "gives": "i.bint",
+      "yields": [
+        {
+          "id": "i.polotno",
+          "count": 6
+        },
+        {
+          "prefix": "i.a.w.",
+          "count": 2
+        },
+        {
+          "prefix": "i.a.r.",
+          "count": 3
+        },
+        {
+          "prefix": "i.a.e.",
+          "count": 3
+        },
+        {
+          "prefix": "i.a.b.",
+          "count": 3
+        }
+      ],
+      "exp": null,
+      "messages": {
+        "success": "Вы разрезали {name} на {count} бинта",
+        "bad": "Ножницами резать можно только ткань или одежду"
+      }
+    },
+    "i.spichka": {
+      "handler": "campfire",
+      "about": "Спички: развести костёр из ветки, лежащей на земле",
+      "source": "plugin/i.spichka.dat",
+      "skill": "food",
+      "needSkill": true,
+      "busy": 6,
+      "needOnGround": {
+        "i.log": 1
+      },
+      "takesFromGround": {
+        "i.log": 1
+      },
+      "toolConsumed": "always",
+      "chance": {
+        "die": [
+          1,
+          100
+        ],
+        "perLevel": 20,
+        "plus": 0,
+        "op": "<"
+      },
+      "spawns": {
+        "fixture": "i.s.fire",
+        "lifetimePerLevelSeconds": 120
+      },
+      "exp": {
+        "kind": "chance",
+        "chance": {
+          "die": [
+            1,
+            100
+          ],
+          "plus": 10,
+          "op": "<"
+        },
+        "then": {
+          "kind": "fixed",
+          "value": 1
+        }
+      },
+      "messages": {
+        "success": "Вы разожгли костер",
+        "fail": "Вам не удалось разжечь костер",
+        "lowSkill": "Ваш навык приготовления пищи равен 0, вы не умеете разводить костры",
+        "noLog": "Вначале положите на землю хотя бы одну ветку (кот. можно срубить топором с дерева)"
+      }
+    },
+    "i.set.shampur": {
+      "handler": "fry",
+      "about": "Шампур: жарка сырого мяса на костре",
+      "source": "plugin/i.set.shampur.dat",
+      "skill": "food",
+      "needSkill": true,
+      "busy": 7,
+      "needHere": [
+        "i.s.fire"
+      ],
+      "needHave": [
+        "i.f.meat"
+      ],
+      "toolConsumed": "never",
+      "takes": {
+        "i.f.meat": 1
+      },
+      "chance": {
+        "die": [
+          1,
+          100
+        ],
+        "perLevel": 20,
+        "plus": 0,
+        "op": "<"
+      },
+      "gives": {
+        "i.f.meat.fried": 1
+      },
+      "exp": {
+        "kind": "chance",
+        "chance": {
+          "die": [
+            1,
+            100
+          ],
+          "plus": 5,
+          "op": "<"
+        },
+        "then": {
+          "kind": "fixed",
+          "value": 1
+        }
+      },
+      "messages": {
+        "success": "Вы поджарили мясо на костре",
+        "fail": "Вам не удалось на костре мясо, оно подгорело",
+        "noMeat": "У вас нет сырого мяса",
+        "noFire": "Вначале найдите или разведите костер.",
+        "lowSkill": "Ваш навык приготовления пищи равен 0, вы не умеете готовить пищу"
+      }
+    },
+    "i.f.b.empty": {
+      "handler": "fillBottle",
+      "about": "Пустая бутылка: наполнить водой у источника",
+      "source": "plugin/i.f.dat:4-11",
+      "skill": null,
+      "busy": 0,
+      "locations": [
+        "x1121x606",
+        "x1149x602",
+        "x1173x603",
+        "x1215x603",
+        "x1237x609",
+        "x1263x641",
+        "x1301x641",
+        "x1339x641",
+        "x1377x641",
+        "x1415x611",
+        "x1098x606",
+        "x1103x618",
+        "x1070x605",
+        "x1048x601",
+        "x1023x589",
+        "x995x553",
+        "x985x520",
+        "x980x491",
+        "x970x467",
+        "x943x465",
+        "x894x429",
+        "x857x429",
+        "x819x429",
+        "x781x429",
+        "x753x439",
+        "x746x410",
+        "x717x378",
+        "x690x361",
+        "x672x336",
+        "x639x309",
+        "x621x284",
+        "x582x257",
+        "x544x257",
+        "x507x228",
+        "x504x201",
+        "x474x169",
+        "x465x140",
+        "x465x112",
+        "x461x83",
+        "x468x41",
+        "x2285x505",
+        "x2487x616",
+        "x2235x509",
+        "x2124x513",
+        "x2073x515",
+        "x2016x549",
+        "x1965x585",
+        "x1965x623",
+        "x1978x700",
+        "x73x1203",
+        "x72x1227",
+        "x70x1252",
+        "x33x1252",
+        "x249x1278",
+        "x249x1252",
+        "x249x1224",
+        "x249x1199",
+        "x287x1252",
+        "x393x1167",
+        "x435x1167",
+        "x1340x534",
+        "x902x254",
+        "c.2.gate"
+      ],
+      "takes": {
+        "i.f.b.empty": 1
+      },
+      "gives": {
+        "i.f.b.water": 1
+      },
+      "messages": {
+        "success": "Вы наполнили водой пустую бутылку.",
+        "noWater": "Рядом нет источника воды, чтобы наполнить бутылку водой."
+      }
+    },
+    "i.z.w": {
+      "handler": "sharpen",
+      "about": "Наждак: заточка оружия на +1; при неудаче оружие уничтожается",
+      "source": "plugin/i.z.w.dat",
+      "skill": null,
+      "busy": 10,
+      "target": {
+        "contains": "i.w.",
+        "inBackpack": true
+      },
+      "level": "текущая заточка N из '-N-' в id (нет — 0); L = N+1",
+      "chance": {
+        "die": [
+          1,
+          "L*L+22"
+        ],
+        "op": "<",
+        "plus": 12
+      },
+      "successPercentByNewLevel": {
+        "1": 47.83,
+        "2": 42.31,
+        "3": 35.48,
+        "4": 28.95,
+        "5": 23.4,
+        "6": 18.97,
+        "7": 15.49
+      },
+      "takes": {
+        "i.z.w": 1,
+        "{target}": 1
+      },
+      "result": "{base}-{L}-{gems}",
+      "resultNote": "base — id до первого '-' (с суффиксом мастера _login_), gems — все '..g' как были",
+      "exp": null,
+      "messages": {
+        "success": "Вы заточили {name} до +{L}",
+        "fail": "Вы не смогли заточить оружие",
+        "bad": "Затачивать можно только оружие"
+      }
+    },
+    "i.bc.": {
+      "handler": "bouquet",
+      "about": "Цветы i.bc.<c>: собрать букет или добавить цветы в букет i.bc_<мастер>_<c1><n1>…",
+      "source": "plugin/i.bc.dat",
+      "skill": null,
+      "busy": 0,
+      "target": {
+        "prefix": "i.bc",
+        "inBackpack": true
+      },
+      "maxKinds": 5,
+      "rules": [
+        "use=i.bc_… (готовый букет): только подсказка, ничего не меняется",
+        "to=i.bc_<m>_<состав>: вся стопка цветка use добавляется к составу (буква = use[5]), букет пересоздаётся с тем же мастером; если в составе уже 5 видов — отказ",
+        "to == use: вся стопка превращается в букет i.bc_<логин>_<c><n>",
+        "to = другой цветок: обе стопки целиком превращаются в букет i.bc_<логин>_<c1><n1><c2><n2>"
+      ],
+      "exp": null
+    },
+    "i.q.health": {
+      "handler": "unpack",
+      "about": "Упаковка элексиров исцеления",
+      "source": "plugin/i.q.health.dat",
+      "busy": 0,
+      "takes": {
+        "i.q.health": 1
+      },
+      "gives": {
+        "i.f.b.health.great": 500
+      }
+    },
+    "i.q.recovering": {
+      "handler": "unpack",
+      "about": "Упаковка элексиров восстановления",
+      "source": "plugin/i.q.recovering.dat",
+      "busy": 0,
+      "takes": {
+        "i.q.recovering": 1
+      },
+      "gives": {
+        "i.f.b.recovering.great": 500
+      }
+    },
+    "i.q.pervor": {
+      "handler": "peekInventory",
+      "about": "Перчатки вора: одноразовое подглядывание в рюкзак NPC/игрока без броска и занятости; ссылки ведут на кражу с меткой vk=now+60",
+      "source": "plugin/i.q.pervor.dat",
+      "busy": 0,
+      "target": {
+        "kind": "npcOrPlayer",
+        "notSelf": true
+      },
+      "toolConsumed": "always",
+      "stealWindowSeconds": 60,
+      "messages": {
+        "empty": "У {target} нет ни одного предмета.",
+        "bad": "Подглядывать можно только в рюкзаки NPC и игроков"
+      }
+    },
+    "i.snezhok": {
+      "handler": "emote",
+      "about": "Снежок: бросок в цель, случайная шуточная фраза",
+      "source": "plugin/i.snezhok.dat",
+      "busy": 0,
+      "target": {
+        "kind": "anyInLocation"
+      },
+      "toolConsumed": "always",
+      "lines": [
+        "<from> попал снежком <to> в глаз",
+        "<from> целясь в <to> подскальзнулся и упал",
+        "<from> по <to> кретически снежком 268<br/><to> погиб!",
+        "совсем не думая головой <from> попал снежком <to> в промежность",
+        "<from> промазал по <to> и зарядил снежком в соседа",
+        "китайский снежок <from> развалился и не долетел до <to>",
+        "<from> поражая своей медкостью угодил снежком в пятку <to>",
+        "<from> снежком попал <to> в руку",
+        "<from> снежком попал <to> в спину",
+        "<from> снежком попал <to> в голову",
+        "<from> снежком попал <to> в ногу",
+        "<from> сжульничал и ледяным снежком выбил <to> зуб",
+        "обуреваемый азартом <from> в месте со снежком запульнул в <to> свою варежку",
+        "не мудурствуя лукаво <from> намылил снежком лицо <to>",
+        "<from> по <to> снежком 0. (щит 100)",
+        "<from> в прыжке запульнул снежком в ухо <to>",
+        "не зная как еще выпендрица <from> корчит рожи <to>",
+        "спрятавшись за сугроб <from> прицельно бьет снежком в глаз <to> ",
+        "<from> боясь получить снежком прячится за соседа и обстреливает <to>",
+        "хитрый <from> на пузе подполз к <to> и засунул снежок за шиворот ",
+        "<from> выпил шампанского и закусил снежком",
+        "<from> заряжает <to> снежком в ухо и его уносит в сугроб",
+        "<from> [мельница] тратит все свои снежки так не в кого и не попав",
+        "<from> с пьяного глазу так и не смог попасть по <to>",
+        "не имея денег на элы <from> ест снежки",
+        "<from> промазал по <to> который крутит ему фиги",
+        "<from> забив на снежки и впав в детство обсасывает сасульку",
+        "пытаясь попасть по <to>, <from> идет на хитрость и подманиват его конфеткой",
+        "не зная пощады <from> добивает контрольным снежком в лоб <to>",
+        "<from> попадает в голову <to>, поле чего <to> громко смеется и начиает пускать слюни",
+        "с подбитым глазом <from> пытается отомстить <to>, но промахивается и падает в сугроб",
+        "промазав по <to>, <from> от злости грызет перчатку",
+        "криворукий <from> не смог заточить снежок",
+        "наевшись сосулек <from> красит снег в желтый цвет...",
+        "<from> решив, что он умнее всех роет себе окоп",
+        "выхватив меч, <to> отбивает снежок <from>",
+        "сделав лицо по страшнее и взяв в зубы сосульку <from> ползет в лагерь противника",
+        "злобный <from> лепит снежок из желтого снега...",
+        "<to> громко матерясь убегает от обстрела <from> в соседнюю локу",
+        "<from> по <to> снежком 1. Появился Rastif[стража]. Rastif[стража], по <from> 100. <from> погиб!",
+        "жадный до снежков <from>, собирает снежки брошеные в него <to>",
+        "напившись шампанского <from>, так и не смог кинуть снежок в <to>",
+        "<from> не расчетав своих сил в потреблени спиртного, уснул в сугробе.",
+        "<from> по <to> [двойной удар] снежком в глаз и в нос, <to> в нокауте"
+      ],
+      "linesNote": "<from> — имя бросающего, <to> — имя цели; одна случайная строка в журнал себе и всем"
+    },
+    "i.b.pit": {
+      "handler": "emote",
+      "about": "Петарда: бросок в цель, случайная шуточная фраза",
+      "source": "plugin/i.b.pit.dat",
+      "busy": 0,
+      "target": {
+        "kind": "anyInLocation"
+      },
+      "toolConsumed": "always",
+      "lines": [
+        "<from> поджог брюки <to>",
+        "<from> поджег питарду, но стормазил и она взорвалась у него в руках",
+        "питарда <from> банально просрала",
+        "не везучий <to> сел на заженную питарду и прожег штаны.",
+        "питарда <from> взорвалась у уха  <to>",
+        " <from> взарвал карман <to>"
+      ],
+      "linesNote": "<from> — имя бросающего, <to> — имя цели; одна случайная строка в журнал себе и всем"
+    },
+    "i.b.bomb": {
+      "handler": "emote",
+      "about": "Бомбочка (шуточная): бросок в цель, случайная фраза",
+      "source": "plugin/i.b.bomb.dat",
+      "busy": 0,
+      "target": {
+        "kind": "anyInLocation"
+      },
+      "toolConsumed": "always",
+      "lines": [
+        "<from> швырнул бомбочку в <to> и испортил его шлем",
+        "бомбочка <from> оставила пятно на полу ",
+        "<from> кинул бомбочку и закрыл... Шарах!!!! <to> оглушен!"
+      ],
+      "linesNote": "<from> — имя бросающего, <to> — имя цели; одна случайная строка в журнал себе и всем"
+    },
+    "i.b.hlop": {
+      "handler": "emote",
+      "about": "Хлопушка: выстрел в цель, случайная фраза",
+      "source": "plugin/i.b.hlop.dat",
+      "busy": 0,
+      "target": {
+        "kind": "anyInLocation"
+      },
+      "toolConsumed": "always",
+      "lines": [
+        "<from> стрельнул из хлопуки и опал в глаз <to>",
+        "<from> глядя в дуло хлопуки дернул нитку...",
+        "хлопуша <from> засыпала конфети всю локу"
+      ],
+      "linesNote": "<from> — имя бросающего, <to> — имя цели; одна случайная строка в журнал себе и всем"
+    }
+  }
+}

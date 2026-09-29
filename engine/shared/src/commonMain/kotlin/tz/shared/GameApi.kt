@@ -103,6 +103,15 @@ class GameApi(
     suspend fun talk(npc: String, topic: String = "begin", arg: String? = null): GameView =
         postJson<GameView, TalkRequest>("/api/game/talk", TalkRequest(npc, topic, arg))
 
+    suspend fun shop(npc: String, mode: String, item: String, count: Int): GameView =
+        postJson<GameView, ShopRequest>("/api/game/shop", ShopRequest(npc, mode, item, count))
+
+    suspend fun bank(npc: String, op: String, item: String, count: Int): GameView =
+        postJson<GameView, BankRequest>("/api/game/bank", BankRequest(npc, op, item, count))
+
+    suspend fun use(item: String, recipe: Int? = null, target: String? = null): GameView =
+        postJson<GameView, UseRequest>("/api/game/use", UseRequest(item, recipe, target))
+
     suspend fun resurrect(): GameView = check(http.post(url("/api/game/resurrect")) { auth() })
 
     /**

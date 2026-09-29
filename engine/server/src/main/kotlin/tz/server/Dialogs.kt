@@ -38,6 +38,8 @@ class Dialogs(private val content: Content, dir: File) {
     /** Joke files content/raw/speak/h.* (n.Garry and others tell a random line). */
     val jokes = HashMap<String, List<String>>()
     val problems = ArrayList<String>()
+    /** Engine values of dialogs that were PHP (raw/speak): trade lines like "buy": "1|1200". */
+    val rawTopics = HashMap<String, Map<String, String>>()
 
     /** Topic names of logic files seen so far, so a topic may point to one defined later in the same file. */
     private val logicTopicsPending = HashMap<String, MutableSet<String>>()
@@ -67,6 +69,9 @@ class Dialogs(private val content: Content, dir: File) {
             val id = f.name.removeSuffix(".json")
             try {
                 val o = Json.parseToJsonElement(f.readText()).jsonObject
+                (o["engineTopics"] as? JsonObject)?.let { e ->
+                    rawTopics[id] = e.mapValues { (_, v) -> (v as? JsonPrimitive)?.contentOrNull ?: "" }
+                }
                 val topics = o["topics"] as? JsonObject ?: run { problems += "logic/$id: no topics"; continue }
                 logic[id] = topics.mapValues { (topic, rules) ->
                     ((rules as? JsonArray) ?: JsonArray(listOf(rules))).map { parseRule(it.jsonObject) }

@@ -1,5 +1,9 @@
 {
   "id": "n.Raksha",
+  "engineTopics": {
+    "buy": "1|1200",
+    "sell": "0.6|i.f.b."
+  },
   "topics": {
     "begin": [
       {

@@ -35,6 +35,9 @@ import tz.shared.Errors
 import tz.shared.ItemRequest
 import tz.shared.LootRequest
 import tz.shared.TalkRequest
+import tz.shared.ShopRequest
+import tz.shared.BankRequest
+import tz.shared.UseRequest
 import tz.shared.TargetRequest
 import tz.shared.MeView
 import tz.shared.MoveRequest
@@ -169,6 +172,21 @@ private fun Route.accountRoutes(accounts: Accounts, game: Game) {
         val account = requireAccount(call, accounts)
         val body = call.receive<TalkRequest>()
         call.respond(game.talk(account, body.npc, body.topic, body.arg))
+    }
+    post("/api/game/shop") {
+        val account = requireAccount(call, accounts)
+        val body = call.receive<ShopRequest>()
+        call.respond(game.shop(account, body.npc, body.mode, body.item, body.count))
+    }
+    post("/api/game/bank") {
+        val account = requireAccount(call, accounts)
+        val body = call.receive<BankRequest>()
+        call.respond(game.bank(account, body.npc, body.op, body.item, body.count))
+    }
+    post("/api/game/use") {
+        val account = requireAccount(call, accounts)
+        val body = call.receive<UseRequest>()
+        call.respond(game.use(account, body.item, body.recipe, body.target))
     }
     post("/api/game/resurrect") {
         val account = requireAccount(call, accounts)

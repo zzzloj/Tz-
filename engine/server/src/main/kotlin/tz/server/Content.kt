@@ -30,6 +30,15 @@ class Content(
     val locationData: Map<String, JsonObject> = emptyMap(),
     val dir: File = File("."),
 ) {
+    /** Doubloon prices of the second shop (content/items_dublon, n.kenius «buy2»). */
+    val dublonPrices: Map<String, JsonObject> by lazy {
+        (dir.resolve("items_dublon").listFiles { f -> f.name.endsWith(".json") } ?: emptyArray())
+            .associate { f -> f.name.removeSuffix(".json") to json.parseToJsonElement(f.readText()).jsonObject }
+    }
+
+    /** Crafting, gathering and item use (content/crafting.json). */
+    val crafting: Crafting by lazy { Crafting.load(dir.resolve("crafting.json")) }
+
     /** Declarative dialog and quest logic, content/logic (built on first use). */
     val logic: Dialogs by lazy { Dialogs(this, dir).finishValidation() }
 
