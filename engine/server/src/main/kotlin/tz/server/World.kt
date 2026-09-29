@@ -215,23 +215,31 @@ class World(
         if (npcs[t.location]?.containsKey(t.key) == true) return
         val proto = t.proto ?: run {
             val template = templateOf(t.key)
-            val o = content.npcs[template] ?: run { problems += "${t.location}: no NPC template for ${t.key}"; return }
-            val char = o["char"] as? JsonObject ?: return
-            val name = char.str("name")?.takeIf { it.isNotBlank() } ?: return
-            val hpMax = (char.int("hp_max") ?: 1).coerceAtLeast(1)
-            Proto(
-                template, name, hpMax, Formulas.npc(o["war"] as? JsonObject),
-                counted(o["items"]), randomLoot(o["itemsrnd"]), counted(o["osvej"]), t.wander,
-                parseRespawn("${t.location}:${t.respawn}"),
-            )
+            if (template !in content.npcs) { problems += "${t.location}: no NPC template for ${t.key}"; return }
+            protoOf(template, t.wander, parseRespawn("${t.location}:${t.respawn}")) ?: return
         }
+        addFromProto(t.key, proto, t.location, now)
+    }
+
+    private fun protoOf(template: String, wander: Wander?, respawn: Respawn?): Proto? {
+        val o = content.npcs[template] ?: return null
+        val char = o["char"] as? JsonObject ?: return null
+        val name = char.str("name")?.takeIf { it.isNotBlank() } ?: return null
+        val hpMax = (char.int("hp_max") ?: 1).coerceAtLeast(1)
+        return Proto(
+            template, name, hpMax, Formulas.npc(o["war"] as? JsonObject),
+            counted(o["items"]), randomLoot(o["itemsrnd"]), counted(o["osvej"]), wander, respawn,
+        )
+    }
+
+    private fun addFromProto(key: String, proto: Proto, location: String, now: Long) {
         val items = proto.items.toMutableMap()
         for (r in proto.randomItems) {
             if (random.nextInt(1, 101) > r.chance) continue
             val n = if (r.max > r.min) random.nextInt(r.min, r.max + 1) else r.min
             if (n > 0) items[r.id] = (items[r.id] ?: 0) + n
         }
-        val npc = Npc(t.key, proto, proto.hpMax, t.location, t.location, nextMove(now, proto.wander), items)
+        val npc = Npc(key, proto, proto.hpMax, location, location, nextMove(now, proto.wander), items)
         npc.regenFrom = now
         addNpc(npc)
     }
@@ -266,7 +274,11 @@ class World(
     // ---- time -------------------------------------------------------------------
 
     /** Advances the world to [now]: due timers fire, NPCs wander, old items and corpses vanish. */
+    /** Time of the last tick, to hide items that expired since. */
+    private var lastTick = 0L
+
     suspend fun tick(now: Long) = mutex.withLock {
+        lastTick = now
         val due = timers.filter { it.first <= now }
         timers.removeAll(due.toSet())
         for ((_, t) in due) when (t) {
@@ -385,8 +397,8 @@ class World(
     }
 
     /** True if a fixture with an id starting with [prefix] stands here (e.g. i.s.res — resurrection stone). */
-    suspend fun hasFixture(loc: String, prefix: String): Boolean = mutex.withLock {
-        ground[loc]?.keys?.any { it.startsWith(prefix) } == true
+    suspend fun hasFixture(loc: String, prefix: String, exact: Boolean = false): Boolean = mutex.withLock {
+        ground[loc]?.let { g -> if (exact) g[prefix]?.let { it.expiresAt == 0L || it.expiresAt > lastTick } == true else g.keys.any { it.startsWith(prefix) } } == true
     }
 
     /** Removes a whole stack from the ground; null if it is not here. Fixtures stay. */
@@ -404,6 +416,21 @@ class World(
 
     /** Puts back a stack that could not be given to a player (database error). */
     suspend fun restore(loc: String, item: GroundItem) = mutex.withLock { putItem(loc, item) }
+
+    // ---- quests ----------------------------------------------------------------------
+
+    /** Puts an NPC made from [template] under [key] into [loc] (no respawn). False if that key is already there. */
+    suspend fun spawn(template: String, key: String, loc: String, now: Long): Boolean = mutex.withLock {
+        if (npcs[loc]?.containsKey(key) == true) return@withLock false
+        val proto = protoOf(template, null, null) ?: return@withLock false
+        addFromProto(key, proto, loc, now)
+        true
+    }
+
+    suspend fun removeNpc(key: String, loc: String): Boolean = mutex.withLock { npcs[loc]?.remove(key) != null }
+
+    /** Removes an item (fixtures too) from the ground; false if it is not there. */
+    suspend fun removeItem(loc: String, itemId: String): Boolean = mutex.withLock { ground[loc]?.remove(itemId) != null }
 
     // ---- for tests and diagnostics --------------------------------------------------
 

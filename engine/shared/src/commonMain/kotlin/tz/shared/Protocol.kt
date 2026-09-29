@@ -80,6 +80,8 @@ data class ContentReport(
     val dialogs: Int,
     /** Problems found while loading content/ (dangling references etc.). */
     val problems: List<String> = emptyList(),
+    /** Dialog topics that still hold old PHP (eval:) with no declarative logic yet. */
+    val untranslated: List<String> = emptyList(),
 )
 
 object Protocol {
@@ -125,6 +127,9 @@ data class CharacterView(
     val exp: Int = 0,
     /** Experience over this value gives a skill point. */
     val expNext: Int = 0,
+    /** Skills above 0 by key (Rules.SKILLS), spells and techniques learnt. */
+    val skills: Map<String, Int> = emptyMap(),
+    val known: List<String> = emptyList(),
     /** Combat numbers for the character screen. */
     val hit: Int = 0,
     val dmgMin: Int = 0,
@@ -151,7 +156,25 @@ data class GameView(
     val restSeconds: Int = 0,
     /** A ghost standing at a resurrection stone or healer. */
     val canResurrect: Boolean = false,
+    /** Open conversation, answer to POST /api/game/talk; null after any other action. */
+    val dialog: DialogView? = null,
 )
+
+/** One answer the player can pick; [arg] carries a choice inside the topic (which attribute to lower, a stake). */
+@Serializable
+data class DialogOption(val label: String, val topic: String, val arg: String? = null)
+
+@Serializable
+data class DialogView(
+    val npc: String,
+    val npcName: String,
+    val text: String,
+    /** Empty: the conversation is over, the app shows «Конец диалога». */
+    val options: List<DialogOption> = emptyList(),
+)
+
+@Serializable
+data class TalkRequest(val npc: String, val topic: String = "begin", val arg: String? = null)
 
 @Serializable
 data class TargetRequest(val target: String)
@@ -196,6 +219,8 @@ object Errors {
     const val NEED_KNIFE = "need_knife"
     const val NO_SUCH_CORPSE = "no_such_corpse"
     const val PEACEFUL = "peaceful"
+    const val CANNOT_TALK = "cannot_talk"
+    const val TOPIC_CLOSED = "topic_closed"
 
     fun text(code: String): String = when (code) {
         UNAUTHORIZED -> "Нужно войти заново"
@@ -223,6 +248,8 @@ object Errors {
         NEED_KNIFE -> "Нужен нож"
         NO_SUCH_CORPSE -> "Здесь нет этого"
         PEACEFUL -> "На него нападать нельзя"
+        CANNOT_TALK -> "С ним нельзя поговорить"
+        TOPIC_CLOSED -> "Разговор ушёл в сторону, начните заново"
         else -> "Ошибка сервера"
     }
 }
@@ -273,6 +300,33 @@ object Rules {
     const val RESURRECT_HP_PERCENT = 0
 
     /** Old formulas: max HP 10 + str·10, max mana 10 + int·10 (docs/mechanics.md). */
+    /**
+     * Skills a teacher can raise (f_speakskillup.dat): key, index in the old
+     * `skills` string, title. The first three are attributes.
+     */
+    val SKILLS: List<Triple<String, Int, String>> = listOf(
+        Triple("str", 0, "Сила"), Triple("dex", 1, "Ловкость"), Triple("int", 2, "Интеллект"),
+        Triple("meditation", 5, "Медитация"), Triple("steal", 6, "Кража"), Triple("animaltaming", 7, "Прир.животных"),
+        Triple("hand", 8, "Рукопашная"), Triple("coldweapon", 9, "Холодн.оружие"), Triple("ranged", 10, "Стрельба"),
+        Triple("parring", 11, "Парирование"), Triple("uklon", 12, "Уклон"), Triple("magic", 13, "Магия"),
+        Triple("magic_resist", 14, "Сопр.магии"), Triple("magic_uklon", 15, "Уклон от магии"),
+        Triple("regeneration", 16, "Регенерация"), Triple("hiding", 17, "Скрытность"), Triple("look", 18, "Осторожность"),
+        Triple("steallook", 19, "Подглядывание"), Triple("animallore", 20, "Изуч.животных"), Triple("spirit", 21, "Спиритизм"),
+        Triple("healing", 22, "Лечение"), Triple("alchemy", 23, "Алхимия"), Triple("mine", 24, "Рудокоп"),
+        Triple("smith", 25, "Кузнец"), Triple("lumb", 26, "Лесоруб"), Triple("bow", 27, "Плотник"),
+        Triple("stone", 28, "Ювелир"), Triple("fish", 29, "Рыболов"), Triple("food", 30, "Повар"),
+        Triple("necro", 31, "Некромант"), Triple("currier", 32, "Друид"), Triple("weaver", 33, "Ткач"),
+    )
+    val ATTRIBUTES = setOf("str", "dex", "int")
+    fun skillTitle(key: String): String = SKILLS.firstOrNull { it.first == key }?.third ?: key
+
+    /** Limits (g.php:44-47): attributes 1..5 with sum ≤ 12, skills 0..5 with sum ≤ 50. */
+    const val ATTR_MAX = 5
+    const val ATTR_SUM = 12
+    const val SKILL_MAX = 5
+    const val SKILL_SUM = 50
+    const val MONEY = "i.money"
+
     fun hpMax(str: Int) = 10 + str * 10
     fun manaMax(int: Int) = 10 + int * 10
 }

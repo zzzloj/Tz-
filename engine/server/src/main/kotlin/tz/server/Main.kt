@@ -34,6 +34,7 @@ import tz.shared.ErrorResponse
 import tz.shared.Errors
 import tz.shared.ItemRequest
 import tz.shared.LootRequest
+import tz.shared.TalkRequest
 import tz.shared.TargetRequest
 import tz.shared.MeView
 import tz.shared.MoveRequest
@@ -52,6 +53,7 @@ fun main() {
     val accounts = Accounts(db, content)
     val world = World(content)
     world.problems.take(20).forEach { System.err.println("world: $it") }
+    content.logic.problems.take(20).forEach { System.err.println("logic: $it") }
     val game = Game(content, db, accounts, world)
     embeddedServer(Netty, port = port, host = "0.0.0.0") {
         // The world lives on its own clock (the old game only moved when a player looked).
@@ -160,6 +162,11 @@ private fun Route.accountRoutes(accounts: Accounts, game: Game) {
     post("/api/game/butcher") {
         val account = requireAccount(call, accounts)
         call.respond(game.butcher(account, call.receive<LootRequest>().corpse))
+    }
+    post("/api/game/talk") {
+        val account = requireAccount(call, accounts)
+        val body = call.receive<TalkRequest>()
+        call.respond(game.talk(account, body.npc, body.topic, body.arg))
     }
     post("/api/game/resurrect") {
         val account = requireAccount(call, accounts)
