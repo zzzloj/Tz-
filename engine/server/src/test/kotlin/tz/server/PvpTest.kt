@@ -7,6 +7,7 @@ import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 /** Players fighting players: crimes, murder, looting, bounties, the arena. Needs TZ_TEST_DATABASE_URL. */
@@ -64,12 +65,13 @@ class PvpTest {
         clock[0] += 10
         var v = game.attackPlayer(a, victim)
         assertEquals("бандит", v.character.crime)
-        assertEquals("бандит", game.view(b).people.first { it.name == villain }.crime)
+        val seen = game.view(b).people
+        assertEquals("бандит", assertNotNull(seen.firstOrNull { it.name == villain }, "$seen").crime)
         fightUntilDead(a, b, victim)
         v = game.view(a)
         assertEquals("убийца", v.character.crime)
         // The victim's corpse holds the knife; for the avenger taking it is looting.
-        val corpse = v.location.corpses.first { it.name == "труп: $victim" }
+        val corpse = assertNotNull(v.location.corpses.firstOrNull { it.name == "труп: $victim" }, "${v.location.corpses.map { it.name }}")
         assertTrue(corpse.looting)
         val w = game.loot(c, corpse.id, Rules.STARTING_KNIFE)
         assertEquals("мародер", w.character.crime)
@@ -78,13 +80,13 @@ class PvpTest {
         game.kill(c) // the avenger's own crime aside: a fresh character state for him below
         game.place(b, "x1092x474")
         var d = game.talk(b, "n.officer", "begin", null).dialog!!
-        val place = d.options.first { it.label.startsWith("Я хочу назначить награду") }
+        val place = assertNotNull(d.options.firstOrNull { it.label.startsWith("Я хочу назначить награду") }, "${d.text} ${d.options.map { it.label }}")
         db!!.tx { conn -> conn.prepareStatement("INSERT INTO character_items (character_id, item_id, count) SELECT id, 'i.money', 300 FROM characters WHERE account_id = ?").use { it.setLong(1, b.id); it.executeUpdate() } }
         d = game.talk(b, "n.officer", place.topic, null).dialog!!
         d = game.talk(b, "n.officer", d.inputTopic!!, "250").dialog!!
         assertTrue(d.text.contains("увеличена на 250"), d.text)
         d = game.talk(b, "n.officer", "begin", null).dialog!!
-        d = game.talk(b, "n.officer", d.options.first { it.label.startsWith("Я хочу посмотреть список") }.topic, null).dialog!!
+        d = game.talk(b, "n.officer", assertNotNull(d.options.firstOrNull { it.label.startsWith("Я хочу посмотреть список") }, "${d.options.map { it.label }}").topic, null).dialog!!
         assertTrue(d.text.contains("$villain — 250 монет"), d.text)
     }
 
