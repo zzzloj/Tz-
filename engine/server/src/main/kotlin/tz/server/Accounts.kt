@@ -119,21 +119,6 @@ class Accounts(private val db: Db, private val content: Content) {
         }
     }
 
-    /** Moves the character through an exit of its current location. */
-    suspend fun move(account: Account, target: String): CharacterView = db.tx { c ->
-        val character = loadCharacter(c, account.id, forUpdate = true)
-            ?: throw ApiException(HttpStatusCode.Conflict, Errors.NO_CHARACTER)
-        val here = content.locations[character.location]
-        if (here == null || here.exits.none { it.target == target } || target !in content.locations)
-            throw ApiException(HttpStatusCode.BadRequest, Errors.NOT_AN_EXIT)
-        c.prepareStatement("UPDATE characters SET location = ? WHERE id = ?").use { st ->
-            st.setString(1, target)
-            st.setLong(2, character.id)
-            st.executeUpdate()
-        }
-        character.copy(location = target)
-    }
-
     private fun loadCharacter(c: Connection, accountId: Long, forUpdate: Boolean = false): CharacterView? =
         c.prepareStatement(
             "SELECT id, name, sex, location, hp, mana, str, dex, intel, skill_points FROM characters " +

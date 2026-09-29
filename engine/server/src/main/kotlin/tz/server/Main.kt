@@ -18,6 +18,11 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
+import io.ktor.server.websocket.WebSockets
+import io.ktor.server.websocket.webSocket
+import io.ktor.websocket.CloseReason
+import io.ktor.websocket.Frame
+import io.ktor.websocket.close
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -28,6 +33,8 @@ import tz.shared.Credentials
 import tz.shared.ErrorResponse
 import tz.shared.Errors
 import tz.shared.ItemRequest
+import tz.shared.LootRequest
+import tz.shared.TargetRequest
 import tz.shared.MeView
 import tz.shared.MoveRequest
 import tz.shared.NewCharacter
@@ -49,8 +56,14 @@ fun main() {
     embeddedServer(Netty, port = port, host = "0.0.0.0") {
         // The world lives on its own clock (the old game only moved when a player looked).
         launch {
+            var lastFlush = 0L
             while (isActive) {
-                try { world.tick(System.currentTimeMillis() / 1000) } catch (e: Exception) { environment.log.error("world tick", e) }
+                val now = System.currentTimeMillis() / 1000
+                try { game.tick(now) } catch (e: Exception) { environment.log.error("world tick", e) }
+                if (now - lastFlush >= 30) {
+                    try { game.flush() } catch (e: Exception) { environment.log.error("flush", e) }
+                    lastFlush = now
+                }
                 delay(1000)
             }
         }
@@ -60,6 +73,7 @@ fun main() {
 
 fun Application.game(content: Content, accounts: Accounts? = null, game: Game? = null) {
     install(ContentNegotiation) { json(Json { ignoreUnknownKeys = true; encodeDefaults = true }) }
+    install(WebSockets) { pingPeriodMillis = 20_000; timeoutMillis = 40_000 }
     install(StatusPages) {
         exception<ApiException> { call, e ->
             call.respond(e.status, ErrorResponse(e.code, Errors.text(e.code)))
@@ -133,6 +147,33 @@ private fun Route.accountRoutes(accounts: Accounts, game: Game) {
     post("/api/game/unequip") {
         val account = requireAccount(call, accounts)
         call.respond(game.unequip(account, call.receive<ItemRequest>().item))
+    }
+    post("/api/game/attack") {
+        val account = requireAccount(call, accounts)
+        call.respond(game.attack(account, call.receive<TargetRequest>().target))
+    }
+    post("/api/game/loot") {
+        val account = requireAccount(call, accounts)
+        val body = call.receive<LootRequest>()
+        call.respond(game.loot(account, body.corpse, body.item))
+    }
+    post("/api/game/butcher") {
+        val account = requireAccount(call, accounts)
+        call.respond(game.butcher(account, call.receive<LootRequest>().corpse))
+    }
+    post("/api/game/resurrect") {
+        val account = requireAccount(call, accounts)
+        call.respond(game.resurrect(account))
+    }
+    // "Your screen changed": the app re-reads GET /api/game. Authenticated like the REST calls.
+    webSocket("/api/events") {
+        val account = bearer(call)?.let { accounts.authenticate(it) }
+        if (account == null) { close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, Errors.UNAUTHORIZED)); return@webSocket }
+        val events = try { game.events(account) } catch (e: ApiException) {
+            close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, e.code)); return@webSocket
+        }
+        val sender = launch { events.collect { send(Frame.Text("changed")) } }
+        try { for (frame in incoming) { /* pings are handled by Ktor; nothing else is expected */ } } finally { sender.cancel() }
     }
 }
 

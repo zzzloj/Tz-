@@ -18,6 +18,21 @@ data class ExitView(
 data class NpcView(
     val id: String,
     val name: String,
+    val hp: Int = 0,
+    val hpMax: Int = 0,
+    /** This NPC is fighting you. */
+    val fightingYou: Boolean = false,
+    /** Monsters and wild animals; townsfolk and traders cannot be attacked yet (no guards and crimes). */
+    val attackable: Boolean = false,
+)
+
+@Serializable
+data class CorpseView(
+    val id: String,
+    val name: String,
+    val items: List<GroundItemView> = emptyList(),
+    /** Meat or hides can be cut off with a knife. */
+    val canButcher: Boolean = false,
 )
 
 @Serializable
@@ -33,6 +48,7 @@ data class LocationView(
     val items: List<GroundItemView> = emptyList(),
     /** Other characters seen here in the last minutes. */
     val players: List<String> = emptyList(),
+    val corpses: List<CorpseView> = emptyList(),
 )
 
 @Serializable
@@ -104,6 +120,17 @@ data class CharacterView(
     val dex: Int,
     val int: Int,
     val skillPoints: Int,
+    /** Dead: a ghost walks, cannot fight or take things, and is revived at a resurrection stone. */
+    val ghost: Boolean = false,
+    val exp: Int = 0,
+    /** Experience over this value gives a skill point. */
+    val expNext: Int = 0,
+    /** Combat numbers for the character screen. */
+    val hit: Int = 0,
+    val dmgMin: Int = 0,
+    val dmgMax: Int = 0,
+    val armor: Int = 0,
+    val dodge: Int = 0,
 )
 
 @Serializable
@@ -118,7 +145,19 @@ data class GameView(
     val character: CharacterView,
     val location: LocationView,
     val inventory: List<InventoryItemView> = emptyList(),
+    /** Recent events, newest last: blows, deaths, experience. */
+    val journal: List<String> = emptyList(),
+    /** Seconds until the character may strike again. */
+    val restSeconds: Int = 0,
+    /** A ghost standing at a resurrection stone or healer. */
+    val canResurrect: Boolean = false,
 )
+
+@Serializable
+data class TargetRequest(val target: String)
+
+@Serializable
+data class LootRequest(val corpse: String, val item: String = "")
 
 @Serializable
 data class MoveRequest(val target: String)
@@ -148,6 +187,15 @@ object Errors {
     const val CANNOT_TAKE = "cannot_take"
     const val NOT_IN_INVENTORY = "not_in_inventory"
     const val CANNOT_EQUIP = "cannot_equip"
+    const val GHOST = "ghost"
+    const val NOT_GHOST = "not_ghost"
+    const val RESTING = "resting"
+    const val NO_TARGET = "no_target"
+    const val NO_AMMO = "no_ammo"
+    const val NO_RESURRECTION_HERE = "no_resurrection_here"
+    const val NEED_KNIFE = "need_knife"
+    const val NO_SUCH_CORPSE = "no_such_corpse"
+    const val PEACEFUL = "peaceful"
 
     fun text(code: String): String = when (code) {
         UNAUTHORIZED -> "Нужно войти заново"
@@ -166,12 +214,24 @@ object Errors {
         CANNOT_TAKE -> "Это нельзя взять"
         NOT_IN_INVENTORY -> "У вас этого нет"
         CANNOT_EQUIP -> "Это нельзя надеть"
+        GHOST -> "Вы призрак: найдите камень воскрешения или лекаря"
+        NOT_GHOST -> "Вы живы"
+        RESTING -> "Нужно отдохнуть"
+        NO_TARGET -> "Здесь нет такого противника"
+        NO_AMMO -> "Нет боеприпасов"
+        NO_RESURRECTION_HERE -> "Здесь нельзя воскреснуть — нужен камень воскрешения или лекарь"
+        NEED_KNIFE -> "Нужен нож"
+        NO_SUCH_CORPSE -> "Здесь нет этого"
+        PEACEFUL -> "На него нападать нельзя"
         else -> "Ошибка сервера"
     }
 }
 
 /** Rules shared by the server (enforced) and the apps (hints before sending). */
 object Rules {
+    /** Stage 3 has no guards and crimes, so only monsters (n.c.*) and wild animals (n.a.*) can be attacked. */
+    fun attackable(npcId: String): Boolean = npcId.startsWith("n.c.") || npcId.startsWith("n.a.")
+
     val LOGIN = Regex("^[a-z0-9_]{3,20}$")
     const val PASSWORD_MIN = 8
 
@@ -208,6 +268,9 @@ object Rules {
     /** A shield cannot be used together with a ranged weapon (plugin/i.w.dat). */
     fun conflicts(a: String, b: String): Boolean =
         (a.startsWith("i.a.s.") && b.startsWith("i.w.r.")) || (b.startsWith("i.a.s.") && a.startsWith("i.w.r."))
+
+    /** A revived ghost gets back this share of max HP (the old game revived with 0 HP — a bug). */
+    const val RESURRECT_HP_PERCENT = 50
 
     /** Old formulas: max HP 10 + str·10, max mana 10 + int·10 (docs/mechanics.md). */
     fun hpMax(str: Int) = 10 + str * 10

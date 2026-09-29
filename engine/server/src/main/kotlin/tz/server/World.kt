@@ -8,18 +8,20 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.intOrNull
+import tz.shared.CorpseView
 import tz.shared.GroundItemView
-import tz.shared.NpcView
+import tz.shared.Rules
 import kotlin.random.Random
 
 /**
- * The live world, in memory: NPCs, their wandering, items on the ground and
- * spawn timers. Built from content/ on start (the old engine's starting
- * l_i state); nothing here is saved yet — NPCs respawn from content/ after a
- * restart and dropped items are short-lived anyway.
+ * The live world, in memory: NPCs (with their fight state), wandering,
+ * items and corpses on the ground, spawn and respawn timers. Built from
+ * content/ on start (the old engine's starting l_i state); not saved — after
+ * a restart NPCs stand where content/ puts them.
  *
- * Rules follow the old engine (docs/mechanics-world.md §3), simplified where
- * noted. All access goes through [mutex]; [tick] advances time.
+ * Rules follow the old engine (docs/mechanics-world.md §3,
+ * docs/mechanics-combat.md §6.4). Game calls everything under its own lock;
+ * [mutex] keeps the world consistent on its own as well.
  */
 class World(
     private val content: Content,
@@ -27,33 +29,67 @@ class World(
     now: Long = System.currentTimeMillis() / 1000,
 ) {
     data class Wander(val steps: Int, val minDelay: Int, val maxDelay: Int)
+    data class Respawn(val location: String, val min: Int, val max: Int)
+    data class RandomLoot(val id: String, val chance: Int, val min: Int, val max: Int)
+
+    /** What an NPC is made of; kept so it can come back after death. */
+    class Proto(
+        val template: String,
+        val name: String,
+        val hpMax: Int,
+        val stats: Stats,
+        val items: Map<String, Int>,
+        val randomItems: List<RandomLoot>,
+        val butcher: Map<String, Int>,
+        val wander: Wander?,
+        val respawn: Respawn?,
+    )
 
     class Npc(
         val key: String,
-        val template: String,
-        val name: String,
+        val proto: Proto,
         var hp: Int,
-        val hpMax: Int,
         var location: String,
         val home: String,
-        val wander: Wander?,
         var nextMoveAt: Long,
+        /** Items it carries; they fall into its corpse. */
+        val items: MutableMap<String, Int>,
     ) {
-        /** Locations walked from home, to walk back (f_na.dat keeps the same trail). */
+        val name get() = proto.name
+        val stats get() = proto.stats
         val trail = ArrayDeque<String>()
+        /** Character id this NPC is fighting, if any. */
+        var target: Long? = null
+        var busyUntil: Long = 0
+        /** Regeneration counts from the last hit or heal (char[5] in the old engine). */
+        var regenFrom: Long = 0
+        /** Monsters (n.c.*) attack players on sight. */
+        val aggressive get() = key.startsWith("n.c.")
     }
 
     class GroundItem(val id: String, val name: String, var count: Int, var expiresAt: Long)
+
+    class Corpse(
+        val id: String,
+        val name: String,
+        val items: LinkedHashMap<String, Int>,
+        val butcher: LinkedHashMap<String, Int>,
+        val expiresAt: Long,
+        /** Character id for a player's corpse. */
+        val playerId: Long?,
+    )
 
     private sealed interface Timer {
         val location: String
     }
 
+    /** Spawn from content/ timers (proto built from the template) or a respawn (proto kept). */
     private data class NpcSpawn(
         override val location: String,
         val key: String,
         val respawn: String,
         val wander: Wander?,
+        val proto: Proto? = null,
     ) : Timer
 
     private data class ItemSpawn(
@@ -68,7 +104,9 @@ class World(
     private val mutex = Mutex()
     private val npcs = HashMap<String, LinkedHashMap<String, Npc>>()
     private val ground = HashMap<String, LinkedHashMap<String, GroundItem>>()
+    private val corpses = HashMap<String, LinkedHashMap<String, Corpse>>()
     private val timers = ArrayList<Pair<Long, Timer>>()
+    private var corpseSeq = 0
 
     /** Problems found while building the world (unknown templates etc.). */
     val problems = ArrayList<String>()
@@ -90,6 +128,28 @@ class World(
 
     // ---- building from content ------------------------------------------------
 
+    private fun counted(e: JsonElement?): Map<String, Int> = when (e) {
+        is JsonArray -> e.mapNotNull { x ->
+            val o = x as? JsonObject ?: return@mapNotNull null
+            val id = o.str("id") ?: return@mapNotNull null
+            id to (o.int("count") ?: 1)
+        }.filter { it.second > 0 }.toMap()
+        else -> emptyMap()
+    }
+
+    private fun randomLoot(e: JsonElement?): List<RandomLoot> = (e as? JsonArray)?.mapNotNull { x ->
+        val o = x as? JsonObject ?: return@mapNotNull null
+        RandomLoot(o.str("id") ?: return@mapNotNull null, o.int("chance") ?: 0, o.int("min") ?: 0, o.int("max") ?: 0)
+    } ?: emptyList()
+
+    private fun parseRespawn(s: String?): Respawn? {
+        val p = s?.split(':') ?: return null
+        val loc = p.getOrNull(0)?.takeIf { it in content.locations } ?: return null
+        val min = p.getOrNull(1)?.toIntOrNull() ?: return null
+        val max = p.getOrNull(2)?.toIntOrNull() ?: return null
+        return Respawn(loc, min.coerceAtLeast(1), max.coerceAtLeast(min.coerceAtLeast(1)))
+    }
+
     private fun placeObject(loc: String, key: String, value: JsonElement, now: Long) {
         when {
             value is JsonObject && key.startsWith("n.") -> {
@@ -98,10 +158,15 @@ class World(
                 val char = value["char"] as? JsonObject ?: return
                 val war = value["war"] as? JsonObject
                 val name = char.str("name")?.substringBefore('*')?.takeIf { it.isNotBlank() } ?: return
-                val hpMax = char.int("hp_max") ?: 1
-                val home = war?.str("respawn")?.substringBefore(':')?.takeIf { it in content.locations } ?: loc
+                val hpMax = (char.int("hp_max") ?: 1).coerceAtLeast(1)
+                val respawn = parseRespawn(war?.str("respawn"))
                 val wander = parseWander(char.str("wander"))
-                addNpc(Npc(key, templateOf(key), name, char.int("hp") ?: hpMax, hpMax, loc, home, wander, nextMove(now, wander)))
+                val proto = Proto(
+                    templateOf(key), name, hpMax, Formulas.npc(war),
+                    counted(value["items"]), emptyList(), counted(value["osvej"]), wander, respawn,
+                )
+                val home = respawn?.location ?: loc
+                addNpc(Npc(key, proto, (char.int("hp") ?: hpMax).coerceIn(1, hpMax), loc, home, nextMove(now, wander), proto.items.toMutableMap()))
             }
             value is JsonPrimitive && key.startsWith("i.") -> {
                 // "name|count|expires": expires 0 = never. Items whose time ran
@@ -145,12 +210,27 @@ class World(
 
     private fun spawnNpc(t: NpcSpawn, now: Long) {
         if (npcs[t.location]?.containsKey(t.key) == true) return
-        val template = templateOf(t.key)
-        val o = content.npcs[template] ?: run { problems += "${t.location}: no NPC template for ${t.key}"; return }
-        val char = o["char"] as? JsonObject ?: return
-        val name = char.str("name")?.takeIf { it.isNotBlank() } ?: return
-        val hpMax = char.int("hp_max") ?: 1
-        addNpc(Npc(t.key, template, name, hpMax, hpMax, t.location, t.location, t.wander, nextMove(now, t.wander)))
+        val proto = t.proto ?: run {
+            val template = templateOf(t.key)
+            val o = content.npcs[template] ?: run { problems += "${t.location}: no NPC template for ${t.key}"; return }
+            val char = o["char"] as? JsonObject ?: return
+            val name = char.str("name")?.takeIf { it.isNotBlank() } ?: return
+            val hpMax = (char.int("hp_max") ?: 1).coerceAtLeast(1)
+            Proto(
+                template, name, hpMax, Formulas.npc(o["war"] as? JsonObject),
+                counted(o["items"]), randomLoot(o["itemsrnd"]), counted(o["osvej"]), t.wander,
+                parseRespawn("${t.location}:${t.respawn}"),
+            )
+        }
+        val items = proto.items.toMutableMap()
+        for (r in proto.randomItems) {
+            if (random.nextInt(1, 101) > r.chance) continue
+            val n = if (r.max > r.min) random.nextInt(r.min, r.max + 1) else r.min
+            if (n > 0) items[r.id] = (items[r.id] ?: 0) + n
+        }
+        val npc = Npc(t.key, proto, proto.hpMax, t.location, t.location, nextMove(now, proto.wander), items)
+        npc.regenFrom = now
+        addNpc(npc)
     }
 
     private fun spawnItem(t: ItemSpawn, now: Long) {
@@ -182,19 +262,19 @@ class World(
 
     // ---- time -------------------------------------------------------------------
 
-    /** Advances the world to [now]: due timers fire, NPCs wander, old items vanish. */
-    suspend fun tick(now: Long) = mutex.withLock { tickLocked(now) }
-
-    private fun tickLocked(now: Long) {
+    /** Advances the world to [now]: due timers fire, NPCs wander, old items and corpses vanish. */
+    suspend fun tick(now: Long) = mutex.withLock {
         val due = timers.filter { it.first <= now }
         timers.removeAll(due.toSet())
         for ((_, t) in due) when (t) {
             is NpcSpawn -> spawnNpc(t, now)
             is ItemSpawn -> spawnItem(t, now)
         }
-        val moving = npcs.values.flatMap { it.values }.filter { it.wander != null && it.nextMoveAt <= now }
+        val moving = npcs.values.flatMap { it.values }
+            .filter { it.proto.wander != null && it.target == null && it.nextMoveAt <= now }
         for (npc in moving) wanderStep(npc, now)
         for (items in ground.values) items.values.removeAll { it.expiresAt != 0L && it.expiresAt <= now }
+        for (list in corpses.values) list.values.removeAll { it.expiresAt <= now }
     }
 
     /**
@@ -203,36 +283,107 @@ class World(
      * same zone (monsters do not enter guarded town streets, f_na.dat).
      */
     private fun wanderStep(npc: Npc, now: Long) {
-        val w = npc.wander ?: return
+        val w = npc.proto.wander ?: return
         npc.nextMoveAt = now + random.nextInt(w.minDelay, w.maxDelay + 1)
         val here = content.locations[npc.location] ?: return
         val target: String
         if (npc.trail.size >= w.steps) {
             target = npc.trail.last()
         } else {
-            val options = here.exits.map { it.target }.distinct().filter { t ->
-                val loc = content.locations[t]
-                loc != null && loc.zone == here.zone && npcs[t]?.containsKey(npc.key) != true
-            }
+            val options = sameZoneExits(npc)
             if (options.isEmpty()) return
             target = options[random.nextInt(options.size)]
         }
-        if (npcs[target]?.containsKey(npc.key) == true) return
+        moveNpcLocked(npc, target)
+    }
+
+    private fun sameZoneExits(npc: Npc): List<String> {
+        val here = content.locations[npc.location] ?: return emptyList()
+        return here.exits.map { it.target }.distinct().filter { t ->
+            val loc = content.locations[t]
+            loc != null && loc.zone == here.zone && npcs[t]?.containsKey(npc.key) != true
+        }
+    }
+
+    private fun moveNpcLocked(npc: Npc, target: String): Boolean {
+        if (npcs[target]?.containsKey(npc.key) == true) return false
         npcs[npc.location]?.remove(npc.key)
         if (npc.trail.isNotEmpty() && npc.trail.last() == target) npc.trail.removeLast() else npc.trail.addLast(npc.location)
         npc.location = target
         addNpc(npc)
+        return true
+    }
+
+    // ---- fights -------------------------------------------------------------------
+
+    suspend fun npc(loc: String, key: String): Npc? = mutex.withLock { npcs[loc]?.get(key) }
+
+    suspend fun npcsIn(loc: String): List<Npc> = mutex.withLock { npcs[loc]?.values?.toList() ?: emptyList() }
+
+    /** A fleeing NPC runs through a random exit of its zone (f_run.dat); false if it cannot. */
+    suspend fun flee(npc: Npc): Boolean = mutex.withLock {
+        val options = sameZoneExits(npc)
+        if (options.isEmpty()) return@withLock false
+        moveNpcLocked(npc, options[random.nextInt(options.size)])
+    }
+
+    /**
+     * Removes a killed NPC: its items and butcher loot go into a corpse for
+     * [Rules.DROPPED_ITEM_LIFETIME] seconds, and it comes back after its
+     * respawn time if it has one (f_kill.dat:69-89).
+     */
+    suspend fun kill(npc: Npc, now: Long): Corpse = mutex.withLock {
+        npcs[npc.location]?.remove(npc.key)
+        val corpse = addCorpseLocked(npc.location, "труп: ${npc.name}", npc.items, npc.proto.butcher, now, null)
+        npc.proto.respawn?.let { r ->
+            timers += (now + random.nextInt(r.min, r.max + 1)) to NpcSpawn(r.location, npc.key, "", npc.proto.wander, npc.proto)
+        }
+        corpse
+    }
+
+    suspend fun addCorpse(loc: String, name: String, items: Map<String, Int>, now: Long, playerId: Long?): Corpse =
+        mutex.withLock { addCorpseLocked(loc, name, items, emptyMap(), now, playerId) }
+
+    private fun addCorpseLocked(loc: String, name: String, items: Map<String, Int>, butcher: Map<String, Int>, now: Long, playerId: Long?): Corpse {
+        val corpse = Corpse("c${++corpseSeq}", name, LinkedHashMap(items), LinkedHashMap(butcher), now + Rules.DROPPED_ITEM_LIFETIME, playerId)
+        corpses.getOrPut(loc) { LinkedHashMap() }[corpse.id] = corpse
+        return corpse
+    }
+
+    /** Takes a whole stack out of a corpse; null if there is no such corpse or item. */
+    suspend fun lootCorpse(loc: String, corpseId: String, itemId: String, now: Long): Int? = mutex.withLock {
+        val c = corpses[loc]?.get(corpseId)?.takeIf { it.expiresAt > now } ?: return@withLock null
+        c.items.remove(itemId)
+    }
+
+    /** Takes the butcher loot (meat, hides) out of a corpse. */
+    suspend fun butcher(loc: String, corpseId: String, now: Long): Map<String, Int>? = mutex.withLock {
+        val c = corpses[loc]?.get(corpseId)?.takeIf { it.expiresAt > now } ?: return@withLock null
+        val loot = LinkedHashMap(c.butcher)
+        c.butcher.clear()
+        loot
+    }
+
+    suspend fun corpsesAt(loc: String, now: Long): List<CorpseView> = mutex.withLock {
+        corpses[loc]?.values?.filter { it.expiresAt > now }?.map { c ->
+            CorpseView(
+                c.id, c.name,
+                c.items.map { (id, n) -> GroundItemView(id, content.itemName(id), n, takeable = true) },
+                canButcher = c.butcher.isNotEmpty(),
+            )
+        } ?: emptyList()
     }
 
     // ---- reading and changing -----------------------------------------------------
 
-    suspend fun npcsAt(loc: String): List<NpcView> = mutex.withLock {
-        npcs[loc]?.values?.map { NpcView(it.key, it.name) } ?: emptyList()
-    }
-
     suspend fun itemsAt(loc: String, now: Long): List<GroundItemView> = mutex.withLock {
         ground[loc]?.values?.filter { it.expiresAt == 0L || it.expiresAt > now }
             ?.map { GroundItemView(it.id, it.name, it.count, takeable = !it.id.startsWith("i.s.")) } ?: emptyList()
+    }
+
+    /** True if a fixture with an id starting with [prefix] stands here (e.g. i.s.res — resurrection stone). */
+    suspend fun hasFixture(loc: String, prefix: String): Boolean = mutex.withLock {
+        ground[loc]?.keys?.any { it.startsWith(prefix) } == true
     }
 
     /** Removes a whole stack from the ground; null if it is not here. Fixtures stay. */
@@ -245,7 +396,7 @@ class World(
     }
 
     suspend fun drop(loc: String, itemId: String, count: Int, now: Long) = mutex.withLock {
-        putItem(loc, GroundItem(itemId, content.itemName(itemId), count, now + tz.shared.Rules.DROPPED_ITEM_LIFETIME))
+        putItem(loc, GroundItem(itemId, content.itemName(itemId), count, now + Rules.DROPPED_ITEM_LIFETIME))
     }
 
     /** Puts back a stack that could not be given to a player (database error). */
