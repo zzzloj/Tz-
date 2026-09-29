@@ -16,8 +16,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Wait for the deployment of a push
-        if: github.event_name == 'push'
-        run: sleep 420
       - name: Smoke test of tz-engine-production.up.railway.app
+        env:
+          # On a push, smoke.py waits until the server reports this commit (GET /api/version).
+          EXPECT_SHA: ${{ github.event_name == 'push' && github.sha || '' }}
         run: python3 engine/ci/smoke.py https://tz-engine-production.up.railway.app

@@ -44,6 +44,19 @@ try:
         except Exception:
             pass
         time.sleep(10)
+    # After a push, wait (up to 30 min) until Railway serves the pushed commit.
+    want = os.environ.get("EXPECT_SHA")
+    if want:
+        for _ in range(60):
+            try:
+                if call("GET", "/api/version")[1] == want:
+                    break
+            except Exception:
+                pass
+            time.sleep(30)
+        else:
+            raise AssertionError(f"server still not on {want[:8]} after 30 min")
+        steps.append(f"server runs {want[:8]}")
     status, report = call("GET", "/api/content/report")
     assert status == 200, (status, report)
     steps.append(f"content: {report['locations']} locations, {len(report['problems'])} problems")
