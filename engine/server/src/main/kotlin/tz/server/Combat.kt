@@ -23,6 +23,9 @@ data class Stats(
     val verb: String,
     val expValue: Int,
     val ammo: String,
+    /** Gems (i.i.am, i.i.ne…) change maximum HP and mana (char[2], char[4]). */
+    val hpBonus: Int = 0,
+    val manaBonus: Int = 0,
 ) {
     val magic: Boolean get() = verb == "магией" || verb == "молнией"
 }
@@ -59,20 +62,43 @@ object Formulas {
 
     /**
      * Player combat parameters from attributes, skills and equipped items:
-     * f_calcparam.dat without gems, sharpening, sets and the leadership flag
-     * (not in the game yet). [item] gives the item's content/ JSON.
+     * f_calcparam.dat with the gems set into items ("i.a.b.dr..ob..am"), but
+     * without sharpening, sets and the leadership flag (not in the game yet).
+     * [item] gives the item's content/ JSON.
      */
     fun player(skills: Skills, equipped: List<String>, item: (String) -> JsonObject?, mounted: Boolean = false): Stats {
         val str = skills[Skills.STR]; val dex = skills[Skills.DEX]; val int = skills[Skills.INT]
         var hit = 0; var dmgMin = 0; var dmgMax = 0; var delay = 0; var ranged = false
         var armor = 0; var shieldArmor = 0; var verb = ""; var ammo = ""
-        val dodge = dex + skills[Skills.DODGE] + (str - 1) * 2
         var parry = 2 * (dex + skills[Skills.PARRY] + (str - 1) * 2)
-        val magicDodge = 5 * (int + skills[Skills.MDODGE] - str)
-        val magicParry = 10 * (int + skills[Skills.MRES] - str)
-        val magicResist = 15 * (skills[Skills.MRES] + int - str)
+        var dodge = dex + skills[Skills.DODGE] + (str - 1) * 2
+        var magicDodge = 5 * (int + skills[Skills.MDODGE] - str)
+        var magicParry = 10 * (int + skills[Skills.MRES] - str)
+        var magicResist = 15 * (skills[Skills.MRES] + int - str)
         var hitPenalty = 0
         var weapon = false
+        var hpBonus = 0
+        var manaBonus = 0
+        val gemsUsed = HashSet<String>()
+
+        // A gem effect [index, value]: war[index] += value, or char[index − 50] for HP (52) and mana (54).
+        fun addEffect(index: Int, v: Int) {
+            when (index) {
+                0 -> hit += v
+                1 -> dmgMin += v
+                2 -> dmgMax += v
+                3 -> delay += v
+                5 -> armor += v
+                6 -> dodge += v
+                7 -> parry += v
+                8 -> shieldArmor += v
+                9 -> magicDodge += v
+                10 -> magicParry += v
+                11 -> magicResist += v
+                52 -> hpBonus += v
+                54 -> manaBonus += v
+            }
+        }
 
         for (id in equipped) {
             val o = item(baseId(id)) ?: continue
@@ -105,6 +131,16 @@ object Formulas {
                 }
                 if (!id.startsWith("i.w.r.c.")) { dmgMin += str; dmgMax += str }
             }
+            // Gems: each kind counts once however many items carry it.
+            for (m in GEM.findAll(id)) {
+                val gem = m.groupValues[1]
+                if (!gemsUsed.add(gem)) continue
+                val effects = item("i.i.$gem")?.get("effects") as? kotlinx.serialization.json.JsonArray ?: continue
+                for (e in effects) {
+                    val pair = (e as? kotlinx.serialization.json.JsonArray)?.mapNotNull { (it as? kotlinx.serialization.json.JsonPrimitive)?.content?.toIntOrNull() }
+                    if (pair != null && pair.size == 2) addEffect(pair[0], pair[1])
+                }
+            }
         }
         if (!weapon) {
             dmgMin += str + skills[Skills.HAND] - 1
@@ -115,6 +151,7 @@ object Formulas {
             delay = 5 - phpRound(dex / 2.0)
             verb = "кулаками"
         }
+        if (equipped.any { it.contains("..do") }) hitPenalty += 20   // dolerite: −20 % accuracy
         hit -= hitPenalty
         if (hit <= 0) hit = 5
         if (hit > 95) hit = 95
@@ -135,8 +172,12 @@ object Formulas {
             verb = verb,
             expValue = skills.sumExceptExp(),
             ammo = ammo,
+            hpBonus = hpBonus,
+            manaBonus = manaBonus,
         )
     }
+
+    private val GEM = Regex("""\.\.([A-Za-z0-9]+)""")
 
     /** "str:dex:int[:hp]" of armour (field req) or a weapon (field req). */
     private fun requirement(o: JsonObject, id: String): List<Int> {

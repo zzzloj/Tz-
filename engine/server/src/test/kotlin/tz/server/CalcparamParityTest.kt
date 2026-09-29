@@ -83,8 +83,8 @@ class CalcparamParityTest {
             val kt = listOf(k.hit, k.dmgMin, k.dmgMax, k.delay, if (k.ranged) 1 else 0, k.armor, k.dodge, k.parry, k.shieldArmor,
                 k.magicDodge, k.magicParry, k.magicResist, k.verb, k.expValue, k.ammo).map { it.toString() }
             assertEquals(php, kt, "skills=${(0 until 16).map { c.skills[it] }} equip=${c.equip} mounted=${c.mounted}")
-            assertEquals(char[2].toInt(), tz.shared.Rules.hpMax(c.skills[Skills.STR]))
-            assertEquals(char[4].toInt(), tz.shared.Rules.manaMax(c.skills[Skills.INT]))
+            assertEquals(char[2].toInt(), tz.shared.Rules.hpMax(c.skills[Skills.STR]) + k.hpBonus)
+            assertEquals(char[4].toInt(), tz.shared.Rules.manaMax(c.skills[Skills.INT]) + k.manaBonus)
             checked++
         }
         println("parity: $checked characters identical to f_calcparam.dat")

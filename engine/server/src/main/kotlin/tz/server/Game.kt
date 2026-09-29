@@ -61,8 +61,8 @@ class Game(
         val journal = ArrayDeque<String>()
 
         fun skills() = Skills.of(str, dex, int, exp, points)
-        val hpMax get() = Rules.hpMax(str)
-        val manaMax get() = Rules.manaMax(int)
+        val hpMax get() = (Rules.hpMax(str) + stats.hpBonus).coerceAtLeast(1)
+        val manaMax get() = (Rules.manaMax(int) + stats.manaBonus).coerceAtLeast(0)
 
         fun log(line: String) {
             journal.addLast(line)
@@ -414,6 +414,8 @@ class Game(
     private suspend fun refreshStats(p: Player) {
         p.equipped = db.tx { c -> inventoryRows(c, p.id) }.filter { it.third }.map { it.first }
         p.stats = Formulas.player(p.skills(), p.equipped, { content.items[it] })
+        p.hp = p.hp.coerceAtMost(p.hpMax)
+        p.mana = p.mana.coerceAtMost(p.manaMax)
     }
 
     private suspend fun save(p: Player) = db.tx { c ->
