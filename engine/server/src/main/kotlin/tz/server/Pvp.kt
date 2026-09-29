@@ -69,9 +69,8 @@ suspend fun Game.attackPlayer(account: Account, name: String): GameView = lock.w
     p.busyUntil = now + p.stats.delay
     if (p.stats.ammo.isNotEmpty() && !useAmmo(p)) throw ApiException(HttpStatusCode.BadRequest, Errors.NO_AMMO)
     // One swing already makes a criminal, before the roll (f_attackf.dat:50-63).
-    val wasCriminal = p.criminal(now)
-    if (!wasCriminal && !guiltyPlayer(t, p, now)) commitCrime(p, "бандит", now)
-    playerHitsPlayer(p, t, now, answer = true, attackerWasCriminal = wasCriminal)
+    if (!p.criminal(now) && !guiltyPlayer(t, p, now)) commitCrime(p, "бандит", now)
+    playerHitsPlayer(p, t, now, answer = true, attackerWasCriminal = p.criminal(now))
     save(p); save(t)
     viewLocked(p)
 }

@@ -45,9 +45,10 @@ class PvpTest {
         }
     }
 
-    private suspend fun Three.fightUntilDead(attacker: tz.server.Account, victim: String) {
+    private suspend fun Three.fightUntilDead(attacker: Account, victimAccount: Account, victim: String) {
         repeat(200) {
             clock[0] += 10
+            game.view(victimAccount)   // the victim stays online
             val v = game.attackPlayer(attacker, victim)
             if (v.people.first { it.name == victim }.ghost) return
         }
@@ -64,7 +65,7 @@ class PvpTest {
         var v = game.attackPlayer(a, victim)
         assertEquals("бандит", v.character.crime)
         assertEquals("бандит", game.view(b).people.first { it.name == villain }.crime)
-        fightUntilDead(a, victim)
+        fightUntilDead(a, b, victim)
         v = game.view(a)
         assertEquals("убийца", v.character.crime)
         // The victim's corpse holds the knife; for the avenger taking it is looting.
@@ -95,7 +96,7 @@ class PvpTest {
         // On the arena nobody becomes a criminal and the fallen keep their things.
         game.place(a, Rules.ARENA); game.place(b, Rules.ARENA)
         game.view(b)
-        fightUntilDead(a, victim)
+        fightUntilDead(a, b, victim)
         val v = game.view(a)
         assertEquals(null, v.character.crime)
         assertTrue(v.location.corpses.isEmpty())
