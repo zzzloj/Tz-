@@ -10,6 +10,17 @@ on:
 jobs:
   jvm-android:
     runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: tz
+          POSTGRES_PASSWORD: tz
+          POSTGRES_DB: tz
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U tz" --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      TZ_TEST_DATABASE_URL: jdbc:postgresql://localhost:5432/tz?user=tz&password=tz
     defaults:
       run:
         working-directory: engine
@@ -23,7 +34,18 @@ jobs:
       - name: Build server, shared (JVM) and Android app, run tests
         run: |
           set -o pipefail
-          ./gradlew --no-daemon --stacktrace :shared:jvmTest :server:test :androidApp:assembleDebug 2>&1 | tee build.log
+          ./gradlew --no-daemon :shared:jvmTest :server:test :androidApp:assembleDebug 2>&1 | tee build.log
+      - name: Server image (as Railway builds it)
+        run: |
+          set -o pipefail
+          docker build -f Dockerfile -t tz-server .. 2>&1 | tee build.log | tail -5
+      - name: Server image starts and answers
+        run: |
+          docker run -d --name tz --network host -e DATABASE_URL="postgres://tz:tz@localhost:5432/tz" -e PORT=8099 tz-server
+          for i in $(seq 1 60); do curl -sf localhost:8099/api/health && break; sleep 1; done
+          curl -sf localhost:8099/api/locations/_begin | head -c 300; echo
+          docker logs tz 2>&1 | tail -20 > build.log
+          curl -sf localhost:8099/api/health
       - name: Report errors
         if: failure()
         run: python3 ci/annotate.py build.log "$GITHUB_WORKSPACE"

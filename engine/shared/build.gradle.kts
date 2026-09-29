@@ -3,14 +3,18 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.android.library) apply false
 }
+
+// -Ptz.serverOnly: JVM (server) and iOS only, no Android SDK needed.
+val withAndroid = !providers.gradleProperty("tz.serverOnly").isPresent
+if (withAndroid) apply(plugin = "com.android.library")
 
 kotlin {
     jvmToolchain(21)
 
     jvm()
-    androidTarget()
+    if (withAndroid) androidTarget()
 
     // iOS: one XCFramework "Shared" for the SwiftUI app (iosApp/).
     val xcf = XCFramework("Shared")
@@ -35,7 +39,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.ktor.client.mock)
         }
-        androidMain.dependencies {
+        findByName("androidMain")?.dependencies {
             implementation(libs.ktor.client.okhttp)
         }
         iosMain.dependencies {
@@ -47,12 +51,14 @@ kotlin {
     }
 }
 
-android {
-    namespace = "tz.shared"
-    compileSdk = 36
-    defaultConfig { minSdk = 26 }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+if (withAndroid) {
+    extensions.configure<com.android.build.gradle.LibraryExtension>("android") {
+        namespace = "tz.shared"
+        compileSdk = 36
+        defaultConfig { minSdk = 26 }
+        compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_21
+            targetCompatibility = JavaVersion.VERSION_21
+        }
     }
 }

@@ -15,8 +15,10 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "0.1"
-        // Emulator address of a server running on the developer's machine.
-        buildConfigField("String", "SERVER_URL", "\"http://10.0.2.2:8080\"")
+        // Server address: -Ptz.serverUrl=https://… (default: a server on the
+        // developer's machine as seen from the Android emulator).
+        val serverUrl = (project.findProperty("tz.serverUrl") as String?) ?: "http://10.0.2.2:8080"
+        buildConfigField("String", "SERVER_URL", "\"$serverUrl\"")
     }
     buildFeatures {
         compose = true
