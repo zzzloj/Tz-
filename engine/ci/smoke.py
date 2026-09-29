@@ -75,11 +75,11 @@ try:
     status, game = call("GET", "/api/game", token=token)
     c = game["character"]
     assert not c["ghost"] and c["hit"] > 0 and c["expNext"] > 0, c
-    status, err = call("POST", "/api/game/attack", {"target": "n.beginner"}, token)
-    assert status == 400 and err["error"] == "peaceful", (status, err)
+    status, err = call("POST", "/api/game/attack", {"target": "Никого-нет", "player": True}, token)
+    assert status == 400 and err["error"] == "no_such_player", (status, err)
     status, err = call("POST", "/api/game/resurrect", {}, token)
     assert status == 400 and err["error"] == "not_ghost", (status, err)
-    steps.append(f"combat: hit {c['hit']}%, damage {c['dmgMin']}-{c['dmgMax']}; gatekeeper cannot be attacked")
+    steps.append(f"combat: hit {c['hit']}%, damage {c['dmgMin']}-{c['dmgMax']}; attacking an absent player refused")
 
     status, g = call("POST", "/api/game/talk", {"npc": "n.beginner"}, token)
     assert status == 200 and g["dialog"]["text"].startswith("Приветствую тебя, " + name), (status, g)
