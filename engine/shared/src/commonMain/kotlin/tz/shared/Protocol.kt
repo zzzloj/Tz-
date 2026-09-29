@@ -22,7 +22,7 @@ data class NpcView(
     val hpMax: Int = 0,
     /** This NPC is fighting you. */
     val fightingYou: Boolean = false,
-    /** Monsters and wild animals; townsfolk and traders cannot be attacked yet (no guards and crimes). */
+    /** Anyone can be attacked; striking townsfolk, traders or guards is a crime (see CharacterView.crime). */
     val attackable: Boolean = false,
     /** Has a dialog: POST /api/game/talk. */
     val canTalk: Boolean = false,
@@ -35,6 +35,8 @@ data class CorpseView(
     val items: List<GroundItemView> = emptyList(),
     /** Meat or hides can be cut off with a knife. */
     val canButcher: Boolean = false,
+    /** Taking from it is looting (мародёрство): the corpse of an innocent that is not yours or your clan's. */
+    val looting: Boolean = false,
 )
 
 @Serializable
@@ -133,6 +135,9 @@ data class CharacterView(
     val exp: Int = 0,
     /** Experience over this value gives a skill point. */
     val expNext: Int = 0,
+    /** Criminal title (бандит, убийца, мародер…) and minutes left; null — innocent. */
+    val crime: String? = null,
+    val crimeMinutes: Long = 0,
     /** Skills above 0 by key (Rules.SKILLS), spells and techniques learnt. */
     val skills: Map<String, Int> = emptyMap(),
     val known: List<String> = emptyList(),
@@ -204,7 +209,7 @@ data class CastleView(
 data class CastleRequest(val op: String, val text: String? = null)
 
 @Serializable
-data class PersonView(val name: String, val clan: String? = null, val ghost: Boolean = false)
+data class PersonView(val name: String, val clan: String? = null, val ghost: Boolean = false, val crime: String? = null)
 
 @Serializable
 data class ExchangeView(
@@ -320,7 +325,7 @@ data class DialogView(
 data class TalkRequest(val npc: String, val topic: String = "begin", val arg: String? = null)
 
 @Serializable
-data class TargetRequest(val target: String)
+data class TargetRequest(val target: String, /** target is a character name, not an NPC key */ val player: Boolean = false)
 
 @Serializable
 data class LootRequest(val corpse: String, val item: String = "")
@@ -376,6 +381,7 @@ object Errors {
     const val NOT_IN_CLAN = "not_in_clan"
     const val CLAN_RIGHTS = "clan_rights"
     const val SAID_ALREADY = "said_already"
+    const val NO_FIGHT_HERE = "no_fight_here"
     const val TOPIC_CLOSED = "topic_closed"
 
     fun text(code: String): String = when (code) {
@@ -418,6 +424,7 @@ object Errors {
         NOT_IN_CLAN -> "Вы не в клане"
         CLAN_RIGHTS -> "Для этого нужно быть главой (или сенешалем) и иметь камень гильдии"
         SAID_ALREADY -> "Вы это уже говорили! Измените текст"
+        NO_FIGHT_HERE -> "Здесь драться нельзя"
         TOPIC_CLOSED -> "Разговор ушёл в сторону, начните заново"
         else -> "Ошибка сервера"
     }
@@ -425,7 +432,7 @@ object Errors {
 
 /** Rules shared by the server (enforced) and the apps (hints before sending). */
 object Rules {
-    /** Stage 3 has no guards and crimes, so only monsters (n.c.*) and wild animals (n.a.*) can be attacked. */
+    /** Monsters (n.c.*) and wild animals (n.a.*): fair game, no crime in attacking them. */
     fun attackable(npcId: String): Boolean = npcId.startsWith("n.c.") || npcId.startsWith("n.a.")
 
     val LOGIN = Regex("^[a-z0-9_]{3,20}$")
@@ -495,6 +502,12 @@ object Rules {
     const val SKILL_MAX = 5
     const val SKILL_SUM = 50
     const val MONEY = "i.money"
+    /** f_docrim.dat: a crime lasts 30 minutes (g_crim), theft 20. */
+    const val CRIME_SECONDS = 1800L
+    /** The bank is the only place where nobody fights (docs/mechanics-combat.md §2.1). */
+    const val BANK_LOCATION = "x1092x474"
+    const val ARENA = "arena"
+    const val ARENA_EXIT = "x1086x501"
     const val SAY_MAX = 250
     const val MESSAGE_MAX = 500
     val CLAN_NAME = Regex("^[A-Za-zА-Яа-яЁё0-9_]{3,20}$")

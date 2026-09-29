@@ -79,6 +79,13 @@ class Game(
         var clanId: Long? = null
         var clanName: String? = null
         var clanRank: String? = null
+        /** Criminal title and when it ends (character_state "crime"). */
+        var crime: String? = null
+        var crimeUntil = 0L
+        /** Faction on the Wolf island: "t" templars, "p" pirates (character_state "faction"). */
+        var faction: String? = null
+        /** The character last struck by this one: striking back is self-defence. */
+        var fightingPlayer: Long? = null
         /** Last thing said, to refuse repeats (f_say.dat:65). */
         var lastSaid: String? = null
 
@@ -128,6 +135,11 @@ class Game(
     }
 
     suspend fun take(account: Account, itemId: String): GameView = lock.withLock {
+        if (itemId == "i.s.arena") {
+            val q = player(account)
+            q.log(leaveArena(q))
+            return@withLock viewLocked(q)
+        }
         val p = alive(player(account))
         if (itemId.startsWith("i.s.")) throw ApiException(HttpStatusCode.BadRequest, Errors.CANNOT_TAKE)
         val now = clock()
@@ -186,8 +198,9 @@ class Game(
         val p = alive(player(account))
         val now = clock()
         val npc = world.npc(p.location, target) ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NO_TARGET)
-        if (!Rules.attackable(npc.key)) throw ApiException(HttpStatusCode.BadRequest, Errors.PEACEFUL)
+        if (p.location == Rules.BANK_LOCATION) throw ApiException(HttpStatusCode.BadRequest, Errors.NO_FIGHT_HERE)
         if (now < p.busyUntil) throw ApiException(HttpStatusCode.Conflict, Errors.RESTING)
+        npcAttackCrime(p, npc, now)
         p.busyUntil = now + p.stats.delay
         if (p.stats.ammo.isNotEmpty() && !useAmmo(p)) {
             viewLocked(p)
@@ -200,6 +213,8 @@ class Game(
 
     suspend fun loot(account: Account, corpseId: String, itemId: String): GameView = lock.withLock {
         val p = alive(player(account))
+        val corpse = world.corpse(p.location, corpseId, clock()) ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NO_SUCH_CORPSE)
+        lootCrime(p, corpse, itemId, clock())
         val count = world.lootCorpse(p.location, corpseId, itemId, clock())
             ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NO_SUCH_CORPSE)
         db.tx { c -> addItem(c, p.id, itemId, count) }
@@ -463,7 +478,7 @@ class Game(
      */
     private suspend fun guard(ctx: TalkCtx, a: JsonObject): Boolean = when (a.str("handler")) {
         // Killing players comes with PvP; until then nobody has.
-        "require-pk" -> false
+        "require-pk" -> stateOf(ctx.p.id, "pk") != null
         "npc-hand-over" -> world.npcHas(a.str("npc")!!, a.str("location") ?: ctx.p.location, a.str("item")!!)
         else -> true
     }
@@ -493,6 +508,8 @@ class Game(
             "castle-keeper-access", "castle-rune-list", "castle-contract", "castle-teleport" ->
                 return keeperHandler(ctx.p, ctx.npc.key, a, ctx.arg) { ctx.handlerOptions = it }
             "hire-mercenary" -> { hireCastleGuard(ctx.p, a.str("template")!!); return null }
+            "arena-enter", "bounty-list", "bounty-form", "bounty-place", "bounty-claim" ->
+                return pvpHandler(ctx.p, a, ctx.arg) { ctx.inputTopic = it }
             "npc-hand-over" -> {
                 val item = a.str("item")!!
                 if (world.takeFromNpc(a.str("npc")!!, a.str("location") ?: p.location, item)) {
@@ -550,11 +567,17 @@ class Game(
                     val value = a.str("value") ?: "1"
                     val until = a.int("for")?.let { ctx.now + it }
                     if ("world" in a && Dialogs.truthy(a["world"])) setWorldState(a.str("set")!!, value, until)
-                    else { setState(p.id, a.str("set")!!, value, until); ctx.flags[a.str("set")!!] = value }
+                    else {
+                        setState(p.id, a.str("set")!!, value, until); ctx.flags[a.str("set")!!] = value
+                        if (a.str("set") == "faction") p.faction = value
+                    }
                 }
                 "clear" in a -> {
                     if ("world" in a && Dialogs.truthy(a["world"])) clearWorldState(a.str("clear")!!)
-                    else { clearState(p.id, a.str("clear")!!); ctx.flags.remove(a.str("clear")!!) }
+                    else {
+                        clearState(p.id, a.str("clear")!!); ctx.flags.remove(a.str("clear")!!)
+                        if (a.str("clear") == "faction") p.faction = null
+                    }
                 }
                 "giveNpc" in a -> world.giveNpc(a.str("npc")!!, a.str("location") ?: p.location, a.str("giveNpc")!!, count)
                 "learn" in a -> learn(p, a.str("learn")!!)
@@ -738,13 +761,21 @@ class Game(
         if (now - lastGuardCheck >= 60) { lastGuardCheck = now; castles(); expireGuards(now) }
         val active = players.values.filter { now - it.lastSeen < ACTIVE_SECONDS }
         for (p in active) if (!p.ghost) regen(p, now)
+        for (p in active) if (p.crime != null && now >= p.crimeUntil) { p.crime = null; p.log("Срок вашего преступления истёк") }
         for ((loc, here) in active.groupBy { it.location }) {
             val living = here.filter { !it.ghost }
+            lawTick(loc, living, now)
             for (npc in world.npcsIn(loc)) {
                 regenNpc(npc, now)
+                // Fighting another NPC (a guard and a monster).
+                npc.npcTarget?.let { key ->
+                    val other = world.npc(loc, key)
+                    if (other == null || other.hp < 1) npc.npcTarget = null
+                    else if (now >= npc.busyUntil && npc.hp > 0) { npcHitsNpc(npc, other, now, here); continue }
+                }
                 // Enemies who left or died are forgotten (no chasing yet, f_goto.dat).
                 npc.enemies.retainAll(living.filter { !it.ghost }.map { it.id }.toSet())
-                if (npc.enemies.isEmpty() && npc.aggressive && living.isNotEmpty()) {
+                if (npc.enemies.isEmpty() && npc.npcTarget == null && npc.aggressive && living.isNotEmpty()) {
                     npc.enemies += living[rnd.nextInt(living.size)].id
                 }
                 // Blows go round all its enemies in turn.
@@ -766,7 +797,7 @@ class Game(
 
     // ---- fighting -------------------------------------------------------------------
 
-    private fun describe(h: Formulas.Hit, verb: String): String = when (h.outcome) {
+    internal fun describe(h: Formulas.Hit, verb: String): String = when (h.outcome) {
         Formulas.Outcome.MISS, Formulas.Outcome.FIZZLED -> "мимо"
         Formulas.Outcome.DODGED -> "мимо (уклон)"
         Formulas.Outcome.HIT -> buildString {
@@ -777,8 +808,8 @@ class Game(
         }
     }
 
-    private suspend fun playerHits(p: Player, npc: World.Npc, now: Long, answer: Boolean) {
-        val h = Formulas.attack(p.stats, npc.stats, dice)
+    internal suspend fun playerHits(p: Player, npc: World.Npc, now: Long, answer: Boolean) {
+        val h = castleBonus(p, Formulas.attack(p.stats, npc.stats, dice))
         if (h.outcome == Formulas.Outcome.FIZZLED) return
         val text = describe(h, p.stats.verb)
         p.log(if (answer) "Вы по ${npc.name} $text" else "  вы отвечаете: $text")
@@ -797,7 +828,7 @@ class Game(
         if (answer && now >= npc.busyUntil) npcHits(npc, p, now, answer = false)
     }
 
-    private suspend fun npcHits(npc: World.Npc, p: Player, now: Long, answer: Boolean) {
+    internal suspend fun npcHits(npc: World.Npc, p: Player, now: Long, answer: Boolean) {
         val h = Formulas.attack(npc.stats, p.stats, dice)
         if (h.outcome == Formulas.Outcome.FIZZLED) return
         val text = describe(h, npc.stats.verb)
@@ -817,7 +848,7 @@ class Game(
         if (answer && now >= p.busyUntil && !p.ghost) playerHits(p, npc, now, answer = false)
     }
 
-    private suspend fun killNpc(p: Player, npc: World.Npc, now: Long) {
+    internal suspend fun killNpc(p: Player, npc: World.Npc, now: Long) {
         world.kill(npc, now)
         p.log("${npc.name} погибает.")
         tellOthers(p.location, p.id, "${npc.name} погибает.")
@@ -838,25 +869,35 @@ class Game(
     }
 
     /** Death (f_kill.dat): everything carried falls into a corpse, the character becomes a ghost. */
-    private suspend fun killPlayer(p: Player, killer: String, now: Long) {
+    internal suspend fun killPlayer(p: Player, killer: String, now: Long, by: Player? = null, killerWasCriminal: Boolean = false) {
+        val guilty = by == null || guiltyPlayer(p, by, now)
         p.hp = 0
         p.ghost = true
-        val items = db.tx { c ->
-            val rows = inventoryRows(c, p.id)
-            c.prepareStatement("DELETE FROM character_items WHERE character_id = ?").use { it.setLong(1, p.id); it.executeUpdate() }
-            rows.associate { it.first to it.second }
+        p.fightingPlayer = null
+        if (p.location == Rules.ARENA) {
+            // On the arena things stay with the fallen (f_kill.dat:19).
+            p.log("Вас победил $killer. Вы призрак: покинуть арену можно через камень выхода.")
+        } else {
+            val items = db.tx { c ->
+                val rows = inventoryRows(c, p.id)
+                c.prepareStatement("DELETE FROM character_items WHERE character_id = ?").use { it.setLong(1, p.id); it.executeUpdate() }
+                rows.associate { it.first to it.second }
+            }
+            val free = p.criminal(now) || CastleRules.inside(p.location)
+            world.addCorpse(p.location, "труп: ${p.name}", items, now, p.id, free, p.clanId)
+            p.equipped = emptyList()
+            p.stats = Formulas.player(p.skills(), emptyList(), { content.items[it] })
+            p.log("Вас убил $killer. Вы призрак; ваши вещи остались в трупе на 10 минут.")
         }
-        world.addCorpse(p.location, "труп: ${p.name}", items, now, p.id)
-        p.equipped = emptyList()
-        p.stats = Formulas.player(p.skills(), emptyList(), { content.items[it] })
-        p.log("Вас убил $killer. Вы призрак; ваши вещи остались в трупе на 10 минут.")
+        if (by != null && !Law.lawless(p.location)) murder(p, by, now, killerWasCriminal, guilty)
+        else if (by != null) setState(by.id, "pk", p.name, null)
         tellOthers(p.location, p.id, "${p.name} погибает.")
         for (npc in world.npcsIn(p.location)) npc.enemies.remove(p.id)
         save(p)
         notify(p.id)
     }
 
-    private suspend fun useAmmo(p: Player): Boolean = db.tx { c ->
+    internal suspend fun useAmmo(p: Player): Boolean = db.tx { c ->
         val left = c.prepareStatement(
             "UPDATE character_items SET count = count - 1 WHERE character_id = ? AND item_id = ? AND count > 0 RETURNING count"
         ).use { st ->
@@ -881,7 +922,7 @@ class Game(
         dirty += p.id
     }
 
-    private fun regenNpc(npc: World.Npc, now: Long) {
+    internal fun regenNpc(npc: World.Npc, now: Long) {
         if (npc.hp >= npc.proto.hpMax) { npc.regenFrom = now; return }
         val add = Formulas.regen(now - npc.regenFrom)
         if (add <= 0) return
@@ -940,6 +981,17 @@ class Game(
             c.prepareStatement("SELECT id FROM character_known WHERE character_id = ?").use { st ->
                 st.setLong(1, p.id)
                 st.executeQuery().use { rs -> buildList { while (rs.next()) add(rs.getString(1)) } }
+            }
+        }
+        db.tx { c ->
+            c.prepareStatement("SELECT key, value, until FROM character_state WHERE character_id = ? AND key IN ('crime', 'faction')").use { st ->
+                st.setLong(1, p.id)
+                st.executeQuery().use { rs ->
+                    while (rs.next()) when (rs.getString(1)) {
+                        "crime" -> { p.crime = rs.getString(2); p.crimeUntil = rs.getLong(3) }
+                        "faction" -> p.faction = rs.getString(2).takeIf { it.isNotEmpty() }
+                    }
+                }
             }
         }
         loadClan(p)
@@ -1004,13 +1056,13 @@ class Game(
         val here = players.values
             .filter { it.id != p.id && it.location == loc.id && now - it.lastSeen < ACTIVE_SECONDS }
             .sortedBy { it.name }
-        val others = here.map { it.name + (it.clanName?.let { c -> " *$c*" } ?: "") + if (it.ghost) " (призрак)" else "" }
-        val npcs = world.npcsIn(loc.id).map { NpcView(it.key, it.name, it.hp, it.proto.hpMax, p.id in it.enemies, Rules.attackable(it.key), content.logic.hasDialog(if (it.key.startsWith("n.g.")) "n.g.guard" else it.key)) }
+        val others = here.map { it.name + (it.clanName?.let { c -> " *$c*" } ?: "") + (if (it.criminal(now)) " [${it.crime}]" else "") + if (it.ghost) " (призрак)" else "" }
+        val npcs = world.npcsIn(loc.id).map { NpcView(it.key, it.name, it.hp, it.proto.hpMax, p.id in it.enemies, true, content.logic.hasDialog(if (it.key.startsWith("n.g.")) "n.g.guard" else it.key)) }
         val location = loc.view().copy(
             npcs = npcs,
             items = world.itemsAt(loc.id, now),
             players = others,
-            corpses = world.corpsesAt(loc.id, now),
+            corpses = world.corpsesAt(loc.id, now, p.id, p.clanId),
         )
         val inventory = db.tx { c -> inventoryRows(c, p.id) }.map { (id, count, equipped) ->
             InventoryItemView(id, content.itemName(id), count, equipped, Rules.equipSlot(id) != null,
@@ -1022,6 +1074,7 @@ class Game(
             hp = p.hp.coerceAtLeast(0), hpMax = p.hpMax, mana = p.mana.coerceAtLeast(0), manaMax = p.manaMax,
             str = p.str, dex = p.dex, int = p.int, skillPoints = p.points,
             skills = p.other.filterValues { it > 0 }.toSortedMap(), known = p.known.sorted(),
+            crime = p.crime.takeIf { p.criminal(now) }, crimeMinutes = if (p.criminal(now)) (p.crimeUntil - now + 59) / 60 else 0,
             ghost = p.ghost, exp = p.exp, expNext = Formulas.expThreshold(p.skills()),
             hit = s.hit, dmgMin = s.dmgMin, dmgMax = s.dmgMax, armor = s.armor, dodge = s.dodge,
         )
@@ -1034,7 +1087,7 @@ class Game(
             castle = castleView(p),
             unread = unreadCount(p),
             clanInvites = clanInvites(p),
-            people = here.map { PersonView(it.name, it.clanName, it.ghost) },
+            people = here.map { q -> PersonView(q.name, q.clanName, q.ghost, q.crime.takeIf { q.criminal(now) }) },
             clan = p.clanName,
         )
     }

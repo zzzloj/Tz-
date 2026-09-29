@@ -47,20 +47,28 @@ class CastleTest {
             assertEquals(clan, v.castle!!.owner)
             assertTrue(v.journal.any { it.startsWith("Вы захватили замок") })
 
-            // A stranger cannot pass while an owner stands inside.
+            // A stranger knocks; walking in while an owner is inside is an attack, not a capture.
             game.place(b, "c.1.in")
-            var w = game.move(b, "c.1.gate")
-            assertEquals("c.1.in", w.character.location)
-            assertTrue(w.journal.last().startsWith("Замок охраняют"), w.journal.last())
-            w = game.castle(b, "knock", null)
+            game.castle(b, "knock", null)
             assertTrue(game.view(a).journal.any { it.contains("стучит в ворота") })
+            var w = game.move(b, "c.1.gate")
+            assertEquals("c.1.gate", w.character.location)
+            assertEquals(clan, w.castle!!.owner)
+            assertTrue(game.view(a).journal.any { it.startsWith("На ваш замок") })
+            game.place(b, "c.1.in")
 
-            // A guard for the castle, then the owner leaves: the guard alone keeps strangers out.
+            // A guard for the castle; with the owner away it attacks the stranger who walks in.
             val p = game.players.values.first { it.name == aName }
             assertTrue(game.hireCastleGuard(p, "n.o.castle1").contains("отправлен"))
             val guard = game.world.npcsIn("c.1.gate").first { it.key.startsWith("n.o.castle1") }
             game.place(a, "c.1.in")
-            assertEquals("c.1.in", game.move(b, "c.1.gate").character.location)
+            assertEquals("c.1.gate", game.move(b, "c.1.gate").character.location)
+            clock[0] += 1
+            game.tick(clock[0])
+            // (A newbie may already have fallen to the first blow, leaving no enemy.)
+            assertTrue(guard.enemies.isNotEmpty() || game.view(b).journal.any { it.startsWith(guard.name) }, "the guard should go for the stranger")
+            assertEquals(clan, game.view(b).castle!!.owner)
+            game.place(b, "x1086x501")
 
             // Lock the gate through the guard; after capture it cannot be locked for two hours.
             game.place(a, "c.1.gate")

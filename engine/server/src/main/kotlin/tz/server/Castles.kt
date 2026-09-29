@@ -11,9 +11,9 @@ import tz.shared.GameView
 
 /*
  * Clan castles c.1..c.5 (docs/mechanics-world.md §6.3, docs/quests.md §52,
- * f_castle.dat, f_castlein.dat, f_speako.dat), for now without fighting:
- * where the old game made guards attack, a defended castle simply does
- * not let strangers in; an undefended one is taken by walking in.
+ * f_castle.dat, f_castlein.dat, f_speako.dat): an undefended castle is
+ * taken by walking into its gate; a defended one is stormed — its guards
+ * attack strangers (Pvp.kt, lawTick), no crimes count inside.
  */
 
 internal class CastleState(
@@ -134,8 +134,9 @@ internal suspend fun Game.castleEntry(p: Game.Player, from: String, to: String):
     if (p.ghost && !own && !guest) return "Призрак не может войти в чужой замок."
     if (own || guest) return null
     if (c.clanId != null && defended(c, p.id)) {
-        tellClan(c.clanId, "${p.name} пытается проникнуть в ваш замок ${castleName(n)}!")
-        return "Замок охраняют: пока внутри его защитники, войти нельзя (постучите в ворота)."
+        // An attack: the guards and the owners inside fight (f_castle.dat:46-72).
+        tellClan(c.clanId, "На ваш замок ${castleName(n)} напали! ${p.name} у ворот.")
+        return null
     }
     if (p.clanId != null && to.endsWith(".gate")) {
         val old = c.clanId

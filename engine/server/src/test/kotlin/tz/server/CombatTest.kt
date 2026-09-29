@@ -83,10 +83,24 @@ class CombatTest {
     }
 
     @Test
-    fun peacefulNpcsCannotBeAttacked() = withGame(seed = 12) {
+    fun strikingTheInnocentCallsTheGuard() = withGame(seed = 12) {
         val npc = meet { all -> all.first { it.key == "n.beginner" } }
-        assertEquals(Errors.PEACEFUL, assertFailsWith<ApiException> { game.attack(account, npc.key) }.code)
         assertEquals(Errors.NO_TARGET, assertFailsWith<ApiException> { game.attack(account, "n.c.nobody") }.code)
+        clock[0] += 10
+        val v = game.attack(account, npc.key)
+        assertEquals("бандит", v.character.crime)
+        assertEquals(30L, v.character.crimeMinutes)
+        // The start street is guarded (zone 1): a city guard comes for the criminal.
+        clock[0] += 1
+        game.tick(clock[0])
+        val guard = game.world.npcsIn(npc.location).firstOrNull { it.key.startsWith("n.g.") }
+        assertNotNull(guard, "a guard appears")
+        assertTrue(guard.name.endsWith("[стража]"))
+        // After 30 minutes the crime is over and the guard (10 minutes) is gone.
+        clock[0] += 1801
+        game.tick(clock[0])
+        assertEquals(null, game.view(account).character.crime)
+        assertTrue(game.world.npcsIn(npc.location).none { it.key.startsWith("n.g.") })
     }
 
     @Test
