@@ -31,6 +31,8 @@ class World(
     data class Wander(val steps: Int, val minDelay: Int, val maxDelay: Int)
     data class Respawn(val location: String, val min: Int, val max: Int)
     data class RandomLoot(val id: String, val chance: Int, val min: Int, val max: Int)
+    /** One line of a trader's goods (`bank` "chance:min:max=id:count", f_speakbuy.dat). */
+    data class StockLine(val id: String, val chance: Int, val min: Int, val max: Int, val initial: Int)
 
     /** What an NPC is made of; kept so it can come back after death. */
     class Proto(
@@ -43,6 +45,7 @@ class World(
         val butcher: Map<String, Int>,
         val wander: Wander?,
         val respawn: Respawn?,
+        val stock: List<StockLine> = emptyList(),
     )
 
     class Npc(
@@ -66,6 +69,9 @@ class World(
         var busyUntil: Long = 0
         /** Regeneration counts from the last hit or heal (char[5] in the old engine). */
         var regenFrom: Long = 0
+        /** A trader's goods: id → count left, refilled at [restockAt] (only when someone looks, as before). */
+        val goods = LinkedHashMap<String, Int>().apply { for (l in proto.stock) put(l.id, l.initial) }
+        var restockAt = 0L
         /** Monsters (n.c.*) attack players on sight. */
         val aggressive get() = key.startsWith("n.c.")
     }
@@ -167,6 +173,7 @@ class World(
                 val proto = Proto(
                     templateOf(key), name, hpMax, Formulas.npc(war),
                     counted(value["items"]), emptyList(), counted(value["osvej"]), wander, respawn,
+                    stockOf((value["bank"] as? JsonPrimitive)?.contentOrNull ?: content.npcs[templateOf(key)]?.str("bank")),
                 )
                 val home = respawn?.location ?: loc
                 addNpc(Npc(key, proto, (char.int("hp") ?: hpMax).coerceIn(1, hpMax), loc, home, nextMove(now, wander), proto.items.toMutableMap()))
@@ -221,6 +228,35 @@ class World(
         addFromProto(t.key, proto, t.location, now)
     }
 
+    private fun stockOf(s: String?): List<StockLine> =
+        Regex("(\\d+):(\\d+):(\\d+)=([^:|]+):(\\d+)").findAll(s ?: "").map { m ->
+            val (chance, min, max, id, count) = m.destructured
+            StockLine(id, chance.toInt(), min.toInt(), max.toInt(), count.toInt())
+        }.toList()
+
+    /**
+     * The trader's goods now: refilled when [now] passed the refill time —
+     * each line gets rand(min,max) with its chance, else 0 — and the next
+     * refill is set period·rand(0.7..1.3) ahead (f_speakbuy.dat:4-12).
+     */
+    suspend fun goods(npc: Npc, period: Int, now: Long): Map<String, Int> = mutex.withLock {
+        if (now > npc.restockAt) {
+            for (l in npc.proto.stock) {
+                npc.goods[l.id] = if (random.nextInt(0, 101) > l.chance) 0 else random.nextInt(l.min, maxOf(l.min, l.max) + 1)
+            }
+            npc.restockAt = now + Math.round(period * random.nextInt(70, 131) / 100.0)
+        }
+        LinkedHashMap(npc.goods)
+    }
+
+    /** Takes [count] from a trader's goods; false if he has fewer. */
+    suspend fun sellFromGoods(npc: Npc, id: String, count: Int): Boolean = mutex.withLock {
+        val have = npc.goods[id] ?: 0
+        if (have < count) return@withLock false
+        npc.goods[id] = have - count
+        true
+    }
+
     private fun protoOf(template: String, wander: Wander?, respawn: Respawn?): Proto? {
         val o = content.npcs[template] ?: return null
         val char = o["char"] as? JsonObject ?: return null
@@ -229,6 +265,7 @@ class World(
         return Proto(
             template, name, hpMax, Formulas.npc(o["war"] as? JsonObject),
             counted(o["items"]), randomLoot(o["itemsrnd"]), counted(o["osvej"]), wander, respawn,
+            stockOf(o.str("bank")),
         )
     }
 
@@ -455,6 +492,43 @@ class World(
 
     /** Removes an item (fixtures too) from the ground; false if it is not there. */
     suspend fun removeItem(loc: String, itemId: String): Boolean = mutex.withLock { ground[loc]?.remove(itemId) != null }
+
+    // ---- crafting ------------------------------------------------------------------
+
+    private class NodeState(var stock: Int, var regrowAt: Long)
+    private val nodes = HashMap<String, NodeState>()
+
+    /**
+     * One pick at a resource node (ore vein, tree) in [loc]: refills it to
+     * [stockMax] once empty and past its regrow time; null if it is empty
+     * (docs: content/crafting.json "nodes"). Call [spendNode] on success.
+     */
+    suspend fun nodeHasStock(loc: String, node: String, initial: Int, stockMax: Int, now: Long): Boolean = mutex.withLock {
+        val n = nodes.getOrPut("$loc|$node") { NodeState(initial, 0) }
+        if (n.stock <= 0 && now > n.regrowAt) n.stock = stockMax
+        n.stock > 0
+    }
+
+    suspend fun spendNode(loc: String, node: String, regrowSeconds: Int, now: Long) = mutex.withLock {
+        val n = nodes["$loc|$node"] ?: return@withLock
+        n.stock -= 1
+        if (n.stock <= 0) n.regrowAt = now + regrowSeconds
+    }
+
+    /** Takes [count] of an item lying on the ground (not fixtures); false if there are fewer. */
+    suspend fun takeFromGround(loc: String, itemId: String, count: Int, now: Long): Boolean = mutex.withLock {
+        val g = ground[loc] ?: return@withLock false
+        val item = g[itemId]?.takeIf { it.expiresAt == 0L || it.expiresAt > now } ?: return@withLock false
+        if (item.count < count) return@withLock false
+        item.count -= count
+        if (item.count <= 0) g.remove(itemId)
+        true
+    }
+
+    /** Puts an object for [seconds] (a campfire). */
+    suspend fun placeFor(loc: String, itemId: String, seconds: Int, now: Long) = mutex.withLock {
+        putItem(loc, GroundItem(itemId, content.itemName(itemId), 1, now + seconds))
+    }
 
     // ---- for tests and diagnostics --------------------------------------------------
 

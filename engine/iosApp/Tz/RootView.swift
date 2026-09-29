@@ -60,6 +60,15 @@ struct RootView: View {
                                 onTalk: { npc in model.run { try await $0.talk(npc: npc) } },
                                 onAnswer: { option in model.run { try await $0.answer(option: option) } },
                                 onCloseDialog: { model.run { $0.closeDialog() } },
+                                pending: s.pendingUse,
+                                more: MoreActions(
+                                    trade: { item, n in model.run { try await $0.trade(item: item, count: Int32(n)) } },
+                                    bankPut: { item, n in model.run { try await $0.bankPut(item: item, count: Int32(n)) } },
+                                    bankTake: { item, n in model.run { try await $0.bankTake(item: item, count: Int32(n)) } },
+                                    use: { item in model.run { try await $0.use(item: item) } },
+                                    useOn: { target in model.run { try await $0.useOn(target: target) } },
+                                    cancelUse: { model.run { $0.cancelUse() } },
+                                    craft: { option in model.run { try await $0.craft(option: option) } }),
                                 onRefresh: { model.run { try await $0.refresh() } },
                                 onSignOut: { model.run { try await $0.signOut() } })
                 } else if s.error != nil {
@@ -133,6 +142,8 @@ struct PlayingView: View {
     let onTalk: (NpcView) -> Void
     let onAnswer: (DialogOption) -> Void
     let onCloseDialog: () -> Void
+    let pending: InventoryItemView?
+    let more: MoreActions
     let onRefresh: () -> Void
     let onSignOut: () -> Void
 
@@ -231,6 +242,68 @@ struct PlayingView: View {
                 }
             }
         }
+        if let shop = game.shop {
+            Section(shop.npcName + (shop.mode == "sell" ? " покупает" : " продаёт")) {
+                if let m = shop.message { Text(m) }
+                ForEach(shop.items, id: \.id) { item in
+                    HStack {
+                        Text("\(item.name)\(item.count > 1 ? " (\(item.count))" : "") — \(item.price) \(shop.currency)")
+                        Spacer()
+                        Button(shop.mode == "sell" ? "продать" : "купить") { more.trade(item, 1) }.disabled(busy).buttonStyle(.borderless)
+                        if item.count > 1 {
+                            Button("все") { more.trade(item, Int(item.count)) }.disabled(busy).buttonStyle(.borderless)
+                        }
+                    }
+                }
+                Button("закрыть") { onCloseDialog() }
+            }
+        }
+        if let bank = game.bank {
+            Section("Банк · \(bank.npcName)" + (bank.fee > 0 ? " (плата \(bank.fee))" : "")) {
+                if let m = bank.message { Text(m) }
+                if bank.items.isEmpty { Text("в ячейке пусто").foregroundStyle(.secondary) }
+                ForEach(bank.items, id: \.id) { item in
+                    HStack {
+                        Text(label(item.name, item.count))
+                        Spacer()
+                        Button("забрать") { more.bankTake(item, 1) }.disabled(busy).buttonStyle(.borderless)
+                        if item.count > 1 {
+                            Button("все") { more.bankTake(item, Int(item.count)) }.disabled(busy).buttonStyle(.borderless)
+                        }
+                    }
+                }
+                ForEach(game.inventory.filter { !$0.equipped }, id: \.id) { item in
+                    HStack {
+                        Text(label(item.name, item.count)).foregroundStyle(.secondary)
+                        Spacer()
+                        Button("в банк") { more.bankPut(item, Int(item.count)) }.disabled(busy).buttonStyle(.borderless)
+                    }
+                }
+                Button("закрыть") { onCloseDialog() }
+            }
+        }
+        if let craft = game.craft {
+            Section(craft.title) {
+                ForEach(Array(craft.options.enumerated()), id: \.offset) { _, o in
+                    Button("\(o.name) — \(o.chance)% (\(o.needs))") { more.craft(o) }.disabled(busy)
+                }
+                Button("закрыть") { onCloseDialog() }
+            }
+        }
+        if let p = pending {
+            Section("Применить «\(p.name)» к…") {
+                if p.target == "player" {
+                    ForEach(game.location.players, id: \.self) { name in
+                        Button(name) { more.useOn(name.replacingOccurrences(of: " (призрак)", with: "")) }.disabled(busy)
+                    }
+                } else {
+                    ForEach(game.inventory.filter { $0.id != p.id }, id: \.id) { item in
+                        Button(item.name) { more.useOn(item.id) }.disabled(busy)
+                    }
+                }
+                Button("отмена") { more.cancelUse() }
+            }
+        }
         Section("Инвентарь") {
             if game.inventory.isEmpty { Text("пусто").foregroundStyle(.secondary) }
             ForEach(game.inventory, id: \.id) { item in
@@ -241,6 +314,9 @@ struct PlayingView: View {
                         Button(item.equipped ? "снять" : "надеть") { onToggleEquip(item) }
                             .disabled(busy).buttonStyle(.borderless)
                     }
+                    if item.usable && !game.character.ghost {
+                        Button("исп.") { more.use(item) }.disabled(busy).buttonStyle(.borderless)
+                    }
                     Button("бросить") { onDrop(item) }.disabled(busy).buttonStyle(.borderless)
                 }
             }
@@ -249,4 +325,15 @@ struct PlayingView: View {
             Button("Выйти", role: .destructive) { onSignOut() }
         }
     }
+}
+
+/// Trade, bank, crafting and item use, grouped to keep PlayingView readable.
+struct MoreActions {
+    let trade: (ShopItemView, Int) -> Void
+    let bankPut: (InventoryItemView, Int) -> Void
+    let bankTake: (InventoryItemView, Int) -> Void
+    let use: (InventoryItemView) -> Void
+    let useOn: (String) -> Void
+    let cancelUse: () -> Void
+    let craft: (CraftOptionView) -> Void
 }

@@ -37,6 +37,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import tz.shared.CorpseView
+import tz.shared.CraftOptionView
+import tz.shared.ShopItemView
 import tz.shared.DialogOption
 import tz.shared.Rules
 import tz.shared.ExitView
@@ -111,6 +113,16 @@ fun App(session: Session, live: Boolean = true) {
                 onTalk = { npc -> run { session.talk(npc) } },
                 onAnswer = { option -> run { session.answer(option) } },
                 onCloseDialog = { session.closeDialog(); version++ },
+                pending = session.pendingUse,
+                more = MoreActions(
+                    trade = { item, n -> run { session.trade(item, n) } },
+                    bankPut = { item, n -> run { session.bankPut(item, n) } },
+                    bankTake = { item, n -> run { session.bankTake(item, n) } },
+                    use = { item -> run { session.use(item) } },
+                    useOn = { target -> run { session.useOn(target) } },
+                    cancelUse = { session.cancelUse(); version++ },
+                    craft = { option -> run { session.craft(option) } },
+                ),
                 onRefresh = { run { session.refresh() } },
                 onSignOut = { run { session.signOut() } },
             )
@@ -169,6 +181,8 @@ fun Playing(
     onCloseDialog: () -> Unit,
     onRefresh: () -> Unit,
     onSignOut: () -> Unit,
+    pending: InventoryItemView? = null,
+    more: MoreActions = MoreActions(),
 ) {
     val c = game.character
     val loc = game.location
@@ -196,6 +210,56 @@ fun Playing(
                     TextButton(onClick = { onAnswer(o) }, enabled = !busy) { Text(o.label) }
                 }
                 TextButton(onClick = onCloseDialog) { Text(if (d.options.isEmpty()) "[Конец диалога]" else "закончить разговор") }
+            }
+        }
+    }
+    game.shop?.let { shop ->
+        Panel(shop.npcName + if (shop.mode == "sell") " покупает" else " продаёт", onCloseDialog) {
+            shop.message?.let { Text(it, style = small) }
+            shop.items.forEach { item ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("${item.name}${if (item.count > 1) " (${item.count})" else ""} — ${item.price} ${shop.currency}", Modifier.weight(1f), style = small)
+                    val verb = if (shop.mode == "sell") "продать" else "купить"
+                    TextButton(onClick = { more.trade(item, 1) }, enabled = !busy) { Text(verb) }
+                    if (item.count > 1) TextButton(onClick = { more.trade(item, item.count) }, enabled = !busy) { Text("все") }
+                }
+            }
+        }
+    }
+    game.bank?.let { bank ->
+        Panel("Банк · ${bank.npcName}" + if (bank.fee > 0) " (плата ${bank.fee})" else "", onCloseDialog) {
+            bank.message?.let { Text(it, style = small) }
+            if (bank.items.isEmpty()) Text("в ячейке пусто", style = small)
+            bank.items.forEach { item ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("${item.name}${if (item.count > 1) " ×${item.count}" else ""}", Modifier.weight(1f), style = small)
+                    TextButton(onClick = { more.bankTake(item, 1) }, enabled = !busy) { Text("забрать") }
+                    if (item.count > 1) TextButton(onClick = { more.bankTake(item, item.count) }, enabled = !busy) { Text("все") }
+                }
+            }
+            Text("Положить из рюкзака:", style = MaterialTheme.typography.labelMedium)
+            game.inventory.filter { !it.equipped }.forEach { item ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("${item.name}${if (item.count > 1) " ×${item.count}" else ""}", Modifier.weight(1f), style = small)
+                    TextButton(onClick = { more.bankPut(item, item.count) }, enabled = !busy) { Text("в банк") }
+                }
+            }
+        }
+    }
+    game.craft?.let { craft ->
+        Panel(craft.title, onCloseDialog) {
+            craft.options.forEach { o ->
+                TextButton(onClick = { more.craft(o) }, enabled = !busy) { Text("${o.name} — ${o.chance}% (${o.needs})") }
+            }
+        }
+    }
+    pending?.let { p ->
+        Panel("Применить «${p.name}» к…", more.cancelUse) {
+            if (p.target == "player") loc.players.forEach { name ->
+                val clean = name.removeSuffix(" (призрак)")
+                TextButton(onClick = { more.useOn(clean) }, enabled = !busy) { Text(name) }
+            } else game.inventory.filter { it.id != p.id }.forEach { item ->
+                TextButton(onClick = { more.useOn(item.id) }, enabled = !busy) { Text(item.name) }
             }
         }
     }
@@ -257,8 +321,31 @@ fun Playing(
             if (item.equippable) TextButton(onClick = { onToggleEquip(item) }, enabled = !busy) {
                 Text(if (item.equipped) "снять" else "надеть")
             }
+            if (item.usable && !c.ghost) TextButton(onClick = { more.use(item) }, enabled = !busy) { Text("исп.") }
             TextButton(onClick = { onDrop(item) }, enabled = !busy) { Text("бросить") }
         }
     }
     TextButton(onClick = onSignOut) { Text("Выйти") }
+}
+
+/** Trade, bank, crafting and item use; grouped so Playing keeps a readable signature. */
+class MoreActions(
+    val trade: (ShopItemView, Int) -> Unit = { _, _ -> },
+    val bankPut: (InventoryItemView, Int) -> Unit = { _, _ -> },
+    val bankTake: (InventoryItemView, Int) -> Unit = { _, _ -> },
+    val use: (InventoryItemView) -> Unit = {},
+    val useOn: (String) -> Unit = {},
+    val cancelUse: () -> Unit = {},
+    val craft: (CraftOptionView) -> Unit = {},
+)
+
+@Composable
+fun Panel(title: String, onClose: () -> Unit, content: @Composable () -> Unit) {
+    Surface(tonalElevation = 2.dp, shape = MaterialTheme.shapes.medium, modifier = Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(title, style = MaterialTheme.typography.titleMedium)
+            content()
+            TextButton(onClick = onClose) { Text("закрыть") }
+        }
+    }
 }

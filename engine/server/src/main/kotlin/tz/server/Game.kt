@@ -32,16 +32,16 @@ import kotlin.random.Random
  * engine's game.lock — simple and fast enough for one world.
  */
 class Game(
-    private val content: Content,
-    private val db: Db,
+    internal val content: Content,
+    internal val db: Db,
     private val accounts: Accounts,
     val world: World,
-    private val clock: () -> Long = { System.currentTimeMillis() / 1000 },
+    internal val clock: () -> Long = { System.currentTimeMillis() / 1000 },
     random: Random = Random.Default,
 ) {
-    private val dice = Dice.of(random)
-    private val rnd = random
-    private val lock = Mutex()
+    internal val dice = Dice.of(random)
+    internal val rnd = random
+    internal val lock = Mutex()
 
     class Player(
         val id: Long,
@@ -90,7 +90,7 @@ class Game(
         }
     }
 
-    private val players = ConcurrentHashMap<Long, Player>()
+    internal val players = ConcurrentHashMap<Long, Player>()
     private val byAccount = ConcurrentHashMap<Long, Long>()
     private val events = ConcurrentHashMap<Long, MutableSharedFlow<Unit>>()
 
@@ -248,6 +248,16 @@ class Game(
         if (!d.hasDialog(dialogId)) throw ApiException(HttpStatusCode.BadRequest, Errors.CANNOT_TALK)
         if (topic != "begin" && (p.talkingTo != npcKey || (topic to arg) !in p.talkChoices))
             throw ApiException(HttpStatusCode.Conflict, Errors.TOPIC_CLOSED)
+        // Trade and bank choices open the trader's list or the bank cell instead of a line.
+        if (topic in Content.ENGINE_TOPICS && !p.ghost && p.id !in npc.enemies) {
+            p.talkingTo = npcKey
+            p.talkChoices = emptySet()
+            val base = viewLocked(p)
+            return@withLock when (topic) {
+                "tobank", "frombank" -> base.copy(bank = bankView(p, npc))
+                else -> base.copy(shop = shopView(p, npc, dialogId, topic))
+            }
+        }
         val view = when {
             p.ghost && !npcKey.startsWith("n.h.") && !npcKey.startsWith("n.cap") ->
                 DialogView(npcKey, npc.name, "Вы призрак и поэтому не можете ни с кем говорить, найдите лекаря или камень воскрешения.")
@@ -366,8 +376,9 @@ class Game(
             text = text.replace("{left:$key}", ((end - ctx.now + 59) / 60).toString())
         }
         text = text.replace("{arg}", ctx.arg ?: "")
-        // Trade and bank come with stage 5; option labels that are still PHP are not shown.
-        return text to options.filter { it.topic !in Content.ENGINE_TOPICS && it.label.isNotBlank() && !it.label.startsWith("eval:") }
+        // Option labels that are still PHP are not shown; nor Uin's accidental bank.
+        return text to options.filter { it.label.isNotBlank() && !it.label.startsWith("eval:") &&
+            !(ctx.dialog == "n.beginner" && it.topic in Content.ENGINE_TOPICS) }
     }
 
     private suspend fun cond(ctx: TalkCtx, c: JsonObject): Boolean {
@@ -606,7 +617,7 @@ class Game(
         }
     }
 
-    private suspend fun learn(p: Player, id: String) {
+    internal suspend fun learn(p: Player, id: String) {
         if (!p.known.add(id)) return
         db.tx { c ->
             c.prepareStatement("INSERT INTO character_known (character_id, id) VALUES (?, ?) ON CONFLICT DO NOTHING").use { st ->
@@ -616,7 +627,7 @@ class Game(
     }
 
     /** Adds (count > 0) or removes items; a stack that reaches 0 is deleted. */
-    private suspend fun changeItem(p: Player, itemId: String, count: Int) = db.tx { c ->
+    internal suspend fun changeItem(p: Player, itemId: String, count: Int) = db.tx { c ->
         if (count > 0) addItem(c, p.id, itemId, count)
         else if (count < 0) {
             // The last ones: delete the row (count must stay > 0), otherwise decrease.
@@ -629,7 +640,7 @@ class Game(
         }
     }
 
-    private suspend fun setState(characterId: Long, key: String, value: String, until: Long?) = db.tx { c ->
+    internal suspend fun setState(characterId: Long, key: String, value: String, until: Long?) = db.tx { c ->
         c.prepareStatement(
             "INSERT INTO character_state (character_id, key, value, until) VALUES (?, ?, ?, ?) " +
                 "ON CONFLICT (character_id, key) DO UPDATE SET value = EXCLUDED.value, until = EXCLUDED.until"
@@ -640,7 +651,7 @@ class Game(
         }
     }
 
-    private suspend fun clearState(characterId: Long, key: String) = db.tx { c ->
+    internal suspend fun clearState(characterId: Long, key: String) = db.tx { c ->
         c.prepareStatement("DELETE FROM character_state WHERE character_id = ? AND key = ?").use { st ->
             st.setLong(1, characterId); st.setString(2, key); st.executeUpdate()
         }
@@ -758,7 +769,7 @@ class Game(
     }
 
     /** f_addexp.dat: over the threshold the experience turns into one skill point (the rest burns). */
-    private suspend fun addExp(p: Player, gained: Int) {
+    internal suspend fun addExp(p: Player, gained: Int) {
         if (gained <= 0) return
         p.exp += gained
         p.log("Опыт +$gained")
@@ -836,12 +847,12 @@ class Game(
 
     // ---- players --------------------------------------------------------------------
 
-    private fun alive(p: Player): Player {
+    internal fun alive(p: Player): Player {
         if (p.ghost) throw ApiException(HttpStatusCode.Conflict, Errors.GHOST)
         return p
     }
 
-    private suspend fun player(account: Account): Player {
+    internal suspend fun player(account: Account): Player {
         val now = clock()
         val cached = byAccount[account.id]?.let { players[it] }
         val p = cached ?: load(account) ?: throw ApiException(HttpStatusCode.Conflict, Errors.NO_CHARACTER)
@@ -882,14 +893,14 @@ class Game(
         return p
     }
 
-    private suspend fun refreshStats(p: Player) {
+    internal suspend fun refreshStats(p: Player) {
         p.equipped = db.tx { c -> inventoryRows(c, p.id) }.filter { it.third }.map { it.first }
         p.stats = Formulas.player(p.skills(), p.equipped, { content.items[it] })
         p.hp = p.hp.coerceAtMost(p.hpMax)
         p.mana = p.mana.coerceAtMost(p.manaMax)
     }
 
-    private suspend fun save(p: Player) = db.tx { c ->
+    internal suspend fun save(p: Player) = db.tx { c ->
         c.prepareStatement(
             "UPDATE characters SET location = ?, hp = ?, mana = ?, ghost = ?, exp = ?, skill_points = ?, " +
                 "str = ?, dex = ?, intel = ?, skills = ?::jsonb WHERE id = ?"
@@ -913,16 +924,16 @@ class Game(
         MutableSharedFlow(extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
     }
 
-    private fun notify(id: Long) {
+    internal fun notify(id: Long) {
         events[id]?.tryEmit(Unit)
     }
 
-    private fun notifyLocation(loc: String, except: Long) {
+    internal fun notifyLocation(loc: String, except: Long) {
         val now = clock()
         for (q in players.values) if (q.id != except && q.location == loc && now - q.lastSeen < ACTIVE_SECONDS) notify(q.id)
     }
 
-    private fun tellOthers(loc: String, except: Long, line: String) {
+    internal fun tellOthers(loc: String, except: Long, line: String) {
         val now = clock()
         for (q in players.values) if (q.id != except && q.location == loc && now - q.lastSeen < ACTIVE_SECONDS) {
             q.log(line)
@@ -930,7 +941,7 @@ class Game(
         }
     }
 
-    private suspend fun viewLocked(p: Player): GameView {
+    internal suspend fun viewLocked(p: Player): GameView {
         val now = clock()
         val loc = content.locations[p.location] ?: content.locations.getValue(Protocol.START_LOCATION)
         val others = players.values
@@ -945,7 +956,8 @@ class Game(
             corpses = world.corpsesAt(loc.id, now),
         )
         val inventory = db.tx { c -> inventoryRows(c, p.id) }.map { (id, count, equipped) ->
-            InventoryItemView(id, content.itemName(id), count, equipped, Rules.equipSlot(id) != null)
+            InventoryItemView(id, content.itemName(id), count, equipped, Rules.equipSlot(id) != null,
+                content.crafting.find(id) != null, content.crafting.targetOf(id))
         }
         val s = p.stats
         val character = CharacterView(
@@ -966,7 +978,7 @@ class Game(
 
     // ---- inventory rows ----------------------------------------------------------------
 
-    private fun addItem(c: Connection, characterId: Long, itemId: String, count: Int) {
+    internal fun addItem(c: Connection, characterId: Long, itemId: String, count: Int) {
         c.prepareStatement(
             "INSERT INTO character_items (character_id, item_id, count) VALUES (?, ?, ?) " +
                 "ON CONFLICT (character_id, item_id) DO UPDATE SET count = character_items.count + EXCLUDED.count"
@@ -978,7 +990,7 @@ class Game(
         }
     }
 
-    private fun inventoryRows(c: Connection, characterId: Long): List<Triple<String, Int, Boolean>> =
+    internal fun inventoryRows(c: Connection, characterId: Long): List<Triple<String, Int, Boolean>> =
         c.prepareStatement("SELECT item_id, count, equipped FROM character_items WHERE character_id = ? ORDER BY equipped DESC, item_id").use { st ->
             st.setLong(1, characterId)
             st.executeQuery().use { rs ->

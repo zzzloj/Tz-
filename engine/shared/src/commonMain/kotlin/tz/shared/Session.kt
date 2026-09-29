@@ -95,7 +95,47 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
     }
 
     fun closeDialog() {
-        game = game?.copy(dialog = null)
+        game = game?.copy(dialog = null, shop = null, bank = null, craft = null)
+    }
+
+    /** Buys from (shop mode buy/buy2) or sells to (sell) the open shop. */
+    suspend fun trade(item: ShopItemView, count: Int) = action {
+        val s = game?.shop ?: return@action
+        game = api.shop(s.npc, s.mode, item.id, count)
+    }
+
+    suspend fun bankPut(item: InventoryItemView, count: Int) = action {
+        val b = game?.bank ?: return@action
+        game = api.bank(b.npc, "put", item.id, count)
+    }
+
+    suspend fun bankTake(item: InventoryItemView, count: Int) = action {
+        val b = game?.bank ?: return@action
+        game = api.bank(b.npc, "take", item.id, count)
+    }
+
+    /** An item waiting for its target (a gem to inlay, clothes to cut, a ghost to revive). */
+    var pendingUse: InventoryItemView? = null
+        private set
+
+    /** Uses an item; one that needs a target waits for [useOn]. */
+    suspend fun use(item: InventoryItemView) {
+        if (item.target != null) { pendingUse = item; return }
+        action { game = api.use(item.id) }
+    }
+
+    suspend fun useOn(target: String) {
+        val item = pendingUse ?: return
+        pendingUse = null
+        action { game = api.use(item.id, target = target) }
+    }
+
+    fun cancelUse() { pendingUse = null }
+
+    /** Picks a recipe from the open crafting menu. */
+    suspend fun craft(option: CraftOptionView) = action {
+        val c = game?.craft ?: return@action
+        game = api.use(c.tool, recipe = option.key)
     }
 
     /**
@@ -109,7 +149,7 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
                 try {
                     api.events {
                         if (screen == Screen.PLAYING && !busy) {
-                            try { val open = game?.dialog; game = api.game().copy(dialog = open); onUpdate() } catch (e: ApiError) { if (e.code == Errors.NO_CHARACTER) enter() }
+                            try { val g = game; game = api.game().copy(dialog = g?.dialog, shop = g?.shop, bank = g?.bank, craft = g?.craft); onUpdate() } catch (e: ApiError) { if (e.code == Errors.NO_CHARACTER) enter() }
                         }
                     }
                 } catch (e: CancellationException) {
