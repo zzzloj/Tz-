@@ -619,11 +619,12 @@ class Game(
     private suspend fun changeItem(p: Player, itemId: String, count: Int) = db.tx { c ->
         if (count > 0) addItem(c, p.id, itemId, count)
         else if (count < 0) {
-            c.prepareStatement("UPDATE character_items SET count = count + ? WHERE character_id = ? AND item_id = ?").use { st ->
-                st.setInt(1, count); st.setLong(2, p.id); st.setString(3, itemId); st.executeUpdate()
+            // The last ones: delete the row (count must stay > 0), otherwise decrease.
+            val deleted = c.prepareStatement("DELETE FROM character_items WHERE character_id = ? AND item_id = ? AND count <= ?").use { st ->
+                st.setLong(1, p.id); st.setString(2, itemId); st.setInt(3, -count); st.executeUpdate()
             }
-            c.prepareStatement("DELETE FROM character_items WHERE character_id = ? AND item_id = ? AND count <= 0").use { st ->
-                st.setLong(1, p.id); st.setString(2, itemId); st.executeUpdate()
+            if (deleted == 0) c.prepareStatement("UPDATE character_items SET count = count + ? WHERE character_id = ? AND item_id = ?").use { st ->
+                st.setInt(1, count); st.setLong(2, p.id); st.setString(3, itemId); st.executeUpdate()
             }
         }
     }
