@@ -60,7 +60,10 @@ class Db(jdbcUrl: String, user: String?, password: String?) : AutoCloseable {
          */
         fun fromUrl(url: String): Db {
             if (url.startsWith("jdbc:")) return Db(url, null, null)
-            val uri = URI(url)
+            val uri = URI(url.trim())
+            require(!uri.host.isNullOrEmpty() && !uri.rawPath.isNullOrEmpty() && uri.rawPath != "/") {
+                "DATABASE_URL must look like postgres://user:password@host:port/database (host or database missing)"
+            }
             val (user, password) = (uri.rawUserInfo ?: ":").split(":", limit = 2).map { java.net.URLDecoder.decode(it, "UTF-8") }
                 .let { it[0] to it.getOrElse(1) { "" } }
             val port = if (uri.port == -1) 5432 else uri.port
