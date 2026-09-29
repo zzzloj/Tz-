@@ -162,7 +162,8 @@ private fun Route.accountRoutes(accounts: Accounts, game: Game) {
     }
     post("/api/game/attack") {
         val account = requireAccount(call, accounts)
-        call.respond(game.attack(account, call.receive<TargetRequest>().target))
+        val body = call.receive<TargetRequest>()
+        call.respond(if (body.player) game.attackPlayer(account, body.target) else game.attack(account, body.target))
     }
     post("/api/game/loot") {
         val account = requireAccount(call, accounts)

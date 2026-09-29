@@ -72,6 +72,10 @@ class World(
         /** A trader's goods: id → count left, refilled at [restockAt] (only when someone looks, as before). */
         val goods = LinkedHashMap<String, Int>().apply { for (l in proto.stock) put(l.id, l.initial) }
         var restockAt = 0L
+        /** A city guard fighting a monster (NPC against NPC). */
+        var npcTarget: String? = null
+        /** Vanishes at this time (city guards live 10 minutes); 0 — never. */
+        var expiresAt = 0L
         /** Monsters (n.c.*) attack players on sight. */
         val aggressive get() = key.startsWith("n.c.")
     }
@@ -86,6 +90,10 @@ class World(
         val expiresAt: Long,
         /** Character id for a player's corpse. */
         val playerId: Long?,
+        /** Anyone may take from it (f_kill.dat:17): a criminal's, a monster's or animal's, or one in a castle. */
+        val free: Boolean = true,
+        /** Clan of the dead character: clanmates may take without looting. */
+        val clanId: Long? = null,
     )
 
     private sealed interface Timer {
@@ -325,6 +333,7 @@ class World(
         val moving = npcs.values.flatMap { it.values }
             .filter { it.proto.wander != null && it.enemies.isEmpty() && it.nextMoveAt <= now }
         for (npc in moving) wanderStep(npc, now)
+        for (list in npcs.values) list.values.removeAll { it.expiresAt != 0L && it.expiresAt <= now }
         for (items in ground.values) items.values.removeAll { it.expiresAt != 0L && it.expiresAt <= now }
         for (list in corpses.values) list.values.removeAll { it.expiresAt <= now }
     }
@@ -386,18 +395,24 @@ class World(
      */
     suspend fun kill(npc: Npc, now: Long): Corpse = mutex.withLock {
         npcs[npc.location]?.remove(npc.key)
-        val corpse = addCorpseLocked(npc.location, "труп: ${npc.name}", npc.items, npc.proto.butcher, now, null)
+        val free = npc.key.startsWith("n.c.") || npc.key.startsWith("n.a.") || CastleRules.inside(npc.location)
+        val corpse = addCorpseLocked(npc.location, "труп: ${npc.name}", npc.items, npc.proto.butcher, now, null, free)
         npc.proto.respawn?.let { r ->
             timers += (now + random.nextInt(r.min, r.max + 1)) to NpcSpawn(r.location, npc.key, "", npc.proto.wander, npc.proto)
         }
         corpse
     }
 
-    suspend fun addCorpse(loc: String, name: String, items: Map<String, Int>, now: Long, playerId: Long?): Corpse =
-        mutex.withLock { addCorpseLocked(loc, name, items, emptyMap(), now, playerId) }
+    suspend fun addCorpse(loc: String, name: String, items: Map<String, Int>, now: Long, playerId: Long?, free: Boolean = true, clanId: Long? = null): Corpse =
+        mutex.withLock { addCorpseLocked(loc, name, items, emptyMap(), now, playerId, free, clanId) }
 
-    private fun addCorpseLocked(loc: String, name: String, items: Map<String, Int>, butcher: Map<String, Int>, now: Long, playerId: Long?): Corpse {
-        val corpse = Corpse("c${++corpseSeq}", name, LinkedHashMap(items), LinkedHashMap(butcher), now + Rules.DROPPED_ITEM_LIFETIME, playerId)
+    suspend fun corpse(loc: String, corpseId: String, now: Long): Corpse? = mutex.withLock { corpses[loc]?.get(corpseId)?.takeIf { it.expiresAt > now } }
+
+    private fun addCorpseLocked(
+        loc: String, name: String, items: Map<String, Int>, butcher: Map<String, Int>, now: Long, playerId: Long?,
+        free: Boolean = true, clanId: Long? = null,
+    ): Corpse {
+        val corpse = Corpse("c${++corpseSeq}", name, LinkedHashMap(items), LinkedHashMap(butcher), now + Rules.DROPPED_ITEM_LIFETIME, playerId, free, clanId)
         corpses.getOrPut(loc) { LinkedHashMap() }[corpse.id] = corpse
         return corpse
     }
@@ -416,12 +431,13 @@ class World(
         loot
     }
 
-    suspend fun corpsesAt(loc: String, now: Long): List<CorpseView> = mutex.withLock {
+    suspend fun corpsesAt(loc: String, now: Long, looter: Long? = null, looterClan: Long? = null): List<CorpseView> = mutex.withLock {
         corpses[loc]?.values?.filter { it.expiresAt > now }?.map { c ->
             CorpseView(
                 c.id, c.name,
                 c.items.map { (id, n) -> GroundItemView(id, content.itemName(id), n, takeable = true) },
                 canButcher = c.butcher.isNotEmpty(),
+                looting = !c.free && c.playerId != looter && (c.clanId == null || c.clanId != looterClan),
             )
         } ?: emptyList()
     }
@@ -486,6 +502,15 @@ class World(
     /** Puts an item on the ground that never vanishes (quest objects: a repaired boat, a hidden clover). */
     suspend fun placePermanent(loc: String, itemId: String, count: Int) = mutex.withLock {
         putItem(loc, GroundItem(itemId, content.itemName(itemId), count, 0))
+    }
+
+    /** Puts an NPC made on the fly (a city guard) for [lifetime] seconds. */
+    suspend fun spawnProto(key: String, proto: Proto, loc: String, now: Long, lifetime: Long): Npc = mutex.withLock {
+        val npc = Npc(key, proto, proto.hpMax, loc, loc, Long.MAX_VALUE, HashMap(proto.items))
+        npc.regenFrom = now
+        npc.expiresAt = now + lifetime
+        addNpc(npc)
+        npc
     }
 
     suspend fun removeNpc(key: String, loc: String): Boolean = mutex.withLock { npcs[loc]?.remove(key) != null }

@@ -21,7 +21,8 @@ SKILLS = {"str", "dex", "int", "meditation", "steal", "animaltaming", "hand", "c
 # Handlers the server implements (Dialogs.HANDLERS in engine/server/.../Dialogs.kt).
 HANDLERS = {"arena-count", "hide-item-random", "repair-boat", "lower-int", "npc-hand-over", "require-pk",
             "clan-status", "clan-leave", "clan-name-input", "clan-create", "clan-restore",
-            "castle-keeper-access", "castle-rune-list", "castle-contract", "castle-teleport"}
+            "castle-keeper-access", "castle-rune-list", "castle-contract", "castle-teleport",
+            "arena-enter", "bounty-list", "bounty-form", "bounty-place", "bounty-claim"}
 
 
 def handler_supported(a):
