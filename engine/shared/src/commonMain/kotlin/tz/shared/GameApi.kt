@@ -128,6 +128,9 @@ class GameApi(
     suspend fun clan(op: String, name: String? = null, rank: String? = null, clan: String? = null, text: String? = null): ClanView =
         postJson<ClanView, ClanRequest>("/api/clan", ClanRequest(op, name, rank, clan, text))
 
+    suspend fun castle(op: String, text: String? = null): GameView =
+        postJson<GameView, CastleRequest>("/api/game/castle", CastleRequest(op, text))
+
     suspend fun resurrect(): GameView = check(http.post(url("/api/game/resurrect")) { auth() })
 
     /**

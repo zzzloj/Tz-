@@ -42,6 +42,7 @@ import tz.shared.SayRequest
 import tz.shared.ExchangeRequest
 import tz.shared.MessageRequest
 import tz.shared.ClanRequest
+import tz.shared.CastleRequest
 import tz.shared.TargetRequest
 import tz.shared.MeView
 import tz.shared.MoveRequest
@@ -209,6 +210,11 @@ private fun Route.accountRoutes(accounts: Accounts, game: Game) {
         val account = requireAccount(call, accounts)
         val body = call.receive<MessageRequest>()
         call.respond(game.message(account, body.op, body.to, body.text))
+    }
+    post("/api/game/castle") {
+        val account = requireAccount(call, accounts)
+        val b = call.receive<CastleRequest>()
+        call.respond(game.castle(account, b.op, b.text))
     }
     get("/api/clan") {
         call.respond(game.clan(requireAccount(call, accounts)))

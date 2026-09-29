@@ -20,7 +20,13 @@ SKILLS = {"str", "dex", "int", "meditation", "steal", "animaltaming", "hand", "c
           "exp", "points"}
 # Handlers the server implements (Dialogs.HANDLERS in engine/server/.../Dialogs.kt).
 HANDLERS = {"arena-count", "hide-item-random", "repair-boat", "lower-int", "npc-hand-over", "require-pk",
-            "clan-status", "clan-leave", "clan-name-input", "clan-create", "clan-restore"}
+            "clan-status", "clan-leave", "clan-name-input", "clan-create", "clan-restore",
+            "castle-keeper-access", "castle-rune-list", "castle-contract", "castle-teleport"}
+
+
+def handler_supported(a):
+    h = a.get("handler")
+    return h is None or h in HANDLERS or (h == "hire-mercenary" and str(a.get("template", "")).startswith("n.o."))
 ENGINE_TOPICS = {"buy", "buy2", "sell", "tobank", "frombank"}
 
 root = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("-") else
@@ -167,7 +173,7 @@ def is_eval(v):
 untranslated = sorted(f"{d}/{t}" for d, o in dialogs.items() for t, v in o["topics"].items()
                       if is_eval(v) and t not in logic.get(d, {}))
 handlers = sorted(f"{d}/{t}" for d, topics in logic.items() for t, rules in topics.items()
-                  if any(a.get("handler") not in (None, *HANDLERS) for r in rules for a in r.get("do", [])))
+                  if any(not handler_supported(a) for r in rules for a in r.get("do", [])))
 raw_dialogs = sorted(p.name for p in (root / "raw/speak").glob("n.*") if p.name not in logic)
 
 print(f"logic: {len(logic)} dialogs, {len(timers)} timers, {len(problems)} problems, "

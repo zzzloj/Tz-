@@ -180,7 +180,28 @@ data class GameView(
     val people: List<PersonView> = emptyList(),
     /** This character's clan, if any. */
     val clan: String? = null,
+    /** At or in a clan castle: owner, gate, what can be done (POST /api/game/castle). */
+    val castle: CastleView? = null,
 )
+
+@Serializable
+data class CastleView(
+    val id: Int,
+    val name: String,
+    /** Owning clan; null — nobody's, the first clan member to enter the gate takes it. */
+    val owner: String? = null,
+    val sign: String = "",
+    /** Minutes the gate stays locked; 0 — open. */
+    val lockedMinutes: Long = 0,
+    val member: Boolean = false,
+    val guest: Boolean = false,
+    val canOpen: Boolean = false,
+    val canKnock: Boolean = false,
+)
+
+/** op: knock, open, sign (text). */
+@Serializable
+data class CastleRequest(val op: String, val text: String? = null)
 
 @Serializable
 data class PersonView(val name: String, val clan: String? = null, val ghost: Boolean = false)

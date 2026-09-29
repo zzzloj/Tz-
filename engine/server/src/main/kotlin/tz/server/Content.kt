@@ -103,7 +103,9 @@ class Content(
 
         private fun location(id: String, o: JsonObject): Location {
             // Castle gates keep state after '*' in the name; it is never shown.
-            val name = (o["name"] as? JsonPrimitive)?.contentOrNull?.substringBefore('*') ?: id
+            var name = (o["name"] as? JsonPrimitive)?.contentOrNull?.substringBefore('*') ?: id
+            // Castle gates kept their state in the name; an unowned one has "[knock]:guests{lock}" left.
+            if (id.endsWith(".gate")) name = name.split('[', '{', ':', '#', '(').first().trim()
             val zone = (o["zone"] as? JsonPrimitive)?.intOrNull ?: 0
             val exits = (o["exits"] as? JsonArray).orEmpty().mapNotNull { e ->
                 val x = e as? JsonObject ?: return@mapNotNull null

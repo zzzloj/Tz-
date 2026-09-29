@@ -84,7 +84,8 @@ struct RootView: View {
                                     cancelExchange: { model.run { try await $0.cancelExchange() } },
                                     openClan: { model.run { try await $0.openClan() } },
                                     closeClan: { model.run { $0.closeClan() } },
-                                    clanOp: { op, name, rank, clan in model.run { try await $0.clanOp(op: op, name: name, rank: rank, clan: clan, text: nil) } }),
+                                    clanOp: { op, name, rank, clan in model.run { try await $0.clanOp(op: op, name: name, rank: rank, clan: clan, text: nil) } },
+                                    castleOp: { op, text in model.run { try await $0.castleOp(op: op, text: text) } }),
                                 mail: s.mail,
                                 clanInfo: s.clanInfo,
                                 onRefresh: { model.run { try await $0.refresh() } },
@@ -214,6 +215,18 @@ struct PlayingView: View {
                 }
             }
             if let d = loc.description_ { Text(d) }
+            if let cs = game.castle {
+                Text((cs.owner.map { "Замок принадлежит клану \($0)" } ?? "Замок никому не принадлежит: первый член клана, вошедший в ворота, захватит его")
+                     + (cs.lockedMinutes > 0 ? " · ворота заперты ещё \(cs.lockedMinutes) мин." : "")
+                     + (cs.guest ? " · вы гость" : "")).font(.footnote)
+                if !cs.sign.isEmpty { Text("Надпись на воротах: \(cs.sign)").font(.footnote) }
+                if cs.canKnock { Button("Постучать") { social.castleOp("knock", nil) }.disabled(busy) }
+                if cs.canOpen { Button("Открыть ворота") { social.castleOp("open", nil) }.disabled(busy) }
+                if cs.member {
+                    TextField("Вывеска", text: $speech)
+                    Button("Сохранить вывеску") { social.castleOp("sign", speech); speech = "" }.disabled(busy || speech.isEmpty)
+                }
+            }
             ForEach(loc.npcs, id: \.id) { npc in
                 HStack {
                     Text(npc.name
@@ -483,4 +496,5 @@ struct SocialActions {
     let openClan: () -> Void
     let closeClan: () -> Void
     let clanOp: (String, String?, String?, String?) -> Void
+    let castleOp: (String, String?) -> Void
 }

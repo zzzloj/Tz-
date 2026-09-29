@@ -100,6 +100,11 @@ class Game(
     }
 
     internal val players = ConcurrentHashMap<Long, Player>()
+    /** Castles and their hired guards (Castles.kt), loaded on first use. */
+    internal var castleCache: HashMap<Int, CastleState>? = null
+    internal val castleGuards = HashMap<String, CastleGuard>()
+    private var lastGuardCheck = 0L
+
     /** Open exchanges by character id (Social.kt). */
     internal val exchanges = HashMap<Long, ExchangeSide>()
     private val byAccount = ConcurrentHashMap<Long, Long>()
@@ -115,6 +120,7 @@ class Game(
         if (here == null || here.exits.none { it.target == target } || target !in content.locations)
             throw ApiException(HttpStatusCode.BadRequest, Errors.NOT_AN_EXIT)
         for (npc in world.npcsIn(p.location)) npc.enemies.remove(p.id)
+        castleEntry(p, p.location, target)?.let { p.log(it); return@withLock viewLocked(p) }
         p.location = target
         save(p)
         notifyLocation(target, except = p.id)
@@ -254,6 +260,14 @@ class Game(
         val p = player(account)
         val now = clock()
         val npc = world.npc(p.location, npcKey) ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NO_TARGET)
+        castles()
+        castleGuards[npcKey]?.let { g ->
+            val view = guardDialog(p, npc, g, topic.takeIf { it == "begin" || (topic to arg) in p.talkChoices } ?: "begin", arg)
+            p.talkingTo = npcKey
+            p.talkChoices = view.options.map { it.topic to it.arg }.toSet()
+            p.talkInput = null
+            return@withLock viewLocked(p).copy(dialog = view)
+        }
         val dialogId = if (npcKey.startsWith("n.g.")) "n.g.guard" else npcKey
         val d = content.logic
         if (!d.hasDialog(dialogId)) throw ApiException(HttpStatusCode.BadRequest, Errors.CANNOT_TALK)
@@ -276,7 +290,7 @@ class Game(
             p.id in npc.enemies ->
                 DialogView(npcKey, npc.name, "Вы не можете разговаривать с ${npc.name}, т.к. он вас атакует.")
             else -> {
-                val ctx = TalkCtx(p, npc, dialogId, arg, now).also { it.load() }
+                val ctx = TalkCtx(p, npc, dialogId, arg, now).also { it.load(); it.engineFlags() }
                 arg?.let { ctx.vars["arg"] = it }
                 val shown = showTopic(ctx, topic, 0)
                 fun fill(t: String) = ctx.vars.entries.fold(Dialogs.plain(t).replace("<imja>", p.name)) { acc, (k, v) -> acc.replace("{$k}", v) }
@@ -299,6 +313,8 @@ class Game(
         val vars = HashMap<String, String>()
         /** Set by a handler that asks the player to type something. */
         var inputTopic: String? = null
+        /** Choices a handler built (castle keeper: the player's runes). */
+        var handlerOptions: List<DialogOption>? = null
         val inventory = HashMap<String, Int>()
         val equipped = ArrayList<String>()
         val flags = HashMap<String, String>()
@@ -322,6 +338,12 @@ class Game(
         }
 
         fun count(id: String) = inventory[id] ?: 0
+
+        /** Flags the engine knows without storing them: the clan rank (castle keepers ask for clan.head). */
+        fun engineFlags() {
+            if (p.clanRank == "head") flags["clan.head"] = "1"
+            p.clanName?.let { flags["clan"] = it }
+        }
 
         /** A flag of the character, or of the whole world. */
         suspend fun flag(key: String, world: Boolean): String? =
@@ -468,6 +490,9 @@ class Game(
             }
             "lower-int" -> { p.int = (p.int - 1).coerceAtLeast(1); refreshStats(p) }
             "clan-status", "clan-leave", "clan-name-input", "clan-create", "clan-restore" -> return clanHandler(ctx.p, a, ctx.vars) { ctx.inputTopic = it }
+            "castle-keeper-access", "castle-rune-list", "castle-contract", "castle-teleport" ->
+                return keeperHandler(ctx.p, ctx.npc.key, a, ctx.arg) { ctx.handlerOptions = it }
+            "hire-mercenary" -> { hireCastleGuard(ctx.p, a.str("template")!!); return null }
             "npc-hand-over" -> {
                 val item = a.str("item")!!
                 if (world.takeFromNpc(a.str("npc")!!, a.str("location") ?: p.location, item)) {
@@ -491,7 +516,7 @@ class Game(
         for (a in actions) a.str("take")?.let { need[it] = (need[it] ?: 0) + (a.int("count") ?: 1) }
         val missing = need.filter { (id, n) -> ctx.count(id) < n }.keys
         if (missing.isNotEmpty()) return Done(failure = "У вас нет: " + missing.joinToString { content.itemName(it) })
-        if (actions.any { a -> a.str("handler")?.let { it !in Dialogs.HANDLERS } == true }) return Done(failure = UNTRANSLATED)
+        if (actions.any { !Dialogs.supported(it) }) return Done(failure = UNTRANSLATED)
 
         val extra = ArrayList<String>()
         val prefix = ArrayList<String>()
@@ -568,6 +593,7 @@ class Game(
         }
         if (statsChanged) refreshStats(p)
         save(p)
+        if (ctx.handlerOptions != null) options = ctx.handlerOptions
         return Done(extra = extra.joinToString("\n").takeIf { it.isNotBlank() }, options = options,
             prefix = prefix.joinToString(" ").takeIf { it.isNotBlank() })
     }
@@ -709,6 +735,7 @@ class Game(
      */
     suspend fun tick(now: Long) = lock.withLock {
         world.tick(now)
+        if (now - lastGuardCheck >= 60) { lastGuardCheck = now; castles(); expireGuards(now) }
         val active = players.values.filter { now - it.lastSeen < ACTIVE_SECONDS }
         for (p in active) if (!p.ghost) regen(p, now)
         for ((loc, here) in active.groupBy { it.location }) {
@@ -1004,6 +1031,7 @@ class Game(
             restSeconds = (p.busyUntil - now).coerceAtLeast(0).toInt(),
             canResurrect = canResurrect(p),
             exchange = exchangeView(p),
+            castle = castleView(p),
             unread = unreadCount(p),
             clanInvites = clanInvites(p),
             people = here.map { PersonView(it.name, it.clanName, it.ghost) },
