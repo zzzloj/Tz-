@@ -78,7 +78,10 @@ class PvpTest {
 
         // The victim, killed by one who already was a criminal, may put a price on his head.
         game.kill(c) // the avenger's own crime aside: a fresh character state for him below
-        game.place(b, "x1092x474")
+        // Back to life at the healer, then to the officer in the bank.
+        game.place(b, game.world.allNpcs().first { it.key.startsWith("n.h.") }.location)
+        game.resurrect(b)
+        game.place(b, Rules.BANK_LOCATION)
         var d = game.talk(b, "n.officer", "begin", null).dialog!!
         val place = assertNotNull(d.options.firstOrNull { it.label.startsWith("Я хочу назначить награду") }, "${d.text} ${d.options.map { it.label }}")
         db!!.tx { conn -> conn.prepareStatement("INSERT INTO character_items (character_id, item_id, count) SELECT id, 'i.money', 300 FROM characters WHERE account_id = ?").use { it.setLong(1, b.id); it.executeUpdate() } }
