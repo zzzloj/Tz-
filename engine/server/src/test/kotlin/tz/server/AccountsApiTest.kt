@@ -42,7 +42,8 @@ class AccountsApiTest {
     private fun withApp(block: suspend ApplicationTestBuilder.() -> Unit) {
         val database = db ?: run { println("TZ_TEST_DATABASE_URL not set, skipping"); return }
         testApplication {
-            application { game(content, Accounts(database, content)) }
+            val accounts = Accounts(database, content)
+            application { game(content, accounts, Game(content, database, accounts, World(content))) }
             block()
         }
     }
@@ -130,6 +131,41 @@ class AccountsApiTest {
         assertEquals(Errors.INVALID_NAME, error(client.postJson("/api/characters", """{"name":"Aнтoниo","sex":"m"}""", token)))
         assertEquals(Errors.INVALID_NAME, error(client.postJson("/api/characters", """{"name":"x","sex":"m"}""", token)))
         assertEquals(Errors.BAD_REQUEST, error(client.postJson("/api/characters", """{"name":"Антонио","sex":"x"}""", token)))
+    }
+
+    @Test
+    fun inventoryTakeDropEquip() = withApp {
+        val reg = client.postJson("/api/auth/register", """{"login":"${unique("i")}","password":"secret-123"}""")
+        val token = json.decodeFromString(AuthResponse.serializer(), reg.bodyAsText()).token
+        client.postJson("/api/characters", """{"name":"${unique("Inv")}","sex":"m"}""", token)
+
+        suspend fun game(r: HttpResponse): GameView {
+            assertEquals(HttpStatusCode.OK, r.status, r.bodyAsText())
+            return json.decodeFromString(GameView.serializer(), r.bodyAsText())
+        }
+
+        // A new character carries the starting knife, not yet equipped.
+        var g = game(client.getAuth("/api/game", token))
+        assertEquals(listOf("i.w.k.begin" to false), g.inventory.map { it.id to it.equipped })
+        assertEquals(listOf("Привратник Уин"), g.location.npcs.map { it.name })
+
+        g = game(client.postJson("/api/game/equip", """{"item":"i.w.k.begin"}""", token))
+        assertEquals(true, g.inventory.single().equipped)
+        g = game(client.postJson("/api/game/unequip", """{"item":"i.w.k.begin"}""", token))
+        assertEquals(false, g.inventory.single().equipped)
+
+        g = game(client.postJson("/api/game/drop", """{"item":"i.w.k.begin"}""", token))
+        assertEquals(emptyList(), g.inventory)
+        assertEquals(true, g.location.items.any { it.id == "i.w.k.begin" && it.takeable })
+
+        g = game(client.postJson("/api/game/take", """{"item":"i.w.k.begin"}""", token))
+        assertEquals(listOf("i.w.k.begin"), g.inventory.map { it.id })
+        assertEquals(false, g.location.items.any { it.id == "i.w.k.begin" })
+
+        assertEquals(Errors.NO_SUCH_ITEM, error(client.postJson("/api/game/take", """{"item":"i.w.k.begin"}""", token)))
+        assertEquals(Errors.NOT_IN_INVENTORY, error(client.postJson("/api/game/drop", """{"item":"i.money"}""", token)))
+        assertEquals(Errors.CANNOT_EQUIP, error(client.postJson("/api/game/equip", """{"item":"i.money"}""", token)))
+        assertEquals(Errors.CANNOT_TAKE, error(client.postJson("/api/game/take", """{"item":"i.s.tree"}""", token)))
     }
 
     @Test

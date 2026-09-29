@@ -23,6 +23,7 @@ dependencies {
     implementation(libs.bcrypt)
     testImplementation(kotlin("test"))
     testImplementation(libs.ktor.server.test.host)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
 
 tasks.test {

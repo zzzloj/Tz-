@@ -26,7 +26,19 @@ class Content(
     val npcs: Map<String, JsonObject>,
     val dialogs: Map<String, JsonObject>,
     val problems: List<String>,
+    /** Location files as loaded: objects (NPCs, items) and timers of the starting world. */
+    val locationData: Map<String, JsonObject> = emptyMap(),
 ) {
+    /**
+     * Display name of an item id. Instance ids carry suffixes after the base
+     * id (maker "_…", sharpening "-N-", gems "..x"), see docs/data-fields.md §0.
+     */
+    fun itemName(id: String): String {
+        val base = id.substringBefore('_').substringBefore('-').substringBefore("..")
+        val o = items[id] ?: items[base]
+        return (o?.get("name") as? JsonPrimitive)?.contentOrNull ?: id
+    }
+
     data class Location(
         val id: String,
         val name: String,
@@ -54,7 +66,8 @@ class Content(
                     .sortedBy { it.name }
                     .associate { f -> f.name.removeSuffix(".json") to json.parseToJsonElement(f.readText()).jsonObject }
 
-            val locations = objects("locations").mapValues { (id, o) -> location(id, o) }
+            val locationData = objects("locations")
+            val locations = locationData.mapValues { (id, o) -> location(id, o) }
             val items = objects("items")
             val npcs = objects("npcs")
             val dialogs = objects("dialogs")
@@ -72,7 +85,7 @@ class Content(
                     }
                 }
             }
-            return Content(locations, items, npcs, dialogs, problems)
+            return Content(locations, items, npcs, dialogs, problems, locationData)
         }
 
         private fun location(id: String, o: JsonObject): Location {

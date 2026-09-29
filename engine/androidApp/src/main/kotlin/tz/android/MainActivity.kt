@@ -30,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -80,7 +81,12 @@ fun App(session: Session) {
             Screen.LOADING -> if (session.error != null) Button(onClick = { run { session.refresh() } }) { Text("Повторить") }
             Screen.SIGN_IN -> SignIn(session.busy, onSignIn = { l, p -> run { session.signIn(l, p) } }, onRegister = { l, p -> run { session.register(l, p) } })
             Screen.CREATE_CHARACTER -> CreateCharacter(session.busy) { name, female -> run { session.createCharacter(name, female) } }
-            Screen.PLAYING -> Playing(session, onGo = { exit -> run { session.go(exit) } }, onSignOut = { run { session.signOut() } })
+            Screen.PLAYING -> Playing(
+                session,
+                onGo = { exit -> run { session.go(exit) } },
+                onSignOut = { run { session.signOut() } },
+                onAction = { action -> run(action) },
+            )
         }
         session.error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
         if (session.busy) CircularProgressIndicator()
@@ -119,7 +125,12 @@ fun CreateCharacter(busy: Boolean, onCreate: (String, Boolean) -> Unit) {
 }
 
 @Composable
-fun Playing(session: Session, onGo: (tz.shared.ExitView) -> Unit, onSignOut: () -> Unit) {
+fun Playing(
+    session: Session,
+    onGo: (tz.shared.ExitView) -> Unit,
+    onSignOut: () -> Unit,
+    onAction: (suspend () -> Unit) -> Unit,
+) {
     val game = session.game ?: return
     val c = game.character
     val loc = game.location
@@ -127,8 +138,31 @@ fun Playing(session: Session, onGo: (tz.shared.ExitView) -> Unit, onSignOut: () 
     Text(loc.name, style = MaterialTheme.typography.headlineSmall)
     loc.description?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
     if (loc.npcs.isNotEmpty()) Text("Здесь: " + loc.npcs.joinToString { it.name }, style = MaterialTheme.typography.bodyMedium)
+    if (loc.players.isNotEmpty()) Text("Игроки: " + loc.players.joinToString(), style = MaterialTheme.typography.bodyMedium)
+    loc.items.forEach { item ->
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("${item.name}${if (item.count > 1) " ×${item.count}" else ""}", Modifier.weight(1f))
+            if (item.takeable) TextButton(onClick = { onAction { session.take(item) } }, enabled = !session.busy) { Text("взять") }
+        }
+    }
     loc.exits.forEach { exit ->
         OutlinedButton(onClick = { onGo(exit) }, enabled = !session.busy, modifier = Modifier.fillMaxWidth()) { Text(exit.label) }
+    }
+    TextButton(onClick = { onAction { session.refresh() } }, enabled = !session.busy) { Text("осмотреться") }
+
+    Text("Инвентарь", style = MaterialTheme.typography.titleMedium)
+    if (game.inventory.isEmpty()) Text("пусто", style = MaterialTheme.typography.bodyMedium)
+    game.inventory.forEach { item ->
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                "${item.name}${if (item.count > 1) " ×${item.count}" else ""}${if (item.equipped) " (надето)" else ""}",
+                Modifier.weight(1f),
+            )
+            if (item.equippable) TextButton(onClick = { onAction { session.toggleEquip(item) } }, enabled = !session.busy) {
+                Text(if (item.equipped) "снять" else "надеть")
+            }
+            TextButton(onClick = { onAction { session.drop(item) } }, enabled = !session.busy) { Text("бросить") }
+        }
     }
     TextButton(onClick = onSignOut) { Text("Выйти") }
 }

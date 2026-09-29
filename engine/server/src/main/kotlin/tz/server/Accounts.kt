@@ -103,6 +103,14 @@ class Accounts(private val db: Db, private val content: Content) {
                     st.setInt(6, Rules.manaMax(1))
                     st.executeUpdate()
                 }
+                c.prepareStatement(
+                    "INSERT INTO character_items (character_id, item_id, count) " +
+                        "SELECT id, ?, 1 FROM characters WHERE account_id = ? AND world_id = 1"
+                ).use { st ->
+                    st.setString(1, Rules.STARTING_KNIFE)
+                    st.setLong(2, account.id)
+                    st.executeUpdate()
+                }
             } catch (e: SQLException) {
                 if (e.sqlState == UNIQUE_VIOLATION) throw ApiException(HttpStatusCode.Conflict, Errors.NAME_TAKEN)
                 throw e

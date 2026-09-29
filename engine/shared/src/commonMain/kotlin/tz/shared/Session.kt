@@ -56,6 +56,16 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
         game = api.move(exit.target)
     }
 
+    suspend fun take(item: GroundItemView) = action { game = api.take(item.id) }
+
+    suspend fun drop(item: InventoryItemView) = action { game = api.drop(item.id) }
+
+    /** Puts the item on, or takes it off if it is on. */
+    suspend fun toggleEquip(item: InventoryItemView) = action {
+        game = if (item.equipped) api.unequip(item.id) else api.equip(item.id)
+    }
+
+    /** Re-reads the screen: NPCs wander and other players come and go. */
     suspend fun refresh() = action { enter() }
 
     suspend fun signOut() = action {

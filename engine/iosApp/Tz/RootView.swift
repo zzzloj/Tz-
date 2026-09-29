@@ -41,6 +41,10 @@ struct RootView: View {
                 } else if s.screen == Screen.playing, let game = s.game {
                     PlayingView(game: game, busy: s.busy,
                                 onGo: { exit in model.run { try await $0.go(exit: exit) } },
+                                onTake: { item in model.run { try await $0.take(item: item) } },
+                                onDrop: { item in model.run { try await $0.drop(item: item) } },
+                                onToggleEquip: { item in model.run { try await $0.toggleEquip(item: item) } },
+                                onRefresh: { model.run { try await $0.refresh() } },
                                 onSignOut: { model.run { try await $0.signOut() } })
                 } else if s.error != nil {
                     Button("Повторить") { model.run { try await $0.refresh() } }
@@ -100,7 +104,15 @@ struct PlayingView: View {
     let game: GameView
     let busy: Bool
     let onGo: (ExitView) -> Void
+    let onTake: (GroundItemView) -> Void
+    let onDrop: (InventoryItemView) -> Void
+    let onToggleEquip: (InventoryItemView) -> Void
+    let onRefresh: () -> Void
     let onSignOut: () -> Void
+
+    private func label(_ name: String, _ count: Int32) -> String {
+        count > 1 ? "\(name) ×\(count)" : name
+    }
 
     var body: some View {
         let c = game.character
@@ -111,10 +123,37 @@ struct PlayingView: View {
             if !loc.npcs.isEmpty {
                 Text("Здесь: " + loc.npcs.map { $0.name }.joined(separator: ", "))
             }
+            if !loc.players.isEmpty {
+                Text("Игроки: " + loc.players.joined(separator: ", "))
+            }
+            ForEach(loc.items, id: \.id) { item in
+                HStack {
+                    Text(label(item.name, item.count))
+                    Spacer()
+                    if item.takeable {
+                        Button("взять") { onTake(item) }.disabled(busy).buttonStyle(.borderless)
+                    }
+                }
+            }
         }
         Section("Выходы") {
             ForEach(loc.exits, id: \.target) { exit in
                 Button(exit.label) { onGo(exit) }.disabled(busy)
+            }
+            Button("осмотреться") { onRefresh() }.disabled(busy)
+        }
+        Section("Инвентарь") {
+            if game.inventory.isEmpty { Text("пусто").foregroundStyle(.secondary) }
+            ForEach(game.inventory, id: \.id) { item in
+                HStack {
+                    Text(label(item.name, item.count) + (item.equipped ? " (надето)" : ""))
+                    Spacer()
+                    if item.equippable {
+                        Button(item.equipped ? "снять" : "надеть") { onToggleEquip(item) }
+                            .disabled(busy).buttonStyle(.borderless)
+                    }
+                    Button("бросить") { onDrop(item) }.disabled(busy).buttonStyle(.borderless)
+                }
             }
         }
         Section {

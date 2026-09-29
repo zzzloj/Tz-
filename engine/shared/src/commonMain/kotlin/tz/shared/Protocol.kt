@@ -29,7 +29,32 @@ data class LocationView(
     val description: String? = null,
     val exits: List<ExitView> = emptyList(),
     val npcs: List<NpcView> = emptyList(),
+    /** Items lying here; fixtures (trees, signs) cannot be taken. */
+    val items: List<GroundItemView> = emptyList(),
+    /** Other characters seen here in the last minutes. */
+    val players: List<String> = emptyList(),
 )
+
+@Serializable
+data class GroundItemView(
+    val id: String,
+    val name: String,
+    val count: Int,
+    val takeable: Boolean,
+)
+
+@Serializable
+data class InventoryItemView(
+    val id: String,
+    val name: String,
+    val count: Int,
+    val equipped: Boolean,
+    /** Weapon or armour: can be put on. */
+    val equippable: Boolean,
+)
+
+@Serializable
+data class ItemRequest(val item: String)
 
 @Serializable
 data class ContentReport(
@@ -92,6 +117,7 @@ data class MeView(
 data class GameView(
     val character: CharacterView,
     val location: LocationView,
+    val inventory: List<InventoryItemView> = emptyList(),
 )
 
 @Serializable
@@ -118,6 +144,10 @@ object Errors {
     const val NO_CHARACTER = "no_character"
     const val NOT_AN_EXIT = "not_an_exit"
     const val BAD_REQUEST = "bad_request"
+    const val NO_SUCH_ITEM = "no_such_item"
+    const val CANNOT_TAKE = "cannot_take"
+    const val NOT_IN_INVENTORY = "not_in_inventory"
+    const val CANNOT_EQUIP = "cannot_equip"
 
     fun text(code: String): String = when (code) {
         UNAUTHORIZED -> "Нужно войти заново"
@@ -132,6 +162,10 @@ object Errors {
         NO_CHARACTER -> "Сначала создайте персонажа"
         NOT_AN_EXIT -> "Туда отсюда не пройти"
         BAD_REQUEST -> "Неверный запрос"
+        NO_SUCH_ITEM -> "Здесь этого нет"
+        CANNOT_TAKE -> "Это нельзя взять"
+        NOT_IN_INVENTORY -> "У вас этого нет"
+        CANNOT_EQUIP -> "Это нельзя надеть"
         else -> "Ошибка сервера"
     }
 }
@@ -157,6 +191,23 @@ object Rules {
         "admin", "administrator", "moderator", "root", "system", "support", "server",
         "qv", "qw", "kv", "scream", "sn0k", "wildspb", "ps_one", "alatiel",
     )
+
+    /** Starting inventory of a new character (f_site_reg2.dat): a knife, not yet equipped. */
+    const val STARTING_KNIFE = "i.w.k.begin"
+
+    /** Dropped items vanish after this many seconds (g_destroy in the old game). */
+    const val DROPPED_ITEM_LIFETIME = 600
+
+    /** Weapons (i.w.*) and armour (i.a.*) can be equipped; armour slot = first 6 chars (i.a.b., i.a.h., …). */
+    fun equipSlot(itemId: String): String? = when {
+        itemId.startsWith("i.w.") -> "weapon"
+        itemId.startsWith("i.a.") && itemId.length > 6 -> itemId.substring(0, 6)
+        else -> null
+    }
+
+    /** A shield cannot be used together with a ranged weapon (plugin/i.w.dat). */
+    fun conflicts(a: String, b: String): Boolean =
+        (a.startsWith("i.a.s.") && b.startsWith("i.w.r.")) || (b.startsWith("i.a.s.") && a.startsWith("i.w.r."))
 
     /** Old formulas: max HP 10 + str·10, max mana 10 + int·10 (docs/mechanics.md). */
     fun hpMax(str: Int) = 10 + str * 10

@@ -18,13 +18,16 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import tz.shared.AuthResponse
 import tz.shared.Credentials
 import tz.shared.ErrorResponse
 import tz.shared.Errors
-import tz.shared.GameView
+import tz.shared.ItemRequest
 import tz.shared.MeView
 import tz.shared.MoveRequest
 import tz.shared.NewCharacter
@@ -39,10 +42,23 @@ fun main() {
     val dbUrl = System.getenv("DATABASE_URL") ?: error("DATABASE_URL is not set")
     val db = Db.fromUrl(dbUrl).also { it.migrate() }
     val port = System.getenv("PORT")?.toIntOrNull() ?: 8080
-    embeddedServer(Netty, port = port, host = "0.0.0.0") { game(content, Accounts(db, content)) }.start(wait = true)
+    val accounts = Accounts(db, content)
+    val world = World(content)
+    world.problems.take(20).forEach { System.err.println("world: $it") }
+    val game = Game(content, db, accounts, world)
+    embeddedServer(Netty, port = port, host = "0.0.0.0") {
+        // The world lives on its own clock (the old game only moved when a player looked).
+        launch {
+            while (isActive) {
+                try { world.tick(System.currentTimeMillis() / 1000) } catch (e: Exception) { environment.log.error("world tick", e) }
+                delay(1000)
+            }
+        }
+        game(content, accounts, game)
+    }.start(wait = true)
 }
 
-fun Application.game(content: Content, accounts: Accounts? = null) {
+fun Application.game(content: Content, accounts: Accounts? = null, game: Game? = null) {
     install(ContentNegotiation) { json(Json { ignoreUnknownKeys = true; encodeDefaults = true }) }
     install(StatusPages) {
         exception<ApiException> { call, e ->
@@ -67,11 +83,11 @@ fun Application.game(content: Content, accounts: Accounts? = null) {
             if (loc == null) call.respond(HttpStatusCode.NotFound, ErrorResponse("not_found", "Нет такой локации"))
             else call.respond(loc.view())
         }
-        if (accounts != null) accountRoutes(content, accounts)
+        if (accounts != null && game != null) accountRoutes(accounts, game)
     }
 }
 
-private fun Route.accountRoutes(content: Content, accounts: Accounts) {
+private fun Route.accountRoutes(accounts: Accounts, game: Game) {
     post("/api/auth/register") {
         val body = call.receive<Credentials>()
         val (account, token) = accounts.register(body.login, body.password)
@@ -96,21 +112,28 @@ private fun Route.accountRoutes(content: Content, accounts: Accounts) {
         call.respond(HttpStatusCode.Created, accounts.createCharacter(account, body.name, body.sex))
     }
     get("/api/game") {
-        val account = requireAccount(call, accounts)
-        val character = accounts.character(account) ?: throw ApiException(HttpStatusCode.Conflict, Errors.NO_CHARACTER)
-        call.respond(gameView(content, character))
+        call.respond(game.view(requireAccount(call, accounts)))
     }
     post("/api/game/move") {
         val account = requireAccount(call, accounts)
-        val body = call.receive<MoveRequest>()
-        call.respond(gameView(content, accounts.move(account, body.target)))
+        call.respond(game.move(account, call.receive<MoveRequest>().target))
     }
-}
-
-private fun gameView(content: Content, character: tz.shared.CharacterView): GameView {
-    // A location removed from content/ must not lock the player out.
-    val loc = content.locations[character.location] ?: content.locations.getValue(tz.shared.Protocol.START_LOCATION)
-    return GameView(character, loc.view())
+    post("/api/game/take") {
+        val account = requireAccount(call, accounts)
+        call.respond(game.take(account, call.receive<ItemRequest>().item))
+    }
+    post("/api/game/drop") {
+        val account = requireAccount(call, accounts)
+        call.respond(game.drop(account, call.receive<ItemRequest>().item))
+    }
+    post("/api/game/equip") {
+        val account = requireAccount(call, accounts)
+        call.respond(game.equip(account, call.receive<ItemRequest>().item))
+    }
+    post("/api/game/unequip") {
+        val account = requireAccount(call, accounts)
+        call.respond(game.unequip(account, call.receive<ItemRequest>().item))
+    }
 }
 
 private fun bearer(call: ApplicationCall): String? =

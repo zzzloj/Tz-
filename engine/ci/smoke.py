@@ -61,6 +61,16 @@ try:
     assert status == 200 and moved["location"]["id"] == exit_["target"], (status, moved)
     steps.append(f"move «{exit_['label']}» → {moved['location']['name']}")
 
+    npcs = [n["name"] for n in game["location"]["npcs"]]
+    assert game["inventory"] and game["inventory"][0]["id"] == "i.w.k.begin", game["inventory"]
+    status, g = call("POST", "/api/game/equip", {"item": "i.w.k.begin"}, token)
+    assert status == 200 and g["inventory"][0]["equipped"], (status, g)
+    status, g = call("POST", "/api/game/drop", {"item": "i.w.k.begin"}, token)
+    assert status == 200 and not g["inventory"] and any(i["id"] == "i.w.k.begin" for i in g["location"]["items"]), (status, g)
+    status, g = call("POST", "/api/game/take", {"item": "i.w.k.begin"}, token)
+    assert status == 200 and g["inventory"][0]["id"] == "i.w.k.begin", (status, g)
+    steps.append(f"start NPCs: {', '.join(npcs) or '—'}; knife: equip, drop, take back ok")
+
     status, err = call("POST", "/api/game/move", {"target": "arena"}, token)
     assert status == 400 and err["error"] == "not_an_exit", (status, err)
     status, _ = call("GET", "/api/me", token="forged")
