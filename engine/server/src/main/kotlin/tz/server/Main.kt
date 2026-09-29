@@ -38,6 +38,10 @@ import tz.shared.TalkRequest
 import tz.shared.ShopRequest
 import tz.shared.BankRequest
 import tz.shared.UseRequest
+import tz.shared.SayRequest
+import tz.shared.ExchangeRequest
+import tz.shared.MessageRequest
+import tz.shared.ClanRequest
 import tz.shared.TargetRequest
 import tz.shared.MeView
 import tz.shared.MoveRequest
@@ -187,6 +191,32 @@ private fun Route.accountRoutes(accounts: Accounts, game: Game) {
         val account = requireAccount(call, accounts)
         val body = call.receive<UseRequest>()
         call.respond(game.use(account, body.item, body.recipe, body.target))
+    }
+    post("/api/game/say") {
+        val account = requireAccount(call, accounts)
+        val body = call.receive<SayRequest>()
+        call.respond(game.say(account, body.text, body.channel))
+    }
+    post("/api/game/exchange") {
+        val account = requireAccount(call, accounts)
+        val body = call.receive<ExchangeRequest>()
+        call.respond(game.exchange(account, body.op, body.with, body.item, body.count))
+    }
+    get("/api/messages") {
+        call.respond(game.messages(requireAccount(call, accounts)))
+    }
+    post("/api/messages") {
+        val account = requireAccount(call, accounts)
+        val body = call.receive<MessageRequest>()
+        call.respond(game.message(account, body.op, body.to, body.text))
+    }
+    get("/api/clan") {
+        call.respond(game.clan(requireAccount(call, accounts)))
+    }
+    post("/api/clan") {
+        val account = requireAccount(call, accounts)
+        val b = call.receive<ClanRequest>()
+        call.respond(game.clanAction(account, b.op, b.name, b.rank, b.clan, b.text))
     }
     post("/api/game/resurrect") {
         val account = requireAccount(call, accounts)

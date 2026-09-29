@@ -12,6 +12,7 @@ import kotlinx.serialization.json.JsonObject
 import tz.shared.CharacterView
 import tz.shared.DialogOption
 import tz.shared.DialogView
+import tz.shared.PersonView
 import tz.shared.Errors
 import tz.shared.GameView
 import tz.shared.InventoryItemView
@@ -72,6 +73,14 @@ class Game(
         /** Open conversation: NPC and the (topic, arg) choices shown last, the only ones accepted next. */
         var talkingTo: String? = null
         var talkChoices: Set<Pair<String, String?>> = emptySet()
+        /** Topic that accepts typed text as its arg (a clan name). */
+        var talkInput: String? = null
+        /** Clan: id, name, rank (head, seneschal, vassal, neophyte). */
+        var clanId: Long? = null
+        var clanName: String? = null
+        var clanRank: String? = null
+        /** Last thing said, to refuse repeats (f_say.dat:65). */
+        var lastSaid: String? = null
 
         fun skill(key: String): Int = when (key) {
             "str" -> str; "dex" -> dex; "int" -> int; "exp" -> exp; "points" -> points
@@ -91,6 +100,8 @@ class Game(
     }
 
     internal val players = ConcurrentHashMap<Long, Player>()
+    /** Open exchanges by character id (Social.kt). */
+    internal val exchanges = HashMap<Long, ExchangeSide>()
     private val byAccount = ConcurrentHashMap<Long, Long>()
     private val events = ConcurrentHashMap<Long, MutableSharedFlow<Unit>>()
 
@@ -246,7 +257,8 @@ class Game(
         val dialogId = if (npcKey.startsWith("n.g.")) "n.g.guard" else npcKey
         val d = content.logic
         if (!d.hasDialog(dialogId)) throw ApiException(HttpStatusCode.BadRequest, Errors.CANNOT_TALK)
-        if (topic != "begin" && (p.talkingTo != npcKey || (topic to arg) !in p.talkChoices))
+        val typed = p.talkingTo == npcKey && topic == p.talkInput && !arg.isNullOrBlank()
+        if (topic != "begin" && !typed && (p.talkingTo != npcKey || (topic to arg) !in p.talkChoices))
             throw ApiException(HttpStatusCode.Conflict, Errors.TOPIC_CLOSED)
         // Trade and bank choices open the trader's list or the bank cell instead of a line.
         if (topic in Content.ENGINE_TOPICS && !p.ghost && p.id !in npc.enemies) {
@@ -265,13 +277,17 @@ class Game(
                 DialogView(npcKey, npc.name, "Вы не можете разговаривать с ${npc.name}, т.к. он вас атакует.")
             else -> {
                 val ctx = TalkCtx(p, npc, dialogId, arg, now).also { it.load() }
+                arg?.let { ctx.vars["arg"] = it }
                 val shown = showTopic(ctx, topic, 0)
-                DialogView(npcKey, npc.name, Dialogs.plain(shown.first).replace("<imja>", p.name),
-                    shown.second.map { it.copy(label = Dialogs.plain(it.label).replace("<imja>", p.name)) })
+                fun fill(t: String) = ctx.vars.entries.fold(Dialogs.plain(t).replace("<imja>", p.name)) { acc, (k, v) -> acc.replace("{$k}", v) }
+                DialogView(npcKey, npc.name, fill(shown.first),
+                    options = shown.second.map { it.copy(label = fill(it.label)) }.filter { it.label.isNotBlank() },
+                    inputTopic = ctx.inputTopic)
             }
         }
         p.talkingTo = npcKey
         p.talkChoices = view.options.map { it.topic to it.arg }.toSet()
+        p.talkInput = view.inputTopic
         save(p)
         viewLocked(p).copy(dialog = view)
     }
@@ -279,6 +295,10 @@ class Game(
     /** What a conversation can see and change: the character, its things and quest state. */
     private inner class TalkCtx(val p: Player, val npc: World.Npc, val dialog: String, val arg: String?, val now: Long) {
         var topic = "begin"
+        /** Values handlers put into texts and labels: {clan}, {clanStatus}… */
+        val vars = HashMap<String, String>()
+        /** Set by a handler that asks the player to type something. */
+        var inputTopic: String? = null
         val inventory = HashMap<String, Int>()
         val equipped = ArrayList<String>()
         val flags = HashMap<String, String>()
@@ -427,6 +447,8 @@ class Game(
     }
 
     /** Handlers implemented in code (Dialogs.HANDLERS); returns text to put before the NPC's line. */
+    internal class HandlerFailed(val text: String) : Exception(text)
+
     private suspend fun handler(ctx: TalkCtx, a: JsonObject): String? {
         val p = ctx.p
         when (a.str("handler")) {
@@ -445,6 +467,7 @@ class Game(
                 world.placePermanent(p.location, a.str("to")!!, 1)
             }
             "lower-int" -> { p.int = (p.int - 1).coerceAtLeast(1); refreshStats(p) }
+            "clan-status", "clan-leave", "clan-name-input", "clan-create", "clan-restore" -> return clanHandler(ctx.p, a, ctx.vars) { ctx.inputTopic = it }
             "npc-hand-over" -> {
                 val item = a.str("item")!!
                 if (world.takeFromNpc(a.str("npc")!!, a.str("location") ?: p.location, item)) {
@@ -477,6 +500,12 @@ class Game(
         for (a in actions) {
             val count = a.int("count") ?: 1
             when {
+                // A handler's own parameters may be named like actions ("give"), so it goes first.
+                "handler" in a -> try {
+                    handler(ctx, a)?.let { prefix += it }
+                } catch (f: HandlerFailed) {
+                    return Done(failure = f.text)
+                }
                 "take" in a -> { changeItem(p, a.str("take")!!, -count); ctx.inventory.merge(a.str("take")!!, -count, Int::plus); statsChanged = true }
                 "give" in a -> { changeItem(p, a.str("give")!!, count); ctx.inventory.merge(a.str("give")!!, count, Int::plus) }
                 "exp" in a -> addExp(p, a.int("exp") ?: 0)
@@ -534,7 +563,7 @@ class Game(
                 }
                 "say" in a -> content.logic.jokes[a.str("say")!!]?.takeIf { it.isNotEmpty() }?.let { extra += it[rnd.nextInt(it.size)] }
                 "journal" in a -> p.log(a.str("journal")!!)
-                "handler" in a -> handler(ctx, a)?.let { prefix += it }
+
             }
         }
         if (statsChanged) refreshStats(p)
@@ -886,6 +915,7 @@ class Game(
                 st.executeQuery().use { rs -> buildList { while (rs.next()) add(rs.getString(1)) } }
             }
         }
+        loadClan(p)
         p.regenFrom = clock()
         refreshStats(p)
         players[p.id] = p
@@ -944,10 +974,10 @@ class Game(
     internal suspend fun viewLocked(p: Player): GameView {
         val now = clock()
         val loc = content.locations[p.location] ?: content.locations.getValue(Protocol.START_LOCATION)
-        val others = players.values
+        val here = players.values
             .filter { it.id != p.id && it.location == loc.id && now - it.lastSeen < ACTIVE_SECONDS }
-            .map { if (it.ghost) "${it.name} (призрак)" else it.name }
-            .sorted()
+            .sortedBy { it.name }
+        val others = here.map { it.name + (it.clanName?.let { c -> " *$c*" } ?: "") + if (it.ghost) " (призрак)" else "" }
         val npcs = world.npcsIn(loc.id).map { NpcView(it.key, it.name, it.hp, it.proto.hpMax, p.id in it.enemies, Rules.attackable(it.key), content.logic.hasDialog(if (it.key.startsWith("n.g.")) "n.g.guard" else it.key)) }
         val location = loc.view().copy(
             npcs = npcs,
@@ -973,6 +1003,11 @@ class Game(
             journal = p.journal.toList(),
             restSeconds = (p.busyUntil - now).coerceAtLeast(0).toInt(),
             canResurrect = canResurrect(p),
+            exchange = exchangeView(p),
+            unread = unreadCount(p),
+            clanInvites = clanInvites(p),
+            people = here.map { PersonView(it.name, it.clanName, it.ghost) },
+            clan = p.clanName,
         )
     }
 

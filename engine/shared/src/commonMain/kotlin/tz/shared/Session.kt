@@ -132,6 +132,58 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
 
     fun cancelUse() { pendingUse = null }
 
+    /** Sends typed text to a dialog that waits for it (a clan name). */
+    suspend fun answerText(text: String) = action {
+        val d = game?.dialog ?: return@action
+        val topic = d.inputTopic ?: return@action
+        game = api.talk(d.npc, topic, text.trim())
+    }
+
+    /** Says something here, or to the clan. */
+    suspend fun say(text: String, clan: Boolean = false) = action {
+        if (text.isNotBlank()) game = api.say(text.trim(), if (clan) "clan" else "here")
+    }
+
+    // ---- messages ----
+    /** Contacts and messages while the mail panel is open. */
+    var mail: MessagesView? = null
+        private set
+
+    suspend fun openMail() = action { mail = api.messages(); game = api.game() }
+
+    fun closeMail() { mail = null }
+
+    suspend fun write(to: String, text: String) = action { mail = api.message("write", to, text) }
+
+    suspend fun addContact(name: String) = action { mail = api.message("add", name) }
+
+    suspend fun removeContact(name: String) = action { mail = api.message("remove", name) }
+
+    // ---- exchange ----
+    suspend fun startExchange(person: PersonView) = action { game = api.exchange("start", with = person.name) }
+
+    suspend fun offer(item: InventoryItemView, count: Int) = action { game = api.exchange("add", item = item.id, count = count) }
+
+    suspend fun withdraw(item: ShopItemView) = action { game = api.exchange("remove", item = item.id) }
+
+    suspend fun agree() = action { game = api.exchange("agree") }
+
+    suspend fun cancelExchange() = action { game = api.exchange("cancel") }
+
+    // ---- clan ----
+    var clanInfo: ClanView? = null
+        private set
+
+    suspend fun openClan() = action { clanInfo = api.clan() }
+
+    fun closeClan() { clanInfo = null }
+
+    /** op: invite, kick, rank, head, accept, decline, leave, info (see ClanRequest). */
+    suspend fun clanOp(op: String, name: String? = null, rank: String? = null, clan: String? = null, text: String? = null) = action {
+        clanInfo = api.clan(op, name, rank, clan, text)
+        game = api.game()
+    }
+
     /** Picks a recipe from the open crafting menu. */
     suspend fun craft(option: CraftOptionView) = action {
         val c = game?.craft ?: return@action
@@ -149,7 +201,12 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
                 try {
                     api.events {
                         if (screen == Screen.PLAYING && !busy) {
-                            try { val g = game; game = api.game().copy(dialog = g?.dialog, shop = g?.shop, bank = g?.bank, craft = g?.craft); onUpdate() } catch (e: ApiError) { if (e.code == Errors.NO_CHARACTER) enter() }
+                            try {
+                                val g = game
+                                game = api.game().copy(dialog = g?.dialog, shop = g?.shop, bank = g?.bank, craft = g?.craft)
+                                if (mail != null) mail = api.messages()
+                                onUpdate()
+                            } catch (e: ApiError) { if (e.code == Errors.NO_CHARACTER) enter() }
                         }
                     }
                 } catch (e: CancellationException) {

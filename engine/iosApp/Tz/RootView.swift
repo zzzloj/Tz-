@@ -69,6 +69,24 @@ struct RootView: View {
                                     useOn: { target in model.run { try await $0.useOn(target: target) } },
                                     cancelUse: { model.run { $0.cancelUse() } },
                                     craft: { option in model.run { try await $0.craft(option: option) } }),
+                                social: SocialActions(
+                                    answerText: { t in model.run { try await $0.answerText(text: t) } },
+                                    say: { t, clan in model.run { try await $0.say(text: t, clan: clan) } },
+                                    openMail: { model.run { try await $0.openMail() } },
+                                    closeMail: { model.run { $0.closeMail() } },
+                                    write: { to, t in model.run { try await $0.write(to: to, text: t) } },
+                                    addContact: { n in model.run { try await $0.addContact(name: n) } },
+                                    removeContact: { n in model.run { try await $0.removeContact(name: n) } },
+                                    startExchange: { p in model.run { try await $0.startExchange(person: p) } },
+                                    offer: { item, n in model.run { try await $0.offer(item: item, count: Int32(n)) } },
+                                    withdraw: { item in model.run { try await $0.withdraw(item: item) } },
+                                    agree: { model.run { try await $0.agree() } },
+                                    cancelExchange: { model.run { try await $0.cancelExchange() } },
+                                    openClan: { model.run { try await $0.openClan() } },
+                                    closeClan: { model.run { $0.closeClan() } },
+                                    clanOp: { op, name, rank, clan in model.run { try await $0.clanOp(op: op, name: name, rank: rank, clan: clan, text: nil) } }),
+                                mail: s.mail,
+                                clanInfo: s.clanInfo,
                                 onRefresh: { model.run { try await $0.refresh() } },
                                 onSignOut: { model.run { try await $0.signOut() } })
                 } else if s.error != nil {
@@ -144,6 +162,13 @@ struct PlayingView: View {
     let onCloseDialog: () -> Void
     let pending: InventoryItemView?
     let more: MoreActions
+    let social: SocialActions
+    let mail: MessagesView?
+    let clanInfo: ClanView?
+    @State private var typed = ""
+    @State private var speech = ""
+    @State private var mailTo: String?
+    @State private var mailText = ""
     let onRefresh: () -> Void
     let onSignOut: () -> Void
 
@@ -164,6 +189,10 @@ struct PlayingView: View {
         if let d = game.dialog {
             Section(d.npcName) {
                 Text(d.text)
+                if d.inputTopic != nil {
+                    TextField("Ответ", text: $typed)
+                    Button("ответить") { social.answerText(typed); typed = "" }.disabled(busy || typed.isEmpty)
+                }
                 ForEach(Array(d.options.enumerated()), id: \.offset) { _, o in
                     Button(o.label) { onAnswer(o) }.disabled(busy)
                 }
@@ -200,8 +229,18 @@ struct PlayingView: View {
                     }
                 }
             }
-            if !loc.players.isEmpty {
-                Text("Игроки: " + loc.players.joined(separator: ", "))
+            ForEach(game.people, id: \.name) { person in
+                HStack {
+                    Text(person.name + (person.clan.map { " *\($0)*" } ?? "") + (person.ghost ? " (призрак)" : ""))
+                    Spacer()
+                    if !c.ghost && !person.ghost {
+                        Button("обмен") { social.startExchange(person) }.disabled(busy).buttonStyle(.borderless)
+                    }
+                    Button("в контакты") { social.addContact(person.name) }.disabled(busy).buttonStyle(.borderless)
+                    if game.clan != nil && person.clan == nil {
+                        Button("в клан") { social.clanOp("invite", person.name, nil, nil) }.disabled(busy).buttonStyle(.borderless)
+                    }
+                }
             }
             ForEach(loc.items, id: \.id) { item in
                 HStack {
@@ -240,6 +279,86 @@ struct PlayingView: View {
                 ForEach(Array(game.journal.suffix(10).enumerated()), id: \.offset) { _, line in
                     Text(line).font(.footnote)
                 }
+            }
+        }
+        Section {
+            HStack {
+                Button(game.unread > 0 ? "Почта (\(game.unread))" : "Почта") { social.openMail() }.disabled(busy).buttonStyle(.borderless)
+                Spacer()
+                Button((game.clan.map { "Клан \($0)" } ?? "Клан") + (game.clanInvites.isEmpty ? "" : " (приглашение)")) { social.openClan() }
+                    .disabled(busy).buttonStyle(.borderless)
+            }
+        }
+        if let m = mail {
+            Section("Почта") {
+                ForEach(m.contacts, id: \.name) { ct in
+                    HStack {
+                        Text(ct.name + (ct.online ? " • в игре" : "") + (ct.mutual ? "" : " (вы не у него в контактах)"))
+                        Spacer()
+                        Button("написать") { mailTo = ct.name }.buttonStyle(.borderless)
+                        Button("убрать") { social.removeContact(ct.name) }.disabled(busy).buttonStyle(.borderless)
+                    }
+                }
+                if let to = mailTo {
+                    TextField("Сообщение для \(to)", text: $mailText)
+                    Button("Отправить") { social.write(to, mailText); mailText = ""; mailTo = nil }.disabled(busy || mailText.isEmpty)
+                }
+                ForEach(Array(m.messages.enumerated()), id: \.offset) { _, msg in
+                    Text((msg.clan ? "[клан] " : "") + "\(msg.from): \(msg.text)").font(.footnote)
+                        .foregroundStyle(msg.read ? .primary : Color.accentColor)
+                }
+                Button("закрыть") { social.closeMail() }
+            }
+        }
+        if let cl = clanInfo {
+            Section(cl.name.map { "Клан \($0)" } ?? "Клан") {
+                if let msg = cl.message { Text(msg).font(.footnote) }
+                if cl.name == nil {
+                    Text("Вы не в клане. Создать клан можно у Мирандера на центральной площади.").font(.footnote)
+                } else {
+                    Text("Ваш ранг: \(Rules.shared.CLAN_RANKS[cl.rank ?? ""] ?? cl.rank ?? "")").font(.footnote)
+                    if !cl.info.isEmpty { Text(cl.info).font(.footnote) }
+                    ForEach(cl.members, id: \.name) { mem in
+                        HStack {
+                            Text("\(mem.name) — \(Rules.shared.CLAN_RANKS[mem.rank] ?? mem.rank)" + (mem.online ? " • в игре" : "")).font(.footnote)
+                            Spacer()
+                            if cl.canManage && cl.rank == "head" && mem.rank != "head" {
+                                let next = mem.rank == "neophyte" ? "vassal" : (mem.rank == "vassal" ? "seneschal" : "neophyte")
+                                Button("→ \(Rules.shared.CLAN_RANKS[next] ?? next)") { social.clanOp("rank", mem.name, next, nil) }.disabled(busy).buttonStyle(.borderless)
+                                Button("выгнать") { social.clanOp("kick", mem.name, nil, nil) }.disabled(busy).buttonStyle(.borderless)
+                            }
+                        }
+                    }
+                    Button(cl.rank == "head" ? "Распустить клан" : "Выйти из клана") { social.clanOp("leave", nil, nil, nil) }.disabled(busy)
+                }
+                ForEach(cl.invites, id: \.self) { inv in
+                    HStack {
+                        Text("Приглашение в клан \(inv)").font(.footnote)
+                        Spacer()
+                        Button("вступить") { social.clanOp("accept", nil, nil, inv) }.disabled(busy).buttonStyle(.borderless)
+                        Button("отказать") { social.clanOp("decline", nil, nil, inv) }.disabled(busy).buttonStyle(.borderless)
+                    }
+                }
+                Button("закрыть") { social.closeClan() }
+            }
+        }
+        if let ex = game.exchange {
+            Section("Обмен с \(ex.partner)" + (ex.waiting ? " (ждём его)" : "")) {
+                Text("Вы отдаёте:" + (ex.iAgree ? " ✓ согласны" : "")).font(.footnote)
+                ForEach(ex.mine, id: \.id) { item in
+                    HStack {
+                        Text("\(item.name) ×\(item.count)")
+                        Spacer()
+                        Button("убрать") { social.withdraw(item) }.disabled(busy).buttonStyle(.borderless)
+                    }
+                }
+                Text("\(ex.partner) отдаёт:" + (ex.theyAgree ? " ✓ согласен" : "")).font(.footnote)
+                ForEach(ex.theirs, id: \.id) { item in Text("\(item.name) ×\(item.count)") }
+                ForEach(game.inventory.filter { inv in !inv.equipped && !ex.mine.contains { $0.id == inv.id } }, id: \.id) { item in
+                    Button("+ \(item.name) ×\(item.count)") { social.offer(item, Int(item.count)) }.disabled(busy)
+                }
+                Button("Согласен") { social.agree() }.disabled(busy || ex.iAgree || ex.waiting)
+                Button("Отменить обмен", role: .destructive) { social.cancelExchange() }
             }
         }
         if let shop = game.shop {
@@ -293,8 +412,8 @@ struct PlayingView: View {
         if let p = pending {
             Section("Применить «\(p.name)» к…") {
                 if p.target == "player" {
-                    ForEach(game.location.players, id: \.self) { name in
-                        Button(name) { more.useOn(name.replacingOccurrences(of: " (призрак)", with: "")) }.disabled(busy)
+                    ForEach(game.people, id: \.name) { person in
+                        Button(person.name + (person.ghost ? " (призрак)" : "")) { more.useOn(person.name) }.disabled(busy)
                     }
                 } else {
                     ForEach(game.inventory.filter { $0.id != p.id }, id: \.id) { item in
@@ -302,6 +421,16 @@ struct PlayingView: View {
                     }
                 }
                 Button("отмена") { more.cancelUse() }
+            }
+        }
+        Section("Сказать") {
+            TextField("Текст", text: $speech)
+            HStack {
+                Button("всем") { social.say(speech, false); speech = "" }.disabled(busy || speech.isEmpty).buttonStyle(.borderless)
+                if game.clan != nil {
+                    Spacer()
+                    Button("клану") { social.say(speech, true); speech = "" }.disabled(busy || speech.isEmpty).buttonStyle(.borderless)
+                }
             }
         }
         Section("Инвентарь") {
@@ -336,4 +465,22 @@ struct MoreActions {
     let useOn: (String) -> Void
     let cancelUse: () -> Void
     let craft: (CraftOptionView) -> Void
+}
+
+struct SocialActions {
+    let answerText: (String) -> Void
+    let say: (String, Bool) -> Void
+    let openMail: () -> Void
+    let closeMail: () -> Void
+    let write: (String, String) -> Void
+    let addContact: (String) -> Void
+    let removeContact: (String) -> Void
+    let startExchange: (PersonView) -> Void
+    let offer: (InventoryItemView, Int) -> Void
+    let withdraw: (ShopItemView) -> Void
+    let agree: () -> Void
+    let cancelExchange: () -> Void
+    let openClan: () -> Void
+    let closeClan: () -> Void
+    let clanOp: (String, String?, String?, String?) -> Void
 }

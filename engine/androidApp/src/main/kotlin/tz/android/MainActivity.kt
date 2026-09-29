@@ -38,6 +38,9 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import tz.shared.CorpseView
 import tz.shared.CraftOptionView
+import tz.shared.ClanView
+import tz.shared.MessagesView
+import tz.shared.PersonView
 import tz.shared.ShopItemView
 import tz.shared.DialogOption
 import tz.shared.Rules
@@ -123,6 +126,25 @@ fun App(session: Session, live: Boolean = true) {
                     cancelUse = { session.cancelUse(); version++ },
                     craft = { option -> run { session.craft(option) } },
                 ),
+                social = SocialActions(
+                    answerText = { t -> run { session.answerText(t) } },
+                    say = { t, clan -> run { session.say(t, clan) } },
+                    openMail = { run { session.openMail() } },
+                    closeMail = { session.closeMail(); version++ },
+                    write = { to, t -> run { session.write(to, t) } },
+                    addContact = { n -> run { session.addContact(n) } },
+                    removeContact = { n -> run { session.removeContact(n) } },
+                    startExchange = { person -> run { session.startExchange(person) } },
+                    offer = { item, n -> run { session.offer(item, n) } },
+                    withdraw = { item -> run { session.withdraw(item) } },
+                    agree = { run { session.agree() } },
+                    cancelExchange = { run { session.cancelExchange() } },
+                    openClan = { run { session.openClan() } },
+                    closeClan = { session.closeClan(); version++ },
+                    clanOp = { op, name, rank, clan -> run { session.clanOp(op, name, rank, clan) } },
+                ),
+                mail = session.mail,
+                clanInfo = session.clanInfo,
                 onRefresh = { run { session.refresh() } },
                 onSignOut = { run { session.signOut() } },
             )
@@ -183,6 +205,9 @@ fun Playing(
     onSignOut: () -> Unit,
     pending: InventoryItemView? = null,
     more: MoreActions = MoreActions(),
+    social: SocialActions = SocialActions(),
+    mail: MessagesView? = null,
+    clanInfo: ClanView? = null,
 ) {
     val c = game.character
     val loc = game.location
@@ -206,11 +231,42 @@ fun Playing(
             Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(d.npcName, style = MaterialTheme.typography.titleMedium)
                 Text(d.text, style = small)
+                if (d.inputTopic != null) {
+                    var typed by remember(d.text) { mutableStateOf("") }
+                    OutlinedTextField(typed, { typed = it }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                    Button(onClick = { social.answerText(typed) }, enabled = !busy && typed.isNotBlank()) { Text("ответить") }
+                }
                 d.options.forEach { o ->
                     TextButton(onClick = { onAnswer(o) }, enabled = !busy) { Text(o.label) }
                 }
                 TextButton(onClick = onCloseDialog) { Text(if (d.options.isEmpty()) "[Конец диалога]" else "закончить разговор") }
             }
+        }
+    }
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        OutlinedButton(onClick = social.openMail, enabled = !busy) { Text(if (game.unread > 0) "Почта (${game.unread})" else "Почта") }
+        OutlinedButton(onClick = social.openClan, enabled = !busy) {
+            Text((game.clan?.let { "Клан $it" } ?: "Клан") + if (game.clanInvites.isNotEmpty()) " (приглашение)" else "")
+        }
+    }
+    mail?.let { m -> MailPanel(m, busy, social) }
+    clanInfo?.let { cl -> ClanPanel(cl, busy, social) }
+    game.exchange?.let { ex ->
+        Panel("Обмен с ${ex.partner}" + if (ex.waiting) " (ждём его)" else "", social.cancelExchange) {
+            Text("Вы отдаёте:" + if (ex.iAgree) " ✓ согласны" else "", style = small)
+            ex.mine.forEach { item ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("${item.name} ×${item.count}", Modifier.weight(1f), style = small)
+                    TextButton(onClick = { social.withdraw(item) }, enabled = !busy) { Text("убрать") }
+                }
+            }
+            Text("${ex.partner} отдаёт:" + if (ex.theyAgree) " ✓ согласен" else "", style = small)
+            ex.theirs.forEach { item -> Text("${item.name} ×${item.count}", style = small) }
+            Text("Добавить из рюкзака:", style = MaterialTheme.typography.labelMedium)
+            game.inventory.filter { !it.equipped && ex.mine.none { m -> m.id == it.id } }.forEach { item ->
+                TextButton(onClick = { social.offer(item, item.count) }, enabled = !busy) { Text("+ ${item.name} ×${item.count}") }
+            }
+            Button(onClick = social.agree, enabled = !busy && !ex.iAgree && !ex.waiting) { Text("Согласен") }
         }
     }
     game.shop?.let { shop ->
@@ -255,9 +311,8 @@ fun Playing(
     }
     pending?.let { p ->
         Panel("Применить «${p.name}» к…", more.cancelUse) {
-            if (p.target == "player") loc.players.forEach { name ->
-                val clean = name.removeSuffix(" (призрак)")
-                TextButton(onClick = { more.useOn(clean) }, enabled = !busy) { Text(name) }
+            if (p.target == "player") game.people.forEach { person ->
+                TextButton(onClick = { more.useOn(person.name) }, enabled = !busy) { Text(person.name + if (person.ghost) " (призрак)" else "") }
             } else game.inventory.filter { it.id != p.id }.forEach { item ->
                 TextButton(onClick = { more.useOn(item.id) }, enabled = !busy) { Text(item.name) }
             }
@@ -281,7 +336,14 @@ fun Playing(
             if (npc.attackable && !c.ghost) TextButton(onClick = { onAttack(npc) }, enabled = !busy) { Text("атаковать") }
         }
     }
-    if (loc.players.isNotEmpty()) Text("Игроки: " + loc.players.joinToString(), style = small)
+    game.people.forEach { person ->
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(person.name + (person.clan?.let { " *$it*" } ?: "") + if (person.ghost) " (призрак)" else "", Modifier.weight(1f), style = small)
+            if (!c.ghost && !person.ghost) TextButton(onClick = { social.startExchange(person) }, enabled = !busy) { Text("обмен") }
+            TextButton(onClick = { social.addContact(person.name) }, enabled = !busy) { Text("в контакты") }
+            if (game.clan != null && person.clan == null) TextButton(onClick = { social.clanOp("invite", person.name, null, null) }, enabled = !busy) { Text("в клан") }
+        }
+    }
     loc.items.forEach { item ->
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("${item.name}${if (item.count > 1) " ×${item.count}" else ""}", Modifier.weight(1f))
@@ -309,6 +371,12 @@ fun Playing(
         Text("Журнал", style = MaterialTheme.typography.titleMedium)
         game.journal.takeLast(10).forEach { Text(it, style = small) }
     }
+    var speech by remember { mutableStateOf("") }
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        OutlinedTextField(speech, { speech = it }, label = { Text("Сказать") }, singleLine = true, modifier = Modifier.weight(1f))
+        TextButton(onClick = { social.say(speech, false); speech = "" }, enabled = !busy && speech.isNotBlank()) { Text("всем") }
+        if (game.clan != null) TextButton(onClick = { social.say(speech, true); speech = "" }, enabled = !busy && speech.isNotBlank()) { Text("клану") }
+    }
 
     Text("Инвентарь", style = MaterialTheme.typography.titleMedium)
     if (game.inventory.isEmpty()) Text("пусто", style = MaterialTheme.typography.bodyMedium)
@@ -326,6 +394,86 @@ fun Playing(
         }
     }
     TextButton(onClick = onSignOut) { Text("Выйти") }
+}
+
+class SocialActions(
+    val answerText: (String) -> Unit = {},
+    val say: (String, Boolean) -> Unit = { _, _ -> },
+    val openMail: () -> Unit = {},
+    val closeMail: () -> Unit = {},
+    val write: (String, String) -> Unit = { _, _ -> },
+    val addContact: (String) -> Unit = {},
+    val removeContact: (String) -> Unit = {},
+    val startExchange: (PersonView) -> Unit = {},
+    val offer: (InventoryItemView, Int) -> Unit = { _, _ -> },
+    val withdraw: (ShopItemView) -> Unit = {},
+    val agree: () -> Unit = {},
+    val cancelExchange: () -> Unit = {},
+    val openClan: () -> Unit = {},
+    val closeClan: () -> Unit = {},
+    val clanOp: (String, String?, String?, String?) -> Unit = { _, _, _, _ -> },
+)
+
+@Composable
+fun MailPanel(m: MessagesView, busy: Boolean, social: SocialActions) {
+    var to by remember { mutableStateOf<String?>(null) }
+    var text by remember { mutableStateOf("") }
+    Panel("Почта", social.closeMail) {
+        Text("Контакты (добавить можно того, кто рядом; писать — тем, у кого вы в контактах):", style = MaterialTheme.typography.labelMedium)
+        if (m.contacts.isEmpty()) Text("пока никого", style = MaterialTheme.typography.bodySmall)
+        m.contacts.forEach { ct ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(ct.name + (if (ct.online) " • в игре" else "") + (if (ct.mutual) "" else " (вы не у него в контактах)"),
+                    Modifier.weight(1f), style = MaterialTheme.typography.bodySmall)
+                TextButton(onClick = { to = ct.name }, enabled = !busy) { Text("написать") }
+                TextButton(onClick = { social.removeContact(ct.name) }, enabled = !busy) { Text("убрать") }
+            }
+        }
+        to?.let { name ->
+            OutlinedTextField(text, { text = it }, label = { Text("Сообщение для $name") }, modifier = Modifier.fillMaxWidth())
+            Button(onClick = { social.write(name, text); text = ""; to = null }, enabled = !busy && text.isNotBlank()) { Text("Отправить") }
+        }
+        Text("Сообщения:", style = MaterialTheme.typography.labelMedium)
+        if (m.messages.isEmpty()) Text("нет сообщений", style = MaterialTheme.typography.bodySmall)
+        m.messages.forEach { msg ->
+            Text((if (msg.clan) "[клан] " else "") + "${msg.from}: ${msg.text}", style = MaterialTheme.typography.bodySmall,
+                color = if (msg.read) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.primary)
+        }
+    }
+}
+
+@Composable
+fun ClanPanel(cl: ClanView, busy: Boolean, social: SocialActions) {
+    Panel(cl.name?.let { "Клан $it" } ?: "Клан", social.closeClan) {
+        cl.message?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
+        if (cl.name == null) {
+            Text("Вы не в клане. Создать клан можно у Мирандера на центральной площади.", style = MaterialTheme.typography.bodySmall)
+        } else {
+            Text("Ваш ранг: ${Rules.CLAN_RANKS[cl.rank] ?: cl.rank}", style = MaterialTheme.typography.bodySmall)
+            if (cl.info.isNotBlank()) Text(cl.info, style = MaterialTheme.typography.bodySmall)
+            cl.members.forEach { mem ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("${mem.name} — ${Rules.CLAN_RANKS[mem.rank] ?: mem.rank}" + if (mem.online) " • в игре" else "",
+                        Modifier.weight(1f), style = MaterialTheme.typography.bodySmall)
+                    if (cl.canManage && cl.rank == "head" && mem.rank != "head") {
+                        val next = when (mem.rank) { "neophyte" -> "vassal"; "vassal" -> "seneschal"; else -> "neophyte" }
+                        TextButton(onClick = { social.clanOp("rank", mem.name, next, null) }, enabled = !busy) { Text("→ ${Rules.CLAN_RANKS[next]}") }
+                        TextButton(onClick = { social.clanOp("kick", mem.name, null, null) }, enabled = !busy) { Text("выгнать") }
+                    }
+                }
+            }
+            TextButton(onClick = { social.clanOp("leave", null, null, null) }, enabled = !busy) {
+                Text(if (cl.rank == "head") "Распустить клан" else "Выйти из клана")
+            }
+        }
+        cl.invites.forEach { inv ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Приглашение в клан $inv", Modifier.weight(1f), style = MaterialTheme.typography.bodySmall)
+                TextButton(onClick = { social.clanOp("accept", null, null, inv) }, enabled = !busy) { Text("вступить") }
+                TextButton(onClick = { social.clanOp("decline", null, null, inv) }, enabled = !busy) { Text("отказать") }
+            }
+        }
+    }
 }
 
 /** Trade, bank, crafting and item use; grouped so Playing keeps a readable signature. */

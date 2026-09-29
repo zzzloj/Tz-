@@ -19,7 +19,8 @@ SKILLS = {"str", "dex", "int", "meditation", "steal", "animaltaming", "hand", "c
           "healing", "alchemy", "mine", "smith", "lumb", "bow", "stone", "fish", "food", "necro", "currier", "weaver",
           "exp", "points"}
 # Handlers the server implements (Dialogs.HANDLERS in engine/server/.../Dialogs.kt).
-HANDLERS = {"arena-count", "hide-item-random", "repair-boat", "lower-int", "npc-hand-over", "require-pk"}
+HANDLERS = {"arena-count", "hide-item-random", "repair-boat", "lower-int", "npc-hand-over", "require-pk",
+            "clan-status", "clan-leave", "clan-name-input", "clan-create", "clan-restore"}
 ENGINE_TOPICS = {"buy", "buy2", "sell", "tobank", "frombank"}
 
 root = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("-") else

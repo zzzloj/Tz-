@@ -221,7 +221,8 @@ class Dialogs(private val content: Content, dir: File) {
          * handlers show «not moved yet» until their stage: pets and
          * mercenaries, clans and castles, PvP, weddings, arena.
          */
-        val HANDLERS = setOf("arena-count", "hide-item-random", "repair-boat", "lower-int", "npc-hand-over", "require-pk")
+        val HANDLERS = setOf("arena-count", "hide-item-random", "repair-boat", "lower-int", "npc-hand-over", "require-pk",
+            "clan-status", "clan-leave", "clan-name-input", "clan-create", "clan-restore")
 
         /** Old texts are WML: line breaks as <br/>, occasional tags. The apps show plain text. */
         fun plain(text: String): String = text
