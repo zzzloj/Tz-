@@ -15,7 +15,7 @@ class WorldTest {
     fun startingWorldHasItsNpcs() = runTest {
         val world = World(content, Random(1), start)
         // The gatekeeper stands at the starting street (content/locations/_begin.json).
-        assertEquals(listOf("Привратник Уин"), world.npcsAt("_begin").map { it.name })
+        assertEquals(listOf("Привратник Уин"), world.npcsIn("_begin").map { it.name })
         assertTrue(world.npcCount() > 300, "npcs: ${world.npcCount()}")
         // Pets of the 2007 players are not in the world.
         assertTrue(world.allNpcs().none { it.key.contains(".u.") })
@@ -30,7 +30,7 @@ class WorldTest {
         world.tick(start)
         val wolf = world.allNpcs().firstOrNull { it.key == "n.c.wolf.sl2" }
         assertNotNull(wolf, "the wolf of x1159x169 spawns on the first tick")
-        assertEquals("n.c.wolf", wolf.template)
+        assertEquals("n.c.wolf", wolf.proto.template)
     }
 
     @Test
@@ -42,9 +42,9 @@ class WorldTest {
         for (t in 1..1440) world.tick(start + t * 10L)
         var moved = 0
         for ((npc, zone) in homes) {
-            if (npc.wander == null) continue
+            val wander = npc.proto.wander ?: continue
             assertEquals(zone, content.locations.getValue(npc.location).zone, "${npc.key} left its zone")
-            assertTrue(npc.trail.size <= npc.wander!!.steps, "${npc.key} too far: ${npc.trail.size}")
+            assertTrue(npc.trail.size <= wander.steps, "${npc.key} too far: ${npc.trail.size}")
             if (npc.trail.isNotEmpty()) moved++
         }
         assertTrue(moved > 20, "wandering NPCs away from home: $moved")

@@ -108,4 +108,34 @@ class GameApiTest {
         assertEquals("Такой логин уже занят", session.error)
         assertEquals(Screen.LOADING, session.screen)
     }
+
+    @Test
+    fun attackSendsTargetAndDeathResyncs() = runTest {
+        var ghost = false
+        val npcs = """[{"id":"n.c.rat","name":"Крыса","hp":5,"hpMax":5,"attackable":true}]"""
+        fun view() = """{"character":${character.replace("\"skillPoints\":2", "\"skillPoints\":2,\"ghost\":$ghost")},
+            "location":${location.replace("\"npcs\":[]", "\"npcs\":$npcs")},"journal":["Вы по Крыса ножом 2"]}"""
+        val client = server { request ->
+            when (request.url.encodedPath) {
+                "/api/auth/login" -> json("""{"token":"t1","login":"anna"}""")
+                "/api/me" -> json("""{"login":"anna","character":$character}""")
+                "/api/game" -> json(view())
+                "/api/game/attack" -> {
+                    val body = (request.body as io.ktor.http.content.TextContent).text
+                    assertEquals("""{"target":"n.c.rat"}""", body)
+                    ghost = true   // killed by the counter-blow on another device meanwhile
+                    json("""{"error":"ghost","message":""}""", HttpStatusCode.Conflict)
+                }
+                else -> error("unexpected ${request.url}")
+            }
+        }
+        val session = Session(GameApi("http://test", client), MemoryTokens())
+        session.signIn("anna", "secret-123")
+        val rat = session.game!!.location.npcs.single()
+        assertEquals(true, rat.attackable)
+        session.attack(rat)
+        assertEquals(Errors.text(Errors.GHOST), session.error)
+        assertEquals(true, session.game?.character?.ghost)
+        assertEquals(listOf("Вы по Крыса ножом 2"), session.game?.journal)
+    }
 }

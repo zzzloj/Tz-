@@ -52,7 +52,7 @@ class Db(jdbcUrl: String, user: String?, password: String?) : AutoCloseable {
     override fun close() = pool.close()
 
     companion object {
-        val MIGRATIONS = listOf(1 to "V1__accounts.sql", 2 to "V2__inventory.sql")
+        val MIGRATIONS = listOf(1 to "V1__accounts.sql", 2 to "V2__inventory.sql", 3 to "V3__combat.sql")
 
         /**
          * Accepts a JDBC URL or the postgres://user:pass@host:port/db form that

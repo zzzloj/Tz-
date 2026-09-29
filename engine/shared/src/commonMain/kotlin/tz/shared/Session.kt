@@ -1,5 +1,8 @@
 package tz.shared
 
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.delay
+
 /** Where the player is in the app. */
 enum class Screen { LOADING, SIGN_IN, CREATE_CHARACTER, PLAYING }
 
@@ -16,7 +19,11 @@ interface TokenStore {
  */
 class Session(val api: GameApi, private val tokens: TokenStore) {
     private companion object {
-        val STALE = setOf(Errors.NOT_AN_EXIT, Errors.NO_SUCH_ITEM, Errors.NOT_IN_INVENTORY, Errors.NO_CHARACTER)
+        val STALE = setOf(
+            Errors.NOT_AN_EXIT, Errors.NO_SUCH_ITEM, Errors.NOT_IN_INVENTORY, Errors.NO_CHARACTER,
+            Errors.NO_TARGET, Errors.NO_SUCH_CORPSE, Errors.GHOST, Errors.NOT_GHOST, Errors.NO_RESURRECTION_HERE,
+        )
+        const val RECONNECT_MILLIS = 3000L
     }
 
     var screen: Screen = Screen.LOADING
@@ -67,6 +74,39 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
     /** Puts the item on, or takes it off if it is on. */
     suspend fun toggleEquip(item: InventoryItemView) = action {
         game = if (item.equipped) api.unequip(item.id) else api.equip(item.id)
+    }
+
+    suspend fun attack(npc: NpcView) = action { game = api.attack(npc.id) }
+
+    suspend fun loot(corpse: CorpseView, item: GroundItemView) = action { game = api.loot(corpse.id, item.id) }
+
+    /** Cuts meat and hides off a corpse (needs a knife in the backpack). */
+    suspend fun butcher(corpse: CorpseView) = action { game = api.butcher(corpse.id) }
+
+    suspend fun resurrect() = action { game = api.resurrect() }
+
+    /**
+     * Keeps the screen live while playing: the server signals every blow,
+     * death or arrival, and the game view is re-read. Call from the UI's
+     * coroutine; [onUpdate] tells the UI to redraw. Runs until cancelled.
+     */
+    suspend fun listen(onUpdate: () -> Unit) {
+        while (true) {
+            if (screen == Screen.PLAYING && api.token != null) {
+                try {
+                    api.events {
+                        if (screen == Screen.PLAYING && !busy) {
+                            try { game = api.game(); onUpdate() } catch (e: ApiError) { if (e.code == Errors.NO_CHARACTER) enter() }
+                        }
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    // Offline or the server restarted: try again shortly.
+                }
+            }
+            delay(RECONNECT_MILLIS)
+        }
     }
 
     /** Re-reads the screen: NPCs wander and other players come and go. */

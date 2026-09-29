@@ -5,12 +5,16 @@ usage: smoke.py <base url>
 Prints a GitHub annotation with the result; exits 1 on failure.
 Creates one throwaway account "smoke_<random>" per run.
 """
+import base64
+import http.client
 import json
+import os
 import random
 import string
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 
 base = sys.argv[1].rstrip("/")
@@ -56,6 +60,25 @@ try:
     steps.append(f"character {name} at _begin, HP {ch['hp']}/{ch['hpMax']}")
 
     status, game = call("GET", "/api/game", token=token)
+    c = game["character"]
+    assert not c["ghost"] and c["hit"] > 0 and c["expNext"] > 0, c
+    status, err = call("POST", "/api/game/attack", {"target": "n.beginner"}, token)
+    assert status == 400 and err["error"] == "peaceful", (status, err)
+    status, err = call("POST", "/api/game/resurrect", {}, token)
+    assert status == 400 and err["error"] == "not_ghost", (status, err)
+    steps.append(f"combat: hit {c['hit']}%, damage {c['dmgMin']}-{c['dmgMax']}; gatekeeper cannot be attacked")
+
+    u = urllib.parse.urlsplit(base)
+    conn = (http.client.HTTPSConnection if u.scheme == "https" else http.client.HTTPConnection)(u.netloc, timeout=20)
+    conn.request("GET", "/api/events", headers={
+        "Connection": "Upgrade", "Upgrade": "websocket", "Sec-WebSocket-Version": "13",
+        "Sec-WebSocket-Key": base64.b64encode(os.urandom(16)).decode(), "Authorization": "Bearer " + token,
+    })
+    ws = conn.getresponse()
+    assert ws.status == 101, ("websocket", ws.status)
+    conn.close()
+    steps.append("events WebSocket: 101 Switching Protocols")
+
     exit_ = game["location"]["exits"][0]
     status, moved = call("POST", "/api/game/move", {"target": exit_["target"]}, token)
     assert status == 200 and moved["location"]["id"] == exit_["target"], (status, moved)

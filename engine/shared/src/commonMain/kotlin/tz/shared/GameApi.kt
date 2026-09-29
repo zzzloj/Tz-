@@ -3,6 +3,8 @@ package tz.shared
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.websocket.WebSockets
+import io.ktor.client.plugins.websocket.webSocket
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -15,6 +17,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
+import io.ktor.websocket.Frame
 import kotlinx.serialization.json.Json
 
 /** An error answer from the server; [code] is one of [Errors]. */
@@ -32,6 +35,7 @@ class GameApi(
     private val http: HttpClient = (client ?: HttpClient()).config {
         expectSuccess = false
         install(ContentNegotiation) { json(json) }
+        install(WebSockets)
     }
 
     private fun url(path: String) = baseUrl.trimEnd('/') + path
@@ -89,4 +93,23 @@ class GameApi(
     suspend fun equip(item: String): GameView = postJson<GameView, ItemRequest>("/api/game/equip", ItemRequest(item))
 
     suspend fun unequip(item: String): GameView = postJson<GameView, ItemRequest>("/api/game/unequip", ItemRequest(item))
+
+    suspend fun attack(npc: String): GameView = postJson<GameView, TargetRequest>("/api/game/attack", TargetRequest(npc))
+
+    suspend fun loot(corpse: String, item: String): GameView = postJson<GameView, LootRequest>("/api/game/loot", LootRequest(corpse, item))
+
+    suspend fun butcher(corpse: String): GameView = postJson<GameView, LootRequest>("/api/game/butcher", LootRequest(corpse))
+
+    suspend fun resurrect(): GameView = check(http.post(url("/api/game/resurrect")) { auth() })
+
+    /**
+     * Listens to "your screen changed" signals until the connection closes
+     * (then returns or throws); [onChange] is called for each one.
+     */
+    suspend fun events(onChange: suspend () -> Unit) {
+        val wsUrl = url("/api/events").replaceFirst("https://", "wss://").replaceFirst("http://", "ws://")
+        http.webSocket(wsUrl, request = { auth() }) {
+            for (frame in incoming) if (frame is Frame.Text) onChange()
+        }
+    }
 }
