@@ -281,7 +281,7 @@ class Game(
                 val shown = showTopic(ctx, topic, 0)
                 fun fill(t: String) = ctx.vars.entries.fold(Dialogs.plain(t).replace("<imja>", p.name)) { acc, (k, v) -> acc.replace("{$k}", v) }
                 DialogView(npcKey, npc.name, fill(shown.first),
-                    shown.second.map { it.copy(label = fill(it.label)) }.filter { it.label.isNotBlank() },
+                    options = shown.second.map { it.copy(label = fill(it.label)) }.filter { it.label.isNotBlank() },
                     inputTopic = ctx.inputTopic)
             }
         }
