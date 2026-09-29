@@ -28,7 +28,7 @@ import java.sql.SQLException
  * silenced words like «худой»; here only the rude roots are beeped.
  */
 internal fun cleanSpeech(text: String): String {
-    var s = text.replace(Regex("[\\u0000-\\u001f\"'\\\\$&|<>]"), "")
+    var s = text.replace(Regex("<[^>]*>"), "").replace(Regex("[\\u0000-\\u001f\"'\\\\$&|<>]"), "")
     for (d in listOf(".ru", ".org", ".net", ".com", ".ua")) s = s.replace(d, "")
     val rude = listOf(
         "(?iu)(с|c)(у|y)(ч)?(к|k)(а|a)", "(?iu)пид(о|o|а|a)р\\w*", "(?iu)\\b(х|x)(у|y)(й|я|е|ё|и|ю|л)\\w*",

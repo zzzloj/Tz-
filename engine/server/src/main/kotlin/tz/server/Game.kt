@@ -500,6 +500,12 @@ class Game(
         for (a in actions) {
             val count = a.int("count") ?: 1
             when {
+                // A handler's own parameters may be named like actions ("give"), so it goes first.
+                "handler" in a -> try {
+                    handler(ctx, a)?.let { prefix += it }
+                } catch (f: HandlerFailed) {
+                    return Done(failure = f.text)
+                }
                 "take" in a -> { changeItem(p, a.str("take")!!, -count); ctx.inventory.merge(a.str("take")!!, -count, Int::plus); statsChanged = true }
                 "give" in a -> { changeItem(p, a.str("give")!!, count); ctx.inventory.merge(a.str("give")!!, count, Int::plus) }
                 "exp" in a -> addExp(p, a.int("exp") ?: 0)
@@ -557,11 +563,7 @@ class Game(
                 }
                 "say" in a -> content.logic.jokes[a.str("say")!!]?.takeIf { it.isNotEmpty() }?.let { extra += it[rnd.nextInt(it.size)] }
                 "journal" in a -> p.log(a.str("journal")!!)
-                "handler" in a -> try {
-                    handler(ctx, a)?.let { prefix += it }
-                } catch (f: HandlerFailed) {
-                    return Done(failure = f.text)
-                }
+
             }
         }
         if (statsChanged) refreshStats(p)
