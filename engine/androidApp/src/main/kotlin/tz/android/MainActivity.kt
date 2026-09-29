@@ -36,11 +36,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import tz.shared.CorpseView
 import tz.shared.ExitView
 import tz.shared.GameApi
 import tz.shared.GameView
 import tz.shared.GroundItemView
 import tz.shared.InventoryItemView
+import tz.shared.NpcView
 import tz.shared.Screen
 import tz.shared.Session
 import tz.shared.TokenStore
@@ -67,7 +69,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun App(session: Session) {
+fun App(session: Session, live: Boolean = true) {
     val scope = rememberCoroutineScope()
     // Session is plain Kotlin; bump this counter after each call to redraw.
     var version by remember { mutableIntStateOf(0) }
@@ -75,6 +77,8 @@ fun App(session: Session) {
         scope.launch { version++; action(); version++ }
     }
     LaunchedEffect(Unit) { run { session.resume() } }
+    // Blows, deaths and arrivals come from the server; redraw on each.
+    if (live) LaunchedEffect(Unit) { session.listen { version++ } }
 
     // Read the counter so this function runs again after every session call;
     // children get plain values (GameView, busy), never the Session object:
@@ -98,6 +102,10 @@ fun App(session: Session) {
                 onTake = { item -> run { session.take(item) } },
                 onDrop = { item -> run { session.drop(item) } },
                 onToggleEquip = { item -> run { session.toggleEquip(item) } },
+                onAttack = { npc -> run { session.attack(npc) } },
+                onLoot = { corpse, item -> run { session.loot(corpse, item) } },
+                onButcher = { corpse -> run { session.butcher(corpse) } },
+                onResurrect = { run { session.resurrect() } },
                 onRefresh = { run { session.refresh() } },
                 onSignOut = { run { session.signOut() } },
             )
@@ -147,26 +155,70 @@ fun Playing(
     onTake: (GroundItemView) -> Unit,
     onDrop: (InventoryItemView) -> Unit,
     onToggleEquip: (InventoryItemView) -> Unit,
+    onAttack: (NpcView) -> Unit,
+    onLoot: (CorpseView, GroundItemView) -> Unit,
+    onButcher: (CorpseView) -> Unit,
+    onResurrect: () -> Unit,
     onRefresh: () -> Unit,
     onSignOut: () -> Unit,
 ) {
     val c = game.character
     val loc = game.location
+    val small = MaterialTheme.typography.bodyMedium
     Text("${c.name} · HP ${c.hp}/${c.hpMax} · мана ${c.mana}/${c.manaMax}", style = MaterialTheme.typography.labelLarge)
+    Text(
+        "удар ${c.hit}% · урон ${c.dmgMin}–${c.dmgMax} · броня ${c.armor} · уклон ${c.dodge} · опыт ${c.exp}/${c.expNext}" +
+            (if (c.skillPoints > 0) " · очков ${c.skillPoints}" else "") +
+            (if (game.restSeconds > 0) " · отдых ${game.restSeconds} с" else ""),
+        style = MaterialTheme.typography.labelMedium,
+    )
+    if (c.ghost) {
+        Text(
+            "Вы призрак. Воскреснуть можно у камня воскрешения или у лекаря Джозефа (двор к северу от Переулка).",
+            color = MaterialTheme.colorScheme.error, style = small,
+        )
+        if (game.canResurrect) Button(onClick = onResurrect, enabled = !busy) { Text("Воскреснуть") }
+    }
     Text(loc.name, style = MaterialTheme.typography.headlineSmall)
-    loc.description?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
-    if (loc.npcs.isNotEmpty()) Text("Здесь: " + loc.npcs.joinToString { it.name }, style = MaterialTheme.typography.bodyMedium)
-    if (loc.players.isNotEmpty()) Text("Игроки: " + loc.players.joinToString(), style = MaterialTheme.typography.bodyMedium)
+    loc.description?.let { Text(it, style = small) }
+    loc.npcs.forEach { npc ->
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                npc.name + (if (npc.attackable) " · HP ${npc.hp}/${npc.hpMax}" else "") + (if (npc.fightingYou) " · бьёт вас" else ""),
+                Modifier.weight(1f), style = small,
+                color = if (npc.fightingYou) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+            )
+            if (npc.attackable && !c.ghost) TextButton(onClick = { onAttack(npc) }, enabled = !busy) { Text("атаковать") }
+        }
+    }
+    if (loc.players.isNotEmpty()) Text("Игроки: " + loc.players.joinToString(), style = small)
     loc.items.forEach { item ->
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("${item.name}${if (item.count > 1) " ×${item.count}" else ""}", Modifier.weight(1f))
             if (item.takeable) TextButton(onClick = { onTake(item) }, enabled = !busy) { Text("взять") }
         }
     }
+    loc.corpses.forEach { corpse ->
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(corpse.name, Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
+            if (corpse.canButcher && !c.ghost) TextButton(onClick = { onButcher(corpse) }, enabled = !busy) { Text("разделать") }
+        }
+        corpse.items.forEach { item ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("  ${item.name}${if (item.count > 1) " ×${item.count}" else ""}", Modifier.weight(1f), style = small)
+                if (!c.ghost) TextButton(onClick = { onLoot(corpse, item) }, enabled = !busy) { Text("взять") }
+            }
+        }
+    }
     loc.exits.forEach { exit ->
         OutlinedButton(onClick = { onGo(exit) }, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text(exit.label) }
     }
     TextButton(onClick = onRefresh, enabled = !busy) { Text("осмотреться") }
+
+    if (game.journal.isNotEmpty()) {
+        Text("Журнал", style = MaterialTheme.typography.titleMedium)
+        game.journal.takeLast(10).forEach { Text(it, style = small) }
+    }
 
     Text("Инвентарь", style = MaterialTheme.typography.titleMedium)
     if (game.inventory.isEmpty()) Text("пусто", style = MaterialTheme.typography.bodyMedium)

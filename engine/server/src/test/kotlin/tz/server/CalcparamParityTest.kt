@@ -77,7 +77,9 @@ class CalcparamParityTest {
             val war = r.jsonObject["war"]!!.jsonPrimitive.content.split('|')
             val char = r.jsonObject["char"]!!.jsonPrimitive.content.split('|')
             val k = Formulas.player(c.skills, c.equip, { content.items[it] }, c.mounted)
-            val php = listOf(war[0], war[1], war[2], war[3], war[4], war[5], war[6], war[7], war[8], war[9], war[10], war[11], war[12], war[13], war[14])
+            val php = listOf(war[0], war[1], war[2], war[3], war[4], war[5], war[6], war[7], war[8], war[9], war[10], war[11], war[12], war[13],
+                // Without a weapon the old engine leaves the ammo field as 0 — "no ammo" either way.
+                war[14].takeUnless { it == "0" } ?: "")
             val kt = listOf(k.hit, k.dmgMin, k.dmgMax, k.delay, if (k.ranged) 1 else 0, k.armor, k.dodge, k.parry, k.shieldArmor,
                 k.magicDodge, k.magicParry, k.magicResist, k.verb, k.expValue, k.ammo).map { it.toString() }
             assertEquals(php, kt, "skills=${(0 until 16).map { c.skills[it] }} equip=${c.equip} mounted=${c.mounted}")

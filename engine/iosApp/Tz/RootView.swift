@@ -20,6 +20,15 @@ final class SessionModel: ObservableObject {
             version += 1
         }
     }
+
+    /// Blows, deaths and arrivals come from the server over a WebSocket; redraw on each.
+    func listen() {
+        Task {
+            try? await session.listen(onUpdate: { [weak self] in
+                Task { @MainActor in self?.version += 1 }
+            })
+        }
+    }
 }
 
 struct RootView: View {
@@ -44,6 +53,10 @@ struct RootView: View {
                                 onTake: { item in model.run { try await $0.take(item: item) } },
                                 onDrop: { item in model.run { try await $0.drop(item: item) } },
                                 onToggleEquip: { item in model.run { try await $0.toggleEquip(item: item) } },
+                                onAttack: { npc in model.run { try await $0.attack(npc: npc) } },
+                                onLoot: { corpse, item in model.run { try await $0.loot(corpse: corpse, item: item) } },
+                                onButcher: { corpse in model.run { try await $0.butcher(corpse: corpse) } },
+                                onResurrect: { model.run { try await $0.resurrect() } },
                                 onRefresh: { model.run { try await $0.refresh() } },
                                 onSignOut: { model.run { try await $0.signOut() } })
                 } else if s.error != nil {
@@ -56,7 +69,10 @@ struct RootView: View {
             .navigationTitle(s.game?.location.name ?? "Территория Зла")
             .overlay { if s.busy { ProgressView() } }
         }
-        .task { model.run { try await $0.resume() } }
+        .task {
+            model.run { try await $0.resume() }
+            model.listen()
+        }
     }
 }
 
@@ -107,8 +123,19 @@ struct PlayingView: View {
     let onTake: (GroundItemView) -> Void
     let onDrop: (InventoryItemView) -> Void
     let onToggleEquip: (InventoryItemView) -> Void
+    let onAttack: (NpcView) -> Void
+    let onLoot: (CorpseView, GroundItemView) -> Void
+    let onButcher: (CorpseView) -> Void
+    let onResurrect: () -> Void
     let onRefresh: () -> Void
     let onSignOut: () -> Void
+
+    private func stats(_ c: CharacterView) -> String {
+        var s = "удар \(c.hit)% · урон \(c.dmgMin)–\(c.dmgMax) · броня \(c.armor) · уклон \(c.dodge) · опыт \(c.exp)/\(c.expNext)"
+        if c.skillPoints > 0 { s += " · очков \(c.skillPoints)" }
+        if game.restSeconds > 0 { s += " · отдых \(game.restSeconds) с" }
+        return s
+    }
 
     private func label(_ name: String, _ count: Int32) -> String {
         count > 1 ? "\(name) ×\(count)" : name
@@ -119,9 +146,26 @@ struct PlayingView: View {
         let loc = game.location
         Section {
             Text("\(c.name) · HP \(c.hp)/\(c.hpMax) · мана \(c.mana)/\(c.manaMax)").font(.footnote)
+            Text(stats(c)).font(.caption).foregroundStyle(.secondary)
+            if c.ghost {
+                Text("Вы призрак. Воскреснуть можно у камня воскрешения или у лекаря Джозефа (двор к северу от Переулка).")
+                    .foregroundStyle(.red)
+                if game.canResurrect {
+                    Button("Воскреснуть") { onResurrect() }.disabled(busy)
+                }
+            }
             if let d = loc.description_ { Text(d) }
-            if !loc.npcs.isEmpty {
-                Text("Здесь: " + loc.npcs.map { $0.name }.joined(separator: ", "))
+            ForEach(loc.npcs, id: \.id) { npc in
+                HStack {
+                    Text(npc.name
+                         + (npc.attackable ? " · HP \(npc.hp)/\(npc.hpMax)" : "")
+                         + (npc.fightingYou ? " · бьёт вас" : ""))
+                        .foregroundStyle(npc.fightingYou ? .red : .primary)
+                    Spacer()
+                    if npc.attackable && !c.ghost {
+                        Button("атаковать") { onAttack(npc) }.disabled(busy).buttonStyle(.borderless)
+                    }
+                }
             }
             if !loc.players.isEmpty {
                 Text("Игроки: " + loc.players.joined(separator: ", "))
@@ -136,11 +180,34 @@ struct PlayingView: View {
                 }
             }
         }
+        ForEach(loc.corpses, id: \.id) { corpse in
+            Section(corpse.name) {
+                ForEach(corpse.items, id: \.id) { item in
+                    HStack {
+                        Text(label(item.name, item.count))
+                        Spacer()
+                        if !c.ghost {
+                            Button("взять") { onLoot(corpse, item) }.disabled(busy).buttonStyle(.borderless)
+                        }
+                    }
+                }
+                if corpse.canButcher && !c.ghost {
+                    Button("разделать") { onButcher(corpse) }.disabled(busy)
+                }
+            }
+        }
         Section("Выходы") {
             ForEach(loc.exits, id: \.target) { exit in
                 Button(exit.label) { onGo(exit) }.disabled(busy)
             }
             Button("осмотреться") { onRefresh() }.disabled(busy)
+        }
+        if !game.journal.isEmpty {
+            Section("Журнал") {
+                ForEach(Array(game.journal.suffix(10).enumerated()), id: \.offset) { _, line in
+                    Text(line).font(.footnote)
+                }
+            }
         }
         Section("Инвентарь") {
             if game.inventory.isEmpty { Text("пусто").foregroundStyle(.secondary) }
