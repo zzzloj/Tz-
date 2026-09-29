@@ -1,0 +1,135 @@
+{
+  "id": "n.Bosvar",
+  "topics": {
+    "begin": [
+      {
+        "do": [
+          {
+            "handler": "castle-keeper-access"
+          }
+        ],
+        "text": "Здравствуй. Тебя зовут <imja>, верно?",
+        "options": [
+          {
+            "label": "Верно, кто ты?",
+            "goto": "who"
+          },
+          {
+            "label": "Я должен идти",
+            "goto": "end"
+          }
+        ]
+      }
+    ],
+    "who": [
+      {
+        "text": "Я могу за небольшую сумму (500 монет) в течении недели телепортировать Вас и Ваш клан в место указанное главой.",
+        "options": [
+          {
+            "label": "Заключить контракт",
+            "goto": "new",
+            "if": [
+              {
+                "flag": "clan.head"
+              }
+            ]
+          },
+          {
+            "label": "Телепортироватса",
+            "goto": "tel",
+            "if": [
+              {
+                "flag": "n.Bosvar.contract",
+                "world": true
+              }
+            ]
+          },
+          {
+            "label": "Все в порядке, мне пора.",
+            "goto": "end"
+          }
+        ]
+      }
+    ],
+    "tel": [
+      {
+        "if": [
+          {
+            "flag": "n.Bosvar.contract",
+            "world": true
+          }
+        ],
+        "do": [
+          {
+            "handler": "castle-teleport",
+            "contract": "n.Bosvar.contract"
+          }
+        ],
+        "text": "До встречи <imja>!"
+      },
+      {
+        "text": "Глава клана не подписывал со мной контракта"
+      }
+    ],
+    "new": [
+      {
+        "if": [
+          {
+            "noflag": "clan.head"
+          }
+        ],
+        "text": "Вы не являетесь главой клана"
+      },
+      {
+        "if": [
+          {
+            "money": 500
+          }
+        ],
+        "do": [
+          {
+            "handler": "castle-rune-list"
+          }
+        ],
+        "text": "Выберите руну: "
+      },
+      {
+        "text": "У вас не достаточно денег"
+      }
+    ],
+    "tele": [
+      {
+        "if": [
+          {
+            "noflag": "clan.head"
+          }
+        ],
+        "text": "Вы не являетесь главой клана"
+      },
+      {
+        "if": [
+          {
+            "money": 500
+          }
+        ],
+        "do": [
+          {
+            "handler": "castle-contract",
+            "contract": "n.Bosvar.contract",
+            "seconds": 604800,
+            "cost": 500
+          }
+        ],
+        "text": "Контракт заключен"
+      },
+      {
+        "text": "У вас не достаточно денег"
+      }
+    ],
+    "end": [
+      {
+        "text": "Пока, приходи еще"
+      }
+    ]
+  }
+}

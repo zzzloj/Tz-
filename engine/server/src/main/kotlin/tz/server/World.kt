@@ -434,6 +434,23 @@ class World(
         true
     }
 
+    /** Takes an item an NPC carries; false if it has none. */
+    suspend fun takeFromNpc(key: String, loc: String, itemId: String): Boolean = mutex.withLock {
+        val npc = npcs[loc]?.get(key) ?: return@withLock false
+        val n = npc.items[itemId] ?: return@withLock false
+        if (n <= 1) npc.items.remove(itemId) else npc.items[itemId] = n - 1
+        true
+    }
+
+    suspend fun npcHas(key: String, loc: String, itemId: String): Boolean = mutex.withLock {
+        (npcs[loc]?.get(key)?.items?.get(itemId) ?: 0) > 0
+    }
+
+    /** Puts an item on the ground that never vanishes (quest objects: a repaired boat, a hidden clover). */
+    suspend fun placePermanent(loc: String, itemId: String, count: Int) = mutex.withLock {
+        putItem(loc, GroundItem(itemId, content.itemName(itemId), count, 0))
+    }
+
     suspend fun removeNpc(key: String, loc: String): Boolean = mutex.withLock { npcs[loc]?.remove(key) != null }
 
     /** Removes an item (fixtures too) from the ground; false if it is not there. */

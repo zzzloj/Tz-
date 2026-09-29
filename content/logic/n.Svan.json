@@ -1,0 +1,29 @@
+{
+  "id": "n.Svan",
+  "topics": {
+    "loshok": [
+      {
+        "do": [
+          {
+            "handler": "pet-owned-here",
+            "npc": "n.a.losh"
+          }
+        ],
+        "text": "Извини, <imja>, у тебя уже есть купленная лошадь"
+      },
+      {
+        "do": [
+          {
+            "take": "i.money",
+            "count": 200
+          },
+          {
+            "handler": "buy-pet",
+            "npc": "n.a.losh"
+          }
+        ],
+        "text": "Вот твоя лошадь..."
+      }
+    ]
+  }
+}

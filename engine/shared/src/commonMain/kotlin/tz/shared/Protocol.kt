@@ -24,6 +24,8 @@ data class NpcView(
     val fightingYou: Boolean = false,
     /** Monsters and wild animals; townsfolk and traders cannot be attacked yet (no guards and crimes). */
     val attackable: Boolean = false,
+    /** Has a dialog: POST /api/game/talk. */
+    val canTalk: Boolean = false,
 )
 
 @Serializable

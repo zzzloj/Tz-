@@ -324,7 +324,7 @@ class Game(
         var options: List<DialogOption> = base?.second ?: emptyList()
         when {
             rules != null -> {
-                val rule = rules.firstOrNull { r -> r.conditions.all { cond(ctx, it) } }
+                val rule = rules.firstOrNull { r -> r.conditions.all { cond(ctx, it) } && r.actions.all { guard(ctx, it) } }
                 val baseText = base?.first?.takeUnless { it.startsWith("eval:") } ?: ""
                 if (rule == null) text = baseText
                 else {
@@ -332,7 +332,8 @@ class Game(
                     if (done.failure != null) {
                         text = done.failure
                     } else {
-                        text = listOfNotNull(rule.text ?: baseText, done.extra).filter { it.isNotBlank() }.joinToString("\n")
+                        text = listOfNotNull(done.prefix, rule.text ?: baseText).filter { it.isNotBlank() }.joinToString(" ")
+                        text = listOfNotNull(text, done.extra).filter { it.isNotBlank() }.joinToString("\n")
                         if (rule.options != null) options = rule.options.filter { o -> o.conditions.all { cond(ctx, it) } }
                             .map { DialogOption(it.label, it.goto, it.arg) }
                         options = options.filter { it.topic !in rule.hide }
@@ -402,7 +403,47 @@ class Game(
         }
     }
 
-    private class Done(val failure: String? = null, val extra: String? = null, val options: List<DialogOption>? = null)
+    /**
+     * The check part of a handler: a rule whose guard fails is skipped and
+     * the next rule is tried, like a condition.
+     */
+    private suspend fun guard(ctx: TalkCtx, a: JsonObject): Boolean = when (a.str("handler")) {
+        // Killing players comes with PvP; until then nobody has.
+        "require-pk" -> false
+        "npc-hand-over" -> world.npcHas(a.str("npc")!!, a.str("location") ?: ctx.p.location, a.str("item")!!)
+        else -> true
+    }
+
+    /** Handlers implemented in code (Dialogs.HANDLERS); returns text to put before the NPC's line. */
+    private suspend fun handler(ctx: TalkCtx, a: JsonObject): String? {
+        val p = ctx.p
+        when (a.str("handler")) {
+            "arena-count" -> {
+                val n = players.values.count { it.location == "arena" && ctx.now - it.lastSeen < ACTIVE_SECONDS }
+                return if (n == 0) "Сейчас на арене никого нет." else "Сейчас на арене $n человек."
+            }
+            "hide-item-random" -> {
+                val places = content.locations.keys.filter { id ->
+                    !id.startsWith("z.") && !id.startsWith("c.") && !id.startsWith("arena") && !id.startsWith("qv") && id != Protocol.START_LOCATION
+                }
+                if (places.isNotEmpty()) world.placePermanent(places[rnd.nextInt(places.size)], a.str("item")!!, 1)
+            }
+            "repair-boat" -> {
+                world.removeItem(p.location, a.str("from")!!)
+                world.placePermanent(p.location, a.str("to")!!, 1)
+            }
+            "lower-int" -> { p.int = (p.int - 1).coerceAtLeast(1); refreshStats(p) }
+            "npc-hand-over" -> {
+                val item = a.str("item")!!
+                if (world.takeFromNpc(a.str("npc")!!, a.str("location") ?: p.location, item)) {
+                    changeItem(p, item, 1); ctx.inventory.merge(item, 1, Int::plus)
+                }
+            }
+        }
+        return null
+    }
+
+    private class Done(val failure: String? = null, val extra: String? = null, val options: List<DialogOption>? = null, val prefix: String? = null)
 
     /**
      * Runs a rule's actions. Everything a rule takes is checked first: if
@@ -415,9 +456,10 @@ class Game(
         for (a in actions) a.str("take")?.let { need[it] = (need[it] ?: 0) + (a.int("count") ?: 1) }
         val missing = need.filter { (id, n) -> ctx.count(id) < n }.keys
         if (missing.isNotEmpty()) return Done(failure = "У вас нет: " + missing.joinToString { content.itemName(it) })
-        if (actions.any { it.containsKey("handler") }) return Done(failure = UNTRANSLATED)
+        if (actions.any { a -> a.str("handler")?.let { it !in Dialogs.HANDLERS } == true }) return Done(failure = UNTRANSLATED)
 
         val extra = ArrayList<String>()
+        val prefix = ArrayList<String>()
         var options: List<DialogOption>? = null
         var statsChanged = false
         for (a in actions) {
@@ -480,11 +522,13 @@ class Game(
                 }
                 "say" in a -> content.logic.jokes[a.str("say")!!]?.takeIf { it.isNotEmpty() }?.let { extra += it[rnd.nextInt(it.size)] }
                 "journal" in a -> p.log(a.str("journal")!!)
+                "handler" in a -> handler(ctx, a)?.let { prefix += it }
             }
         }
         if (statsChanged) refreshStats(p)
         save(p)
-        return Done(extra = extra.joinToString("\n").takeIf { it.isNotBlank() }, options = options)
+        return Done(extra = extra.joinToString("\n").takeIf { it.isNotBlank() }, options = options,
+            prefix = prefix.joinToString(" ").takeIf { it.isNotBlank() })
     }
 
     /**
@@ -891,7 +935,7 @@ class Game(
             .filter { it.id != p.id && it.location == loc.id && now - it.lastSeen < ACTIVE_SECONDS }
             .map { if (it.ghost) "${it.name} (призрак)" else it.name }
             .sorted()
-        val npcs = world.npcsIn(loc.id).map { NpcView(it.key, it.name, it.hp, it.proto.hpMax, p.id in it.enemies, Rules.attackable(it.key)) }
+        val npcs = world.npcsIn(loc.id).map { NpcView(it.key, it.name, it.hp, it.proto.hpMax, p.id in it.enemies, Rules.attackable(it.key), content.logic.hasDialog(if (it.key.startsWith("n.g.")) "n.g.guard" else it.key)) }
         val location = loc.view().copy(
             npcs = npcs,
             items = world.itemsAt(loc.id, now),

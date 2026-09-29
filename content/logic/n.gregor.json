@@ -1,0 +1,54 @@
+{
+  "id": "n.gregor",
+  "topics": {
+    "begin": [
+      {
+        "options": [
+          {
+            "label": "Кто ты?",
+            "goto": "who"
+          },
+          {
+            "label": "Я принес тебе все, что ты просил",
+            "goto": "spec",
+            "if": [
+              {
+                "has": "i.f.healherb"
+              },
+              {
+                "has": "i.h.jalo"
+              },
+              {
+                "has": "i.f.mushroom.dark"
+              }
+            ]
+          },
+          {
+            "label": "Ничем, я просто шел мимо, пока",
+            "goto": "end"
+          }
+        ]
+      }
+    ],
+    "spec": [
+      {
+        "do": [
+          {
+            "take": "i.f.healherb"
+          },
+          {
+            "take": "i.h.jalo"
+          },
+          {
+            "take": "i.f.mushroom.dark"
+          },
+          {
+            "give": "i.acid",
+            "count": 2
+          }
+        ],
+        "text": "Спасибо <imja>! Вот возьми в качестве моей благодарности."
+      }
+    ]
+  }
+}

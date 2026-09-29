@@ -1,0 +1,82 @@
+{
+  "id": "n.telemag",
+  "topics": {
+    "enternow": [
+      {
+        "if": [
+          {
+            "has": "i.q.telemag"
+          }
+        ],
+        "do": [
+          {
+            "take": "i.q.telemag"
+          },
+          {
+            "teleport": "x3100x100"
+          }
+        ],
+        "text": "[голос издалека]Прощай, <imja>,надеюсь тебе повезет."
+      },
+      {
+        "text": "У тебя нет свитка"
+      }
+    ],
+    "kast1": [
+      {
+        "if": [
+          {
+            "money": 150
+          }
+        ],
+        "do": [
+          {
+            "take": "i.money",
+            "count": 150
+          },
+          {
+            "journal": "Томрак: Tana Kas"
+          },
+          {
+            "handler": "tomrak-armor"
+          },
+          {
+            "journal": "Броня +5"
+          }
+        ],
+        "text": "Иди с миром"
+      },
+      {
+        "text": "У тебя нет денег"
+      }
+    ],
+    "kast2": [
+      {
+        "if": [
+          {
+            "money": 200
+          }
+        ],
+        "do": [
+          {
+            "take": "i.money",
+            "count": 200
+          },
+          {
+            "journal": "Томрак: Lana Tas"
+          },
+          {
+            "handler": "tomrak-life"
+          },
+          {
+            "journal": "Макс.жизнь +10"
+          }
+        ],
+        "text": "Иди с миром"
+      },
+      {
+        "text": "У тебя нет денег"
+      }
+    ]
+  }
+}

@@ -173,7 +173,8 @@ class Dialogs(private val content: Content, dir: File) {
             }
         }
         for ((id, topics) in logic) for ((topic, rules) in topics) {
-            if (rules.any { r -> r.actions.any { it.containsKey("handler") } }) add("$id/$topic (handler)")
+            val waiting = rules.flatMap { r -> r.actions.mapNotNull { it.str("handler") } }.filter { it !in HANDLERS }.toSet()
+            if (waiting.isNotEmpty()) add("$id/$topic (handler ${waiting.joinToString()})")
         }
     }.sorted()
 
@@ -209,6 +210,13 @@ class Dialogs(private val content: Content, dir: File) {
             "take", "give", "exp", "start", "stop", "set", "clear", "learn", "teach", "teleport", "spawn", "remove",
             "place", "removeHere", "resurrect", "heal", "say", "journal", "handler", "giveNpc",
         )
+
+        /**
+         * Handlers written in the server so far (Game.kt). Topics using other
+         * handlers show «not moved yet» until their stage: pets and
+         * mercenaries, clans and castles, PvP, weddings, arena.
+         */
+        val HANDLERS = setOf("arena-count", "hide-item-random", "repair-boat", "lower-int", "npc-hand-over", "require-pk")
 
         /** Old texts are WML: line breaks as <br/>, occasional tags. The apps show plain text. */
         fun plain(text: String): String = text

@@ -1,0 +1,153 @@
+{
+  "id": "n.Slejter",
+  "topics": {
+    "begin": [
+      {
+        "if": [
+          {
+            "ready": "n.Slejter.qv"
+          }
+        ],
+        "do": [
+          {
+            "start": "n.Slejter.qv"
+          },
+          {
+            "handler": "hide-item-random",
+            "item": "i.q.ambroken1"
+          }
+        ],
+        "text": "Ага, <imja>, и ты решил заглянуть в мой скромный магазинчик?",
+        "options": [
+          {
+            "label": "Я собрал все 4 части амулета",
+            "goto": "qvok",
+            "if": [
+              {
+                "has": "i.q.ambroken1",
+                "count": 4
+              }
+            ]
+          },
+          {
+            "label": "Я нашел часть амулета",
+            "goto": "nful",
+            "if": [
+              {
+                "has": "i.q.ambroken1"
+              },
+              {
+                "lacks": "i.q.ambroken1",
+                "count": 4
+              }
+            ]
+          },
+          {
+            "label": "[оглядываясь] Я вижу, у тебя много интересных вещей...",
+            "goto": "qv",
+            "if": [
+              {
+                "lacks": "i.q.ambroken1"
+              }
+            ]
+          },
+          {
+            "label": "Что ты продаешь?",
+            "goto": "buyinfo"
+          },
+          {
+            "label": "Я хочу посмотреть твои товары",
+            "goto": "buy"
+          },
+          {
+            "label": "Я хочу продать",
+            "goto": "sell"
+          },
+          {
+            "label": "Мне пора",
+            "goto": "end"
+          }
+        ]
+      },
+      {
+        "text": "Ага, <imja>, и ты решил заглянуть в мой скромный магазинчик?",
+        "options": [
+          {
+            "label": "Я собрал все 4 части амулета",
+            "goto": "qvok",
+            "if": [
+              {
+                "has": "i.q.ambroken1",
+                "count": 4
+              }
+            ]
+          },
+          {
+            "label": "Я нашел часть амулета",
+            "goto": "nful",
+            "if": [
+              {
+                "has": "i.q.ambroken1"
+              },
+              {
+                "lacks": "i.q.ambroken1",
+                "count": 4
+              }
+            ]
+          },
+          {
+            "label": "[оглядываясь] Я вижу, у тебя много интересных вещей...",
+            "goto": "qv",
+            "if": [
+              {
+                "lacks": "i.q.ambroken1"
+              }
+            ]
+          },
+          {
+            "label": "Что ты продаешь?",
+            "goto": "buyinfo"
+          },
+          {
+            "label": "Я хочу посмотреть твои товары",
+            "goto": "buy"
+          },
+          {
+            "label": "Я хочу продать",
+            "goto": "sell"
+          },
+          {
+            "label": "Мне пора",
+            "goto": "end"
+          }
+        ]
+      }
+    ],
+    "qvok": [
+      {
+        "if": [
+          {
+            "has": "i.q.ambroken1",
+            "count": 4
+          }
+        ],
+        "do": [
+          {
+            "take": "i.q.ambroken1",
+            "count": 4
+          },
+          {
+            "give": "i.w.r.c.gazov2"
+          },
+          {
+            "stop": "n.Slejter.qv"
+          }
+        ],
+        "text": "Как мы и договаривались, газовый самострел теперь твой. Не думаю, что в мире найдется еще хотя бы десяток таких штук, тебе повезло."
+      },
+      {
+        "text": "У тебя недостаточно частей амулета"
+      }
+    ]
+  }
+}
