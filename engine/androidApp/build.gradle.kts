@@ -15,9 +15,9 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "0.1"
-        // Server address: -Ptz.serverUrl=https://… (default: a server on the
-        // developer's machine as seen from the Android emulator).
-        val serverUrl = (project.findProperty("tz.serverUrl") as String?) ?: "http://10.0.2.2:8080"
+        // Server address. Default: the test server on Railway. A server on the
+        // developer's machine from the emulator: -Ptz.serverUrl=http://10.0.2.2:8080
+        val serverUrl = (project.findProperty("tz.serverUrl") as String?) ?: "https://tz-engine-production.up.railway.app"
         buildConfigField("String", "SERVER_URL", "\"$serverUrl\"")
     }
     buildFeatures {

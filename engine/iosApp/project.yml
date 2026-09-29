@@ -9,7 +9,7 @@ options:
 settings:
   base:
     SWIFT_VERSION: "5.0"
-    SERVER_URL: "http://localhost:8080"
+    SERVER_URL: "https://tz-engine-production.up.railway.app"   # local: http://localhost:8080
 targets:
   Tz:
     type: application

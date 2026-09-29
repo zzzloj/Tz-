@@ -12,7 +12,19 @@ Kotlin Multiplatform: сервер на Ktor, общий модуль и нат�
 | `iosApp/` | Приложение iOS на SwiftUI поверх `Shared.xcframework`. Проект Xcode генерируется из `project.yml` (XcodeGen), в репозитории не хранится. |
 | `ci/annotate.py` | Превращает ошибки сборки из лога CI в аннотации GitHub. |
 
-## Что уже работает (этап 0)
+## Что уже работает
+
+**Этап 1 — аккаунты и персонаж** (сервер на Railway: `https://tz-engine-production.up.railway.app`, база — сервис `Postgres` в том же проекте):
+
+- регистрация и вход, токен сессии (в базе хранится только SHA-256), пароли в bcrypt, ограничение неудачных входов, зарезервированные логины старых админов;
+- персонаж: имя из букв одного алфавита (смешанные «Aнтoниo» не пройдут), пол, стартовые параметры как в старой игре (атрибуты 1, HP и мана 20, 2 свободных очка), старт в `_begin`, один персонаж на аккаунт в мире;
+- перемещение только по выходам текущей локации — сервер проверяет, позиция сохраняется;
+- приложения: вход/регистрация → создание персонажа → игра; токен в Keychain (iOS) и в хранилище приложения (Android); тексты ошибок общие, из `shared`;
+- CI: серверные тесты на PostgreSQL, сборка Docker-образа сервера и его запуск; после деплоя — смоук-тест живого сервера (`.github/workflows/engine-smoke.yml`).
+
+API: `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/me`, `POST /api/characters`, `GET /api/game`, `POST /api/game/move`, а также `GET /api/locations/{id}`, `GET /api/content/report`, `GET /api/health`.
+
+**Этап 0 — каркас**
 
 - Сервер загружает весь мир из `content/` (≈1400 локаций, 765 предметов, 305 NPC, 122 диалога) и отдаёт `GET /api/locations/{id}`, `GET /api/content/report`, `GET /api/health`.
 - Оба приложения показывают локацию (название, описание, кто здесь) и позволяют ходить по выходам — с общей логикой экрана из `shared`.
@@ -22,8 +34,9 @@ Kotlin Multiplatform: сервер на Ktor, общий модуль и нат�
 
 ```sh
 cd engine
-./gradlew :server:run                      # сервер на http://localhost:8080, читает ../content
-./gradlew :androidApp:installDebug         # эмулятор Android ходит на 10.0.2.2:8080
+DATABASE_URL=postgres://user:pass@localhost:5432/tz ./gradlew :server:run   # сервер на :8080, читает ../content
+./gradlew :androidApp:installDebug                                            # приложение ходит на сервер Railway
+./gradlew :androidApp:installDebug -Ptz.serverUrl=http://10.0.2.2:8080        # …или на локальный сервер из эмулятора
 ./gradlew :shared:assembleSharedDebugXCFramework && (cd iosApp && xcodegen && open Tz.xcodeproj)   # iOS, нужен macOS
 ```
 
@@ -40,7 +53,7 @@ cd engine
 ## План этапов
 
 1. **Этап 0 — каркас** ✓: модули, загрузка контента, ходьба по миру в обоих приложениях, CI.
-2. **Аккаунты и персонаж**: регистрация и вход (токены), создание персонажа, PostgreSQL, сохранение позиции. Railway: отдельный сервис для нового сервера.
+2. **Аккаунты и персонаж** ✓: регистрация и вход (токены), создание персонажа, PostgreSQL, сохранение позиции, сервер на Railway.
 3. **Мир живёт**: NPC из `content/`, таймеры респауна, блуждание, предметы на земле, подбор/выброс, инвентарь и экипировка.
 4. **Бой**: параметры, атака, смерть и воскрешение, опыт — с паритетными тестами против PHP.
 5. **Торговля, банк, навыки и крафт.**
