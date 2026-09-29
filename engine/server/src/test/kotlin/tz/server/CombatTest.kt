@@ -120,19 +120,46 @@ class CombatTest {
         if (!view.canResurrect)
             assertEquals(Errors.NO_RESURRECTION_HERE, assertFailsWith<ApiException> { game.resurrect(account) }.code)
 
-        // The healer's yard north of the start (n.h.Djozef) brings the ghost back with half HP.
+        // The healer's yard north of the start (n.h.Djozef) brings the ghost back with 0 HP, as in the old game.
         val healer = world.allNpcs().first { it.key.startsWith("n.h.") }
         game.place(account, healer.location)
         view = game.view(account)
         assertTrue(view.canResurrect)
         view = game.resurrect(account)
         assertTrue(!view.character.ghost)
-        assertEquals(view.character.hpMax / 2, view.character.hp)
+        assertEquals(0, view.character.hp)
+        // Health comes back by itself: +1 after 31 s without blows.
+        clock[0] += 31
+        game.tick(clock[0])
+        assertEquals(1, game.view(account).character.hp)
         assertEquals(Errors.NOT_GHOST, assertFailsWith<ApiException> { game.resurrect(account) }.code)
 
         // Back to the corpse for the knife.
         game.place(account, here)
         view = game.loot(account, corpse.id, "i.w.k.begin")
         assertNotNull(view.inventory.firstOrNull { it.id == "i.w.k.begin" })
+    }
+
+    @Test
+    fun anNpcFightsEveryoneWhoStruckIt() = withGame(seed = 14) {
+        val cow = meet { all -> all.first { it.key == "n.a.cow.krest" } }
+        val (second, _) = accounts.register("c" + (1..10).map { ('a'..'z').random() }.joinToString(""), "secret-123")
+        accounts.createCharacter(second, "Второй" + (1..6).map { ('а'..'я').random() }.joinToString(""), "f")
+        game.place(second, cow.location)
+
+        assertTrue(game.attack(account, cow.key).location.npcs.single { it.id == cow.key }.fightingYou)
+        assertTrue(game.attack(second, cow.key).location.npcs.single { it.id == cow.key }.fightingYou)
+        assertTrue(game.view(account).location.npcs.single { it.id == cow.key }.fightingYou, "the first attacker is not forgotten")
+
+        // Its own blows go round both attackers.
+        repeat(40) {
+            clock[0] += 1
+            game.tick(clock[0])
+            game.view(account); game.view(second)   // both stay active
+        }
+        val first = game.view(account).journal
+        val other = game.view(second).journal
+        assertTrue(first.any { it.startsWith("${cow.name} по вам") }, first.toString())
+        assertTrue(other.any { it.startsWith("${cow.name} по вам") }, other.toString())
     }
 }

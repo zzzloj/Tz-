@@ -270,7 +270,7 @@ object Rules {
         (a.startsWith("i.a.s.") && b.startsWith("i.w.r.")) || (b.startsWith("i.a.s.") && a.startsWith("i.w.r."))
 
     /** A revived ghost gets back this share of max HP (the old game revived with 0 HP — a bug). */
-    const val RESURRECT_HP_PERCENT = 50
+    const val RESURRECT_HP_PERCENT = 0
 
     /** Old formulas: max HP 10 + str·10, max mana 10 + int·10 (docs/mechanics.md). */
     fun hpMax(str: Int) = 10 + str * 10

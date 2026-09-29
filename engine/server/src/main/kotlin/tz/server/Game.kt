@@ -83,6 +83,7 @@ class Game(
         val here = content.locations[p.location]
         if (here == null || here.exits.none { it.target == target } || target !in content.locations)
             throw ApiException(HttpStatusCode.BadRequest, Errors.NOT_AN_EXIT)
+        for (npc in world.npcsIn(p.location)) npc.enemies.remove(p.id)
         p.location = target
         save(p)
         notifyLocation(target, except = p.id)
@@ -182,7 +183,8 @@ class Game(
 
     /**
      * A ghost at a resurrection stone (i.s.res*) or a healer (n.h.*) comes
-     * back to life with [Rules.RESURRECT_HP_PERCENT] of max HP (the old
+     * back to life with [Rules.RESURRECT_HP_PERCENT] of max HP — 0 as in the
+     * old f_ressurect.dat; health comes back with regeneration.
      * f_ressurect.dat left 0 HP — any blow killed again).
      */
     suspend fun resurrect(account: Account): GameView = lock.withLock {
@@ -190,7 +192,7 @@ class Game(
         if (!p.ghost) throw ApiException(HttpStatusCode.BadRequest, Errors.NOT_GHOST)
         if (!canResurrect(p)) throw ApiException(HttpStatusCode.BadRequest, Errors.NO_RESURRECTION_HERE)
         p.ghost = false
-        p.hp = (p.hpMax * Rules.RESURRECT_HP_PERCENT / 100).coerceAtLeast(1)
+        p.hp = p.hpMax * Rules.RESURRECT_HP_PERCENT / 100
         p.regenFrom = clock()
         p.log("Вы воскресли.")
         save(p)
@@ -222,19 +224,22 @@ class Game(
             val living = here.filter { !it.ghost }
             for (npc in world.npcsIn(loc)) {
                 regenNpc(npc, now)
-                val target = npc.target?.let { id -> living.firstOrNull { it.id == id } }
-                if (npc.target != null && target == null) npc.target = null
-                if (npc.target == null && npc.aggressive && living.isNotEmpty()) {
-                    npc.target = living[rnd.nextInt(living.size)].id
+                // Enemies who left or died are forgotten (no chasing yet, f_goto.dat).
+                npc.enemies.retainAll(living.filter { !it.ghost }.map { it.id }.toSet())
+                if (npc.enemies.isEmpty() && npc.aggressive && living.isNotEmpty()) {
+                    npc.enemies += living[rnd.nextInt(living.size)].id
                 }
-                val victim = npc.target?.let { id -> living.firstOrNull { it.id == id && !it.ghost } } ?: continue
+                // Blows go round all its enemies in turn.
+                val victimId = npc.enemies.firstOrNull() ?: continue
+                val victim = living.firstOrNull { it.id == victimId } ?: continue
                 if (now < npc.busyUntil || npc.hp < 1) continue
                 if (npc.hp < npc.proto.hpMax / 4 && dice.roll(0, 100) < 50 && world.flee(npc)) {
-                    npc.target = null
+                    npc.enemies.clear()
                     for (q in here) { q.log("${npc.name} убегает."); notify(q.id) }
                     continue
                 }
                 npc.busyUntil = now + npc.stats.delay
+                npc.enemies.remove(victimId); npc.enemies.add(victimId)
                 npcHits(npc, victim, now, answer = true)
                 save(victim)
             }
@@ -264,8 +269,8 @@ class Game(
             npc.hp -= h.damage
             npc.regenFrom = now
         }
-        // Fix of the old $tсhar typo: an NPC turns on the attacker only if it had no target.
-        if (npc.target == null) npc.target = p.id
+        // Everyone who strikes an NPC becomes its enemy; it answers them all.
+        npc.enemies += p.id
         if (npc.hp < 1) {
             killNpc(p, npc, now)
             return
@@ -285,7 +290,8 @@ class Game(
             p.hp -= h.damage
             p.regenFrom = now
         }
-        if (p.hp < 1) {
+        // Only a blow that lands kills: just resurrected at 0 HP, a miss leaves the character alive.
+        if (h.outcome == Formulas.Outcome.HIT && p.hp < 1) {
             killPlayer(p, "${npc.name}", now)
             return
         }
@@ -323,7 +329,7 @@ class Game(
         p.stats = Formulas.player(p.skills(), emptyList(), { content.items[it] })
         p.log("Вас убил $killer. Вы призрак; ваши вещи остались в трупе на 10 минут.")
         tellOthers(p.location, p.id, "${p.name} погибает.")
-        for (npc in world.npcsIn(p.location)) if (npc.target == p.id) npc.target = null
+        for (npc in world.npcsIn(p.location)) npc.enemies.remove(p.id)
         save(p)
         notify(p.id)
     }
@@ -461,7 +467,7 @@ class Game(
             .filter { it.id != p.id && it.location == loc.id && now - it.lastSeen < ACTIVE_SECONDS }
             .map { if (it.ghost) "${it.name} (призрак)" else it.name }
             .sorted()
-        val npcs = world.npcsIn(loc.id).map { NpcView(it.key, it.name, it.hp, it.proto.hpMax, it.target == p.id, Rules.attackable(it.key)) }
+        val npcs = world.npcsIn(loc.id).map { NpcView(it.key, it.name, it.hp, it.proto.hpMax, p.id in it.enemies, Rules.attackable(it.key)) }
         val location = loc.view().copy(
             npcs = npcs,
             items = world.itemsAt(loc.id, now),

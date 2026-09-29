@@ -58,8 +58,11 @@ class World(
         val name get() = proto.name
         val stats get() = proto.stats
         val trail = ArrayDeque<String>()
-        /** Character id this NPC is fighting, if any. */
-        var target: Long? = null
+        /**
+         * Characters this NPC fights: everyone who struck it (and, for a monster,
+         * whoever it picked). Its blows go round them in turn.
+         */
+        val enemies = LinkedHashSet<Long>()
         var busyUntil: Long = 0
         /** Regeneration counts from the last hit or heal (char[5] in the old engine). */
         var regenFrom: Long = 0
@@ -271,7 +274,7 @@ class World(
             is ItemSpawn -> spawnItem(t, now)
         }
         val moving = npcs.values.flatMap { it.values }
-            .filter { it.proto.wander != null && it.target == null && it.nextMoveAt <= now }
+            .filter { it.proto.wander != null && it.enemies.isEmpty() && it.nextMoveAt <= now }
         for (npc in moving) wanderStep(npc, now)
         for (items in ground.values) items.values.removeAll { it.expiresAt != 0L && it.expiresAt <= now }
         for (list in corpses.values) list.values.removeAll { it.expiresAt <= now }
