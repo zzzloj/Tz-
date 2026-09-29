@@ -170,7 +170,72 @@ data class GameView(
     val bank: BankView? = null,
     /** Recipes of a crafting tool, answer to POST /api/game/use without a recipe. */
     val craft: CraftView? = null,
+    /** Exchange with another player, while one is open. */
+    val exchange: ExchangeView? = null,
+    /** Unread private and clan messages (GET /api/messages). */
+    val unread: Int = 0,
+    /** Clans that invited this character (answer in GET/POST /api/clan). */
+    val clanInvites: List<String> = emptyList(),
+    /** Other characters here, for actions (location.players has the display strings). */
+    val people: List<PersonView> = emptyList(),
+    /** This character's clan, if any. */
+    val clan: String? = null,
 )
+
+@Serializable
+data class PersonView(val name: String, val clan: String? = null, val ghost: Boolean = false)
+
+@Serializable
+data class ExchangeView(
+    val partner: String,
+    /** The partner has not opened the exchange with you yet. */
+    val waiting: Boolean,
+    val mine: List<ShopItemView> = emptyList(),
+    val theirs: List<ShopItemView> = emptyList(),
+    val iAgree: Boolean = false,
+    val theyAgree: Boolean = false,
+)
+
+/** op: start (with), add/remove (item, count), agree, cancel. */
+@Serializable
+data class ExchangeRequest(val op: String, val with: String? = null, val item: String? = null, val count: Int = 1)
+
+/** channel: "here" (players in the location) or "clan". */
+@Serializable
+data class SayRequest(val text: String, val channel: String = "here")
+
+@Serializable
+data class ContactView(val name: String, val online: Boolean, val mutual: Boolean)
+
+@Serializable
+data class MessageView(val from: String, val text: String, val at: Long, val clan: Boolean, val read: Boolean)
+
+@Serializable
+data class MessagesView(val contacts: List<ContactView> = emptyList(), val messages: List<MessageView> = emptyList())
+
+/** op: write (to, text), add/remove contact (to). */
+@Serializable
+data class MessageRequest(val op: String, val to: String, val text: String = "")
+
+@Serializable
+data class ClanMemberView(val name: String, val rank: String, val online: Boolean)
+
+@Serializable
+data class ClanView(
+    /** Null: not in a clan. */
+    val name: String? = null,
+    val rank: String? = null,
+    val info: String = "",
+    val members: List<ClanMemberView> = emptyList(),
+    val invites: List<String> = emptyList(),
+    /** Head or seneschal with a guild stone in the backpack. */
+    val canManage: Boolean = false,
+    val message: String? = null,
+)
+
+/** op: invite, kick, rank (name, rank), head (pass leadership), accept (clan), decline (clan), leave, info (text). */
+@Serializable
+data class ClanRequest(val op: String, val name: String? = null, val rank: String? = null, val clan: String? = null, val text: String? = null)
 
 @Serializable
 data class ShopItemView(val id: String, val name: String, val price: Int, val count: Int)
@@ -224,6 +289,8 @@ data class DialogView(
     val npc: String,
     val npcName: String,
     val text: String,
+    /** The NPC waits for typed text (a clan name): send it as `arg` of this topic. */
+    val inputTopic: String? = null,
     /** Empty: the conversation is over, the app shows «Конец диалога». */
     val options: List<DialogOption> = emptyList(),
 )
@@ -281,6 +348,13 @@ object Errors {
     const val NOT_WANTED = "not_wanted"
     const val BANK_FULL = "bank_full"
     const val CANNOT_USE = "cannot_use"
+    const val NO_SUCH_PLAYER = "no_such_player"
+    const val NOT_IN_CONTACTS = "not_in_contacts"
+    const val NO_EXCHANGE = "no_exchange"
+    const val CANNOT_TRADE = "cannot_trade"
+    const val NOT_IN_CLAN = "not_in_clan"
+    const val CLAN_RIGHTS = "clan_rights"
+    const val SAID_ALREADY = "said_already"
     const val TOPIC_CLOSED = "topic_closed"
 
     fun text(code: String): String = when (code) {
@@ -316,6 +390,13 @@ object Errors {
         NOT_WANTED -> "Это ему не нужно"
         BANK_FULL -> "В банке нет места"
         CANNOT_USE -> "Это нельзя использовать здесь"
+        NO_SUCH_PLAYER -> "Такого игрока здесь нет"
+        NOT_IN_CONTACTS -> "Писать можно только тем, у кого вы в контактах"
+        NO_EXCHANGE -> "Обмена сейчас нет"
+        CANNOT_TRADE -> "Это нельзя передать"
+        NOT_IN_CLAN -> "Вы не в клане"
+        CLAN_RIGHTS -> "Для этого нужно быть главой (или сенешалем) и иметь камень гильдии"
+        SAID_ALREADY -> "Вы это уже говорили! Измените текст"
         TOPIC_CLOSED -> "Разговор ушёл в сторону, начните заново"
         else -> "Ошибка сервера"
     }
@@ -393,6 +474,14 @@ object Rules {
     const val SKILL_MAX = 5
     const val SKILL_SUM = 50
     const val MONEY = "i.money"
+    const val SAY_MAX = 250
+    const val MESSAGE_MAX = 500
+    val CLAN_NAME = Regex("^[A-Za-zА-Яа-яЁё0-9_]{3,20}$")
+    const val CLAN_COST = 50000
+    const val GUILD_STONE = "i.guildstone"
+    /** Quest items cannot change hands, except doubloons and firebird feathers (f_trade.dat:40). */
+    fun tradeable(id: String) = !id.startsWith("i.q.") || id == DUBLON || id == "i.q.pjpt"
+    val CLAN_RANKS = mapOf("head" to "Сеньор", "seneschal" to "Сенешаль", "vassal" to "Вассал", "neophyte" to "Неофит")
     const val DUBLON = "i.q.dublon"
     /** f_speaktobankto.dat: at most 70 000 coins in a bank cell. */
     const val BANK_MONEY_MAX = 70000

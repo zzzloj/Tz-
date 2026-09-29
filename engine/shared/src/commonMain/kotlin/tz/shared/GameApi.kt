@@ -112,6 +112,22 @@ class GameApi(
     suspend fun use(item: String, recipe: Int? = null, target: String? = null): GameView =
         postJson<GameView, UseRequest>("/api/game/use", UseRequest(item, recipe, target))
 
+    suspend fun say(text: String, channel: String): GameView =
+        postJson<GameView, SayRequest>("/api/game/say", SayRequest(text, channel))
+
+    suspend fun exchange(op: String, with: String? = null, item: String? = null, count: Int = 1): GameView =
+        postJson<GameView, ExchangeRequest>("/api/game/exchange", ExchangeRequest(op, with, item, count))
+
+    suspend fun messages(): MessagesView = check(http.get(url("/api/messages")) { auth() })
+
+    suspend fun message(op: String, to: String, text: String = ""): MessagesView =
+        postJson<MessagesView, MessageRequest>("/api/messages", MessageRequest(op, to, text))
+
+    suspend fun clan(): ClanView = check(http.get(url("/api/clan")) { auth() })
+
+    suspend fun clan(op: String, name: String? = null, rank: String? = null, clan: String? = null, text: String? = null): ClanView =
+        postJson<ClanView, ClanRequest>("/api/clan", ClanRequest(op, name, rank, clan, text))
+
     suspend fun resurrect(): GameView = check(http.post(url("/api/game/resurrect")) { auth() })
 
     /**
