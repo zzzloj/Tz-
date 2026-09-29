@@ -15,10 +15,6 @@ interface TokenStore {
  * each call and never decide game rules themselves.
  */
 class Session(val api: GameApi, private val tokens: TokenStore) {
-    private companion object {
-        val STALE = setOf(Errors.NOT_AN_EXIT, Errors.NO_SUCH_ITEM, Errors.NOT_IN_INVENTORY, Errors.NO_CHARACTER)
-    }
-
     var screen: Screen = Screen.LOADING
         private set
     var game: GameView? = null
@@ -104,11 +100,6 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
         } catch (e: ApiError) {
             if (e.code == Errors.UNAUTHORIZED) forget()
             error = e.message
-            // The screen was out of date (moved elsewhere, item already gone):
-            // show the real state, keeping the message.
-            if (e.code in STALE && screen == Screen.PLAYING) {
-                try { enter() } catch (_: Exception) { }
-            }
         } catch (e: Exception) {
             error = "Нет связи с сервером"
             if (screen == Screen.LOADING) screen = if (api.token == null) Screen.SIGN_IN else Screen.LOADING

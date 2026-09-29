@@ -36,11 +36,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import tz.shared.ExitView
 import tz.shared.GameApi
-import tz.shared.GameView
-import tz.shared.GroundItemView
-import tz.shared.InventoryItemView
 import tz.shared.Screen
 import tz.shared.Session
 import tz.shared.TokenStore
@@ -76,34 +72,24 @@ fun App(session: Session) {
     }
     LaunchedEffect(Unit) { run { session.resume() } }
 
-    // Read the counter so this function runs again after every session call;
-    // children get plain values (GameView, busy), never the Session object:
-    // Compose skips a child whose arguments are the same instances.
-    val tick = version
-    val game = session.game
-    val busy = session.busy
+    @Suppress("UNUSED_EXPRESSION") version
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         when (session.screen) {
             Screen.LOADING -> if (session.error != null) Button(onClick = { run { session.refresh() } }) { Text("Повторить") }
-            Screen.SIGN_IN -> SignIn(busy, onSignIn = { l, p -> run { session.signIn(l, p) } }, onRegister = { l, p -> run { session.register(l, p) } })
-            Screen.CREATE_CHARACTER -> CreateCharacter(busy) { name, female -> run { session.createCharacter(name, female) } }
-            Screen.PLAYING -> if (game != null) Playing(
-                game,
-                busy,
-                tick,
+            Screen.SIGN_IN -> SignIn(session.busy, onSignIn = { l, p -> run { session.signIn(l, p) } }, onRegister = { l, p -> run { session.register(l, p) } })
+            Screen.CREATE_CHARACTER -> CreateCharacter(session.busy) { name, female -> run { session.createCharacter(name, female) } }
+            Screen.PLAYING -> Playing(
+                session,
                 onGo = { exit -> run { session.go(exit) } },
-                onTake = { item -> run { session.take(item) } },
-                onDrop = { item -> run { session.drop(item) } },
-                onToggleEquip = { item -> run { session.toggleEquip(item) } },
-                onRefresh = { run { session.refresh() } },
                 onSignOut = { run { session.signOut() } },
+                onAction = { action -> run(action) },
             )
         }
         session.error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-        if (busy) CircularProgressIndicator()
+        if (session.busy) CircularProgressIndicator()
     }
 }
 
@@ -140,16 +126,12 @@ fun CreateCharacter(busy: Boolean, onCreate: (String, Boolean) -> Unit) {
 
 @Composable
 fun Playing(
-    game: GameView,
-    busy: Boolean,
-    @Suppress("UNUSED_PARAMETER") version: Int,
-    onGo: (ExitView) -> Unit,
-    onTake: (GroundItemView) -> Unit,
-    onDrop: (InventoryItemView) -> Unit,
-    onToggleEquip: (InventoryItemView) -> Unit,
-    onRefresh: () -> Unit,
+    session: Session,
+    onGo: (tz.shared.ExitView) -> Unit,
     onSignOut: () -> Unit,
+    onAction: (suspend () -> Unit) -> Unit,
 ) {
+    val game = session.game ?: return
     val c = game.character
     val loc = game.location
     Text("${c.name} · HP ${c.hp}/${c.hpMax} · мана ${c.mana}/${c.manaMax}", style = MaterialTheme.typography.labelLarge)
@@ -160,13 +142,13 @@ fun Playing(
     loc.items.forEach { item ->
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("${item.name}${if (item.count > 1) " ×${item.count}" else ""}", Modifier.weight(1f))
-            if (item.takeable) TextButton(onClick = { onTake(item) }, enabled = !busy) { Text("взять") }
+            if (item.takeable) TextButton(onClick = { onAction { session.take(item) } }, enabled = !session.busy) { Text("взять") }
         }
     }
     loc.exits.forEach { exit ->
-        OutlinedButton(onClick = { onGo(exit) }, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text(exit.label) }
+        OutlinedButton(onClick = { onGo(exit) }, enabled = !session.busy, modifier = Modifier.fillMaxWidth()) { Text(exit.label) }
     }
-    TextButton(onClick = onRefresh, enabled = !busy) { Text("осмотреться") }
+    TextButton(onClick = { onAction { session.refresh() } }, enabled = !session.busy) { Text("осмотреться") }
 
     Text("Инвентарь", style = MaterialTheme.typography.titleMedium)
     if (game.inventory.isEmpty()) Text("пусто", style = MaterialTheme.typography.bodyMedium)
@@ -176,10 +158,10 @@ fun Playing(
                 "${item.name}${if (item.count > 1) " ×${item.count}" else ""}${if (item.equipped) " (надето)" else ""}",
                 Modifier.weight(1f),
             )
-            if (item.equippable) TextButton(onClick = { onToggleEquip(item) }, enabled = !busy) {
+            if (item.equippable) TextButton(onClick = { onAction { session.toggleEquip(item) } }, enabled = !session.busy) {
                 Text(if (item.equipped) "снять" else "надеть")
             }
-            TextButton(onClick = { onDrop(item) }, enabled = !busy) { Text("бросить") }
+            TextButton(onClick = { onAction { session.drop(item) } }, enabled = !session.busy) { Text("бросить") }
         }
     }
     TextButton(onClick = onSignOut) { Text("Выйти") }
