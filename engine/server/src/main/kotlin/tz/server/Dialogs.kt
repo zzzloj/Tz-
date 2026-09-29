@@ -178,7 +178,7 @@ class Dialogs(private val content: Content, dir: File) {
             }
         }
         for ((id, topics) in logic) for ((topic, rules) in topics) {
-            val waiting = rules.flatMap { r -> r.actions.mapNotNull { it.str("handler") } }.filter { it !in HANDLERS }.toSet()
+            val waiting = rules.flatMap { r -> r.actions.filter { it.containsKey("handler") && !supported(it) }.mapNotNull { it.str("handler") } }.toSet()
             if (waiting.isNotEmpty()) add("$id/$topic (handler ${waiting.joinToString()})")
         }
     }.sorted()
@@ -222,7 +222,14 @@ class Dialogs(private val content: Content, dir: File) {
          * mercenaries, clans and castles, PvP, weddings, arena.
          */
         val HANDLERS = setOf("arena-count", "hide-item-random", "repair-boat", "lower-int", "npc-hand-over", "require-pk",
-            "clan-status", "clan-leave", "clan-name-input", "clan-create", "clan-restore")
+            "clan-status", "clan-leave", "clan-name-input", "clan-create", "clan-restore",
+            "castle-keeper-access", "castle-rune-list", "castle-contract", "castle-teleport")
+
+        /** A handler action the server can run; mercenaries only as castle guards so far (n.o.*). */
+        fun supported(a: JsonObject): Boolean {
+            val h = a.str("handler") ?: return true
+            return h in HANDLERS || (h == "hire-mercenary" && a.str("template")?.startsWith("n.o.") == true)
+        }
 
         /** Old texts are WML: line breaks as <br/>, occasional tags. The apps show plain text. */
         fun plain(text: String): String = text

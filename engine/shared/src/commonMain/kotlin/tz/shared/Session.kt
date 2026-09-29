@@ -184,6 +184,9 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
         game = api.game()
     }
 
+    /** At a castle: knock, open (owners), sign (owners, [text]). */
+    suspend fun castleOp(op: String, text: String? = null) = action { game = api.castle(op, text) }
+
     /** Picks a recipe from the open crafting menu. */
     suspend fun craft(option: CraftOptionView) = action {
         val c = game?.craft ?: return@action

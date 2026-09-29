@@ -142,6 +142,7 @@ fun App(session: Session, live: Boolean = true) {
                     openClan = { run { session.openClan() } },
                     closeClan = { session.closeClan(); version++ },
                     clanOp = { op, name, rank, clan -> run { session.clanOp(op, name, rank, clan) } },
+                    castleOp = { op, text -> run { session.castleOp(op, text) } },
                 ),
                 mail = session.mail,
                 clanInfo = session.clanInfo,
@@ -324,6 +325,26 @@ fun Playing(
         style = MaterialTheme.typography.labelMedium,
     )
     Text(loc.name, style = MaterialTheme.typography.headlineSmall)
+    game.castle?.let { cs ->
+        Text(
+            (cs.owner?.let { "Замок принадлежит клану $it" } ?: "Замок никому не принадлежит: первый член клана, вошедший в ворота, захватит его") +
+                (if (cs.lockedMinutes > 0) " · ворота заперты ещё ${cs.lockedMinutes} мин." else "") +
+                (if (cs.guest) " · вы гость" else ""),
+            style = small,
+        )
+        if (cs.sign.isNotBlank()) Text("Надпись на воротах: ${cs.sign}", style = small)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (cs.canKnock) OutlinedButton(onClick = { social.castleOp("knock", null) }, enabled = !busy) { Text("Постучать") }
+            if (cs.canOpen) OutlinedButton(onClick = { social.castleOp("open", null) }, enabled = !busy) { Text("Открыть ворота") }
+        }
+        if (cs.member) {
+            var sign by remember(cs.id) { mutableStateOf(cs.sign) }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                OutlinedTextField(sign, { sign = it }, label = { Text("Вывеска") }, singleLine = true, modifier = Modifier.weight(1f))
+                TextButton(onClick = { social.castleOp("sign", sign) }, enabled = !busy) { Text("сохранить") }
+            }
+        }
+    }
     loc.description?.let { Text(it, style = small) }
     loc.npcs.forEach { npc ->
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -412,6 +433,7 @@ class SocialActions(
     val openClan: () -> Unit = {},
     val closeClan: () -> Unit = {},
     val clanOp: (String, String?, String?, String?) -> Unit = { _, _, _, _ -> },
+    val castleOp: (String, String?) -> Unit = { _, _ -> },
 )
 
 @Composable
