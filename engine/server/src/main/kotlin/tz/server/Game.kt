@@ -256,7 +256,8 @@ class Game(
             else -> {
                 val ctx = TalkCtx(p, npc, dialogId, arg, now).also { it.load() }
                 val shown = showTopic(ctx, topic, 0)
-                DialogView(npcKey, npc.name, Dialogs.plain(shown.first).replace("<imja>", p.name), shown.second)
+                DialogView(npcKey, npc.name, Dialogs.plain(shown.first).replace("<imja>", p.name),
+                    shown.second.map { it.copy(label = Dialogs.plain(it.label).replace("<imja>", p.name)) })
             }
         }
         p.talkingTo = npcKey

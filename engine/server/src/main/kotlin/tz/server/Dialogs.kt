@@ -47,6 +47,10 @@ class Dialogs(private val content: Content, dir: File) {
     private val skillKeys = Rules.SKILLS.map { it.first }.toSet() + setOf("exp", "points")
 
     init {
+        val raw = dir.resolve("raw/speak")
+        for (f in raw.listFiles { f -> f.name.startsWith("h.") } ?: emptyArray()) {
+            jokes[f.name] = f.readLines().map { it.trim() }.filter { it.isNotEmpty() }
+        }
         val logicDir = dir.resolve("logic")
         logicDir.resolve("timers.json").takeIf { it.isFile }?.let { f ->
             for ((key, v) in Json.parseToJsonElement(f.readText()).jsonObject) {
@@ -71,10 +75,6 @@ class Dialogs(private val content: Content, dir: File) {
             } catch (e: Exception) {
                 problems += "logic/$id: ${e.message}"
             }
-        }
-        val raw = dir.resolve("raw/speak")
-        for (f in raw.listFiles { f -> f.name.startsWith("h.") } ?: emptyArray()) {
-            jokes[f.name] = f.readLines().map { it.trim() }.filter { it.isNotEmpty() }
         }
     }
 

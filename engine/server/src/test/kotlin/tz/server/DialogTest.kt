@@ -113,4 +113,53 @@ class DialogTest {
         assertEquals(0, v.character.hp)
         assertTrue(v.dialog!!.text.startsWith("Конечно, нет проблем"))
     }
+
+    private suspend fun give(account: Account, item: String, count: Int = 1) = db!!.tx { c ->
+        c.prepareStatement(
+            "INSERT INTO character_items (character_id, item_id, count) SELECT id, ?, ? FROM characters WHERE account_id = ?"
+        ).use { it.setString(1, item); it.setInt(2, count); it.setLong(3, account.id); it.executeUpdate() }
+    }
+
+    @Test
+    fun deliveryQuestTakesTheItemAndRewards() = withGame { game, account ->
+        val npc = "n.Arant"
+        game.place(account, game.world.allNpcs().first { it.key == npc }.location)
+        var v = game.talk(account, npc, "begin", null)
+        assertTrue(v.dialog!!.options.none { it.topic == "qvok" }, "no tools, no hand-in option")
+        give(account, "i.q.instrum")
+        v = game.talk(account, npc, "begin", null)
+        v = game.choose(account, npc, v, "Кузнец просил передать тебе эти инструменты")
+        assertTrue(v.dialog!!.text.startsWith("Спасибо, Собеседник"), v.dialog!!.text)
+        val inv = v.inventory.associate { it.id to it.count }
+        assertEquals(null, inv["i.q.instrum"])
+        assertEquals(12, inv["i.arrow"])
+        assertEquals(1, inv["i.w.r.b.short"])
+        assertEquals(10, v.character.exp)
+    }
+
+    @Test
+    fun worldTimerIsSharedByAllPlayers() {
+        val database = db ?: return
+        runBlocking { database.tx { c -> c.createStatement().use { it.execute("DELETE FROM world_state WHERE key = 'timer:n.Ditrih.qv'") } } }
+        withGame { game, first ->
+            val accounts = Accounts(database, content)
+            val (second, _) = accounts.register("d" + (1..10).map { ('a'..'z').random() }.joinToString(""), "secret-123")
+            accounts.createCharacter(second, "Второй" + (1..5).map { ('а'..'я').random() }.joinToString(""), "f")
+            val npc = "n.Ditrih"
+            val loc = game.world.allNpcs().first { it.key == npc }.location
+            game.place(first, loc); game.place(second, loc)
+            var v = game.talk(first, npc, "begin", null)
+            assertTrue(v.dialog!!.options.any { it.label == "Меня зовут Собеседник" + v.character.name.removePrefix("Собеседник") + ", а вы кто?" })
+            v = game.choose(first, npc, v, "Я хочу поступить к вам на службу")
+            assertTrue(v.dialog!!.text.startsWith("Да, нам требуются люди"), v.dialog!!.text)
+            assertTrue(v.inventory.any { it.id == "i.q.ditrih" })
+            var w = game.talk(second, npc, "begin", null)
+            w = game.choose(second, npc, w, "Я хочу поступить к вам на службу")
+            assertTrue(Regex("приходи минут через \\d+").containsMatchIn(w.dialog!!.text), w.dialog!!.text)
+            // The first one is already in.
+            v = game.talk(first, npc, "begin", null)
+            v = game.choose(first, npc, v, "Я хочу поступить к вам на службу")
+            assertTrue(v.dialog!!.text.startsWith("Ты и так числишься"), v.dialog!!.text)
+        }
+    }
 }
