@@ -146,7 +146,7 @@ class Dialogs(private val content: Content, dir: File) {
 
     private fun checkAction(where: String, a: JsonObject) {
         when (a.keys.firstOrNull { it in ACTIONS }) {
-            "take", "give", "place" -> checkItem(where, a.str(a.keys.first { it in setOf("take", "give", "place") }))
+            "take", "give", "place", "giveNpc" -> checkItem(where, a.str(a.keys.first { it in setOf("take", "give", "place", "giveNpc") }))
             "start", "stop" -> checkTimer(where, a.str(if ("start" in a) "start" else "stop"))
             "teach" -> {
                 val what = a.str("teach") ?: ""
@@ -207,7 +207,7 @@ class Dialogs(private val content: Content, dir: File) {
         )
         val ACTIONS = setOf(
             "take", "give", "exp", "start", "stop", "set", "clear", "learn", "teach", "teleport", "spawn", "remove",
-            "place", "removeHere", "resurrect", "heal", "say", "journal", "handler",
+            "place", "removeHere", "resurrect", "heal", "say", "journal", "handler", "giveNpc",
         )
 
         /** Old texts are WML: line breaks as <br/>, occasional tags. The apps show plain text. */

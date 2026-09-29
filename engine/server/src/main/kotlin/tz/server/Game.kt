@@ -292,6 +292,15 @@ class Game(
 
         fun count(id: String) = inventory[id] ?: 0
 
+        /** A flag of the character, or of the whole world. */
+        suspend fun flag(key: String, world: Boolean): String? =
+            if (!world) flags[key] else db.tx { c ->
+                c.prepareStatement("SELECT value FROM world_state WHERE key = ? AND (until IS NULL OR until > ?)").use { st ->
+                    st.setString(1, key); st.setLong(2, now)
+                    st.executeQuery().use { rs -> if (rs.next()) rs.getString(1) else null }
+                }
+            }
+
         /** Unix time the timer ends, or null if it is not running. */
         suspend fun timerEnd(key: String): Long? {
             val t = content.logic.timers[key] ?: return null
@@ -374,8 +383,8 @@ class Game(
             "newbie" in c -> (p.skills().sumExceptExp() == 5) == Dialogs.truthy(c["newbie"])
             "ready" in c -> ctx.timerEnd(c.str("ready")!!) == null
             "waiting" in c -> ctx.timerEnd(c.str("waiting")!!) != null
-            "flag" in c -> ctx.flags[c.str("flag")!!]?.let { v -> c.str("value")?.let { it == v } ?: true } ?: false
-            "noflag" in c -> c.str("noflag")!! !in ctx.flags
+            "flag" in c -> ctx.flag(c.str("flag")!!, Dialogs.truthy(c["world"]) && "world" in c)?.let { v -> c.str("value")?.let { it == v } ?: true } ?: false
+            "noflag" in c -> ctx.flag(c.str("noflag")!!, Dialogs.truthy(c["world"]) && "world" in c) == null
             "known" in c -> c.str("known")!! in p.known
             "unknown" in c -> c.str("unknown")!! !in p.known
             "here" in c -> world.hasFixture(p.location, c.str("here")!!, exact = true)
@@ -431,10 +440,15 @@ class Game(
                 }
                 "set" in a -> {
                     val value = a.str("value") ?: "1"
-                    setState(p.id, a.str("set")!!, value, a.int("for")?.let { ctx.now + it })
-                    ctx.flags[a.str("set")!!] = value
+                    val until = a.int("for")?.let { ctx.now + it }
+                    if ("world" in a && Dialogs.truthy(a["world"])) setWorldState(a.str("set")!!, value, until)
+                    else { setState(p.id, a.str("set")!!, value, until); ctx.flags[a.str("set")!!] = value }
                 }
-                "clear" in a -> { clearState(p.id, a.str("clear")!!); ctx.flags.remove(a.str("clear")!!) }
+                "clear" in a -> {
+                    if ("world" in a && Dialogs.truthy(a["world"])) clearWorldState(a.str("clear")!!)
+                    else { clearState(p.id, a.str("clear")!!); ctx.flags.remove(a.str("clear")!!) }
+                }
+                "giveNpc" in a -> world.giveNpc(a.str("npc")!!, a.str("location") ?: p.location, a.str("giveNpc")!!, count)
                 "learn" in a -> learn(p, a.str("learn")!!)
                 "teach" in a -> {
                     val t = teach(ctx, a.str("teach")!!, a.int("cost") ?: 0, a.int("min") ?: 0, a.int("max") ?: 0)

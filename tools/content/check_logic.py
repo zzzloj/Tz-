@@ -12,7 +12,7 @@ import sys
 CONDITIONS = {"has", "lacks", "money", "equipped", "skill", "newbie", "ready", "waiting", "flag", "noflag",
               "known", "unknown", "here", "notHere", "npcAt", "noNpcAt", "arg", "chance", "sex", "ghost", "any", "not"}
 ACTIONS = {"take", "give", "exp", "start", "stop", "set", "clear", "learn", "teach", "teleport", "spawn", "remove",
-           "place", "removeHere", "resurrect", "heal", "say", "journal", "handler"}
+           "place", "removeHere", "resurrect", "heal", "say", "journal", "handler", "giveNpc"}
 RULE_KEYS = {"if", "do", "text", "options", "hide", "goto"}
 SKILLS = {"str", "dex", "int", "meditation", "steal", "animaltaming", "hand", "coldweapon", "ranged", "parring", "uklon",
           "magic", "magic_resist", "magic_uklon", "regeneration", "hiding", "look", "steallook", "animallore", "spirit",
@@ -28,7 +28,13 @@ locations = {p.stem for p in (root / "locations").glob("*.json")}
 jokes = {p.name for p in (root / "raw/speak").glob("h.*")}
 dialogs = {p.stem: json.loads(p.read_text()) for p in (root / "dialogs").glob("*.json")}
 logic_dir = root / "logic"
-timers = json.loads((logic_dir / "timers.json").read_text()) if (logic_dir / "timers.json").exists() else {}
+# timers.json, plus timers-<part>.json while several people translate at once (merged into timers.json later).
+timers = {}
+for tp in sorted(logic_dir.glob("timers*.json")):
+    for k, v in json.loads(tp.read_text()).items():
+        if k in timers:
+            print(f"  duplicate timer {k} in {tp.name}")
+        timers[k] = v
 problems = []
 
 
@@ -50,7 +56,7 @@ for k, t in timers.items():
 
 logic = {}
 for p in sorted(logic_dir.glob("*.json")):
-    if p.name == "timers.json":
+    if p.name.startswith("timers"):
         continue
     try:
         o = json.loads(p.read_text())
@@ -98,7 +104,7 @@ def check_action(where, a):
     k = next((x for x in a if x in ACTIONS), None)
     if k is None:
         problems.append(f"{where}: unknown action {a}")
-    elif k in ("take", "give", "place") and not item_ok(a[k]):
+    elif k in ("take", "give", "place", "giveNpc") and not item_ok(a[k]):
         problems.append(f"{where}: unknown item {a[k]}")
     elif k in ("start", "stop") and a[k] not in timers:
         problems.append(f"{where}: unknown timer {a[k]} (add it to timers.json)")

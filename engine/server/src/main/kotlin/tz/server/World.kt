@@ -427,6 +427,13 @@ class World(
         true
     }
 
+    /** Gives an NPC items to carry (they fall into its corpse). False if the NPC is not there. */
+    suspend fun giveNpc(key: String, loc: String, itemId: String, count: Int): Boolean = mutex.withLock {
+        val npc = npcs[loc]?.get(key) ?: return@withLock false
+        npc.items[itemId] = (npc.items[itemId] ?: 0) + count
+        true
+    }
+
     suspend fun removeNpc(key: String, loc: String): Boolean = mutex.withLock { npcs[loc]?.remove(key) != null }
 
     /** Removes an item (fixtures too) from the ground; false if it is not there. */
