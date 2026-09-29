@@ -59,7 +59,7 @@ class Game(
         var points: Int,
     ) {
         var equipped: List<String> = emptyList()
-        var stats: Stats = Formulas.player(skills(), emptyList(), { null })
+        var stats: Stats = Formulas.player(Skills.of(str, dex, int, exp, points), emptyList(), { null })
         var busyUntil = 0L
         var regenFrom = 0L
         var lastSeen = 0L
