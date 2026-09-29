@@ -37,6 +37,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import tz.shared.CorpseView
+import tz.shared.DialogOption
+import tz.shared.Rules
 import tz.shared.ExitView
 import tz.shared.GameApi
 import tz.shared.GameView
@@ -106,6 +108,9 @@ fun App(session: Session, live: Boolean = true) {
                 onLoot = { corpse, item -> run { session.loot(corpse, item) } },
                 onButcher = { corpse -> run { session.butcher(corpse) } },
                 onResurrect = { run { session.resurrect() } },
+                onTalk = { npc -> run { session.talk(npc) } },
+                onAnswer = { option -> run { session.answer(option) } },
+                onCloseDialog = { session.closeDialog(); version++ },
                 onRefresh = { run { session.refresh() } },
                 onSignOut = { run { session.signOut() } },
             )
@@ -159,6 +164,9 @@ fun Playing(
     onLoot: (CorpseView, GroundItemView) -> Unit,
     onButcher: (CorpseView) -> Unit,
     onResurrect: () -> Unit,
+    onTalk: (NpcView) -> Unit,
+    onAnswer: (DialogOption) -> Unit,
+    onCloseDialog: () -> Unit,
     onRefresh: () -> Unit,
     onSignOut: () -> Unit,
 ) {
@@ -179,6 +187,23 @@ fun Playing(
         )
         if (game.canResurrect) Button(onClick = onResurrect, enabled = !busy) { Text("Воскреснуть") }
     }
+    game.dialog?.let { d ->
+        Surface(tonalElevation = 2.dp, shape = MaterialTheme.shapes.medium, modifier = Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(d.npcName, style = MaterialTheme.typography.titleMedium)
+                Text(d.text, style = small)
+                d.options.forEach { o ->
+                    TextButton(onClick = { onAnswer(o) }, enabled = !busy) { Text(o.label) }
+                }
+                TextButton(onClick = onCloseDialog) { Text(if (d.options.isEmpty()) "[Конец диалога]" else "закончить разговор") }
+            }
+        }
+    }
+    if (c.skills.isNotEmpty()) Text(
+        "навыки: " + c.skills.entries.joinToString { (k, v) -> "${Rules.skillTitle(k)} $v" } +
+            (if (c.known.isNotEmpty()) " · изучено: ${c.known.size}" else ""),
+        style = MaterialTheme.typography.labelMedium,
+    )
     Text(loc.name, style = MaterialTheme.typography.headlineSmall)
     loc.description?.let { Text(it, style = small) }
     loc.npcs.forEach { npc ->
@@ -188,6 +213,7 @@ fun Playing(
                 Modifier.weight(1f), style = small,
                 color = if (npc.fightingYou) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
             )
+            if (npc.canTalk) TextButton(onClick = { onTalk(npc) }, enabled = !busy) { Text("говорить") }
             if (npc.attackable && !c.ghost) TextButton(onClick = { onAttack(npc) }, enabled = !busy) { Text("атаковать") }
         }
     }

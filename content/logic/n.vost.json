@@ -1,0 +1,285 @@
+{
+  "id": "n.vost",
+  "topics": {
+    "tren": [
+      {
+        "if": [
+          {
+            "flag": "x"
+          },
+          {
+            "skill": "str",
+            "min": 5,
+            "max": 5
+          }
+        ],
+        "do": [
+          {
+            "clear": "x"
+          },
+          {
+            "give": "i.a.h.massf_set_..kc"
+          },
+          {
+            "give": "i.w.s.farmech"
+          },
+          {
+            "give": "i.a.s.obschit"
+          },
+          {
+            "give": "i.a.p.obspor_admin_..az..ku..zm"
+          },
+          {
+            "give": "i.a.l.obspon_admin_..ag..me..do"
+          },
+          {
+            "give": "i.a.b.obsnagrud_admin_..am..ob"
+          },
+          {
+            "give": "i.i.ag"
+          },
+          {
+            "give": "i.i.ne"
+          },
+          {
+            "give": "i.i.kc"
+          },
+          {
+            "give": "i.i.ma"
+          },
+          {
+            "give": "i.i.do"
+          },
+          {
+            "give": "i.i.zm"
+          },
+          {
+            "give": "i.i.sa"
+          },
+          {
+            "give": "i.i.dy"
+          },
+          {
+            "give": "i.i.ku"
+          },
+          {
+            "give": "i.i.ob"
+          },
+          {
+            "give": "i.i.me"
+          },
+          {
+            "give": "i.i.az"
+          },
+          {
+            "give": "i.i.am"
+          },
+          {
+            "give": "i.f.wine",
+            "count": 20
+          },
+          {
+            "give": "i.money",
+            "count": 20000
+          },
+          {
+            "give": "i.q.pjpt"
+          },
+          {
+            "give": "i.f.b.health.great",
+            "count": 50
+          },
+          {
+            "give": "i.a.c.twar"
+          }
+        ],
+        "text": "Сожелею, вот держи немного вещей, думаю они тебе немного помогут"
+      },
+      {
+        "if": [
+          {
+            "flag": "x"
+          },
+          {
+            "skill": "int",
+            "min": 5,
+            "max": 5
+          }
+        ],
+        "do": [
+          {
+            "clear": "x"
+          },
+          {
+            "give": "i.arrow",
+            "count": 1500
+          },
+          {
+            "give": "i.w.r.b.lset"
+          },
+          {
+            "give": "i.a.b.troll_admin_..me..do..ag"
+          },
+          {
+            "give": "i.a.l.ogr_admin_..sa..dy..ma"
+          },
+          {
+            "give": "i.a.p.ogr_admin_..ob..am..az"
+          },
+          {
+            "give": "i.a.h.whitewolf_admin_..ku..zm..kc"
+          },
+          {
+            "give": "i.i.ag"
+          },
+          {
+            "give": "i.i.ne"
+          },
+          {
+            "give": "i.i.kc"
+          },
+          {
+            "give": "i.i.ma"
+          },
+          {
+            "give": "i.i.do"
+          },
+          {
+            "give": "i.i.zm"
+          },
+          {
+            "give": "i.i.sa"
+          },
+          {
+            "give": "i.i.dy"
+          },
+          {
+            "give": "i.i.ku"
+          },
+          {
+            "give": "i.i.ob"
+          },
+          {
+            "give": "i.i.me"
+          },
+          {
+            "give": "i.i.az"
+          },
+          {
+            "give": "i.i.am"
+          },
+          {
+            "give": "i.f.wine",
+            "count": 20
+          },
+          {
+            "give": "i.money",
+            "count": 20000
+          },
+          {
+            "give": "i.q.pjpt"
+          },
+          {
+            "give": "i.f.b.health.great",
+            "count": 50
+          },
+          {
+            "give": "i.a.c.sp1"
+          }
+        ],
+        "text": "Сожелею, вот держи немного вещей, думаю они тебе немного помогут"
+      },
+      {
+        "if": [
+          {
+            "flag": "x"
+          }
+        ],
+        "do": [
+          {
+            "clear": "x"
+          },
+          {
+            "give": "i.w.s.p_admin_..ag..me..do"
+          },
+          {
+            "give": "i.a.l.p"
+          },
+          {
+            "give": "i.a.p.p"
+          },
+          {
+            "give": "i.a.b.pdosp"
+          },
+          {
+            "give": "i.a.h.p"
+          },
+          {
+            "give": "i.a.e.p"
+          },
+          {
+            "give": "i.i.ag"
+          },
+          {
+            "give": "i.i.ne"
+          },
+          {
+            "give": "i.i.kc"
+          },
+          {
+            "give": "i.i.ma"
+          },
+          {
+            "give": "i.i.do"
+          },
+          {
+            "give": "i.i.zm"
+          },
+          {
+            "give": "i.i.sa"
+          },
+          {
+            "give": "i.i.dy"
+          },
+          {
+            "give": "i.i.ku"
+          },
+          {
+            "give": "i.i.ob"
+          },
+          {
+            "give": "i.i.me"
+          },
+          {
+            "give": "i.i.az"
+          },
+          {
+            "give": "i.i.am"
+          },
+          {
+            "give": "i.f.wine",
+            "count": 20
+          },
+          {
+            "give": "i.money",
+            "count": 20000
+          },
+          {
+            "give": "i.q.pjpt"
+          },
+          {
+            "give": "i.f.b.health.great",
+            "count": 50
+          },
+          {
+            "give": "i.a.c.twar"
+          }
+        ],
+        "text": "Сожелею, вот держи немного вещей, думаю они тебе немного помогут"
+      },
+      {
+        "text": "Нет ты не был обнулен, или я тебе уже дал вещей!!!"
+      }
+    ]
+  }
+}

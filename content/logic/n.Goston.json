@@ -1,0 +1,71 @@
+{
+  "id": "n.Goston",
+  "topics": {
+    "begin": [
+      {
+        "options": [
+          {
+            "label": "Чем ты торгуешь?",
+            "goto": "sellinfo"
+          },
+          {
+            "label": "Покажи мне твои товары",
+            "goto": "buy"
+          },
+          {
+            "label": "Я хочу кое-что продать",
+            "goto": "sell"
+          },
+          {
+            "label": "Вот янтарь для твоей любимой.",
+            "goto": "spec",
+            "if": [
+              {
+                "has": "i.c.amber.good"
+              }
+            ]
+          },
+          {
+            "label": "Мне пора",
+            "goto": "end"
+          }
+        ]
+      }
+    ],
+    "spec": [
+      {
+        "if": [
+          {
+            "ready": "n.Goston.spec"
+          },
+          {
+            "has": "i.c.amber.good"
+          }
+        ],
+        "do": [
+          {
+            "take": "i.c.amber.good"
+          },
+          {
+            "start": "n.Goston.spec"
+          },
+          {
+            "give": "i.q.zub"
+          },
+          {
+            "give": "i.q.kij"
+          }
+        ],
+        "text": "Спасибо <imja>! Держи, ты честно заслужил их."
+      },
+      {
+        "if": [
+          {
+            "waiting": "n.Goston.spec"
+          }
+        ],
+        "text": "Извени, мой поставщик опаздывает. Приходи через  {left:n.Goston.spec} минут и я дам тебе нужный инструмент"
+      }
+    ]
+  }
+}

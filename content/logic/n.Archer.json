@@ -1,0 +1,16 @@
+{
+  "id": "n.Archer",
+  "topics": {
+    "qv": [
+      {
+        "do": [
+          {
+            "set": "kvest",
+            "value": "n.c.orc|i.q.ambroken|10|15"
+          }
+        ],
+        "text": "Убевая орков найди 10 сломаных палок"
+      }
+    ]
+  }
+}

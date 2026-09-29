@@ -1,0 +1,249 @@
+{
+  "id": "n.officer",
+  "topics": {
+    "begin": [
+      {
+        "options": [
+          {
+            "label": "Я хочу получить награду за голову убитого преступника",
+            "goto": "killedto",
+            "if": [
+              {
+                "flag": "bounty.killed"
+              }
+            ]
+          },
+          {
+            "label": "Я хочу назначить награду за голову своего убийцы",
+            "goto": "killedby",
+            "if": [
+              {
+                "flag": "bounty.killer"
+              }
+            ]
+          },
+          {
+            "label": "О какой награде идет речь?",
+            "goto": "do"
+          },
+          {
+            "label": "Я хочу посмотреть список кого разыскивают",
+            "goto": "stat"
+          },
+          {
+            "label": "Что-то скучно...",
+            "goto": "hum"
+          },
+          {
+            "label": "Ничего особенного, мне пора",
+            "goto": "end"
+          },
+          {
+            "label": "Я хочу получить дотацию",
+            "goto": "vybor",
+            "if": [
+              {
+                "has": "i.pg"
+              }
+            ]
+          },
+          {
+            "label": "Хочу обменять опыт.",
+            "goto": "qv",
+            "if": [
+              {
+                "has": "i.q.opyt"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "stat": [
+      {
+        "do": [
+          {
+            "handler": "bounty-list"
+          }
+        ]
+      }
+    ],
+    "killedto": [
+      {
+        "do": [
+          {
+            "handler": "bounty-claim"
+          }
+        ]
+      }
+    ],
+    "killedby": [
+      {
+        "do": [
+          {
+            "handler": "bounty-form"
+          }
+        ],
+        "text": "Укажите размер награды:"
+      }
+    ],
+    "killedby2": [
+      {
+        "do": [
+          {
+            "handler": "bounty-place"
+          }
+        ]
+      }
+    ],
+    "qv": [
+      {
+        "if": [
+          {
+            "has": "i.q.opyt"
+          }
+        ],
+        "do": [
+          {
+            "take": "i.q.opyt"
+          },
+          {
+            "exp": 600
+          }
+        ],
+        "text": "Вот твой опыт."
+      },
+      {
+        "text": "У тебя нет грамоты.!"
+      }
+    ],
+    "voin": [
+      {
+        "if": [
+          {
+            "has": "i.pg"
+          }
+        ],
+        "do": [
+          {
+            "take": "i.pg"
+          },
+          {
+            "give": "i.q.opyt",
+            "count": 48
+          },
+          {
+            "give": "i.a.b.pdosp_zzz_..ag..az..am..",
+            "count": 2
+          },
+          {
+            "give": "i.a.c.sp1",
+            "count": 2
+          },
+          {
+            "give": "i.a.e.p_zzz_..ku..ma..me..",
+            "count": 2
+          },
+          {
+            "give": "i.a.h.p_zzz_..ob..sa..zm..",
+            "count": 2
+          },
+          {
+            "give": "i.a.p.p_zzz_",
+            "count": 2
+          },
+          {
+            "give": "i.a.s.obschit_zzz_",
+            "count": 2
+          },
+          {
+            "give": "i.a.l.p_zzz_..do..dy..kp",
+            "count": 2
+          },
+          {
+            "give": "i.w.s.farmech_zzz_",
+            "count": 2
+          },
+          {
+            "give": "i.f.b.kv",
+            "count": 50
+          },
+          {
+            "give": "i.money",
+            "count": 50000
+          }
+        ],
+        "text": "Вот. Но учти, 20.01.2008 эти вещи будут удалены."
+      }
+    ],
+    "mag": [
+      {
+        "if": [
+          {
+            "has": "i.pg"
+          }
+        ],
+        "do": [
+          {
+            "take": "i.pg"
+          },
+          {
+            "give": "i.q.opyt",
+            "count": 48
+          },
+          {
+            "give": "i.a.b.troll_zzz_..ag..az..am",
+            "count": 2
+          },
+          {
+            "give": "i.a.c.sp1",
+            "count": 2
+          },
+          {
+            "give": "i.a.p.ogr_zzz_..do..dy..kp",
+            "count": 2
+          },
+          {
+            "give": "i.a.h.wolf_zzz_..ku..ma..me",
+            "count": 2
+          },
+          {
+            "give": "i.a.l.ogr_zzz_..ob..sa..zm",
+            "count": 2
+          },
+          {
+            "give": "i.a.e.mage_zzz_",
+            "count": 2
+          },
+          {
+            "give": "i.w.r.c.gazov2_zzz_",
+            "count": 2
+          },
+          {
+            "give": "i.bolt",
+            "count": 500
+          },
+          {
+            "give": "i.f.b.kv",
+            "count": 50
+          },
+          {
+            "give": "i.money",
+            "count": 50000
+          }
+        ],
+        "text": "Вот. Но учти, 20.01.2008 эти вещи будут удалены."
+      }
+    ],
+    "merfy": [
+      {
+        "do": [
+          {
+            "say": "h.merfy"
+          }
+        ],
+        "text": ""
+      }
+    ]
+  }
+}

@@ -68,6 +68,15 @@ try:
     assert status == 400 and err["error"] == "not_ghost", (status, err)
     steps.append(f"combat: hit {c['hit']}%, damage {c['dmgMin']}-{c['dmgMax']}; gatekeeper cannot be attacked")
 
+    status, g = call("POST", "/api/game/talk", {"npc": "n.beginner"}, token)
+    assert status == 200 and g["dialog"]["text"].startswith("Приветствую тебя, " + name), (status, g)
+    status, g = call("POST", "/api/game/talk", {"npc": "n.beginner", "topic": "news"}, token)
+    assert status == 200 and g["dialog"]["text"].startswith("На Волчьем острове"), (status, g)
+    status, err = call("POST", "/api/game/talk", {"npc": "n.beginner", "topic": "lek"}, token)
+    assert status == 409 and err["error"] == "topic_closed", (status, err)
+    status, report = call("GET", "/api/content/report")
+    steps.append(f"dialog with the gatekeeper ok, jumping to a hidden topic refused; {len(report.get('untranslated', []))} topics wait for later stages")
+
     u = urllib.parse.urlsplit(base)
     conn = (http.client.HTTPSConnection if u.scheme == "https" else http.client.HTTPConnection)(u.netloc, timeout=20)
     conn.request("GET", "/api/events", headers={

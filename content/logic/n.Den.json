@@ -1,0 +1,30 @@
+{
+  "id": "n.Den",
+  "topics": {
+    "begin": [
+      {
+        "do": [
+          {
+            "handler": "arena-count"
+          }
+        ],
+        "text": "Вход стоит 1000 монет. Ты знаком с правилами?"
+      }
+    ],
+    "go": [
+      {
+        "do": [
+          {
+            "take": "i.money",
+            "count": 1000
+          },
+          {
+            "handler": "arena-enter"
+          }
+        ],
+        "text": "[освобождает проход] Проходи.",
+        "options": []
+      }
+    ]
+  }
+}

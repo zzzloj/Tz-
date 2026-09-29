@@ -57,6 +57,9 @@ struct RootView: View {
                                 onLoot: { corpse, item in model.run { try await $0.loot(corpse: corpse, item: item) } },
                                 onButcher: { corpse in model.run { try await $0.butcher(corpse: corpse) } },
                                 onResurrect: { model.run { try await $0.resurrect() } },
+                                onTalk: { npc in model.run { try await $0.talk(npc: npc) } },
+                                onAnswer: { option in model.run { try await $0.answer(option: option) } },
+                                onCloseDialog: { model.run { $0.closeDialog() } },
                                 onRefresh: { model.run { try await $0.refresh() } },
                                 onSignOut: { model.run { try await $0.signOut() } })
                 } else if s.error != nil {
@@ -127,6 +130,9 @@ struct PlayingView: View {
     let onLoot: (CorpseView, GroundItemView) -> Void
     let onButcher: (CorpseView) -> Void
     let onResurrect: () -> Void
+    let onTalk: (NpcView) -> Void
+    let onAnswer: (DialogOption) -> Void
+    let onCloseDialog: () -> Void
     let onRefresh: () -> Void
     let onSignOut: () -> Void
 
@@ -144,9 +150,22 @@ struct PlayingView: View {
     var body: some View {
         let c = game.character
         let loc = game.location
+        if let d = game.dialog {
+            Section(d.npcName) {
+                Text(d.text)
+                ForEach(Array(d.options.enumerated()), id: \.offset) { _, o in
+                    Button(o.label) { onAnswer(o) }.disabled(busy)
+                }
+                Button(d.options.isEmpty ? "[Конец диалога]" : "закончить разговор") { onCloseDialog() }
+            }
+        }
         Section {
             Text("\(c.name) · HP \(c.hp)/\(c.hpMax) · мана \(c.mana)/\(c.manaMax)").font(.footnote)
             Text(stats(c)).font(.caption).foregroundStyle(.secondary)
+            if !c.skills.isEmpty {
+                Text("навыки: " + c.skills.keys.sorted().map { "\(Rules.shared.skillTitle(key: $0)) \(c.skills[$0]?.intValue ?? 0)" }.joined(separator: ", "))
+                    .font(.caption).foregroundStyle(.secondary)
+            }
             if c.ghost {
                 Text("Вы призрак. Воскреснуть можно у камня воскрешения или у лекаря Джозефа (двор к северу от Переулка).")
                     .foregroundStyle(.red)
@@ -162,6 +181,9 @@ struct PlayingView: View {
                          + (npc.fightingYou ? " · бьёт вас" : ""))
                         .foregroundStyle(npc.fightingYou ? .red : .primary)
                     Spacer()
+                    if npc.canTalk {
+                        Button("говорить") { onTalk(npc) }.disabled(busy).buttonStyle(.borderless)
+                    }
                     if npc.attackable && !c.ghost {
                         Button("атаковать") { onAttack(npc) }.disabled(busy).buttonStyle(.borderless)
                     }

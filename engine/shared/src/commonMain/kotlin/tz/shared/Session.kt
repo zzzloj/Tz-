@@ -22,6 +22,7 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
         val STALE = setOf(
             Errors.NOT_AN_EXIT, Errors.NO_SUCH_ITEM, Errors.NOT_IN_INVENTORY, Errors.NO_CHARACTER,
             Errors.NO_TARGET, Errors.NO_SUCH_CORPSE, Errors.GHOST, Errors.NOT_GHOST, Errors.NO_RESURRECTION_HERE,
+            Errors.TOPIC_CLOSED,
         )
         const val RECONNECT_MILLIS = 3000L
     }
@@ -85,6 +86,18 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
 
     suspend fun resurrect() = action { game = api.resurrect() }
 
+    suspend fun talk(npc: NpcView) = action { game = api.talk(npc.id) }
+
+    /** Picks an answer in the open dialog. */
+    suspend fun answer(option: DialogOption) = action {
+        val d = game?.dialog ?: return@action
+        game = api.talk(d.npc, option.topic, option.arg)
+    }
+
+    fun closeDialog() {
+        game = game?.copy(dialog = null)
+    }
+
     /**
      * Keeps the screen live while playing: the server signals every blow,
      * death or arrival, and the game view is re-read. Call from the UI's
@@ -96,7 +109,7 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
                 try {
                     api.events {
                         if (screen == Screen.PLAYING && !busy) {
-                            try { game = api.game(); onUpdate() } catch (e: ApiError) { if (e.code == Errors.NO_CHARACTER) enter() }
+                            try { val open = game?.dialog; game = api.game().copy(dialog = open); onUpdate() } catch (e: ApiError) { if (e.code == Errors.NO_CHARACTER) enter() }
                         }
                     }
                 } catch (e: CancellationException) {

@@ -1,0 +1,72 @@
+{
+  "id": "n.Mes",
+  "topics": {
+    "begin": [
+      {
+        "options": [
+          {
+            "label": "[Молча уйти]",
+            "goto": "end"
+          },
+          {
+            "label": "Твой друг с болота просит , что нибуть поесть.",
+            "goto": "qvok",
+            "if": [
+              {
+                "has": "i.q.vorovoj"
+              }
+            ]
+          },
+          {
+            "label": "Я принес молоко и траву.",
+            "goto": "qvok2",
+            "if": [
+              {
+                "has": "i.f.milk"
+              },
+              {
+                "has": "i.f.healherb"
+              },
+              {
+                "has": "i.q.vorovoj"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "qvok2": [
+      {
+        "if": [
+          {
+            "has": "i.q.vorovoj"
+          },
+          {
+            "has": "i.f.milk"
+          },
+          {
+            "has": "i.f.healherb"
+          }
+        ],
+        "do": [
+          {
+            "take": "i.f.healherb"
+          },
+          {
+            "take": "i.f.milk"
+          },
+          {
+            "take": "i.q.vorovoj"
+          },
+          {
+            "give": "i.q.eda"
+          }
+        ],
+        "text": "Вот, держи. Надюсь ему этого хватит на пару дней."
+      },
+      {
+        "text": ""
+      }
+    ]
+  }
+}

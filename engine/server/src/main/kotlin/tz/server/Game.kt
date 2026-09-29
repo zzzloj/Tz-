@@ -6,7 +6,12 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.JsonObject
 import tz.shared.CharacterView
+import tz.shared.DialogOption
+import tz.shared.DialogView
 import tz.shared.Errors
 import tz.shared.GameView
 import tz.shared.InventoryItemView
@@ -47,20 +52,35 @@ class Game(
         var hp: Int,
         var mana: Int,
         var ghost: Boolean,
-        val str: Int,
-        val dex: Int,
-        val int: Int,
+        var str: Int,
+        var dex: Int,
+        var int: Int,
         var exp: Int,
         var points: Int,
     ) {
         var equipped: List<String> = emptyList()
-        var stats: Stats = Formulas.player(skills(), emptyList(), { null })
+        var stats: Stats = Formulas.player(Skills.of(str, dex, int, exp, points), emptyList(), { null })
         var busyUntil = 0L
         var regenFrom = 0L
         var lastSeen = 0L
         val journal = ArrayDeque<String>()
 
-        fun skills() = Skills.of(str, dex, int, exp, points)
+        /** Skills other than the attributes, by key of [Rules.SKILLS]. */
+        val other = HashMap<String, Int>()
+        /** Spells and techniques learnt. */
+        val known = HashSet<String>()
+        /** Open conversation: NPC and the (topic, arg) choices shown last, the only ones accepted next. */
+        var talkingTo: String? = null
+        var talkChoices: Set<Pair<String, String?>> = emptySet()
+
+        fun skill(key: String): Int = when (key) {
+            "str" -> str; "dex" -> dex; "int" -> int; "exp" -> exp; "points" -> points
+            else -> other[key] ?: 0
+        }
+
+        fun skills() = Skills.of(str, dex, int, exp, points).also { s ->
+            for ((key, index, _) in Rules.SKILLS) if (index > 4) s[index] = other[key] ?: 0
+        }
         val hpMax get() = (Rules.hpMax(str) + stats.hpBonus).coerceAtLeast(1)
         val manaMax get() = (Rules.manaMax(int) + stats.manaBonus).coerceAtLeast(0)
 
@@ -206,8 +226,439 @@ class Game(
         save(p)
     }
 
+    /** Kills a character outright (tests). */
+    internal suspend fun kill(account: Account) = lock.withLock { killPlayer(player(account), "проверка", clock()) }
+
     /** Signals "your screen changed" for the WebSocket of this account's character. */
     suspend fun events(account: Account): SharedFlow<Unit> = lock.withLock { eventsOf(player(account).id) }
+
+    // ---- dialogs ----------------------------------------------------------------------
+
+    /**
+     * Opens a topic of an NPC's dialog (f_speak.dat). Only "begin" or one of
+     * the choices shown last may be asked for: no jumping to any topic by id,
+     * as the old engine allowed with &id=.
+     */
+    suspend fun talk(account: Account, npcKey: String, topic: String, arg: String?): GameView = lock.withLock {
+        val p = player(account)
+        val now = clock()
+        val npc = world.npc(p.location, npcKey) ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NO_TARGET)
+        val dialogId = if (npcKey.startsWith("n.g.")) "n.g.guard" else npcKey
+        val d = content.logic
+        if (!d.hasDialog(dialogId)) throw ApiException(HttpStatusCode.BadRequest, Errors.CANNOT_TALK)
+        if (topic != "begin" && (p.talkingTo != npcKey || (topic to arg) !in p.talkChoices))
+            throw ApiException(HttpStatusCode.Conflict, Errors.TOPIC_CLOSED)
+        val view = when {
+            p.ghost && !npcKey.startsWith("n.h.") && !npcKey.startsWith("n.cap") ->
+                DialogView(npcKey, npc.name, "Вы призрак и поэтому не можете ни с кем говорить, найдите лекаря или камень воскрешения.")
+            p.id in npc.enemies ->
+                DialogView(npcKey, npc.name, "Вы не можете разговаривать с ${npc.name}, т.к. он вас атакует.")
+            else -> {
+                val ctx = TalkCtx(p, npc, dialogId, arg, now).also { it.load() }
+                val shown = showTopic(ctx, topic, 0)
+                DialogView(npcKey, npc.name, Dialogs.plain(shown.first).replace("<imja>", p.name),
+                    shown.second.map { it.copy(label = Dialogs.plain(it.label).replace("<imja>", p.name)) })
+            }
+        }
+        p.talkingTo = npcKey
+        p.talkChoices = view.options.map { it.topic to it.arg }.toSet()
+        save(p)
+        viewLocked(p).copy(dialog = view)
+    }
+
+    /** What a conversation can see and change: the character, its things and quest state. */
+    private inner class TalkCtx(val p: Player, val npc: World.Npc, val dialog: String, val arg: String?, val now: Long) {
+        var topic = "begin"
+        val inventory = HashMap<String, Int>()
+        val equipped = ArrayList<String>()
+        val flags = HashMap<String, String>()
+        val playerTimers = HashMap<String, Long>()
+
+        suspend fun load() {
+            inventory.clear(); equipped.clear(); flags.clear(); playerTimers.clear()
+            db.tx { c ->
+                for ((id, n, on) in inventoryRows(c, p.id)) { inventory[id] = n; if (on) equipped += id }
+                c.prepareStatement("SELECT key, value, until FROM character_state WHERE character_id = ? AND (until IS NULL OR until > ?)").use { st ->
+                    st.setLong(1, p.id); st.setLong(2, now)
+                    st.executeQuery().use { rs ->
+                        while (rs.next()) {
+                            val key = rs.getString(1)
+                            if (key.startsWith(TIMER_PREFIX)) playerTimers[key.removePrefix(TIMER_PREFIX)] = rs.getLong(3)
+                            else flags[key] = rs.getString(2)
+                        }
+                    }
+                }
+            }
+        }
+
+        fun count(id: String) = inventory[id] ?: 0
+
+        /** A flag of the character, or of the whole world. */
+        suspend fun flag(key: String, world: Boolean): String? =
+            if (!world) flags[key] else db.tx { c ->
+                c.prepareStatement("SELECT value FROM world_state WHERE key = ? AND (until IS NULL OR until > ?)").use { st ->
+                    st.setString(1, key); st.setLong(2, now)
+                    st.executeQuery().use { rs -> if (rs.next()) rs.getString(1) else null }
+                }
+            }
+
+        /** Unix time the timer ends, or null if it is not running. */
+        suspend fun timerEnd(key: String): Long? {
+            val t = content.logic.timers[key] ?: return null
+            val until = if (t.scope == "world") db.tx { c ->
+                c.prepareStatement("SELECT until FROM world_state WHERE key = ?").use { st ->
+                    st.setString(1, TIMER_PREFIX + key)
+                    st.executeQuery().use { rs -> if (rs.next()) rs.getLong(1) else null }
+                }
+            } else playerTimers[key]
+            return until?.takeIf { it > now }
+        }
+    }
+
+    /** Text and choices of a topic after its rules ran. */
+    private suspend fun showTopic(ctx: TalkCtx, topic: String, depth: Int): Pair<String, List<DialogOption>> {
+        ctx.topic = topic
+        val d = content.logic
+        val base = d.baseTopic(ctx.dialog, topic)
+        val rules = d.logic[ctx.dialog]?.get(topic)
+        var text: String
+        var options: List<DialogOption> = base?.second ?: emptyList()
+        when {
+            rules != null -> {
+                val rule = rules.firstOrNull { r -> r.conditions.all { cond(ctx, it) } && r.actions.all { guard(ctx, it) } }
+                val baseText = base?.first?.takeUnless { it.startsWith("eval:") } ?: ""
+                if (rule == null) text = baseText
+                else {
+                    val done = runActions(ctx, rule.actions)
+                    if (done.failure != null) {
+                        text = done.failure
+                    } else {
+                        text = listOfNotNull(done.prefix, rule.text ?: baseText).filter { it.isNotBlank() }.joinToString(" ")
+                        text = listOfNotNull(text, done.extra).filter { it.isNotBlank() }.joinToString("\n")
+                        if (rule.options != null) options = rule.options.filter { o -> o.conditions.all { cond(ctx, it) } }
+                            .map { DialogOption(it.label, it.goto, it.arg) }
+                        options = options.filter { it.topic !in rule.hide }
+                        done.options?.let { options = it }
+                        if (rule.goto != null && depth < 5) {
+                            val next = showTopic(ctx, rule.goto, depth + 1)
+                            text = listOf(text, next.first).filter { it.isNotBlank() }.joinToString("\n")
+                            options = next.second
+                        }
+                    }
+                }
+            }
+            base == null -> {
+                if (topic == "end") return "" to emptyList()
+                throw ApiException(HttpStatusCode.Conflict, Errors.TOPIC_CLOSED)
+            }
+            base.first.startsWith("eval:") -> text = UNTRANSLATED
+            base.first.startsWith("skill|") -> {
+                val parts = base.first.split('|')
+                val t = teach(ctx, parts.getOrElse(1) { "" }, parts.getOrNull(2)?.toIntOrNull() ?: 0,
+                    parts.getOrNull(3)?.toIntOrNull() ?: 0, parts.getOrNull(4)?.toIntOrNull() ?: 0)
+                text = t.first
+                options = t.second ?: emptyList()
+            }
+            else -> text = base.first
+        }
+        for (key in Regex("\\{left:([^}]+)\\}").findAll(text).map { it.groupValues[1] }.toSet()) {
+            val end = ctx.timerEnd(key) ?: ctx.now
+            text = text.replace("{left:$key}", ((end - ctx.now + 59) / 60).toString())
+        }
+        text = text.replace("{arg}", ctx.arg ?: "")
+        // Trade and bank come with stage 5; option labels that are still PHP are not shown.
+        return text to options.filter { it.topic !in Content.ENGINE_TOPICS && it.label.isNotBlank() && !it.label.startsWith("eval:") }
+    }
+
+    private suspend fun cond(ctx: TalkCtx, c: JsonObject): Boolean {
+        val p = ctx.p
+        fun n(key: String, default: Int = 1) = c.int(key) ?: default
+        return when {
+            "has" in c -> ctx.count(c.str("has")!!) >= n("count")
+            "lacks" in c -> ctx.count(c.str("lacks")!!) < n("count")
+            "money" in c -> ctx.count(Rules.MONEY) >= n("money", 0)
+            "equipped" in c -> ctx.equipped.any { it.startsWith(c.str("equipped")!!) }
+            "skill" in c -> {
+                val v = p.skill(c.str("skill")!!)
+                (c.int("min")?.let { v >= it } ?: true) && (c.int("max")?.let { v <= it } ?: true)
+            }
+            "newbie" in c -> (p.skills().sumExceptExp() == 5) == Dialogs.truthy(c["newbie"])
+            "ready" in c -> ctx.timerEnd(c.str("ready")!!) == null
+            "waiting" in c -> ctx.timerEnd(c.str("waiting")!!) != null
+            "flag" in c -> ctx.flag(c.str("flag")!!, Dialogs.truthy(c["world"]) && "world" in c)?.let { v -> c.str("value")?.let { it == v } ?: true } ?: false
+            "noflag" in c -> ctx.flag(c.str("noflag")!!, Dialogs.truthy(c["world"]) && "world" in c) == null
+            "known" in c -> c.str("known")!! in p.known
+            "unknown" in c -> c.str("unknown")!! !in p.known
+            "here" in c -> world.hasFixture(p.location, c.str("here")!!, exact = true)
+            "notHere" in c -> !world.hasFixture(p.location, c.str("notHere")!!, exact = true)
+            "npcAt" in c -> world.npc(c.str("location") ?: p.location, c.str("npcAt")!!) != null
+            "noNpcAt" in c -> world.npc(c.str("location") ?: p.location, c.str("noNpcAt")!!) == null
+            "arg" in c -> (c["arg"] as? kotlinx.serialization.json.JsonArray).orEmpty()
+                .any { (it as? kotlinx.serialization.json.JsonPrimitive)?.content == ctx.arg }
+            "chance" in c -> rnd.nextInt(100) < n("chance", 0)
+            "sex" in c -> p.sex == c.str("sex")
+            "ghost" in c -> p.ghost == Dialogs.truthy(c["ghost"])
+            "any" in c -> (c["any"] as? kotlinx.serialization.json.JsonArray).orEmpty().any { cond(ctx, it.jsonObject) }
+            "not" in c -> !cond(ctx, c["not"]!!.jsonObject)
+            else -> false
+        }
+    }
+
+    /**
+     * The check part of a handler: a rule whose guard fails is skipped and
+     * the next rule is tried, like a condition.
+     */
+    private suspend fun guard(ctx: TalkCtx, a: JsonObject): Boolean = when (a.str("handler")) {
+        // Killing players comes with PvP; until then nobody has.
+        "require-pk" -> false
+        "npc-hand-over" -> world.npcHas(a.str("npc")!!, a.str("location") ?: ctx.p.location, a.str("item")!!)
+        else -> true
+    }
+
+    /** Handlers implemented in code (Dialogs.HANDLERS); returns text to put before the NPC's line. */
+    private suspend fun handler(ctx: TalkCtx, a: JsonObject): String? {
+        val p = ctx.p
+        when (a.str("handler")) {
+            "arena-count" -> {
+                val n = players.values.count { it.location == "arena" && ctx.now - it.lastSeen < ACTIVE_SECONDS }
+                return if (n == 0) "Сейчас на арене никого нет." else "Сейчас на арене $n человек."
+            }
+            "hide-item-random" -> {
+                val places = content.locations.keys.filter { id ->
+                    !id.startsWith("z.") && !id.startsWith("c.") && !id.startsWith("arena") && !id.startsWith("qv") && id != Protocol.START_LOCATION
+                }
+                if (places.isNotEmpty()) world.placePermanent(places[rnd.nextInt(places.size)], a.str("item")!!, 1)
+            }
+            "repair-boat" -> {
+                world.removeItem(p.location, a.str("from")!!)
+                world.placePermanent(p.location, a.str("to")!!, 1)
+            }
+            "lower-int" -> { p.int = (p.int - 1).coerceAtLeast(1); refreshStats(p) }
+            "npc-hand-over" -> {
+                val item = a.str("item")!!
+                if (world.takeFromNpc(a.str("npc")!!, a.str("location") ?: p.location, item)) {
+                    changeItem(p, item, 1); ctx.inventory.merge(item, 1, Int::plus)
+                }
+            }
+        }
+        return null
+    }
+
+    private class Done(val failure: String? = null, val extra: String? = null, val options: List<DialogOption>? = null, val prefix: String? = null)
+
+    /**
+     * Runs a rule's actions. Everything a rule takes is checked first: if
+     * something is missing nothing happens (the old code often gave the
+     * reward anyway).
+     */
+    private suspend fun runActions(ctx: TalkCtx, actions: List<JsonObject>): Done {
+        val p = ctx.p
+        val need = HashMap<String, Int>()
+        for (a in actions) a.str("take")?.let { need[it] = (need[it] ?: 0) + (a.int("count") ?: 1) }
+        val missing = need.filter { (id, n) -> ctx.count(id) < n }.keys
+        if (missing.isNotEmpty()) return Done(failure = "У вас нет: " + missing.joinToString { content.itemName(it) })
+        if (actions.any { a -> a.str("handler")?.let { it !in Dialogs.HANDLERS } == true }) return Done(failure = UNTRANSLATED)
+
+        val extra = ArrayList<String>()
+        val prefix = ArrayList<String>()
+        var options: List<DialogOption>? = null
+        var statsChanged = false
+        for (a in actions) {
+            val count = a.int("count") ?: 1
+            when {
+                "take" in a -> { changeItem(p, a.str("take")!!, -count); ctx.inventory.merge(a.str("take")!!, -count, Int::plus); statsChanged = true }
+                "give" in a -> { changeItem(p, a.str("give")!!, count); ctx.inventory.merge(a.str("give")!!, count, Int::plus) }
+                "exp" in a -> addExp(p, a.int("exp") ?: 0)
+                "start" in a -> {
+                    val key = a.str("start")!!
+                    val t = content.logic.timers.getValue(key)
+                    val until = ctx.now + if (t.max > t.min) rnd.nextInt(t.min, t.max + 1) else t.min
+                    if (t.scope == "world") setWorldState(TIMER_PREFIX + key, "", until)
+                    else { setState(p.id, TIMER_PREFIX + key, "", until); ctx.playerTimers[key] = until }
+                }
+                "stop" in a -> {
+                    val key = a.str("stop")!!
+                    if (content.logic.timers[key]?.scope == "world") clearWorldState(TIMER_PREFIX + key)
+                    else { clearState(p.id, TIMER_PREFIX + key); ctx.playerTimers.remove(key) }
+                }
+                "set" in a -> {
+                    val value = a.str("value") ?: "1"
+                    val until = a.int("for")?.let { ctx.now + it }
+                    if ("world" in a && Dialogs.truthy(a["world"])) setWorldState(a.str("set")!!, value, until)
+                    else { setState(p.id, a.str("set")!!, value, until); ctx.flags[a.str("set")!!] = value }
+                }
+                "clear" in a -> {
+                    if ("world" in a && Dialogs.truthy(a["world"])) clearWorldState(a.str("clear")!!)
+                    else { clearState(p.id, a.str("clear")!!); ctx.flags.remove(a.str("clear")!!) }
+                }
+                "giveNpc" in a -> world.giveNpc(a.str("npc")!!, a.str("location") ?: p.location, a.str("giveNpc")!!, count)
+                "learn" in a -> learn(p, a.str("learn")!!)
+                "teach" in a -> {
+                    val t = teach(ctx, a.str("teach")!!, a.int("cost") ?: 0, a.int("min") ?: 0, a.int("max") ?: 0)
+                    extra += t.first
+                    options = t.second
+                }
+                "teleport" in a -> {
+                    p.location = a.str("teleport")!!
+                    save(p)
+                    notifyLocation(p.location, except = p.id)
+                }
+                "spawn" in a -> {
+                    val template = a.str("spawn")!!
+                    world.spawn(template, a.str("key") ?: template, a.str("location") ?: p.location, ctx.now)
+                }
+                "remove" in a -> world.removeNpc(a.str("remove")!!, a.str("location") ?: p.location)
+                "place" in a -> world.drop(a.str("location") ?: p.location, a.str("place")!!, count, ctx.now)
+                "removeHere" in a -> world.removeItem(p.location, a.str("removeHere")!!)
+                "resurrect" in a -> if (p.ghost) {
+                    p.ghost = false
+                    p.hp = p.hpMax * Rules.RESURRECT_HP_PERCENT / 100
+                    p.regenFrom = ctx.now
+                    p.log("Вы воскресли.")
+                    save(p)
+                }
+                "heal" in a -> {
+                    p.hp = if (a.str("heal") == "full") p.hpMax else (p.hp + (a.int("heal") ?: 0)).coerceAtMost(p.hpMax)
+                    save(p)
+                }
+                "say" in a -> content.logic.jokes[a.str("say")!!]?.takeIf { it.isNotEmpty() }?.let { extra += it[rnd.nextInt(it.size)] }
+                "journal" in a -> p.log(a.str("journal")!!)
+                "handler" in a -> handler(ctx, a)?.let { prefix += it }
+            }
+        }
+        if (statsChanged) refreshStats(p)
+        save(p)
+        return Done(extra = extra.joinToString("\n").takeIf { it.isNotBlank() }, options = options,
+            prefix = prefix.joinToString(" ").takeIf { it.isNotBlank() })
+    }
+
+    /**
+     * A teacher (f_speakskillup.dat, docs/mechanics-progression.md §3.4):
+     * attributes and skills for a skill point (free while the character has
+     * only its starting points), spells and techniques for money.
+     * [ctx.arg] is the attribute or skill chosen to lower when at the limit.
+     */
+    private suspend fun teach(ctx: TalkCtx, what: String, cost: Int, min: Int, max: Int): Pair<String, List<DialogOption>?> {
+        val p = ctx.p
+        if (what.startsWith("m.") || what.startsWith("p.")) {
+            val spell = what.startsWith("m.")
+            if (what in p.known) return (if (spell) "У вас уже есть это заклинание" else "Вы уже знаете этот прием") to null
+            val magic = p.skill("magic")
+            if (spell && min > 0 && magic < min) return "У вас недостаточный навык магии (надо минимум $min)" to null
+            if (spell && max > 0 && magic > max) return "У вас слишком высокий навык магии (максимум $max)" to null
+            if (cost > 0) {
+                if (ctx.count(Rules.MONEY) < cost) return "У вас недостаточно денег (надо $cost монет)" to null
+                changeItem(p, Rules.MONEY, -cost)
+            }
+            learn(p, what)
+            return (if (spell) "Вы выучили новое заклинание!" else "Вы выучили новый прием!") to null
+        }
+        if (Rules.SKILLS.none { it.first == what }) return "Этому здесь не учат." to null
+        if (p.points < 1) return "Недостаточно очков опыта" to null
+        val current = p.skill(what)
+        if (min > 0 && current < min) return "Вы должны иметь уровень навыка не ниже $min" to null
+        if (max > 0 && current > max) return "Вы и так достаточно опытны, я учу только до уровня ${max + 1}" to null
+        val attribute = what in Rules.ATTRIBUTES
+        val down = ctx.arg?.takeIf { it.isNotEmpty() }
+        if (attribute) {
+            if (current >= Rules.ATTR_MAX) return "Невозможно повысить, т.к. аттрибут уже на максимальном уровне ${Rules.ATTR_MAX}" to null
+            if (down != null && down !in Rules.ATTRIBUTES) return "Неверный аттрибут" to null
+            if (down != null && p.skill(down) <= 1) return "Невозможно понизить, т.к. аттрибут уже на минимальном уровне 1, выберите другой" to null
+            if (down == null && p.str + p.dex + p.int >= Rules.ATTR_SUM) {
+                return "Превышен предел суммы очков (${Rules.ATTR_SUM}) для аттрибутов, выберите что уменьшить:" to
+                    Rules.ATTRIBUTES.filter { it != what }.map { DialogOption("${Rules.skillTitle(it)}: ${p.skill(it)}", ctx.topic, it) }
+            }
+        } else {
+            if (current >= Rules.SKILL_MAX) return "Невозможно повысить, т.к. навык уже на максимальном уровне ${Rules.SKILL_MAX}" to null
+            if (down != null && (down in Rules.ATTRIBUTES || Rules.SKILLS.none { it.first == down })) return "Неверный навык" to null
+            if (down != null && p.skill(down) <= 0) return "Невозможно понизить, т.к. навык уже на минимальном уровне 0, выберите другой" to null
+            if (down == null && p.other.values.sum() >= Rules.SKILL_SUM) {
+                return "Превышен предел суммы очков (${Rules.SKILL_SUM}) для навыков, выберите что уменьшить:" to
+                    Rules.SKILLS.filter { it.first !in Rules.ATTRIBUTES && it.first != what && p.skill(it.first) > 0 }
+                        .map { DialogOption("${it.third}: ${p.skill(it.first)}", ctx.topic, it.first) }
+            }
+        }
+        var text = ""
+        if (cost > 0) {
+            if (p.skills().sumExceptExp() == 5) text = "Ладно, так уж и быть, раз ты новичок, то я это сделаю бесплатно.\n"
+            else {
+                if (ctx.count(Rules.MONEY) < cost) return "У вас недостаточно денег (надо $cost монет)" to null
+                changeItem(p, Rules.MONEY, -cost)
+                ctx.inventory.merge(Rules.MONEY, -cost, Int::plus)
+            }
+        }
+        setSkill(p, what, current + 1)
+        if (down != null) setSkill(p, down, p.skill(down) - 1)
+        p.points -= 1
+        refreshStats(p)
+        save(p)
+        text += Rules.skillTitle(what) + ": +1"
+        if (down != null) text += "\n" + Rules.skillTitle(down) + ": -1"
+        return text to null
+    }
+
+    private fun setSkill(p: Player, key: String, v: Int) {
+        when (key) {
+            "str" -> p.str = v
+            "dex" -> p.dex = v
+            "int" -> p.int = v
+            else -> p.other[key] = v
+        }
+    }
+
+    private suspend fun learn(p: Player, id: String) {
+        if (!p.known.add(id)) return
+        db.tx { c ->
+            c.prepareStatement("INSERT INTO character_known (character_id, id) VALUES (?, ?) ON CONFLICT DO NOTHING").use { st ->
+                st.setLong(1, p.id); st.setString(2, id); st.executeUpdate()
+            }
+        }
+    }
+
+    /** Adds (count > 0) or removes items; a stack that reaches 0 is deleted. */
+    private suspend fun changeItem(p: Player, itemId: String, count: Int) = db.tx { c ->
+        if (count > 0) addItem(c, p.id, itemId, count)
+        else if (count < 0) {
+            // The last ones: delete the row (count must stay > 0), otherwise decrease.
+            val deleted = c.prepareStatement("DELETE FROM character_items WHERE character_id = ? AND item_id = ? AND count <= ?").use { st ->
+                st.setLong(1, p.id); st.setString(2, itemId); st.setInt(3, -count); st.executeUpdate()
+            }
+            if (deleted == 0) c.prepareStatement("UPDATE character_items SET count = count + ? WHERE character_id = ? AND item_id = ?").use { st ->
+                st.setInt(1, count); st.setLong(2, p.id); st.setString(3, itemId); st.executeUpdate()
+            }
+        }
+    }
+
+    private suspend fun setState(characterId: Long, key: String, value: String, until: Long?) = db.tx { c ->
+        c.prepareStatement(
+            "INSERT INTO character_state (character_id, key, value, until) VALUES (?, ?, ?, ?) " +
+                "ON CONFLICT (character_id, key) DO UPDATE SET value = EXCLUDED.value, until = EXCLUDED.until"
+        ).use { st ->
+            st.setLong(1, characterId); st.setString(2, key); st.setString(3, value)
+            if (until == null) st.setNull(4, java.sql.Types.BIGINT) else st.setLong(4, until)
+            st.executeUpdate()
+        }
+    }
+
+    private suspend fun clearState(characterId: Long, key: String) = db.tx { c ->
+        c.prepareStatement("DELETE FROM character_state WHERE character_id = ? AND key = ?").use { st ->
+            st.setLong(1, characterId); st.setString(2, key); st.executeUpdate()
+        }
+    }
+
+    private suspend fun setWorldState(key: String, value: String, until: Long?) = db.tx { c ->
+        c.prepareStatement(
+            "INSERT INTO world_state (key, value, until) VALUES (?, ?, ?) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, until = EXCLUDED.until"
+        ).use { st ->
+            st.setString(1, key); st.setString(2, value)
+            if (until == null) st.setNull(3, java.sql.Types.BIGINT) else st.setLong(3, until)
+            st.executeUpdate()
+        }
+    }
+
+    private suspend fun clearWorldState(key: String) = db.tx { c ->
+        c.prepareStatement("DELETE FROM world_state WHERE key = ?").use { st -> st.setString(1, key); st.executeUpdate() }
+    }
 
     // ---- world clock ------------------------------------------------------------------
 
@@ -303,15 +754,19 @@ class Game(
         world.kill(npc, now)
         p.log("${npc.name} погибает.")
         tellOthers(p.location, p.id, "${npc.name} погибает.")
-        val gained = npc.stats.expValue
-        if (gained > 0) {
-            p.exp += gained
-            if (p.exp > Formulas.expThreshold(p.skills())) {
-                p.exp = 0
-                p.points += 1
-                p.log("Вы получили очко опыта! Потратить его можно у учителей.")
-                refreshStats(p)
-            }
+        addExp(p, npc.stats.expValue)
+    }
+
+    /** f_addexp.dat: over the threshold the experience turns into one skill point (the rest burns). */
+    private suspend fun addExp(p: Player, gained: Int) {
+        if (gained <= 0) return
+        p.exp += gained
+        p.log("Опыт +$gained")
+        if (p.exp > Formulas.expThreshold(p.skills())) {
+            p.exp = 0
+            p.points += 1
+            p.log("Вы получили очко опыта! Потратить его можно у учителей.")
+            refreshStats(p)
         }
     }
 
@@ -397,7 +852,7 @@ class Game(
     private suspend fun load(account: Account): Player? {
         val p = db.tx { c ->
             c.prepareStatement(
-                "SELECT id, name, sex, location, hp, mana, ghost, str, dex, intel, exp, skill_points FROM characters " +
+                "SELECT id, name, sex, location, hp, mana, ghost, str, dex, intel, exp, skill_points, skills::text AS skills FROM characters " +
                     "WHERE account_id = ? AND world_id = 1"
             ).use { st ->
                 st.setLong(1, account.id)
@@ -406,10 +861,20 @@ class Game(
                         rs.getLong("id"), account.id, rs.getString("name"), rs.getString("sex"), rs.getString("location"),
                         rs.getInt("hp"), rs.getInt("mana"), rs.getBoolean("ghost"),
                         rs.getInt("str"), rs.getInt("dex"), rs.getInt("intel"), rs.getInt("exp"), rs.getInt("skill_points"),
-                    )
+                    ).also { p ->
+                        for ((k, v) in kotlinx.serialization.json.Json.parseToJsonElement(rs.getString("skills")).jsonObject) {
+                            (v as? kotlinx.serialization.json.JsonPrimitive)?.intOrNull?.let { p.other[k] = it }
+                        }
+                    }
                 }
             }
         } ?: return null
+        p.known += db.tx { c ->
+            c.prepareStatement("SELECT id FROM character_known WHERE character_id = ?").use { st ->
+                st.setLong(1, p.id)
+                st.executeQuery().use { rs -> buildList { while (rs.next()) add(rs.getString(1)) } }
+            }
+        }
         p.regenFrom = clock()
         refreshStats(p)
         players[p.id] = p
@@ -426,7 +891,8 @@ class Game(
 
     private suspend fun save(p: Player) = db.tx { c ->
         c.prepareStatement(
-            "UPDATE characters SET location = ?, hp = ?, mana = ?, ghost = ?, exp = ?, skill_points = ? WHERE id = ?"
+            "UPDATE characters SET location = ?, hp = ?, mana = ?, ghost = ?, exp = ?, skill_points = ?, " +
+                "str = ?, dex = ?, intel = ?, skills = ?::jsonb WHERE id = ?"
         ).use { st ->
             st.setString(1, p.location)
             st.setInt(2, p.hp.coerceAtLeast(0))
@@ -434,7 +900,11 @@ class Game(
             st.setBoolean(4, p.ghost)
             st.setInt(5, p.exp)
             st.setInt(6, p.points)
-            st.setLong(7, p.id)
+            st.setInt(7, p.str)
+            st.setInt(8, p.dex)
+            st.setInt(9, p.int)
+            st.setString(10, kotlinx.serialization.json.JsonObject(p.other.filterValues { it != 0 }.mapValues { kotlinx.serialization.json.JsonPrimitive(it.value) }).toString())
+            st.setLong(11, p.id)
             st.executeUpdate()
         }
     }
@@ -467,7 +937,7 @@ class Game(
             .filter { it.id != p.id && it.location == loc.id && now - it.lastSeen < ACTIVE_SECONDS }
             .map { if (it.ghost) "${it.name} (призрак)" else it.name }
             .sorted()
-        val npcs = world.npcsIn(loc.id).map { NpcView(it.key, it.name, it.hp, it.proto.hpMax, p.id in it.enemies, Rules.attackable(it.key)) }
+        val npcs = world.npcsIn(loc.id).map { NpcView(it.key, it.name, it.hp, it.proto.hpMax, p.id in it.enemies, Rules.attackable(it.key), content.logic.hasDialog(if (it.key.startsWith("n.g.")) "n.g.guard" else it.key)) }
         val location = loc.view().copy(
             npcs = npcs,
             items = world.itemsAt(loc.id, now),
@@ -482,6 +952,7 @@ class Game(
             id = p.id, name = p.name, sex = p.sex, location = p.location,
             hp = p.hp.coerceAtLeast(0), hpMax = p.hpMax, mana = p.mana.coerceAtLeast(0), manaMax = p.manaMax,
             str = p.str, dex = p.dex, int = p.int, skillPoints = p.points,
+            skills = p.other.filterValues { it > 0 }.toSortedMap(), known = p.known.sorted(),
             ghost = p.ghost, exp = p.exp, expNext = Formulas.expThreshold(p.skills()),
             hit = s.hit, dmgMin = s.dmgMin, dmgMax = s.dmgMax, armor = s.armor, dodge = s.dodge,
         )
@@ -527,5 +998,7 @@ class Game(
         /** Characters active in the last 10 minutes are shown and can be attacked by monsters. */
         const val ACTIVE_SECONDS = 600
         const val JOURNAL_SIZE = 30
+        const val TIMER_PREFIX = "timer:"
+        const val UNTRANSLATED = "Этот разговор пока не перенесён в новую версию игры."
     }
 }

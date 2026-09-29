@@ -28,7 +28,11 @@ class Content(
     val problems: List<String>,
     /** Location files as loaded: objects (NPCs, items) and timers of the starting world. */
     val locationData: Map<String, JsonObject> = emptyMap(),
+    val dir: File = File("."),
 ) {
+    /** Declarative dialog and quest logic, content/logic (built on first use). */
+    val logic: Dialogs by lazy { Dialogs(this, dir).finishValidation() }
+
     /**
      * Display name of an item id. Instance ids carry suffixes after the base
      * id (maker "_…", sharpening "-N-", gems "..x"), see docs/data-fields.md §0.
@@ -50,7 +54,7 @@ class Content(
         fun view() = LocationView(id, name, zone, description, exits, npcs)
     }
 
-    fun report() = ContentReport(locations.size, items.size, npcs.size, dialogs.size, problems)
+    fun report() = ContentReport(locations.size, items.size, npcs.size, dialogs.size, problems + logic.problems, logic.untranslated())
 
     companion object {
         private val json = Json { ignoreUnknownKeys = true }
@@ -85,7 +89,7 @@ class Content(
                     }
                 }
             }
-            return Content(locations, items, npcs, dialogs, problems, locationData)
+            return Content(locations, items, npcs, dialogs, problems, locationData, dir)
         }
 
         private fun location(id: String, o: JsonObject): Location {

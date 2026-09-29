@@ -1,0 +1,121 @@
+{
+  "id": "n.guildmaster",
+  "topics": {
+    "begin": [
+      {
+        "do": [
+          {
+            "handler": "clan-status"
+          }
+        ],
+        "text": "Здравствуй, <imja>. Меня зовут Мирандер, я заношу в королевский реестр создаваемые кланы. Так-с... [заглядывает в журнал] Ты сейчас {clanStatus}",
+        "options": [
+          {
+            "label": "Расскажи о кланах",
+            "goto": "info"
+          },
+          {
+            "label": "{clanAction}",
+            "goto": "new"
+          },
+          {
+            "label": "Я хочу купить камень гильдии",
+            "goto": "buystone"
+          },
+          {
+            "label": "У меня проблема с кланом",
+            "goto": "problem"
+          },
+          {
+            "label": "Все в порядке, мне пора.",
+            "goto": "end"
+          }
+        ]
+      }
+    ],
+    "buystonenow": [
+      {
+        "do": [
+          {
+            "take": "i.money",
+            "count": 500
+          },
+          {
+            "give": "i.guildstone"
+          }
+        ],
+        "text": "Держи и не теряй больше."
+      }
+    ],
+    "new": [
+      {
+        "do": [
+          {
+            "handler": "clan-leave"
+          }
+        ],
+        "text": "Стоимость регистрации нового клана 50000 монет",
+        "options": [
+          {
+            "label": "Я согласен",
+            "goto": "newnow"
+          },
+          {
+            "label": "Хех, может в другой раз...",
+            "goto": "end"
+          }
+        ]
+      }
+    ],
+    "newnow": [
+      {
+        "do": [
+          {
+            "handler": "clan-name-input",
+            "next": "newnow2"
+          }
+        ],
+        "text": "Напиши имя своего будущего клана"
+      }
+    ],
+    "newnow2": [
+      {
+        "do": [
+          {
+            "handler": "clan-create",
+            "cost": 50000,
+            "give": "i.guildstone"
+          }
+        ],
+        "text": "Поздравляю, ты теперь глава клана {clan}, используй камень гильдии для управления им.",
+        "options": [
+          {
+            "label": "Спасибо, до свидания",
+            "goto": "end"
+          }
+        ]
+      }
+    ],
+    "problem": [
+      {
+        "do": [
+          {
+            "handler": "clan-name-input",
+            "next": "problem2"
+          }
+        ],
+        "text": "Напиши имя своего клана"
+      }
+    ],
+    "problem2": [
+      {
+        "do": [
+          {
+            "handler": "clan-restore"
+          }
+        ],
+        "text": "[читает записи] Ага, да ты являешься главой этого клана! [делает пометки в бумагах] Ок, все готово."
+      }
+    ]
+  }
+}

@@ -100,6 +100,9 @@ class GameApi(
 
     suspend fun butcher(corpse: String): GameView = postJson<GameView, LootRequest>("/api/game/butcher", LootRequest(corpse))
 
+    suspend fun talk(npc: String, topic: String = "begin", arg: String? = null): GameView =
+        postJson<GameView, TalkRequest>("/api/game/talk", TalkRequest(npc, topic, arg))
+
     suspend fun resurrect(): GameView = check(http.post(url("/api/game/resurrect")) { auth() })
 
     /**
