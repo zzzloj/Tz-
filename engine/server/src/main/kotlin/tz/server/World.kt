@@ -76,6 +76,8 @@ class World(
         var npcTarget: String? = null
         /** Vanishes at this time (city guards live 10 minutes); 0 — never. */
         var expiresAt = 0L
+        /** Poisoned till then (i.b.jad.c): loses health instead of regenerating. */
+        var poisonUntil = 0L
         /** Monsters (n.c.*) attack players on sight. */
         val aggressive get() = key.startsWith("n.c.")
     }
@@ -366,8 +368,19 @@ class World(
         }
     }
 
+    /** An NPC went from one location to another: Game writes «ушёл/пришёл» to the players there. */
+    class Move(val name: String, val from: String, val to: String)
+    private val moves = ArrayList<Move>()
+
+    /** The moves since the last call. */
+    suspend fun drainMoves(): List<Move> = mutex.withLock { moves.toList().also { moves.clear() } }
+
+    /** Moves an NPC (a chase, a firebird flying off); false if the same key is already there. */
+    suspend fun moveNpc(npc: Npc, target: String): Boolean = mutex.withLock { moveNpcLocked(npc, target) }
+
     private fun moveNpcLocked(npc: Npc, target: String): Boolean {
         if (npcs[target]?.containsKey(npc.key) == true) return false
+        if (moves.size < 1000) moves += Move(npc.name, npc.location, target)
         npcs[npc.location]?.remove(npc.key)
         if (npc.trail.isNotEmpty() && npc.trail.last() == target) npc.trail.removeLast() else npc.trail.addLast(npc.location)
         npc.location = target
@@ -446,7 +459,7 @@ class World(
 
     suspend fun itemsAt(loc: String, now: Long): List<GroundItemView> = mutex.withLock {
         ground[loc]?.values?.filter { it.expiresAt == 0L || it.expiresAt > now }
-            ?.map { GroundItemView(it.id, it.name, it.count, takeable = !it.id.startsWith("i.s.") || it.id == "i.s.arena" || it.id.startsWith(Spells.PORTAL)) } ?: emptyList()
+            ?.map { GroundItemView(it.id, it.name, it.count, takeable = !it.id.startsWith("i.s.") || it.id == "i.s.arena" || it.id == Travel.BOAT || it.id.startsWith(Spells.PORTAL)) } ?: emptyList()
     }
 
     /** True if a fixture with an id starting with [prefix] stands here (e.g. i.s.res — resurrection stone). */

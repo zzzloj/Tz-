@@ -86,7 +86,7 @@ class GameApi(
 
     suspend fun move(target: String): GameView = postJson<GameView, MoveRequest>("/api/game/move", MoveRequest(target))
 
-    suspend fun take(item: String): GameView = postJson<GameView, ItemRequest>("/api/game/take", ItemRequest(item))
+    suspend fun take(item: String, arg: String? = null): GameView = postJson<GameView, ItemRequest>("/api/game/take", ItemRequest(item, arg))
 
     suspend fun drop(item: String): GameView = postJson<GameView, ItemRequest>("/api/game/drop", ItemRequest(item))
 

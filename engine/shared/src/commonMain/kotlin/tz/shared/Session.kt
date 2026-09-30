@@ -70,6 +70,15 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
 
     suspend fun take(item: GroundItemView) = action { game = api.take(item.id) }
 
+    /** Answers a thing's question (GameView.choice: where to sail the boat). */
+    suspend fun choose(option: ChoiceOption) = action {
+        val c = game?.choice ?: return@action
+        game = api.take(c.item, option.value)
+    }
+
+    /** Closes a thing's question without answering. */
+    fun closeChoice() { game = game?.copy(choice = null) }
+
     suspend fun drop(item: InventoryItemView) = action { game = api.drop(item.id) }
 
     /** Puts the item on, or takes it off if it is on. */

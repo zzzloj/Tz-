@@ -88,6 +88,10 @@ class Game(
         var fightingPlayer: Long? = null
         /** Last thing said, to refuse repeats (f_say.dat:65). */
         var lastSaid: String? = null
+        /** Whom this character strikes: an NPC key or "u:<character id>" (char[7], the «атакует» mark). */
+        var attackTarget: String? = null
+        /** Poisoned till then (i.b.jad.c): health goes down instead of regenerating. */
+        var poisonUntil = 0L
         /** Defensive stance (p.d.*), one at a time (Magic.kt). */
         var stance: Stance? = null
         /** When each spell or technique may be used again (unix time). */
@@ -134,17 +138,24 @@ class Game(
     suspend fun move(account: Account, target: String): GameView = lock.withLock {
         val p = player(account)
         val here = content.locations[p.location]
-        if (here == null || here.exits.none { it.target == target } || target !in content.locations)
+        val exit = here?.exits?.firstOrNull { it.target == target }
+        if (exit == null || target !in content.locations)
             throw ApiException(HttpStatusCode.BadRequest, Errors.NOT_AN_EXIT)
-        for (npc in world.npcsIn(p.location)) npc.enemies.remove(p.id)
+        Travel.locked(p.location, target) { part -> db.tx { c -> inventoryRows(c, p.id) }.any { part in it.first } }
+            ?.let { p.log(it); return@withLock viewLocked(p) }
         castleEntry(p, p.location, target)?.let { p.log(it); return@withLock viewLocked(p) }
+        // Walking away is always allowed, even mid-fight (g.php go=); the enemies here may follow (Travel.chase).
+        val from = p.location
+        val hidden = dice.roll(1, 100) <= p.skill("hiding") * 8
         p.location = target
+        p.attackTarget = null
+        walkLines(p, from, target, exit.label, hidden)
         save(p)
         notifyLocation(target, except = p.id)
         viewLocked(p)
     }
 
-    suspend fun take(account: Account, itemId: String): GameView = lock.withLock {
+    suspend fun take(account: Account, itemId: String, arg: String? = null): GameView = lock.withLock {
         if (itemId == "i.s.arena") {
             val q = player(account)
             q.log(leaveArena(q))
@@ -153,6 +164,7 @@ class Game(
         val p = alive(player(account))
         val now = clock()
         if (itemId.startsWith(Spells.PORTAL)) { usePortal(p, itemId, now); return@withLock viewLocked(p) }
+        if (itemId == Travel.BOAT) { val choice = sail(p, arg, now); return@withLock viewLocked(p).copy(choice = choice) }
         if (itemId.startsWith("i.s.")) throw ApiException(HttpStatusCode.BadRequest, Errors.CANNOT_TAKE)
         if (p.stance?.id == "p.d.o" && now < p.stance!!.until) { p.log("В глухой обороне брать предметы нельзя"); return@withLock viewLocked(p) }
         val item = world.take(p.location, itemId, now) ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NO_SUCH_ITEM)
@@ -772,6 +784,7 @@ class Game(
      */
     suspend fun tick(now: Long) = lock.withLock {
         world.tick(now)
+        npcMoveLines(now)
         if (now - lastGuardCheck >= 60) { lastGuardCheck = now; castles(); expireGuards(now) }
         val active = players.values.filter { now - it.lastSeen < ACTIVE_SECONDS }
         for (p in active) if (!p.ghost) regen(p, now)
@@ -787,10 +800,17 @@ class Game(
                     if (other == null || other.hp < 1) npc.npcTarget = null
                     else if (now >= npc.busyUntil && npc.hp > 0) { npcHitsNpc(npc, other, now, here); continue }
                 }
-                // Enemies who left or died are forgotten (no chasing yet, f_goto.dat).
-                npc.enemies.retainAll(living.filter { !it.ghost }.map { it.id }.toSet())
-                if (npc.enemies.isEmpty() && npc.npcTarget == null && npc.aggressive && living.isNotEmpty()) {
-                    npc.enemies += living[rnd.nextInt(living.size)].id
+                // The firebird never lets anyone near (g.php:719).
+                if (npc.key == Travel.FIREBIRD && living.isNotEmpty() && firebirdFlees(npc, loc)) continue
+                // Its target walked off: follow (f_goto.dat); the others who left or died are forgotten.
+                val livingIds = living.map { it.id }.toSet()
+                val first = npc.enemies.firstOrNull()
+                if (first != null && first !in livingIds && chase(npc, first, loc, now)) continue
+                npc.enemies.retainAll(livingIds)
+                // A monster picks its victim among those it notices: hiding·6 % of the time you are unseen (g.php:680).
+                if (npc.enemies.isEmpty() && npc.npcTarget == null && npc.aggressive) {
+                    val seen = living.filter { dice.roll(0, 100) > it.skill("hiding") * 6 }
+                    if (seen.isNotEmpty()) npc.enemies += seen[rnd.nextInt(seen.size)].id
                 }
                 // Blows go round all its enemies in turn.
                 val victimId = npc.enemies.firstOrNull() ?: continue
@@ -837,6 +857,7 @@ class Game(
         }
         // Everyone who strikes an NPC becomes its enemy; it answers them all.
         npc.enemies += p.id
+        if (answer) p.attackTarget = npc.key
         if (npc.hp < 1) {
             killNpc(p, npc, now)
             return
@@ -894,6 +915,8 @@ class Game(
         p.fightingPlayer = null
         p.stance = null
         p.clearBuffs()
+        p.attackTarget = null
+        p.poisonUntil = 0
         if (p.location == Rules.ARENA) {
             // On the arena things stay with the fallen (f_kill.dat:19).
             p.log("Вас победил $killer. Вы призрак: покинуть арену можно через камень выхода.")
@@ -931,22 +954,29 @@ class Game(
         true
     }
 
+    /**
+     * g.php:703-708: health comes back by the regeneration skill, mana by
+     * meditation; poison takes round(t/10) health instead, never below 1.
+     */
     private fun regen(p: Player, now: Long) {
-        if (p.hp >= p.hpMax && p.mana >= p.manaMax) { p.regenFrom = now; return }
+        val poisoned = now < p.poisonUntil
+        if (!poisoned && p.hp >= p.hpMax && p.mana >= p.manaMax) { p.regenFrom = now; return }
         val since = now - p.regenFrom
-        val add = Formulas.regen(since)
-        if (add <= 0) return
-        p.hp = (p.hp + add).coerceAtMost(p.hpMax)
-        p.mana = (p.mana + add).coerceAtMost(p.manaMax)
+        if (since <= 30) return
+        p.hp = if (poisoned) (p.hp - Math.round(since / 10.0).toInt()).coerceAtLeast(1)
+        else (p.hp + Formulas.regen(since, p.skill("regeneration"))).coerceAtMost(p.hpMax)
+        p.mana = (p.mana + Formulas.regen(since, p.skill("meditation"))).coerceAtMost(p.manaMax)
         p.regenFrom = now
         dirty += p.id
     }
 
     internal fun regenNpc(npc: World.Npc, now: Long) {
-        if (npc.hp >= npc.proto.hpMax) { npc.regenFrom = now; return }
-        val add = Formulas.regen(now - npc.regenFrom)
-        if (add <= 0) return
-        npc.hp = (npc.hp + add).coerceAtMost(npc.proto.hpMax)
+        val poisoned = now < npc.poisonUntil
+        if (!poisoned && npc.hp >= npc.proto.hpMax) { npc.regenFrom = now; return }
+        val since = now - npc.regenFrom
+        if (since <= 30) return
+        npc.hp = if (poisoned) (npc.hp - Math.round(since / 10.0).toInt()).coerceAtLeast(1)
+        else (npc.hp + Formulas.regen(since)).coerceAtMost(npc.proto.hpMax)
         npc.regenFrom = now
     }
 
@@ -973,6 +1003,7 @@ class Game(
         val now = clock()
         val cached = byAccount[account.id]?.let { players[it] }
         val p = cached ?: load(account) ?: throw ApiException(HttpStatusCode.Conflict, Errors.NO_CHARACTER)
+        if (cached != null && p.lastSeen != 0L && now - p.lastSeen >= ACTIVE_SECONDS) afterBreak(p, now - p.lastSeen)
         p.lastSeen = now
         return p
     }
@@ -1015,6 +1046,7 @@ class Game(
             }
         }
         loadClan(p)
+        afterBreak(p, 0)
         p.regenFrom = clock()
         refreshStats(p)
         players[p.id] = p
@@ -1077,8 +1109,27 @@ class Game(
             .filter { it.id != p.id && it.location == loc.id && now - it.lastSeen < ACTIVE_SECONDS }
             .sortedBy { it.name }
         val others = here.map { it.name + (it.clanName?.let { c -> " *$c*" } ?: "") + (if (it.criminal(now)) " [${it.crime}]" else "") + if (it.ghost) " (призрак)" else "" }
-        val npcs = world.npcsIn(loc.id).map { NpcView(it.key, it.name, it.hp, it.proto.hpMax, p.id in it.enemies, true, content.logic.hasDialog(if (it.key.startsWith("n.g.")) "n.g.guard" else it.key)) }
+        val npcsHere = world.npcsIn(loc.id)
+        fun whom(id: Long?): String? = when (id) {
+            null -> null
+            p.id -> "вас"
+            else -> here.firstOrNull { it.id == id && !it.ghost }?.name
+        }
+        fun attackingOf(target: String?): String? = when {
+            target == null -> null
+            target.startsWith("u:") -> whom(target.removePrefix("u:").toLongOrNull())
+            else -> npcsHere.firstOrNull { it.key == target }?.name
+        }
+        val npcs = npcsHere.map {
+            NpcView(it.key, it.name, it.hp, it.proto.hpMax, p.id in it.enemies, true,
+                content.logic.hasDialog(if (it.key.startsWith("n.g.")) "n.g.guard" else it.key),
+                attacking = whom(it.enemies.firstOrNull()) ?: it.npcTarget?.let { k -> npcsHere.firstOrNull { n -> n.key == k }?.name })
+        }
+        val occupied = loc.exits.map { it.target }.distinct().filter { t ->
+            t != loc.id && (world.npcsIn(t).isNotEmpty() || players.values.any { it.location == t && now - it.lastSeen < ACTIVE_SECONDS })
+        }.toSet()
         val location = loc.view().copy(
+            exits = loc.exits.map { it.copy(occupied = it.target in occupied) },
             npcs = npcs,
             items = world.itemsAt(loc.id, now),
             players = others,
@@ -1095,6 +1146,7 @@ class Game(
             str = p.str, dex = p.dex, int = p.int, skillPoints = p.points,
             skills = p.other.filterValues { it > 0 }.toSortedMap(), known = p.known.sorted(),
             crime = p.crime.takeIf { p.criminal(now) }, crimeMinutes = if (p.criminal(now)) (p.crimeUntil - now + 59) / 60 else 0,
+            poisoned = now < p.poisonUntil,
             ghost = p.ghost, exp = p.exp, expNext = Formulas.expThreshold(p.skills()),
             hit = s.hit, dmgMin = s.dmgMin, dmgMax = s.dmgMax, armor = s.armor, dodge = s.dodge,
         )
@@ -1107,7 +1159,13 @@ class Game(
             castle = castleView(p),
             unread = unreadCount(p),
             clanInvites = clanInvites(p),
-            people = here.map { q -> PersonView(q.name, q.clanName, q.ghost, q.crime.takeIf { q.criminal(now) }) },
+            people = here.map { q ->
+                PersonView(q.name, q.clanName, q.ghost, q.crime.takeIf { q.criminal(now) },
+                    hpPercent = if (!q.ghost && q.hp < q.hpMax) q.hp.coerceAtLeast(0) * 100 / q.hpMax else null,
+                    attacking = if (q.ghost) null else attackingOf(q.attackTarget),
+                    faction = if (Law.wolfIsland(loc.id) && (Regex("x(\\d+)$").find(loc.id)?.groupValues?.get(1)?.toIntOrNull() ?: 0) <= 1370)
+                        when (q.faction) { "t" -> "тамплиер"; "p" -> "пират"; else -> null } else null)
+            },
             clan = p.clanName,
             abilities = abilities(p, now),
             stance = p.stance?.takeIf { now < it.until }?.let { "${it.name} (${(it.until - now + 59) / 60} мин)" },
