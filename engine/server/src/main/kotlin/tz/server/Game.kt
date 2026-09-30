@@ -89,7 +89,7 @@ class Game(
         /** Last thing said, to refuse repeats (f_say.dat:65). */
         var lastSaid: String? = null
         /** Statistics, the old `st` string (Skills.kt, Stat). */
-        val stats = IntArray(Stat.SIZE)
+        val statistics = IntArray(Stat.SIZE)
         /** Whose backpack was peeked into, till when stealing from it is allowed, and the list to show once. */
         var peekTarget: String? = null
         var peekUntil = 0L
@@ -1063,7 +1063,7 @@ class Game(
                             (v as? kotlinx.serialization.json.JsonPrimitive)?.intOrNull?.let { p.other[k] = it }
                         }
                         (kotlinx.serialization.json.Json.parseToJsonElement(rs.getString("stats")) as? kotlinx.serialization.json.JsonArray)
-                            ?.forEachIndexed { i, v -> if (i < Stat.SIZE) (v as? kotlinx.serialization.json.JsonPrimitive)?.intOrNull?.let { p.stats[i] = it } }
+                            ?.forEachIndexed { i, v -> if (i < Stat.SIZE) (v as? kotlinx.serialization.json.JsonPrimitive)?.intOrNull?.let { p.statistics[i] = it } }
                     }
                 }
             }
@@ -1116,7 +1116,7 @@ class Game(
             st.setInt(8, p.dex)
             st.setInt(9, p.int)
             st.setString(10, kotlinx.serialization.json.JsonObject(p.other.filterValues { it != 0 }.mapValues { kotlinx.serialization.json.JsonPrimitive(it.value) }).toString())
-            st.setString(11, p.stats.joinToString(",", "[", "]"))
+            st.setString(11, p.statistics.joinToString(",", "[", "]"))
             st.setLong(12, p.id)
             st.executeUpdate()
         }

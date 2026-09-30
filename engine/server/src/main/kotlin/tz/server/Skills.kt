@@ -30,7 +30,7 @@ internal object Stat {
 }
 
 internal fun Game.Player.count(stat: Int, n: Int = 1) {
-    if (stat in 0 until Stat.SIZE) stats[stat] += n
+    if (stat in 0 until Stat.SIZE) statistics[stat] += n
 }
 
 /** Level in percent of all attributes and skills (g_attr + g_skills = 62), rank and title by the best skill (f_lookuser.dat:71-116). */

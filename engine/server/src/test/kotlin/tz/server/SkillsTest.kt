@@ -66,7 +66,7 @@ class SkillsTest {
         }
         assertTrue(stolen)
         assertTrue(game.view(b).inventory.none { it.id == Rules.MONEY })
-        assertEquals(1, me(a).stats[Stat.THEFTS])
+        assertEquals(1, me(a).statistics[Stat.THEFTS])
         // Stealing without a fresh peek is always noticed: «вор».
         clock[0] += 120
         game.view(b)
@@ -118,7 +118,7 @@ class SkillsTest {
         assertTrue(v.inventory.any { it.id == Rules.STARTING_KNIFE })
         assertTrue(v.inventory.none { it.id == Game.FEATHER })
         assertTrue(v.location.corpses.none { it.name.endsWith(aName) })
-        assertEquals(1, me(a).stats[Stat.DEATHS])
+        assertEquals(1, me(a).statistics[Stat.DEATHS])
     }
 
     @Test

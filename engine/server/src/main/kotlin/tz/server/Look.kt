@@ -74,7 +74,7 @@ private suspend fun Game.lookPlayer(q: Game.Player): LookView {
     if (q.ghost) lines += "Призрак"
     lines += equipmentLines(q.equipped)
     lines += "— Статистика —"
-    for ((i, verbs) in SEX_VERBS) lines += "${if (female) verbs.second else verbs.first}: ${q.stats[i]}"
+    for ((i, verbs) in SEX_VERBS) lines += "${if (female) verbs.second else verbs.first}: ${q.statistics[i]}"
     return LookView(q.name, lines.joinToString("\n"))
 }
 
