@@ -5,6 +5,6 @@ owner from the prompt pack; one picture per key, 1280×720 WebP.
 
 - `locations/<key>.webp` — location header art (16:9, name goes over the dark
   bottom third). Which locations get which picture: `locations.json` (first
-  matching rule on the location name wins; `fallback` covers keys not drawn yet).
+  matching rule on the location name wins; `fallback` covers keys whose picture is missing — empty now, all 34 drawn).
 
 Game icons elsewhere in the apps: game-icons.net, CC BY 3.0.
