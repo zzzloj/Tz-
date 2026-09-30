@@ -228,7 +228,7 @@ internal suspend fun Game.societyHandler(p: Game.Player, a: JsonObject, arg: Str
  * online; kill him and come back for 1000 coins, thief's gloves and 100 experience.
  */
 private suspend fun Game.thievesContract(p: Game.Player, now: Long): String {
-    fun world(key: String) = db.tx { c ->
+    suspend fun readWorld(key: String) = db.tx { c ->
         c.prepareStatement("SELECT value FROM world_state WHERE key = ? AND (until IS NULL OR until > ?)").use { st ->
             st.setString(1, key); st.setLong(2, now); st.executeQuery().use { rs -> if (rs.next()) rs.getString(1) else null }
         }
@@ -239,7 +239,7 @@ private suspend fun Game.thievesContract(p: Game.Player, now: Long): String {
             st.setString(1, key); st.setString(2, value); if (until == null) st.setNull(3, java.sql.Types.BIGINT) else st.setLong(3, until); st.executeUpdate()
         }
     }
-    var target = world("thieves.target")
+    var target = readWorld("thieves.target")
     val killed = stateOf(p.id, "pk")
     var prefix = ""
     if (target != null && killed == target && target != p.name) {
@@ -259,7 +259,7 @@ private suspend fun Game.thievesContract(p: Game.Player, now: Long): String {
             setWorld("thieves.target", null, null)
             return prefix + "Сожалею, слишком мало игроков онлайн, нужно как минимум ${Society.THIEVES_MIN_ONLINE} человек."
         }
-        val next = world("thieves.next")
+        val next = readWorld("thieves.next")
         if (next != null) return prefix + "Извини, сейчас нет заказов."
         val pick = online.filter { it.id != p.id }.randomOrNull(rnd) ?: return prefix + "Извини, сейчас нет заказов."
         target = pick.name
