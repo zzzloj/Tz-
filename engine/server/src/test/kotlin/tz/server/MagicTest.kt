@@ -155,6 +155,7 @@ class MagicTest {
         repeat(20) {
             if (stunned) return@repeat
             clock[0] += 901
+            game.view(b)   // still online
             me(b).hp = me(b).hpMax
             me(a).hp = me(a).hpMax
             v = game.technique(a, "p.n", bName)

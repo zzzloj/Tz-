@@ -41,6 +41,8 @@ import tz.shared.CraftOptionView
 import tz.shared.ClanView
 import tz.shared.MessagesView
 import tz.shared.PersonView
+import tz.shared.AbilityView
+import tz.shared.Targets
 import tz.shared.ShopItemView
 import tz.shared.DialogOption
 import tz.shared.Rules
@@ -125,7 +127,11 @@ fun App(session: Session, live: Boolean = true) {
                     useOn = { target -> run { session.useOn(target) } },
                     cancelUse = { session.cancelUse(); version++ },
                     craft = { option -> run { session.craft(option) } },
+                    useAbility = { a -> run { session.useAbility(a) } },
+                    aimAbility = { t -> run { session.aimAbility(t) } },
+                    cancelAbility = { session.cancelAbility(); version++ },
                 ),
+                pendingAbility = session.pendingAbility,
                 social = SocialActions(
                     answerText = { t -> run { session.answerText(t) } },
                     say = { t, clan -> run { session.say(t, clan) } },
@@ -206,6 +212,7 @@ fun Playing(
     onRefresh: () -> Unit,
     onSignOut: () -> Unit,
     pending: InventoryItemView? = null,
+    pendingAbility: AbilityView? = null,
     more: MoreActions = MoreActions(),
     social: SocialActions = SocialActions(),
     mail: MessagesView? = null,
@@ -314,10 +321,31 @@ fun Playing(
     }
     pending?.let { p ->
         Panel("Применить «${p.name}» к…", more.cancelUse) {
-            if (p.target == "player") game.people.forEach { person ->
-                TextButton(onClick = { more.useOn(person.name) }, enabled = !busy) { Text(person.name + if (person.ghost) " (призрак)" else "") }
-            } else game.inventory.filter { it.id != p.id }.forEach { item ->
-                TextButton(onClick = { more.useOn(item.id) }, enabled = !busy) { Text(item.name) }
+            val choices = Targets.choices(p.target, game, exceptItem = p.id)
+            if (choices.isEmpty()) Text("здесь не на кого", style = small)
+            choices.forEach { t -> TextButton(onClick = { more.useOn(t.value) }, enabled = !busy) { Text(t.label) } }
+        }
+    }
+    pendingAbility?.let { a ->
+        Panel("«${a.name}» — на кого?", more.cancelAbility) {
+            val choices = Targets.choices(a.target, game)
+            if (choices.isEmpty()) Text("здесь не на кого", style = small)
+            choices.forEach { t -> TextButton(onClick = { more.aimAbility(t.value) }, enabled = !busy) { Text(t.label) } }
+        }
+    }
+    game.stance?.let { Text("Стойка: $it", style = MaterialTheme.typography.labelMedium) }
+    if (game.abilities.isNotEmpty() && !c.ghost) {
+        var open by remember { mutableStateOf(false) }
+        TextButton(onClick = { open = !open }) { Text(if (open) "Магия и приёмы ▲" else "Магия и приёмы ▼") }
+        if (open) game.abilities.forEach { a ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    a.name + (if (a.manaCost > 0) " · мана ${a.manaCost}" else "") +
+                        (if (a.readyIn > 0) " · через ${(a.readyIn + 59) / 60} мин" else "") + (if (a.later) " · позже" else ""),
+                    Modifier.weight(1f), style = small,
+                )
+                val verb = when (a.kind) { "spell" -> "читать"; "stance" -> "встать"; else -> "ударить" }
+                TextButton(onClick = { more.useAbility(a) }, enabled = !busy && a.readyIn == 0L && !a.later) { Text(verb) }
             }
         }
     }
@@ -516,6 +544,9 @@ class MoreActions(
     val useOn: (String) -> Unit = {},
     val cancelUse: () -> Unit = {},
     val craft: (CraftOptionView) -> Unit = {},
+    val useAbility: (AbilityView) -> Unit = {},
+    val aimAbility: (String) -> Unit = {},
+    val cancelAbility: () -> Unit = {},
 )
 
 @Composable

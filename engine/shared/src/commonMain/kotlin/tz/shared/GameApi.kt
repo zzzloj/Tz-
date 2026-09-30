@@ -115,6 +115,14 @@ class GameApi(
     suspend fun use(item: String, recipe: Int? = null, target: String? = null): GameView =
         postJson<GameView, UseRequest>("/api/game/use", UseRequest(item, recipe, target))
 
+    /** Casts a spell from the book at [target] (an NPC id, a character's name or an item id). */
+    suspend fun cast(spell: String, target: String? = null): GameView =
+        postJson<GameView, CastRequest>("/api/game/cast", CastRequest(spell, target))
+
+    /** Uses a technique at [target], or takes a stance (no target). */
+    suspend fun technique(id: String, target: String? = null): GameView =
+        postJson<GameView, TechniqueRequest>("/api/game/technique", TechniqueRequest(id, target))
+
     suspend fun say(text: String, channel: String): GameView =
         postJson<GameView, SayRequest>("/api/game/say", SayRequest(text, channel))
 
