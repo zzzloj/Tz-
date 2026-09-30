@@ -13,7 +13,7 @@ import kotlin.test.assertTrue
 class PetsTest {
     companion object {
         private val content by lazy { Content.load(contentDir()) }
-        private val db: Db? by lazy { System.getenv("TZ_TEST_DATABASE_URL")?.let { Db.fromUrl(it).also(Db::migrate) } }
+        private val db: Db? get() = TestDb.db
     }
 
     private class One(val game: Game, val a: Account, val name: String, val clock: LongArray)
@@ -39,15 +39,16 @@ class PetsTest {
 
     private fun One.me() = game.players.values.first { it.accountId == a.id }
 
-    /** Walks a dialog from «begin» through the options until [topic] is offered, then picks it. */
+    /** Finds a way from «begin» through the options to [topic] (breadth first, replaying from «begin»), then takes it. */
     private suspend fun One.reach(npc: String, topic: String): DialogView {
-        var d = game.talk(a, npc, "begin", null).dialog!!
+        val queue = ArrayDeque(listOf(emptyList<Pair<String, String?>>()))
         val seen = HashSet<String>()
-        repeat(6) {
+        while (queue.isNotEmpty()) {
+            val path = queue.removeFirst()
+            var d = game.talk(a, npc, "begin", null).dialog!!
+            for ((t, arg) in path) d = game.talk(a, npc, t, arg).dialog!!
             d.options.firstOrNull { it.topic == topic }?.let { return game.talk(a, npc, it.topic, it.arg).dialog!! }
-            val next = d.options.firstOrNull { it.topic !in seen && it.topic != "end" } ?: error("no way to $topic: ${d.options}")
-            seen += next.topic
-            d = game.talk(a, npc, next.topic, next.arg).dialog!!
+            if (path.size < 4) for (o in d.options) if (o.topic != "end" && seen.add(o.topic)) queue.addLast(path + (o.topic to o.arg))
         }
         error("no way to $topic")
     }
@@ -140,7 +141,7 @@ class PetsTest {
         var zombie: World.Npc? = null
         repeat(25) {
             if (zombie != null) return@repeat
-            clock[0] += 11
+            clock[0] += 20
             me().mana = me().manaMax
             game.skill(a, "necro", corpse.id, null)
             zombie = game.world.npcsIn(me().location).firstOrNull { it.key.startsWith("n.z.") && it.owner?.ownerId == me().id }

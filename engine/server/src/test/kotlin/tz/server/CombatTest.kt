@@ -15,7 +15,7 @@ import kotlin.test.assertTrue
 class CombatTest {
     companion object {
         private val content by lazy { Content.load(contentDir()) }
-        private val db: Db? by lazy { System.getenv("TZ_TEST_DATABASE_URL")?.let { Db.fromUrl(it).also(Db::migrate) } }
+        private val db: Db? get() = TestDb.db
     }
 
     private val start = 1_800_000_000L

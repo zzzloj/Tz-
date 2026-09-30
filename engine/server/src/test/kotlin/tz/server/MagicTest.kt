@@ -16,7 +16,7 @@ import kotlin.test.assertTrue
 class MagicTest {
     companion object {
         private val content by lazy { Content.load(contentDir()) }
-        private val db: Db? by lazy { System.getenv("TZ_TEST_DATABASE_URL")?.let { Db.fromUrl(it).also(Db::migrate) } }
+        private val db: Db? get() = TestDb.db
     }
 
     private class Two(val game: Game, val a: Account, val b: Account, val aName: String, val bName: String, val clock: LongArray, val db: Db)
