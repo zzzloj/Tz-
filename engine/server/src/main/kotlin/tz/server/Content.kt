@@ -30,6 +30,15 @@ class Content(
     val locationData: Map<String, JsonObject> = emptyMap(),
     val dir: File = File("."),
 ) {
+    /** Site pages (content/pages/NN_id.md, first line «# Title»), in file order. */
+    val pages: List<tz.shared.PageView> by lazy {
+        (dir.resolve("pages").listFiles { f -> f.name.endsWith(".md") } ?: emptyArray()).sortedBy { it.name }.map { f ->
+            val lines = f.readText().trim().lines()
+            val title = lines.firstOrNull()?.removePrefix("#")?.trim() ?: f.name
+            tz.shared.PageView(f.name.removeSuffix(".md").substringAfter('_'), title, lines.drop(1).joinToString("\n").trim())
+        }
+    }
+
     /** Doubloon prices of the second shop (content/items_dublon, n.kenius «buy2»). */
     val dublonPrices: Map<String, JsonObject> by lazy {
         (dir.resolve("items_dublon").listFiles { f -> f.name.endsWith(".json") } ?: emptyArray())

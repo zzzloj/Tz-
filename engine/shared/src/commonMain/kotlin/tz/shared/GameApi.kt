@@ -154,6 +154,46 @@ class GameApi(
     suspend fun castle(op: String, text: String? = null): GameView =
         postJson<GameView, CastleRequest>("/api/game/castle", CastleRequest(op, text))
 
+    // ---- account, forum, pages, moderation ----
+
+    /** A new password by the recovery code; signs in like [login]. */
+    suspend fun recover(login: String, code: String, newPassword: String): AuthResponse =
+        postJson<AuthResponse, RecoverRequest>("/api/auth/recover", RecoverRequest(login, code, newPassword)).also { token = it.token }
+
+    suspend fun account(): AccountView = check(http.get(url("/api/account")) { auth() })
+
+    /** op: password, recovery, about (see AccountRequest). */
+    suspend fun account(op: String, password: String = "", newPassword: String = "", text: String = ""): AccountView =
+        postJson<AccountView, AccountRequest>("/api/account", AccountRequest(op, password, newPassword, text))
+
+    /** Deletes the account and character for good. */
+    suspend fun deleteAccount(password: String) {
+        val r = http.post(url("/api/account")) {
+            auth()
+            contentType(ContentType.Application.Json)
+            setBody(AccountRequest("delete", password))
+        }
+        if (!r.status.isSuccess()) check<ErrorResponse>(r)
+        token = null
+    }
+
+    suspend fun forum(): ForumView = check(http.get(url("/api/forum")) { auth() })
+
+    suspend fun forumSection(id: Int, page: Int = 0): ForumView = check(http.get(url("/api/forum/section/$id?page=$page")) { auth() })
+
+    /** [page] -1 — the last page. */
+    suspend fun forumTopic(id: Long, page: Int = 0): ForumView = check(http.get(url("/api/forum/topic/$id?page=$page")) { auth() })
+
+    suspend fun forum(request: ForumRequest): ForumView = postJson<ForumView, ForumRequest>("/api/forum", request)
+
+    suspend fun pages(): List<PageSummary> = check(http.get(url("/api/pages")))
+
+    suspend fun page(id: String): PageView = check(http.get(url("/api/pages/$id")))
+
+    suspend fun admin(): AdminView = check(http.get(url("/api/admin")) { auth() })
+
+    suspend fun admin(request: AdminRequest): AdminView = postJson<AdminView, AdminRequest>("/api/admin", request)
+
     suspend fun resurrect(): GameView = check(http.post(url("/api/game/resurrect")) { auth() })
 
     /**

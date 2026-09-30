@@ -1,6 +1,5 @@
 package tz.android
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -59,21 +58,11 @@ import tz.shared.InventoryItemView
 import tz.shared.NpcView
 import tz.shared.Screen
 import tz.shared.Session
-import tz.shared.TokenStore
-
-/** Session token in the app's private storage. TODO: Android Keystore before release. */
-class PrefsTokens(context: Context) : TokenStore {
-    private val prefs = context.getSharedPreferences("session", Context.MODE_PRIVATE)
-    override fun load(): String? = prefs.getString("token", null)
-    override fun save(token: String?) {
-        prefs.edit().apply { if (token == null) remove("token") else putString("token", token) }.apply()
-    }
-}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val session = Session(GameApi(BuildConfig.SERVER_URL), PrefsTokens(applicationContext))
+        val session = Session(GameApi(BuildConfig.SERVER_URL), KeystoreTokens(applicationContext))
         setContent {
             MaterialTheme {
                 Surface(Modifier.fillMaxSize()) { App(session) }
@@ -100,15 +89,68 @@ fun App(session: Session, live: Boolean = true) {
     val tick = version
     val game = session.game
     val busy = session.busy
+    val site = SiteActions(
+        closeAccount = { session.closeAccount(); version++ },
+        changePassword = { o, n -> run { session.changePassword(o, n) } },
+        makeRecovery = { p -> run { session.makeRecoveryCode(p) } },
+        setAbout = { t -> run { session.setAbout(t) } },
+        deleteAccount = { p -> run { session.deleteAccount(p) } },
+        openSection = { s -> run { session.openSection(s) } },
+        openTopic = { t -> run { session.openTopic(t) } },
+        forumPage = { n -> run { session.forumPage(n) } },
+        forumBack = { run { session.forumBack() } },
+        closeForum = { session.closeForum(); version++ },
+        newTopic = { t, x -> run { session.startTopic(t, x) } },
+        reply = { x -> run { session.reply(x) } },
+        editPost = { p, x -> run { session.editPost(p, x) } },
+        moderateTopic = { op -> run { session.moderateTopic(op) } },
+        renameTopic = { t -> run { session.renameTopic(t) } },
+        deletePost = { p -> run { session.deletePost(p) } },
+        openPage = { p -> run { session.openPage(p) } },
+        closePage = { session.closePage(); version++ },
+        closePages = { session.closePages(); version++ },
+        adminOp = { op, target, text, item, count, minutes -> run { session.adminOp(op, target, text, item, count, minutes) } },
+        closeAdmin = { session.closeAdmin(); version++ },
+    )
+    var recovering by remember { mutableStateOf(false) }
+    val account = session.account
+    val admin = session.admin
+    val forum = session.forum
+    val pages = session.pages
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        when (session.screen) {
+        when {
+            account != null -> AccountPanel(account, session.info, busy, site)
+            admin != null -> AdminPanel(admin, busy, site)
+            forum != null -> ForumPanel(forum, busy, site)
+            pages != null -> PagesPanel(pages, session.page, busy, site)
+            else -> Unit
+        }
+        if (account == null && admin == null && forum == null && pages == null) when (session.screen) {
             Screen.LOADING -> if (session.error != null) Button(onClick = { run { session.refresh() } }) { Text("Повторить") }
-            Screen.SIGN_IN -> SignIn(busy, onSignIn = { l, p -> run { session.signIn(l, p) } }, onRegister = { l, p -> run { session.register(l, p) } })
+            Screen.SIGN_IN -> if (recovering) RecoverForm(
+                busy,
+                onRecover = { l, c, p -> run { session.recover(l, c, p); if (session.error == null) recovering = false } },
+                onCancel = { recovering = false },
+            ) else {
+                SignIn(busy, onSignIn = { l, p -> run { session.signIn(l, p) } }, onRegister = { l, p -> run { session.register(l, p) } })
+                Row {
+                    TextButton(onClick = { recovering = true }) { Text("Забыли пароль?") }
+                    TextButton(onClick = { run { session.openForum() } }, enabled = !busy) { Text("Форум") }
+                    TextButton(onClick = { run { session.openPages() } }, enabled = !busy) { Text("Об игре") }
+                }
+            }
             Screen.CREATE_CHARACTER -> CreateCharacter(busy) { name, female -> run { session.createCharacter(name, female) } }
-            Screen.PLAYING -> if (game != null) Playing(
+            Screen.PLAYING -> if (game != null) {
+                Row {
+                    TextButton(onClick = { run { session.openForum() } }, enabled = !busy) { Text("Форум") }
+                    TextButton(onClick = { run { session.openPages() } }, enabled = !busy) { Text("Помощь") }
+                    TextButton(onClick = { run { session.openAccount() } }, enabled = !busy) { Text("Аккаунт") }
+                    if (session.moderator) TextButton(onClick = { run { session.openAdmin() } }, enabled = !busy) { Text("Модерация") }
+                }
+                Playing(
                 game,
                 busy,
                 tick,
@@ -153,6 +195,7 @@ fun App(session: Session, live: Boolean = true) {
                     closeMap = { session.closeMap(); version++ },
                     stele = { run { session.stele() } },
                     dropFlag = { run { session.dropFlag() } },
+                    openSite = { page -> run { if (page == "news") session.openNews() else session.openPages() } },
                 ),
                 pendingAbility = session.pendingAbility,
                 social = SocialActions(
@@ -184,7 +227,9 @@ fun App(session: Session, live: Boolean = true) {
                 onRefresh = { run { session.refresh() } },
                 onSignOut = { run { session.signOut() } },
             )
+            }
         }
+        if (account == null) session.info?.let { Text(it, color = MaterialTheme.colorScheme.primary) }
         session.error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
         if (busy) CircularProgressIndicator()
     }
@@ -413,7 +458,10 @@ fun Playing(
         }
     }
     game.look?.let { l ->
-        Panel(l.title, more.closeLook) { Text(l.text, style = small) }
+        Panel(l.title, more.closeLook) {
+            Text(l.text, style = small)
+            l.page?.let { pg -> TextButton(onClick = { more.openSite(pg) }, enabled = !busy) { Text(if (pg == "news") "Все новости" else "Выбрать книгу") } }
+        }
     }
     game.peek?.let { pk ->
         Panel("Рюкзак: ${pk.targetName}", more.closePeek) {
@@ -722,6 +770,8 @@ class MoreActions(
     val closeMap: () -> Unit = {},
     val stele: () -> Unit = {},
     val dropFlag: () -> Unit = {},
+    /** A notice board or bookshelf: "news" or "pages". */
+    val openSite: (String) -> Unit = {},
 )
 
 @Composable

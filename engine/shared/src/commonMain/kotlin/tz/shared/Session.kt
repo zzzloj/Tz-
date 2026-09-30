@@ -33,6 +33,13 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
         private set
     var login: String? = null
         private set
+    /** player, moder or admin: moderators see the moderation panel. */
+    var role: String = "player"
+        private set
+    val moderator get() = role == "moder" || role == "admin"
+    /** A short «done» line after an account action (password changed…); null otherwise. */
+    var info: String? = null
+        private set
     /** Text to show to the player, in Russian; null when the last action succeeded. */
     var error: String? = null
         private set
@@ -56,6 +63,14 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
     suspend fun signIn(login: String, password: String) = action {
         tokens.save(api.login(login.trim().lowercase(), password).token)
         enter()
+    }
+
+    /** Forgot the password: a new one by the recovery code. */
+    suspend fun recover(login: String, code: String, newPassword: String) = action {
+        if (newPassword.length < Rules.PASSWORD_MIN) throw ApiError(Errors.WEAK_PASSWORD)
+        tokens.save(api.recover(login.trim().lowercase(), code.trim(), newPassword).token)
+        enter()
+        info = "Пароль изменён"
     }
 
     suspend fun createCharacter(name: String, female: Boolean) = action {
@@ -315,6 +330,129 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
         }
     }
 
+    // ---- account ----
+    /** The account page while it is open. */
+    var account: AccountView? = null
+        private set
+
+    suspend fun openAccount() = action { account = api.account() }
+
+    fun closeAccount() { account = null; info = null }
+
+    suspend fun changePassword(old: String, newPassword: String) = action {
+        if (newPassword.length < Rules.PASSWORD_MIN) throw ApiError(Errors.WEAK_PASSWORD)
+        account = api.account("password", old, newPassword)
+        info = "Пароль изменён. На других устройствах нужно войти заново."
+    }
+
+    /** A new recovery code: shown in account.recoveryCode until the page is closed. */
+    suspend fun makeRecoveryCode(password: String) = action {
+        account = api.account("recovery", password)
+        info = "Запишите код и храните его в надёжном месте: он показывается один раз."
+    }
+
+    suspend fun setAbout(text: String) = action {
+        account = api.account("about", text = text)
+        info = "Сохранено"
+    }
+
+    /** Deletes the account for good and goes back to the sign-in screen. */
+    suspend fun deleteAccount(password: String) = action {
+        api.deleteAccount(password)
+        account = null
+        forget()
+    }
+
+    // ---- forum ----
+    /** What is open in the forum: sections, a section's topics, or a topic's posts. */
+    var forum: ForumView? = null
+        private set
+
+    suspend fun openForum() = action { forum = api.forum() }
+
+    /** The news section (a notice board in town points here). */
+    suspend fun openNews() = action {
+        val all = api.forum()
+        forum = all.sections.firstOrNull { it.staffOnly }?.let { api.forumSection(it.id) } ?: all
+    }
+
+    suspend fun openSection(section: ForumSection, page: Int = 0) = action { forum = api.forumSection(section.id, page) }
+
+    suspend fun openTopic(topic: ForumTopic, page: Int = 0) = action { forum = api.forumTopic(topic.id, page) }
+
+    /** Another page of the open section or topic. */
+    suspend fun forumPage(page: Int) = action {
+        val f = forum ?: return@action
+        forum = f.topic?.let { api.forumTopic(it.id, page) } ?: f.section?.let { api.forumSection(it.id, page) } ?: f
+    }
+
+    /** Up one level: topic → section → sections → closed. */
+    suspend fun forumBack() {
+        val f = forum ?: return
+        when {
+            f.topic != null && f.section != null -> action { forum = api.forumSection(f.section.id) }
+            f.section != null -> action { forum = api.forum() }
+            else -> forum = null
+        }
+    }
+
+    fun closeForum() { forum = null }
+
+    suspend fun startTopic(title: String, text: String) = action {
+        val s = forum?.section ?: return@action
+        forum = api.forum(ForumRequest("topic", section = s.id, title = title.trim(), text = text.trim()))
+    }
+
+    suspend fun reply(text: String) = action {
+        val t = forum?.topic ?: return@action
+        if (text.isNotBlank()) forum = api.forum(ForumRequest("post", topic = t.id, text = text.trim()))
+    }
+
+    suspend fun editPost(post: ForumPost, text: String) = action {
+        forum = api.forum(ForumRequest("edit", post = post.id, text = text.trim()))
+    }
+
+    /** Moderators: close, open, pin, unpin or delete the open topic. */
+    suspend fun moderateTopic(op: String) = action {
+        val t = forum?.topic ?: return@action
+        forum = api.forum(ForumRequest(op, topic = t.id))
+    }
+
+    suspend fun renameTopic(title: String) = action {
+        val t = forum?.topic ?: return@action
+        forum = api.forum(ForumRequest("rename", topic = t.id, title = title.trim()))
+    }
+
+    suspend fun deletePost(post: ForumPost) = action { forum = api.forum(ForumRequest("delete", post = post.id)) }
+
+    // ---- pages ----
+    var pages: List<PageSummary>? = null
+        private set
+    var page: PageView? = null
+        private set
+
+    suspend fun openPages() = action { pages = api.pages() }
+
+    suspend fun openPage(summary: PageSummary) = action { page = api.page(summary.id) }
+
+    fun closePage() { page = null }
+
+    fun closePages() { pages = null; page = null }
+
+    // ---- moderation ----
+    var admin: AdminView? = null
+        private set
+
+    suspend fun openAdmin() = action { admin = api.admin() }
+
+    /** See AdminRequest: mute, unmute, kick, ban, unban, teleport, summon, broadcast, give, role. */
+    suspend fun adminOp(op: String, target: String = "", text: String = "", item: String = "", count: Int = 1, minutes: Int = 0) = action {
+        admin = api.admin(AdminRequest(op, target.trim(), text.trim(), item.trim(), count, minutes))
+        if (screen == Screen.PLAYING) game = api.game()
+    }
+
+    fun closeAdmin() { admin = null }
+
     /** Re-reads the screen: NPCs wander and other players come and go. */
     suspend fun refresh() = action { enter() }
 
@@ -325,6 +463,7 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
     private suspend fun enter() {
         val me = api.me()
         login = me.login
+        role = me.role
         if (me.character == null) {
             game = null
             screen = Screen.CREATE_CHARACTER
@@ -339,16 +478,21 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
         api.token = null
         game = null
         login = null
+        role = "player"
+        account = null
+        forum = null
+        admin = null
         screen = Screen.SIGN_IN
     }
 
     private suspend fun action(block: suspend () -> Unit) {
         busy = true
         error = null
+        info = null
         try {
             block()
         } catch (e: ApiError) {
-            if (e.code == Errors.UNAUTHORIZED) forget()
+            if (e.code == Errors.UNAUTHORIZED || e.code == Errors.BANNED) forget()
             error = e.message
             // The screen was out of date (moved elsewhere, item already gone):
             // show the real state, keeping the message.

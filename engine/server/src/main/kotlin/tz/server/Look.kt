@@ -22,10 +22,12 @@ suspend fun Game.look(account: Account, target: String): GameView = lock.withLoc
     val look = when {
         t.startsWith("n.") -> world.npc(p.location, t)?.let { lookNpc(it) }
         t.startsWith("m.") || t.startsWith("p.") && t.length > 1 -> lookAbility(p, t)
+        t == "i.s.book.news" -> noticeBoard()
+        t == "i.s.book.story" -> LookView("Книжная полка", "На полке лежат несколько книг, которые можно почитать:\n" + content.pages.joinToString("\n") { "— " + it.title }, page = "pages")
         t.startsWith("i.") -> lookItem(t)
         HELP.matches(t) -> lookHelp(t)
         else -> players.values.firstOrNull { it.location == p.location && it.name.equals(t, ignoreCase = true) && now - it.lastSeen < Game.ACTIVE_SECONDS }
-            ?.let { lookPlayer(it) }
+            ?.let { q -> lookPlayer(q).let { v -> about(q.id)?.let { v.copy(text = v.text + "\n\nО себе: " + it) } ?: v } }
     } ?: LookView("Осмотр", "Не на кого смотреть")
     viewLocked(p).copy(look = look)
 }
@@ -134,6 +136,21 @@ private fun req(o: JsonObject): List<Int> = when (val r = o["req"]) {
     is JsonArray -> r.map { (it as? JsonPrimitive)?.contentOrNull?.toIntOrNull() ?: 0 }
     is JsonPrimitive -> r.contentOrNull?.split(':')?.map { it.toIntOrNull() ?: 0 } ?: emptyList()
     else -> emptyList()
+}
+
+/** The town notice board (i.s.book.news): the latest news from the forum. */
+private suspend fun Game.noticeBoard(): LookView {
+    val news = forum.news(5)
+    val text = if (news.isEmpty()) "Новостей пока нет." else news.joinToString("\n\n") { (t, body) ->
+        Moderation.date(t.updated).substringBefore(' ') + " — " + t.title + "\n" + body.take(300) + if (body.length > 300) "…" else ""
+    }
+    return LookView("Доска объявлений", text, page = "news")
+}
+
+private suspend fun Game.about(characterId: Long): String? = db.tx { c ->
+    c.prepareStatement("SELECT about FROM characters WHERE id = ?").use { st ->
+        st.setLong(1, characterId); st.executeQuery().use { rs -> if (rs.next()) rs.getString(1).takeIf { it.isNotBlank() } else null }
+    }
 }
 
 private fun Game.lookItem(id: String): LookView {
