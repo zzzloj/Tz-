@@ -73,7 +73,7 @@ data class InventoryItemView(
     val equippable: Boolean,
     /** Food, drink, a tool or a kit: POST /api/game/use. */
     val usable: Boolean = false,
-    /** Used on something: "item" (a thing in the backpack) or "player" (a character here). */
+    /** Used on something: "item" (a thing in the backpack), "player" (a character here) or, for scrolls, an AbilityView.target. */
     val target: String? = null,
 )
 
@@ -187,7 +187,40 @@ data class GameView(
     val clan: String? = null,
     /** At or in a clan castle: owner, gate, what can be done (POST /api/game/castle). */
     val castle: CastleView? = null,
+    /** Spells and techniques learnt, with what they are aimed at and when they are ready. */
+    val abilities: List<AbilityView> = emptyList(),
+    /** The defensive stance held, "реакция (1 мин)"; null — none. */
+    val stance: String? = null,
 )
+
+/** A spell (POST /api/game/cast) or a technique or stance (POST /api/game/technique). */
+@Serializable
+data class AbilityView(
+    val id: String,
+    val name: String,
+    /** spell, technique (a special blow) or stance (a defensive stance). */
+    val kind: String,
+    val manaCost: Int = 0,
+    /**
+     * What it is aimed at: creature — an NPC or another character here;
+     * creature_self — the same or yourself; player / player_self — characters
+     * only; ghost — a ghost here; npc; rune — a teleport rune in the backpack
+     * (its item id); null — nothing. Send an NPC's id, a character's name or
+     * an item id as the target.
+     */
+    val target: String? = null,
+    /** Seconds until it can be used again. */
+    val readyIn: Long = 0,
+    val description: String = "",
+    /** Needs pets and horses, which come later: shown, but does nothing yet. */
+    val later: Boolean = false,
+)
+
+@Serializable
+data class CastRequest(val spell: String, val target: String? = null)
+
+@Serializable
+data class TechniqueRequest(val id: String, val target: String? = null)
 
 @Serializable
 data class CastleView(
@@ -383,6 +416,7 @@ object Errors {
     const val SAID_ALREADY = "said_already"
     const val NO_FIGHT_HERE = "no_fight_here"
     const val TOPIC_CLOSED = "topic_closed"
+    const val UNKNOWN_ABILITY = "unknown_ability"
 
     fun text(code: String): String = when (code) {
         UNAUTHORIZED -> "Нужно войти заново"
@@ -426,6 +460,7 @@ object Errors {
         SAID_ALREADY -> "Вы это уже говорили! Измените текст"
         NO_FIGHT_HERE -> "Здесь драться нельзя"
         TOPIC_CLOSED -> "Разговор ушёл в сторону, начните заново"
+        UNKNOWN_ABILITY -> "Вы этого не умеете: найдите учителя"
         else -> "Ошибка сервера"
     }
 }

@@ -49,7 +49,11 @@ class Content(
     fun itemName(id: String): String {
         val base = id.substringBefore('_').substringBefore('-').substringBefore("..")
         val o = items[id] ?: items[base]
-        return (o?.get("name") as? JsonPrimitive)?.contentOrNull ?: id
+        (o?.get("name") as? JsonPrimitive)?.contentOrNull?.let { return it }
+        // Teleport runes: sold empty, marked by m.mark with the place (plugin/i.rr.empty, m.mark.dat).
+        if (id == "i.rr.empty") return "руна телепортации (пустая)"
+        if (id.startsWith("i.rr.")) return "руна телепортации: " + (locations[id.removePrefix("i.rr.")]?.name ?: id.removePrefix("i.rr."))
+        return id
     }
 
     data class Location(

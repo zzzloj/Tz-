@@ -134,6 +134,28 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
 
     fun cancelUse() { pendingUse = null }
 
+    /** A spell or technique waiting for its target. */
+    var pendingAbility: AbilityView? = null
+        private set
+
+    /** Casts a spell, uses a technique or takes a stance; one that needs a target waits for [aimAbility]. */
+    suspend fun useAbility(ability: AbilityView) {
+        if (ability.target != null) { pendingAbility = ability; return }
+        act(ability, null)
+    }
+
+    suspend fun aimAbility(target: String) {
+        val a = pendingAbility ?: return
+        pendingAbility = null
+        act(a, target)
+    }
+
+    fun cancelAbility() { pendingAbility = null }
+
+    private suspend fun act(a: AbilityView, target: String?) = action {
+        game = if (a.kind == "spell") api.cast(a.id, target) else api.technique(a.id, target)
+    }
+
     /** Sends typed text to a dialog that waits for it (a clan name). */
     suspend fun answerText(text: String) = action {
         val d = game?.dialog ?: return@action

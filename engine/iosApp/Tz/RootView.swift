@@ -68,7 +68,11 @@ struct RootView: View {
                                     use: { item in model.run { try await $0.use(item: item) } },
                                     useOn: { target in model.run { try await $0.useOn(target: target) } },
                                     cancelUse: { model.run { $0.cancelUse() } },
-                                    craft: { option in model.run { try await $0.craft(option: option) } }),
+                                    craft: { option in model.run { try await $0.craft(option: option) } },
+                                    useAbility: { a in model.run { try await $0.useAbility(ability: a) } },
+                                    aimAbility: { t in model.run { try await $0.aimAbility(target: t) } },
+                                    cancelAbility: { model.run { $0.cancelAbility() } }),
+                                pendingAbility: s.pendingAbility,
                                 social: SocialActions(
                                     answerText: { t in model.run { try await $0.answerText(text: t) } },
                                     say: { t, clan in model.run { try await $0.say(text: t, clan: clan) } },
@@ -164,6 +168,7 @@ struct PlayingView: View {
     let onCloseDialog: () -> Void
     let pending: InventoryItemView?
     let more: MoreActions
+    let pendingAbility: AbilityView?
     let social: SocialActions
     let mail: MessagesView?
     let clanInfo: ClanView?
@@ -446,18 +451,13 @@ struct PlayingView: View {
         }
         if let p = pending {
             Section("Применить «\(p.name)» к…") {
-                if p.target == "player" {
-                    ForEach(game.people, id: \.name) { person in
-                        Button(person.name + (person.ghost ? " (призрак)" : "")) { more.useOn(person.name) }.disabled(busy)
-                    }
-                } else {
-                    ForEach(game.inventory.filter { $0.id != p.id }, id: \.id) { item in
-                        Button(item.name) { more.useOn(item.id) }.disabled(busy)
-                    }
+                ForEach(Targets.shared.choices(kind: p.target, game: game, exceptItem: p.id), id: \.value) { t in
+                    Button(t.label) { more.useOn(t.value) }.disabled(busy)
                 }
                 Button("отмена") { more.cancelUse() }
             }
         }
+        MagicSection(game: game, busy: busy, pending: pendingAbility, more: more)
         Section("Сказать") {
             TextField("Текст", text: $speech)
             HStack {
@@ -500,6 +500,57 @@ struct MoreActions {
     let useOn: (String) -> Void
     let cancelUse: () -> Void
     let craft: (CraftOptionView) -> Void
+    let useAbility: (AbilityView) -> Void
+    let aimAbility: (String) -> Void
+    let cancelAbility: () -> Void
+}
+
+/// Spells, techniques and stances learnt, and the «на кого?» list for one that needs a target.
+struct MagicSection: View {
+    let game: GameView
+    let busy: Bool
+    let pending: AbilityView?
+    let more: MoreActions
+
+    private func line(_ a: AbilityView) -> String {
+        var s = a.name
+        if a.manaCost > 0 { s += " · мана \(a.manaCost)" }
+        if a.readyIn > 0 { s += " · через \((a.readyIn + 59) / 60) мин" }
+        if a.later { s += " · позже" }
+        return s
+    }
+
+    private func verb(_ a: AbilityView) -> String {
+        switch a.kind {
+        case "spell": return "читать"
+        case "stance": return "встать"
+        default: return "ударить"
+        }
+    }
+
+    var body: some View {
+        if let a = pending {
+            Section("«\(a.name)» — на кого?") {
+                ForEach(Targets.shared.choices(kind: a.target, game: game, exceptItem: nil), id: \.value) { t in
+                    Button(t.label) { more.aimAbility(t.value) }.disabled(busy)
+                }
+                Button("отмена") { more.cancelAbility() }
+            }
+        }
+        if !game.abilities.isEmpty && !game.character.ghost {
+            Section("Магия и приёмы") {
+                if let stance = game.stance { Text("Стойка: \(stance)").font(.caption) }
+                ForEach(game.abilities, id: \.id) { a in
+                    HStack {
+                        Text(line(a)).font(.footnote)
+                        Spacer()
+                        Button(verb(a)) { more.useAbility(a) }
+                            .disabled(busy || a.readyIn > 0 || a.later).buttonStyle(.borderless)
+                    }
+                }
+            }
+        }
+    }
 }
 
 struct SocialActions {

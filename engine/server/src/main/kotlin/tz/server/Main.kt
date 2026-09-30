@@ -29,6 +29,8 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import tz.shared.AuthResponse
+import tz.shared.CastRequest
+import tz.shared.TechniqueRequest
 import tz.shared.Credentials
 import tz.shared.ErrorResponse
 import tz.shared.Errors
@@ -193,6 +195,16 @@ private fun Route.accountRoutes(accounts: Accounts, game: Game) {
         val account = requireAccount(call, accounts)
         val body = call.receive<UseRequest>()
         call.respond(game.use(account, body.item, body.recipe, body.target))
+    }
+    post("/api/game/cast") {
+        val account = requireAccount(call, accounts)
+        val body = call.receive<CastRequest>()
+        call.respond(game.cast(account, body.spell, body.target))
+    }
+    post("/api/game/technique") {
+        val account = requireAccount(call, accounts)
+        val body = call.receive<TechniqueRequest>()
+        call.respond(game.technique(account, body.id, body.target))
     }
     post("/api/game/say") {
         val account = requireAccount(call, accounts)
