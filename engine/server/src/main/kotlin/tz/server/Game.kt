@@ -141,7 +141,8 @@ class Game(
         val exit = here?.exits?.firstOrNull { it.target == target }
         if (exit == null || target !in content.locations)
             throw ApiException(HttpStatusCode.BadRequest, Errors.NOT_AN_EXIT)
-        Travel.locked(p.location, target) { part -> db.tx { c -> inventoryRows(c, p.id) }.any { part in it.first } }
+        val carried = db.tx { c -> inventoryRows(c, p.id) }.map { it.first }
+        Travel.locked(p.location, target) { part -> carried.any { part in it } }
             ?.let { p.log(it); return@withLock viewLocked(p) }
         castleEntry(p, p.location, target)?.let { p.log(it); return@withLock viewLocked(p) }
         // Walking away is always allowed, even mid-fight (g.php go=); the enemies here may follow (Travel.chase).
