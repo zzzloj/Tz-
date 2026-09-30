@@ -83,6 +83,17 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
 
     suspend fun meditate() = action { game = api.skill("meditation") }
 
+    /** Gallops two locations on through [exit] (ExitView.gallop). */
+    suspend fun gallop(exit: ExitView) = action { game = api.move(exit.target, gallop = true) }
+
+    suspend fun dismount() = action { game = api.skill("dismount") }
+
+    /** Tames an animal here. */
+    suspend fun tame(npc: NpcView) = action { game = api.skill("animaltaming", npc.id) }
+
+    /** Raises a monster's or animal's corpse. */
+    suspend fun raise(corpse: CorpseView) = action { game = api.skill("necro", corpse.id) }
+
     /** Peeks into [target]'s backpack (an NPC id or a character's name); what was seen comes in GameView.peek. */
     suspend fun peek(target: String) = action { game = api.skill("steal", target) }
 

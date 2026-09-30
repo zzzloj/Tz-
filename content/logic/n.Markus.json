@@ -5,30 +5,69 @@
       {
         "do": [
           {
-            "handler": "hire-mercenary"
+            "handler": "hire-mercenary",
+            "template": "n.kastle1",
+            "perPlayer": true,
+            "title": "[наемник]",
+            "for": 10800,
+            "guard": true,
+            "vanish": true
+          },
+          {
+            "take": "i.money",
+            "count": 90
           }
         ],
         "text": "{name} теперь в твоем распоряжении, <imja>. Чтобы отдать приказ или определить тактику поведения, поговори с ним."
+      },
+      {
+        "text": "Извини, <imja>, у тебя уже есть наемник воин"
       }
     ],
     "get2": [
       {
         "do": [
           {
-            "handler": "hire-mercenary"
+            "handler": "hire-mercenary",
+            "template": "n.kastle1",
+            "perPlayer": true,
+            "title": "[наемник]",
+            "for": 21600,
+            "guard": true,
+            "vanish": true
+          },
+          {
+            "take": "i.money",
+            "count": 160
           }
         ],
         "text": "{name} теперь в твоем распоряжении, <imja>. Чтобы отдать приказ или определить тактику поведения, поговори с ним."
+      },
+      {
+        "text": "Извини, <imja>, у тебя уже есть наемник воин"
       }
     ],
     "get3": [
       {
         "do": [
           {
-            "handler": "hire-mercenary"
+            "handler": "hire-mercenary",
+            "template": "n.kastle1",
+            "perPlayer": true,
+            "title": "[наемник]",
+            "for": 32400,
+            "guard": true,
+            "vanish": true
+          },
+          {
+            "take": "i.money",
+            "count": 210
           }
         ],
         "text": "{name} теперь в твоем распоряжении, <imja>. Чтобы отдать приказ или определить тактику поведения, поговори с ним."
+      },
+      {
+        "text": "Извини, <imja>, у тебя уже есть наемник воин"
       }
     ],
     "get4": [
@@ -43,13 +82,26 @@
       {
         "do": [
           {
-            "handler": "hire-mercenary"
+            "handler": "hire-mercenary",
+            "template": "n.kastle4",
+            "perPlayer": true,
+            "title": "[маг-наемник]",
+            "for": 10800,
+            "guard": true,
+            "vanish": true
+          },
+          {
+            "take": "i.money",
+            "count": 300
           },
           {
             "start": "n.Markus.qv"
           }
         ],
         "text": "{name} теперь в твоем распоряжении, <imja>. Чтобы отдать приказ или определить тактику поведения, поговори с ним."
+      },
+      {
+        "text": "Извини, <imja>, у тебя уже есть наемник маг"
       }
     ],
     "army": [

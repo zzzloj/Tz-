@@ -140,6 +140,10 @@ fun App(session: Session, live: Boolean = true) {
                     closeLook = { session.closeLook(); version++ },
                     dropOne = { i -> run { session.drop(i, 1) } },
                     takeOne = { i -> run { session.take(i, 1) } },
+                    dismount = { run { session.dismount() } },
+                    tame = { n -> run { session.tame(n) } },
+                    raise = { c -> run { session.raise(c) } },
+                    gallop = { e -> run { session.gallop(e) } },
                 ),
                 pendingAbility = session.pendingAbility,
                 social = SocialActions(
@@ -236,6 +240,10 @@ fun Playing(
     Text("${c.name} · HP ${c.hp}/${c.hpMax} · мана ${c.mana}/${c.manaMax}", style = MaterialTheme.typography.labelLarge)
     c.crime?.let { Text("Вы $it — стража ищет вас ещё ${c.crimeMinutes} мин", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.error) }
     if (c.poisoned) Text("Вы отравлены: здоровье убывает", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.error)
+    if (c.mounted) Row(verticalAlignment = Alignment.CenterVertically) {
+        Text("Вы верхом", Modifier.weight(1f), style = MaterialTheme.typography.labelMedium)
+        TextButton(onClick = more.dismount, enabled = !busy) { Text("спешиться") }
+    }
     game.choice?.let { ch ->
         Panel(ch.title, social.closeChoice) {
             ch.options.forEach { o -> TextButton(onClick = { social.choose(o) }, enabled = !busy) { Text(o.label) } }
@@ -422,12 +430,14 @@ fun Playing(
     loc.npcs.forEach { npc ->
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                npc.name + (if (npc.attackable) " · HP ${npc.hp}/${npc.hpMax}" else "") + (npc.attacking?.let { " · атакует $it" } ?: ""),
+                npc.name + (npc.owner?.let { if (npc.mine) " (ваш)" else " ($it)" } ?: "") + (if (npc.attackable) " · HP ${npc.hp}/${npc.hpMax}" else "") + (npc.attacking?.let { " · атакует $it" } ?: ""),
                 Modifier.weight(1f), style = small,
                 color = if (npc.fightingYou) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
             )
             if (npc.canTalk) TextButton(onClick = { onTalk(npc) }, enabled = !busy) { Text("говорить") }
             TextButton(onClick = { more.look(npc.id) }, enabled = !busy) { Text("?") }
+            if (!c.ghost && !npc.mine && npc.owner == null && npc.id.startsWith("n.a.") && (c.skills["animaltaming"] ?: 0) > 0)
+                TextButton(onClick = { more.tame(npc) }, enabled = !busy) { Text("приручить") }
             if (thief && !c.ghost) TextButton(onClick = { more.peek(npc.id) }, enabled = !busy) { Text("подглядеть") }
             if (npc.attackable && !c.ghost) TextButton(onClick = { onAttack(npc) }, enabled = !busy) { Text("атаковать") }
         }
@@ -436,7 +446,7 @@ fun Playing(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 person.name + (person.clan?.let { " *$it*" } ?: "") + (person.crime?.let { " [$it]" } ?: "") +
-                    (person.faction?.let { " $it" } ?: "") + (person.hpPercent?.let { " $it%" } ?: "") +
+                    (person.faction?.let { " $it" } ?: "") + (person.hpPercent?.let { " $it%" } ?: "") + (if (person.rider) " (всадник)" else "") +
                     (person.attacking?.let { " · атакует $it" } ?: "") + if (person.ghost) " (призрак)" else "",
                 Modifier.weight(1f), style = small,
                 color = if (person.crime != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
@@ -461,6 +471,7 @@ fun Playing(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(corpse.name, Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
             if (corpse.canButcher && !c.ghost) TextButton(onClick = { onButcher(corpse) }, enabled = !busy) { Text("разделать") }
+            if (corpse.canRaise && !c.ghost && (c.skills["necro"] ?: 0) > 0) TextButton(onClick = { more.raise(corpse) }, enabled = !busy) { Text("поднять") }
         }
         if (corpse.looting && corpse.items.isNotEmpty()) Text("  взять отсюда — мародёрство", style = small, color = MaterialTheme.colorScheme.error)
         corpse.items.forEach { item ->
@@ -471,7 +482,10 @@ fun Playing(
         }
     }
     loc.exits.forEach { exit ->
-        OutlinedButton(onClick = { onGo(exit) }, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text(exit.label + if (exit.occupied) " !" else "") }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            OutlinedButton(onClick = { onGo(exit) }, enabled = !busy, modifier = Modifier.weight(1f)) { Text(exit.label + if (exit.occupied) " !" else "") }
+            if (exit.gallop) TextButton(onClick = { more.gallop(exit) }, enabled = !busy) { Text("галопом") }
+        }
     }
     TextButton(onClick = onRefresh, enabled = !busy) { Text("осмотреться") }
 
@@ -610,6 +624,10 @@ class MoreActions(
     val closeLook: () -> Unit = {},
     val dropOne: (InventoryItemView) -> Unit = {},
     val takeOne: (GroundItemView) -> Unit = {},
+    val dismount: () -> Unit = {},
+    val tame: (NpcView) -> Unit = {},
+    val raise: (CorpseView) -> Unit = {},
+    val gallop: (ExitView) -> Unit = {},
 )
 
 @Composable

@@ -224,12 +224,14 @@ class Dialogs(private val content: Content, dir: File) {
         val HANDLERS = setOf("arena-count", "hide-item-random", "repair-boat", "lower-int", "npc-hand-over", "require-pk",
             "clan-status", "clan-leave", "clan-name-input", "clan-create", "clan-restore",
             "castle-keeper-access", "castle-rune-list", "castle-contract", "castle-teleport",
-            "arena-enter", "bounty-list", "bounty-form", "bounty-place", "bounty-claim")
+            "arena-enter", "bounty-list", "bounty-form", "bounty-place", "bounty-claim",
+            "hire-mercenary", "buy-pet", "pet-owned-here", "pet-free", "sell-pet", "pet-return", "marten-unicorn", "sacrifice-pet",
+            "hire-fairy", "kasten-squad", "escort")
 
         /** A handler action the server can run; mercenaries only as castle guards so far (n.o.*). */
         fun supported(a: JsonObject): Boolean {
             val h = a.str("handler") ?: return true
-            return h in HANDLERS || (h == "hire-mercenary" && a.str("template")?.startsWith("n.o.") == true)
+            return h in HANDLERS
         }
 
         /** Old texts are WML: line breaks as <br/>, occasional tags. The apps show plain text. */

@@ -5,7 +5,28 @@
       {
         "do": [
           {
-            "handler": "buy-pet"
+            "handler": "pet-owned-here",
+            "npcs": [
+              "n.a.dog",
+              "n.a.b.sok",
+              "n.a.cow",
+              "n.a.pig",
+              "n.a.losh"
+            ]
+          }
+        ],
+        "text": "Извини, <imja>, у тебя уже есть купленное здесь животное"
+      },
+      {
+        "do": [
+          {
+            "take": "i.money",
+            "count": 100
+          },
+          {
+            "handler": "buy-pet",
+            "template": "n.a.dog",
+            "guard": true
           }
         ],
         "text": "Поздравляю, у тебя, <imja>, теперь есть собственная собака!"
@@ -15,7 +36,28 @@
       {
         "do": [
           {
-            "handler": "buy-pet"
+            "handler": "pet-owned-here",
+            "npcs": [
+              "n.a.dog",
+              "n.a.b.sok",
+              "n.a.cow",
+              "n.a.pig",
+              "n.a.losh"
+            ]
+          }
+        ],
+        "text": "Извини, <imja>, у тебя уже есть купленное здесь животное"
+      },
+      {
+        "do": [
+          {
+            "take": "i.money",
+            "count": 80
+          },
+          {
+            "handler": "buy-pet",
+            "template": "n.a.b.sok",
+            "guard": true
           }
         ],
         "text": "Поздравляю, у тебя, <imja>, теперь есть собственный сокол!"
@@ -25,7 +67,28 @@
       {
         "do": [
           {
-            "handler": "buy-pet"
+            "handler": "pet-owned-here",
+            "npcs": [
+              "n.a.dog",
+              "n.a.b.sok",
+              "n.a.cow",
+              "n.a.pig",
+              "n.a.losh"
+            ]
+          }
+        ],
+        "text": "Извини, <imja>, у тебя уже есть купленное здесь животное"
+      },
+      {
+        "do": [
+          {
+            "take": "i.money",
+            "count": 90
+          },
+          {
+            "handler": "buy-pet",
+            "template": "n.a.losh",
+            "guard": false
           }
         ],
         "text": "Поздравляю, у тебя, <imja>, теперь есть собственная лошадь! Учти, что она тебя защищать не будет, пока ты ей об этом не скажешь."
@@ -35,7 +98,28 @@
       {
         "do": [
           {
-            "handler": "buy-pet"
+            "handler": "pet-owned-here",
+            "npcs": [
+              "n.a.dog",
+              "n.a.b.sok",
+              "n.a.cow",
+              "n.a.pig",
+              "n.a.losh"
+            ]
+          }
+        ],
+        "text": "Извини, <imja>, у тебя уже есть купленное здесь животное"
+      },
+      {
+        "do": [
+          {
+            "take": "i.money",
+            "count": 70
+          },
+          {
+            "handler": "buy-pet",
+            "template": "n.a.cow",
+            "guard": false
           }
         ],
         "text": "Поздравляю, у тебя, <imja>, теперь есть собственная корова! Учти, что она тебя защищать не будет, пока ты ей об этом не скажешь."
@@ -45,7 +129,28 @@
       {
         "do": [
           {
-            "handler": "buy-pet"
+            "handler": "pet-owned-here",
+            "npcs": [
+              "n.a.dog",
+              "n.a.b.sok",
+              "n.a.cow",
+              "n.a.pig",
+              "n.a.losh"
+            ]
+          }
+        ],
+        "text": "Извини, <imja>, у тебя уже есть купленное здесь животное"
+      },
+      {
+        "do": [
+          {
+            "take": "i.money",
+            "count": 70
+          },
+          {
+            "handler": "buy-pet",
+            "template": "n.a.pig",
+            "guard": false
           }
         ],
         "text": "Поздравляю, у тебя, <imja>, теперь есть собственная свинья! Учти, что она тебя защищать не будет, пока ты ей об этом не скажешь."

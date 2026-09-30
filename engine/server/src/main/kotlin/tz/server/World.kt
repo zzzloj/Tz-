@@ -58,8 +58,14 @@ class World(
         /** Items it carries; they fall into its corpse. */
         val items: MutableMap<String, Int>,
     ) {
-        val name get() = proto.name
+        /** A name given by the owner (f_speakowner.dat «Изменить имя»), shown after the kind. */
+        var customName: String? = null
+        val name get() = customName?.let { "${proto.name} $it" } ?: proto.name
         val stats get() = proto.stats
+        /** Whose it is: a pet, a horse, a mercenary, a summoned creature (Pets.kt); null — nobody's. */
+        var owner: Owner? = null
+        /** A criminal NPC (a summoned demon) attacks players like a monster. */
+        var criminal = false
         val trail = ArrayDeque<String>()
         /**
          * Characters this NPC fights: everyone who struck it (and, for a monster,
@@ -82,6 +88,28 @@ class World(
         val aggressive get() = key.startsWith("n.c.")
     }
 
+    /**
+     * The old `owner` string (docs/data-fields.md §3.5): who owns it, whom it
+     * follows and guards (character id; [guardNpc] — an NPC key), when it
+     * leaves (0 — never), whether it then vanishes, when it leaves for lack
+     * of walks (1 hour), where it goes home; [flag]: an escort sets this
+     * player flag once out of the dungeon (Y < [flagBelowY]).
+     */
+    class Owner(
+        val ownerId: Long,
+        var follow: Long?,
+        var guard: Long?,
+        var until: Long,
+        val vanish: Boolean,
+        var idleUntil: Long,
+        val home: String? = null,
+        var flag: String? = null,
+        val flagBelowY: Int = 0,
+    ) {
+        var guardNpc: String? = null
+        var healAt = 0L
+    }
+
     class GroundItem(val id: String, val name: String, var count: Int, var expiresAt: Long)
 
     class Corpse(
@@ -96,7 +124,10 @@ class World(
         val free: Boolean = true,
         /** Clan of the dead character: clanmates may take without looting. */
         val clanId: Long? = null,
-    )
+    ) {
+        /** Template of a dead NPC: a necromancer raises it (f_necro.dat). */
+        var template: String? = null
+    }
 
     private sealed interface Timer {
         val location: String
@@ -333,7 +364,7 @@ class World(
             is ItemSpawn -> spawnItem(t, now)
         }
         val moving = npcs.values.flatMap { it.values }
-            .filter { it.proto.wander != null && it.enemies.isEmpty() && it.nextMoveAt <= now }
+            .filter { it.proto.wander != null && it.owner == null && it.enemies.isEmpty() && it.nextMoveAt <= now }
         for (npc in moving) wanderStep(npc, now)
         for (list in npcs.values) list.values.removeAll { it.expiresAt != 0L && it.expiresAt <= now }
         for (items in ground.values) items.values.removeAll { it.expiresAt != 0L && it.expiresAt <= now }
@@ -410,6 +441,9 @@ class World(
         npcs[npc.location]?.remove(npc.key)
         val free = npc.key.startsWith("n.c.") || npc.key.startsWith("n.a.") || CastleRules.inside(npc.location)
         val corpse = addCorpseLocked(npc.location, "труп: ${npc.name}", npc.items, npc.proto.butcher, now, null, free)
+        // Zombies and summoned creatures do not rise again.
+        if (!npc.key.startsWith("n.z.") && !npc.key.startsWith("n.s.")) corpse.template = npc.proto.template
+        npc.owner = null
         npc.proto.respawn?.let { r ->
             timers += (now + random.nextInt(r.min, r.max + 1)) to NpcSpawn(r.location, npc.key, "", npc.proto.wander, npc.proto)
         }
@@ -451,6 +485,7 @@ class World(
                 c.items.map { (id, n) -> GroundItemView(id, content.itemName(id), n, takeable = true) },
                 canButcher = c.butcher.isNotEmpty(),
                 looting = !c.free && c.playerId != looter && (c.clanId == null || c.clanId != looterClan),
+                canRaise = c.template?.let { it.startsWith("n.c.") || it.startsWith("n.a.") } == true,
             )
         } ?: emptyList()
     }
@@ -521,10 +556,30 @@ class World(
     suspend fun spawnProto(key: String, proto: Proto, loc: String, now: Long, lifetime: Long): Npc = mutex.withLock {
         val npc = Npc(key, proto, proto.hpMax, loc, loc, Long.MAX_VALUE, HashMap(proto.items))
         npc.regenFrom = now
-        npc.expiresAt = now + lifetime
+        if (lifetime > 0) npc.expiresAt = now + lifetime
         addNpc(npc)
         npc
     }
+
+    /** An NPC's template as a proto, without wandering and respawn (pets, mercenaries, zombies). */
+    suspend fun proto(template: String): Proto? = mutex.withLock { protoOf(template, null, null) }
+
+    /**
+     * Takes an NPC out of the world (a pet given back, a sheep sacrificed); it
+     * comes back at [respawnAt] after min..max seconds, or by its own respawn.
+     */
+    suspend fun despawn(npc: Npc, now: Long, respawnAt: String? = null, min: Int = 0, max: Int = 0) = mutex.withLock {
+        npcs[npc.location]?.remove(npc.key)
+        npc.owner = null
+        val r = if (respawnAt != null) Respawn(respawnAt, min, maxOf(min, max)) else npc.proto.respawn
+        if (r != null) {
+            val base = protoOf(npc.proto.template, npc.proto.wander, r) ?: npc.proto
+            timers += (now + random.nextInt(r.min, r.max + 1)) to NpcSpawn(r.location, npc.key, "", npc.proto.wander, base)
+        }
+    }
+
+    /** Removes a corpse (raised by a necromancer). */
+    suspend fun removeCorpse(loc: String, corpseId: String): Corpse? = mutex.withLock { corpses[loc]?.remove(corpseId) }
 
     suspend fun removeNpc(key: String, loc: String): Boolean = mutex.withLock { npcs[loc]?.remove(key) != null }
 
