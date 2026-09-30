@@ -164,6 +164,9 @@ class World(
     /** Problems found while building the world (unknown templates etc.). */
     val problems = ArrayList<String>()
 
+    /** NPCs placed by content/ at start, "home|key" (WorldStore: which of them died). */
+    private val initialIds = HashSet<String>()
+
     init {
         for ((locId, data) in content.locationData) {
             if (locId !in content.locations) continue
@@ -179,9 +182,6 @@ class World(
         }
         for (list in npcs.values) for (n in list.values) initialIds += n.id
     }
-
-    /** NPCs placed by content/ at start, "home|key" (WorldStore: which of them died). */
-    private val initialIds = HashSet<String>()
 
     // ---- building from content ------------------------------------------------
 

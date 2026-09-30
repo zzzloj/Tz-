@@ -849,7 +849,7 @@ data class ForumRequest(
     val text: String = "",
 )
 
-/** GET /api/pages: rules, help, stories (content/pages/*.md). */
+/** GET /api/pages: rules, help, stories (content/pages, one Markdown file each). */
 @Serializable
 data class PageSummary(val id: String, val title: String)
 

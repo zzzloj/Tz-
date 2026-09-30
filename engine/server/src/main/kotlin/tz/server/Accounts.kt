@@ -148,12 +148,13 @@ class Accounts(private val db: Db, private val content: Content) {
                 st.executeQuery().use { rs -> if (rs.next()) Account(rs.getLong(1), rs.getString(2), rs.getString(3)) to rs.getString(4) else null }
             }
             val clean = code.trim().uppercase().replace(" ", "")
-            if (!verify(clean, row?.second ?: dummyHash) || row?.second == null) {
+            val ok = verify(clean, row?.second ?: dummyHash) && row?.second != null
+            if (!ok) {
                 limiter.failed("recover:$normalized")
                 throw ApiException(HttpStatusCode.Unauthorized, Errors.WRONG_CODE)
             }
             limiter.succeeded("recover:$normalized")
-            val account = row.first
+            val account = row!!.first
             c.prepareStatement("UPDATE accounts SET password_hash = ?, recovery_hash = NULL WHERE id = ?").use { it.setString(1, hash(newPassword)); it.setLong(2, account.id); it.executeUpdate() }
             c.prepareStatement("DELETE FROM sessions WHERE account_id = ?").use { it.setLong(1, account.id); it.executeUpdate() }
             checkBan(c, account.id)
