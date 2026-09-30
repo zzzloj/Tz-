@@ -226,7 +226,8 @@ class Dialogs(private val content: Content, dir: File) {
             "castle-keeper-access", "castle-rune-list", "castle-contract", "castle-teleport",
             "arena-enter", "bounty-list", "bounty-form", "bounty-place", "bounty-claim",
             "hire-mercenary", "buy-pet", "pet-owned-here", "pet-free", "sell-pet", "pet-return", "marten-unicorn", "sacrifice-pet",
-            "hire-fairy", "kasten-squad", "escort")
+            "hire-fairy", "kasten-squad", "escort",
+            "wedding", "tomrak-armor", "tomrak-life", "gred-bouquet-give", "gred-bouquet-take", "thieves-contract", "smsCode", "claim-dublons")
 
         /** A handler action the server can run; mercenaries only as castle guards so far (n.o.*). */
         fun supported(a: JsonObject): Boolean {

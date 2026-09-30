@@ -173,6 +173,16 @@ internal suspend fun Game.castleView(p: Game.Player): CastleView? {
 /** knock (outside, every 3 min), open (owners), sign (owners). */
 suspend fun Game.castle(account: Account, op: String, text: String?): GameView = lock.withLock {
     val p = player(account)
+    // To the castle under attack (f_castle.dat:17-30): only while strangers are inside.
+    if (op == "tele") {
+        val (_, room) = castleAlarm(alive(p), clock()) ?: run { p.log("В вашем замке спокойно"); return@withLock viewLocked(p) }
+        for (npc in world.npcsIn(p.location)) npc.enemies.remove(p.id)
+        tellOthers(p.location, p.id, "${p.name} исчез")
+        p.location = room
+        tellOthers(room, p.id, "Появился ${p.name}")
+        save(p)
+        return@withLock viewLocked(p)
+    }
     val n = CastleRules.castleOf(p.location) ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NOT_A_TRADER)
     val c = castles().getValue(n)
     val now = clock()

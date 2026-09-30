@@ -83,7 +83,13 @@ struct RootView: View {
                                     dismount: { model.run { try await $0.dismount() } },
                                     tame: { n in model.run { try await $0.tame(npc: n) } },
                                     raise: { c in model.run { try await $0.raise(corpse: c) } },
-                                    gallop: { e in model.run { try await $0.gallop(exit: e) } }),
+                                    gallop: { e in model.run { try await $0.gallop(exit: e) } },
+                                    openWorld: { model.run { try await $0.openWorld() } },
+                                    closeWorld: { model.run { $0.closeWorld() } },
+                                    openMap: { model.run { try await $0.openMap() } },
+                                    closeMap: { model.run { $0.closeMap() } },
+                                    stele: { model.run { try await $0.stele() } },
+                                    dropFlag: { model.run { try await $0.dropFlag() } }),
                                 pendingAbility: s.pendingAbility,
                                 social: SocialActions(
                                     answerText: { t in model.run { try await $0.answerText(text: t) } },
@@ -104,9 +110,12 @@ struct RootView: View {
                                     clanOp: { op, name, rank, clan in model.run { try await $0.clanOp(op: op, name: name, rank: rank, clan: clan, text: nil) } },
                                     castleOp: { op, text in model.run { try await $0.castleOp(op: op, text: text) } },
                                     choose: { o in model.run { try await $0.choose(option: o) } },
-                                    closeChoice: { model.run { $0.closeChoice() } }),
+                                    closeChoice: { model.run { $0.closeChoice() } },
+                                    writeAll: { t in model.run { try await $0.writeAll(text: t) } }),
                                 mail: s.mail,
                                 clanInfo: s.clanInfo,
+                                worldInfo: s.world,
+                                mapView: s.mapOpen ? s.map : nil,
                                 onRefresh: { model.run { try await $0.refresh() } },
                                 onSignOut: { model.run { try await $0.signOut() } })
                 } else if s.error != nil {
@@ -186,6 +195,8 @@ struct PlayingView: View {
     let social: SocialActions
     let mail: MessagesView?
     let clanInfo: ClanView?
+    let worldInfo: WorldView?
+    let mapView: MapView?
     @State private var typed = ""
     @State private var speech = ""
     @State private var mailTo: String?
@@ -208,6 +219,7 @@ struct PlayingView: View {
         if let hp = p.hpPercent { s += " \(hp.intValue)%" }
         if let a = p.attacking { s += " · атакует \(a)" }
         if p.rider { s += " (всадник)" }
+        if p.flag { s += " с флагом!" }
         if p.ghost { s += " (призрак)" }
         return s
     }
@@ -387,9 +399,15 @@ struct PlayingView: View {
                         Button("убрать") { social.removeContact(ct.name) }.disabled(busy).buttonStyle(.borderless)
                     }
                 }
+                if m.contacts.contains(where: { $0.mutual }) {
+                    Button("написать всем") { mailTo = "*" }.buttonStyle(.borderless)
+                }
                 if let to = mailTo {
-                    TextField("Сообщение для \(to)", text: $mailText)
-                    Button("Отправить") { social.write(to, mailText); mailText = ""; mailTo = nil }.disabled(busy || mailText.isEmpty)
+                    TextField(to == "*" ? "Сообщение всем контактам" : "Сообщение для \(to)", text: $mailText)
+                    Button("Отправить") {
+                        if to == "*" { social.writeAll(mailText) } else { social.write(to, mailText) }
+                        mailText = ""; mailTo = nil
+                    }.disabled(busy || mailText.isEmpty)
                 }
                 ForEach(Array(m.messages.enumerated()), id: \.offset) { _, msg in
                     Text((msg.clan ? "[клан] " : "") + "\(msg.from): \(msg.text)").font(.footnote)
@@ -507,6 +525,7 @@ struct PlayingView: View {
         }
         MagicSection(game: game, busy: busy, pending: pendingAbility, more: more)
         CharacterSection(game: game, busy: busy, more: more)
+        WorldSection(game: game, busy: busy, more: more, social: social, worldInfo: worldInfo, mapView: mapView)
         if let ch = game.choice {
             Section(ch.title) {
                 ForEach(ch.options, id: \.value) { o in Button(o.label) { social.choose(o) }.disabled(busy) }
@@ -572,6 +591,12 @@ struct MoreActions {
     let tame: (NpcView) -> Void
     let raise: (CorpseView) -> Void
     let gallop: (ExitView) -> Void
+    let openWorld: () -> Void
+    let closeWorld: () -> Void
+    let openMap: () -> Void
+    let closeMap: () -> Void
+    let stele: () -> Void
+    let dropFlag: () -> Void
 }
 
 /// Spells, techniques and stances learnt, and the «на кого?» list for one that needs a target.
@@ -643,6 +668,7 @@ struct SocialActions {
     let castleOp: (String, String?) -> Void
     let choose: (ChoiceOption) -> Void
     let closeChoice: () -> Void
+    let writeAll: (String) -> Void
 }
 
 /// What was looked at or peeked into, and the character's own page: rank, full parameters, skills with help.
@@ -686,6 +712,102 @@ struct CharacterSection: View {
                     }
                 }
             }
+        }
+    }
+}
+
+/// The flag, the spouse's call, the castle alarm, the world page and the map.
+struct WorldSection: View {
+    let game: GameView
+    let busy: Bool
+    let more: MoreActions
+    let social: SocialActions
+    let worldInfo: WorldView?
+    let mapView: MapView?
+
+    var body: some View {
+        Section {
+            if game.character.flag {
+                HStack { Text("У вас флаг лидерства").font(.footnote); Spacer(); Button("бросить") { more.dropFlag() }.disabled(busy).buttonStyle(.borderless) }
+            }
+            if let place = game.stele {
+                Button("\(game.character.spouse ?? "Супруг") ранен(а): \(place) — на помощь") { more.stele() }.disabled(busy)
+            }
+            if let castle = game.alarm {
+                Button("В \(castle) чужие! — в замок") { social.castleOp("tele", nil) }.disabled(busy)
+            }
+            HStack {
+                Button("Мир") { more.openWorld() }.disabled(busy).buttonStyle(.borderless)
+                Spacer()
+                Button("Карта") { more.openMap() }.disabled(busy).buttonStyle(.borderless)
+            }
+        }
+        if let w = worldInfo {
+            Section("Мир") {
+                Text("Флаг лидерства: " + (w.flagHolder.map { "у \($0) (\(w.flagLocation ?? "?"))" } ?? "лежит: \(w.flagLocation ?? "неизвестно где")")).font(.footnote)
+                ForEach(w.castles, id: \.id) { c in Text("\(c.name): \(c.owner ?? "ничей")").font(.caption) }
+                ForEach(w.clans, id: \.name) { c in Text("Клан \(c.name) — \(c.members)").font(.caption) }
+                Text("Сейчас в игре \(w.online.count)").font(.footnote)
+                ForEach(w.online, id: \.name) { o in Text("\(o.name) [\(o.level)]" + (o.clan.map { " *\($0)*" } ?? "") + (o.crime.map { " \($0)" } ?? "")).font(.caption) }
+                Button("закрыть") { more.closeWorld() }
+            }
+        }
+        if let m = mapView {
+            Section(mapTitle()) {
+                MapCanvas(points: m.points, here: game.character.location, flagAt: worldInfo?.flagLocationId)
+                    .frame(height: 260)
+                Text("красное — вы, жёлтое — флаг лидерства, бордовое — замки").font(.caption)
+                Button("закрыть") { more.closeMap() }
+            }
+        }
+    }
+
+    private func mapTitle() -> String {
+        switch MapCanvas.point(game.character.location)?.2 ?? 0 {
+        case 1: return "Карта: Ансалон"
+        case 2: return "Карта: Волчий остров"
+        default: return "Карта: основная территория"
+        }
+    }
+}
+
+struct MapCanvas: View {
+    let points: [MapPoint]
+    let here: String
+    let flagAt: String?
+
+    /// (x, y, map) of a location: m.php's pins and regions, from the shared rules.
+    static func point(_ loc: String) -> (CGFloat, CGFloat, Int)? {
+        guard let t = Rules.shared.mapPoint(loc: loc),
+              let x = t.first as? KotlinInt, let y = t.second as? KotlinInt, let r = t.third as? KotlinInt else { return nil }
+        return (CGFloat(x.doubleValue), CGFloat(y.doubleValue), Int(r.int32Value))
+    }
+
+    var body: some View {
+        let me = MapCanvas.point(here)
+        let region = me?.2 ?? 0
+        var dots: [(CGFloat, CGFloat, Bool)] = []
+        for point in points {
+            let px = CGFloat(Double(point.mapX))
+            let py = CGFloat(Double(point.mapY))
+            let r = py > 1101 ? 2 : (px > 1650 ? 1 : 0)
+            if r == region { dots.append((px, py, point.guarded)) }
+        }
+        let castles = ["c.1.gate", "c.2.gate", "c.3.gate", "c.4.gate"].compactMap { MapCanvas.point($0) }.filter { $0.2 == region }
+        let flag = flagAt.flatMap { MapCanvas.point($0) }.flatMap { $0.2 == region ? $0 : nil }
+        return Canvas { ctx, size in
+            guard let minX = dots.map({ $0.0 }).min(), let maxX = dots.map({ $0.0 }).max(),
+                  let minY = dots.map({ $0.1 }).min(), let maxY = dots.map({ $0.1 }).max() else { return }
+            let k = min(size.width / max(maxX - minX + 1, 1), size.height / max(maxY - minY + 1, 1))
+            let d = min(max(k * 6, 2), 6)
+            func dot(_ x: CGFloat, _ y: CGFloat, _ r: CGFloat, _ c: Color) {
+                let cx = (x - minX) * k, cy = (y - minY) * k
+                ctx.fill(Path(ellipseIn: CGRect(x: cx - r, y: cy - r, width: r * 2, height: r * 2)), with: .color(c))
+            }
+            for p in dots { dot(p.0, p.1, d / 2, p.2 ? Color.accentColor : Color.gray.opacity(0.4)) }
+            for c in castles { dot(c.0, c.1, d * 1.5, Color(red: 0.7, green: 0.2, blue: 0.2)) }
+            if let f = flag { dot(f.0, f.1, d * 1.5, .yellow) }
+            if let m = me { dot(m.0, m.1, d * 2, .red) }
         }
     }
 }
