@@ -54,6 +54,7 @@ class Crafting(private val root: JsonObject) {
         return when (special[key]?.jsonObject?.str("handler")) {
             "polishGem", "inlayGem", "extractGem", "cutCloth", "sharpen" -> "item"
             "resurrect" -> "player"
+            "peekInventory" -> "creature"
             else -> null
         }
     }
@@ -62,7 +63,7 @@ class Crafting(private val root: JsonObject) {
         /** Special handlers written so far; the rest (bouquets, peeking) come with their stages. */
         val SUPPORTED = setOf(
             "bandage", "resurrect", "cutCloth", "campfire", "fry", "fillBottle", "polishGem", "inlayGem",
-            "extractGem", "unpack", "emote", "sharpen",
+            "extractGem", "unpack", "emote", "sharpen", "peekInventory",
         )
 
         fun load(file: File): Crafting =
@@ -277,6 +278,7 @@ private suspend fun Game.gather(p: Game.Player, tool: String, o: JsonObject, now
         if (row != null) {
             changeItem(p, row.str("give")!!, row.int("count") ?: 1)
             p.log("Вы поймали " + (row.str("text") ?: content.itemName(row.str("give")!!)))
+            o.int("stat")?.let { p.count(it) }
             addExp(p, Crafting.exp(o["exp"], dice))
         } else p.log(msg(o, "fail", "Ничего не вышло"))
     } else if (Crafting.roll(o["chance"] as? JsonObject, skill, 0, dice)) {
@@ -284,6 +286,7 @@ private suspend fun Game.gather(p: Game.Player, tool: String, o: JsonObject, now
         for ((id, n) in Crafting.counts(o["gives"])) changeItem(p, id, n)
         p.log(msg(o, "success", "Удалось"))
         addExp(p, Crafting.exp(o["exp"], dice))
+        o.int("stat")?.let { p.count(it) }
         gatherExtras(p, o["extra"] as? JsonObject, now)
     } else p.log(msg(o, "fail", "Не получилось"))
     breakTool(p, tool, o.int("toolBreakPercent") ?: 0, msg(o, "broken", "Инструмент сломался"))
@@ -302,6 +305,7 @@ private suspend fun Game.gatherExtras(p: Game.Player, extra: JsonObject?, now: L
             if (Crafting.roll(gems["chance"] as? JsonObject, 0, 0, dice)) {
                 changeItem(p, gem, gems.int("count") ?: 1)
                 p.log("Вы нашли " + content.itemName(gem) + "!")
+                p.count(gems.int("stat") ?: Stat.GEMS_FOUND)
             }
         }
     }
@@ -418,6 +422,7 @@ private suspend fun Game.special(
                 changeItem(p, "$t..$gem", 1)
                 p.log(fail("success", "Вы инкрустировали самоцвет в {name}").replace("{name}", content.itemName(t)))
                 addExp(p, Crafting.exp(o["exp"], dice))
+                p.count(o.int("stat") ?: Stat.GEMS_SET)
             } else p.log(fail("fail", "Вы испортили {name}").replace("{name}", content.itemName(t)))
             breakTool(p, "i.set.shlif", 5, fail("broken", "Вы сломали набор ювелира"))
         }
@@ -452,6 +457,13 @@ private suspend fun Game.special(
                 changeItem(p, "$base-$level-$gems", 1)
                 p.log("Вы заточили ${content.itemName(t)} до +$level")
             } else p.log("Вы не смогли заточить ${content.itemName(t)}, оружие испорчено")
+        }
+        "peekInventory" -> {
+            // Thief's gloves: a peek without a roll, a rest or place limits; they wear out (plugin/i.q.pervor.dat).
+            val aim = aim(p, target, now)?.takeIf { it !is Aim.Item && !(it is Aim.Pc && it.p.id == p.id) }
+                ?: refuse(fail("noTarget", "Нет цели"))
+            changeItem(p, tool, -1)
+            showPeek(p, aim, now)
         }
         "emote" -> {
             val lines = Crafting.strings(o["lines"])

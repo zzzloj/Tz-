@@ -50,8 +50,8 @@ struct RootView: View {
                 } else if s.screen == Screen.playing, let game = s.game {
                     PlayingView(game: game, busy: s.busy,
                                 onGo: { exit in model.run { try await $0.go(exit: exit) } },
-                                onTake: { item in model.run { try await $0.take(item: item) } },
-                                onDrop: { item in model.run { try await $0.drop(item: item) } },
+                                onTake: { item in model.run { try await $0.take(item: item, count: nil) } },
+                                onDrop: { item in model.run { try await $0.drop(item: item, count: nil) } },
                                 onToggleEquip: { item in model.run { try await $0.toggleEquip(item: item) } },
                                 onAttack: { npc in model.run { try await $0.attack(npc: npc) } },
                                 onLoot: { corpse, item in model.run { try await $0.loot(corpse: corpse, item: item) } },
@@ -71,7 +71,15 @@ struct RootView: View {
                                     craft: { option in model.run { try await $0.craft(option: option) } },
                                     useAbility: { a in model.run { try await $0.useAbility(ability: a) } },
                                     aimAbility: { t in model.run { try await $0.aimAbility(target: t) } },
-                                    cancelAbility: { model.run { $0.cancelAbility() } }),
+                                    cancelAbility: { model.run { $0.cancelAbility() } },
+                                    meditate: { model.run { try await $0.meditate() } },
+                                    peek: { t in model.run { try await $0.peek(target: t) } },
+                                    steal: { i in model.run { try await $0.steal(item: i) } },
+                                    closePeek: { model.run { $0.closePeek() } },
+                                    look: { t in model.run { try await $0.look(target: t) } },
+                                    closeLook: { model.run { $0.closeLook() } },
+                                    dropOne: { i in model.run { try await $0.drop(item: i, count: KotlinInt(int: 1)) } },
+                                    takeOne: { i in model.run { try await $0.take(item: i, count: KotlinInt(int: 1)) } }),
                                 pendingAbility: s.pendingAbility,
                                 social: SocialActions(
                                     answerText: { t in model.run { try await $0.answerText(text: t) } },
@@ -204,6 +212,10 @@ struct PlayingView: View {
         return "Вы \(crime) — стража ищет вас ещё \(c.crimeMinutes) мин"
     }
 
+    private func isThief(_ c: CharacterView) -> Bool {
+        !c.ghost && ((c.skills["steal"]?.intValue ?? 0) > 0 || (c.skills["steallook"]?.intValue ?? 0) > 0)
+    }
+
     private func label(_ name: String, _ count: Int32) -> String {
         count > 1 ? "\(name) ×\(count)" : name
     }
@@ -265,6 +277,10 @@ struct PlayingView: View {
                     if npc.canTalk {
                         Button("говорить") { onTalk(npc) }.disabled(busy).buttonStyle(.borderless)
                     }
+                    Button("?") { more.look(npc.id) }.disabled(busy).buttonStyle(.borderless)
+                    if isThief(c) {
+                        Button("подглядеть") { more.peek(npc.id) }.disabled(busy).buttonStyle(.borderless)
+                    }
                     if npc.attackable && !c.ghost {
                         Button("атаковать") { onAttack(npc) }.disabled(busy).buttonStyle(.borderless)
                     }
@@ -277,6 +293,7 @@ struct PlayingView: View {
                     Spacer()
                     if !c.ghost && !person.ghost {
                         Button("атаковать") { social.attackPlayer(person) }.disabled(busy).buttonStyle(.borderless)
+                        if isThief(c) { Button("подглядеть") { more.peek(person.name) }.disabled(busy).buttonStyle(.borderless) }
                         Button("обмен") { social.startExchange(person) }.disabled(busy).buttonStyle(.borderless)
                     }
                     Button("в контакты") { social.addContact(person.name) }.disabled(busy).buttonStyle(.borderless)
@@ -291,6 +308,7 @@ struct PlayingView: View {
                     Spacer()
                     if item.takeable {
                         Button(item.id.hasPrefix("i.s.") ? "использовать" : "взять") { onTake(item) }.disabled(busy).buttonStyle(.borderless)
+                        if item.count > 1 { Button("1") { more.takeOne(item) }.disabled(busy).buttonStyle(.borderless) }
                     }
                 }
             }
@@ -464,6 +482,7 @@ struct PlayingView: View {
             }
         }
         MagicSection(game: game, busy: busy, pending: pendingAbility, more: more)
+        CharacterSection(game: game, busy: busy, more: more)
         if let ch = game.choice {
             Section(ch.title) {
                 ForEach(ch.options, id: \.value) { o in Button(o.label) { social.choose(o) }.disabled(busy) }
@@ -493,6 +512,8 @@ struct PlayingView: View {
                     if item.usable && !game.character.ghost {
                         Button("исп.") { more.use(item) }.disabled(busy).buttonStyle(.borderless)
                     }
+                    Button("?") { more.look(item.id) }.disabled(busy).buttonStyle(.borderless)
+                    if item.count > 1 { Button("−1") { more.dropOne(item) }.disabled(busy).buttonStyle(.borderless) }
                     Button("бросить") { onDrop(item) }.disabled(busy).buttonStyle(.borderless)
                 }
             }
@@ -515,6 +536,14 @@ struct MoreActions {
     let useAbility: (AbilityView) -> Void
     let aimAbility: (String) -> Void
     let cancelAbility: () -> Void
+    let meditate: () -> Void
+    let peek: (String) -> Void
+    let steal: (PeekItem) -> Void
+    let closePeek: () -> Void
+    let look: (String) -> Void
+    let closeLook: () -> Void
+    let dropOne: (InventoryItemView) -> Void
+    let takeOne: (GroundItemView) -> Void
 }
 
 /// Spells, techniques and stances learnt, and the «на кого?» list for one that needs a target.
@@ -556,6 +585,7 @@ struct MagicSection: View {
                     HStack {
                         Text(line(a)).font(.footnote)
                         Spacer()
+                        Button("?") { more.look(a.id) }.disabled(busy).buttonStyle(.borderless)
                         Button(verb(a)) { more.useAbility(a) }
                             .disabled(busy || a.readyIn > 0 || a.later).buttonStyle(.borderless)
                     }
@@ -585,4 +615,49 @@ struct SocialActions {
     let castleOp: (String, String?) -> Void
     let choose: (ChoiceOption) -> Void
     let closeChoice: () -> Void
+}
+
+/// What was looked at or peeked into, and the character's own page: rank, full parameters, skills with help.
+struct CharacterSection: View {
+    let game: GameView
+    let busy: Bool
+    let more: MoreActions
+    @State private var open = false
+
+    var body: some View {
+        if let l = game.look {
+            Section(l.title) {
+                Text(l.text).font(.footnote)
+                Button("закрыть") { more.closeLook() }
+            }
+        }
+        if let pk = game.peek {
+            Section("Рюкзак: \(pk.targetName)") {
+                ForEach(pk.items, id: \.id) { it in
+                    HStack {
+                        Text(it.name + (it.count > 1 ? " ×\(it.count)" : "") + (it.equipped ? " (надето)" : "")).font(.footnote)
+                        Spacer()
+                        Button("украсть") { more.steal(it) }.disabled(busy).buttonStyle(.borderless)
+                    }
+                }
+                Button("закрыть") { more.closePeek() }
+            }
+        }
+        Section {
+            Button(open ? "Персонаж ▲" : "Персонаж ▼") { open.toggle() }
+            if open {
+                let c = game.character
+                Text("\(c.rank) \(c.title)").font(.footnote)
+                Text("парирование \(c.parry) · уклон от магии \(c.magicDodge) · защита от магии \(c.magicParry) · сопр. магии \(c.magicResist)").font(.caption)
+                ForEach(c.skills.keys.sorted(), id: \.self) { k in
+                    HStack {
+                        Text("\(Rules.shared.skillTitle(key: k)) \(c.skills[k]?.intValue ?? 0)").font(.footnote)
+                        Spacer()
+                        if k == "meditation" && !c.ghost { Button("медитировать") { more.meditate() }.disabled(busy).buttonStyle(.borderless) }
+                        Button("?") { more.look("skill." + k) }.disabled(busy).buttonStyle(.borderless)
+                    }
+                }
+            }
+        }
+    }
 }

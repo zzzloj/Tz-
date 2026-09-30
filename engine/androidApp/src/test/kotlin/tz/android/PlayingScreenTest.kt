@@ -4,6 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -58,10 +59,10 @@ class PlayingScreenTest {
         compose.setContent { MaterialTheme { App(session, live = false) } }
 
         compose.waitUntil(5_000) { compose.onAllNodesWithTextExists("Переулок") }
-        compose.onNodeWithText("на север").performClick()
+        compose.onNodeWithText("на север").performScrollTo().performClick()
         compose.waitUntil(5_000) { compose.onAllNodesWithTextExists("Двор лекаря") }
 
-        compose.onNodeWithText("надеть").performClick()
+        compose.onNodeWithText("надеть").performScrollTo().performClick()
         compose.waitUntil(5_000) { compose.onAllNodesWithTextExists("нож (надето)") }
         compose.onNodeWithText("снять").assertExists()
     }

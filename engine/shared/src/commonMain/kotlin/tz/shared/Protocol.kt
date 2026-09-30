@@ -83,7 +83,7 @@ data class InventoryItemView(
 
 /** [arg]: a choice some things ask for (where to sail the boat). */
 @Serializable
-data class ItemRequest(val item: String, val arg: String? = null)
+data class ItemRequest(val item: String, val arg: String? = null, /** take or drop only this many; null — the whole stack */ val count: Int? = null)
 
 @Serializable
 data class ContentReport(
@@ -154,6 +154,13 @@ data class CharacterView(
     val dmgMax: Int = 0,
     val armor: Int = 0,
     val dodge: Int = 0,
+    val parry: Int = 0,
+    val magicDodge: Int = 0,
+    val magicParry: Int = 0,
+    val magicResist: Int = 0,
+    /** Rank by the sum of skills (Новичок … Лорд) and title by the best skill (воин, маг, вор…), f_lookuser.dat. */
+    val rank: String = "",
+    val title: String = "",
 )
 
 @Serializable
@@ -200,7 +207,28 @@ data class GameView(
     val stance: String? = null,
     /** A question from a thing (the boat: where to?): answer by repeating the action with the option's value as arg. */
     val choice: ChoiceView? = null,
+    /** What you saw in someone's backpack (POST /api/game/skill steal without item): steal from it for a minute. */
+    val peek: PeekView? = null,
+    /** Answer to POST /api/game/look: a character, an NPC, an item, a spell or a skill described. */
+    val look: LookView? = null,
 )
+
+@Serializable
+data class PeekItem(val id: String, val name: String, val count: Int, val equipped: Boolean = false)
+
+@Serializable
+data class PeekView(val target: String, val targetName: String, val items: List<PeekItem> = emptyList())
+
+@Serializable
+data class LookView(val title: String, val text: String)
+
+/** skill: meditation, or steal ([target]; without [item] — peek into the backpack first). */
+@Serializable
+data class SkillRequest(val skill: String, val target: String? = null, val item: String? = null)
+
+/** [target]: an NPC id, a character's name, an item id, a spell or technique id, or skill.<key> for help. */
+@Serializable
+data class LookRequest(val target: String)
 
 /** A choice a thing asks for: [item] is taken again with arg = the chosen option's value. */
 @Serializable
@@ -444,6 +472,8 @@ object Errors {
     const val NO_FIGHT_HERE = "no_fight_here"
     const val TOPIC_CLOSED = "topic_closed"
     const val UNKNOWN_ABILITY = "unknown_ability"
+    const val CANNOT_DROP = "cannot_drop"
+    const val TOO_MANY = "too_many"
 
     fun text(code: String): String = when (code) {
         UNAUTHORIZED -> "Нужно войти заново"
@@ -488,6 +518,8 @@ object Errors {
         NO_FIGHT_HERE -> "Здесь драться нельзя"
         TOPIC_CLOSED -> "Разговор ушёл в сторону, начните заново"
         UNKNOWN_ABILITY -> "Вы этого не умеете: найдите учителя"
+        CANNOT_DROP -> "Квестовую вещь бросить нельзя"
+        TOO_MANY -> "Больше таких носить нельзя"
         else -> "Ошибка сервера"
     }
 }

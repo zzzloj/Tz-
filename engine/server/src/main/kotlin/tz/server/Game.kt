@@ -88,6 +88,12 @@ class Game(
         var fightingPlayer: Long? = null
         /** Last thing said, to refuse repeats (f_say.dat:65). */
         var lastSaid: String? = null
+        /** Statistics, the old `st` string (Skills.kt, Stat). */
+        val statistics = IntArray(Stat.SIZE)
+        /** Whose backpack was peeked into, till when stealing from it is allowed, and the list to show once. */
+        var peekTarget: String? = null
+        var peekUntil = 0L
+        var peekView: tz.shared.PeekView? = null
         /** Whom this character strikes: an NPC key or "u:<character id>" (char[7], the «атакует» mark). */
         var attackTarget: String? = null
         /** Poisoned till then (i.b.jad.c): health goes down instead of regenerating. */
@@ -156,7 +162,7 @@ class Game(
         viewLocked(p)
     }
 
-    suspend fun take(account: Account, itemId: String, arg: String? = null): GameView = lock.withLock {
+    suspend fun take(account: Account, itemId: String, arg: String? = null, count: Int? = null): GameView = lock.withLock {
         if (itemId == "i.s.arena") {
             val q = player(account)
             q.log(leaveArena(q))
@@ -168,6 +174,13 @@ class Game(
         if (itemId == Travel.BOAT) { val choice = sail(p, arg, now); return@withLock viewLocked(p).copy(choice = choice) }
         if (itemId.startsWith("i.s.")) throw ApiException(HttpStatusCode.BadRequest, Errors.CANNOT_TAKE)
         if (p.stance?.id == "p.d.o" && now < p.stance!!.until) { p.log("В глухой обороне брать предметы нельзя"); return@withLock viewLocked(p) }
+        val lying = world.itemsAt(p.location, now).firstOrNull { it.id == itemId } ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NO_SUCH_ITEM)
+        checkLimit(p, itemId, count ?: lying.count)
+        if (count != null && count in 1 until lying.count) {
+            if (!world.takeFromGround(p.location, itemId, count, now)) throw ApiException(HttpStatusCode.BadRequest, Errors.NO_SUCH_ITEM)
+            db.tx { c -> addItem(c, p.id, itemId, count) }
+            return@withLock viewLocked(p)
+        }
         val item = world.take(p.location, itemId, now) ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NO_SUCH_ITEM)
         try {
             db.tx { c -> addItem(c, p.id, item.id, item.count) }
@@ -178,16 +191,19 @@ class Game(
         viewLocked(p)
     }
 
-    suspend fun drop(account: Account, itemId: String): GameView = lock.withLock {
+    suspend fun drop(account: Account, itemId: String, count: Int? = null): GameView = lock.withLock {
         val p = alive(player(account))
-        val count = db.tx { c ->
-            c.prepareStatement("DELETE FROM character_items WHERE character_id = ? AND item_id = ? RETURNING count").use { st ->
-                st.setLong(1, p.id)
-                st.setString(2, itemId)
-                st.executeQuery().use { rs -> if (rs.next()) rs.getInt(1) else null }
+        // Quest things stay with you (f_drop.dat:9): otherwise the trade ban would mean nothing.
+        if (!Rules.tradeable(itemId)) throw ApiException(HttpStatusCode.BadRequest, Errors.CANNOT_DROP)
+        val have = db.tx { c -> inventoryRows(c, p.id) }.firstOrNull { it.first == itemId }?.second
+            ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NOT_IN_INVENTORY)
+        val n = (count ?: have).coerceIn(1, have)
+        if (n == have) db.tx { c ->
+            c.prepareStatement("DELETE FROM character_items WHERE character_id = ? AND item_id = ?").use { st ->
+                st.setLong(1, p.id); st.setString(2, itemId); st.executeUpdate()
             }
-        } ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NOT_IN_INVENTORY)
-        world.drop(p.location, itemId, count, clock())
+        } else changeItem(p, itemId, -n)
+        world.drop(p.location, itemId, n, clock())
         refreshStats(p)
         viewLocked(p)
     }
@@ -242,6 +258,7 @@ class Game(
         val p = alive(player(account))
         val corpse = world.corpse(p.location, corpseId, clock()) ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NO_SUCH_CORPSE)
         lootCrime(p, corpse, itemId, clock())
+        checkLimit(p, itemId, corpse.items[itemId] ?: 1)
         val count = world.lootCorpse(p.location, corpseId, itemId, clock())
             ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NO_SUCH_CORPSE)
         db.tx { c -> addItem(c, p.id, itemId, count) }
@@ -257,6 +274,7 @@ class Game(
             ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NO_SUCH_CORPSE)
         db.tx { c -> for ((id, n) in loot) addItem(c, p.id, id, n) }
         if (loot.isNotEmpty()) p.log("Вы разделали: " + loot.entries.joinToString { (id, n) -> content.itemName(id) + if (n > 1) " ×$n" else "" })
+        if (loot.isNotEmpty() && dice.roll(0, 100) < 4) addExp(p, 1)   // plugin/i.w.k.dat:9
         viewLocked(p)
     }
 
@@ -849,7 +867,10 @@ class Game(
     }
 
     internal suspend fun playerHits(p: Player, npc: World.Npc, now: Long, answer: Boolean, blow: Blow? = null) {
-        val stats = blow?.stats ?: p.stats
+        // The amulet of power doubles damage against monsters (f_attackf.dat:74).
+        val stats = (blow?.stats ?: p.stats).let {
+            if (npc.key.startsWith("n.c.") && p.equipped.any { e -> e.startsWith("i.a.m.vlast") }) it.copy(dmgMin = it.dmgMin * 2, dmgMax = it.dmgMax * 2) else it
+        }
         val r = strike(stats, p, npc.stats, null, blow, now)
         if (r.hit.outcome == Formulas.Outcome.FIZZLED) return
         val h = castleBonus(p, r.hit)
@@ -895,6 +916,7 @@ class Game(
 
     internal suspend fun killNpc(p: Player, npc: World.Npc, now: Long) {
         world.kill(npc, now)
+        p.count(Stat.MONSTERS)
         p.log("${npc.name} погибает.")
         tellOthers(p.location, p.id, "${npc.name} погибает.")
         addExp(p, npc.stats.expValue)
@@ -923,9 +945,19 @@ class Game(
         p.clearBuffs()
         p.attackTarget = null
         p.poisonUntil = 0
+        p.count(Stat.DEATHS)
+        by?.count(Stat.PLAYERS)
         if (p.location == Rules.ARENA) {
             // On the arena things stay with the fallen (f_kill.dat:19).
             p.log("Вас победил $killer. Вы призрак: покинуть арену можно через камень выхода.")
+        } else if (db.tx { c -> inventoryRows(c, p.id) }.any { it.first == FEATHER }) {
+            // The firebird feather burns and the things stay with the ghost, taken off (f_kill.dat:19-23,40).
+            changeItem(p, FEATHER, -1)
+            db.tx { c -> c.prepareStatement("UPDATE character_items SET equipped = FALSE WHERE character_id = ?").use { it.setLong(1, p.id); it.executeUpdate() } }
+            p.equipped = emptyList()
+            p.stats = Formulas.player(p.skills(), emptyList(), { content.items[it] })
+            p.log("Вас убил $killer. Вы спасли свои вещи пером жар-птицы!")
+            tellOthers(p.location, p.id, "${p.name} спасает свои вещи пером жар-птицы!")
         } else {
             val items = db.tx { c ->
                 val rows = inventoryRows(c, p.id)
@@ -1017,7 +1049,7 @@ class Game(
     private suspend fun load(account: Account): Player? {
         val p = db.tx { c ->
             c.prepareStatement(
-                "SELECT id, name, sex, location, hp, mana, ghost, str, dex, intel, exp, skill_points, skills::text AS skills FROM characters " +
+                "SELECT id, name, sex, location, hp, mana, ghost, str, dex, intel, exp, skill_points, skills::text AS skills, stats::text AS stats FROM characters " +
                     "WHERE account_id = ? AND world_id = 1"
             ).use { st ->
                 st.setLong(1, account.id)
@@ -1030,6 +1062,8 @@ class Game(
                         for ((k, v) in kotlinx.serialization.json.Json.parseToJsonElement(rs.getString("skills")).jsonObject) {
                             (v as? kotlinx.serialization.json.JsonPrimitive)?.intOrNull?.let { p.other[k] = it }
                         }
+                        (kotlinx.serialization.json.Json.parseToJsonElement(rs.getString("stats")) as? kotlinx.serialization.json.JsonArray)
+                            ?.forEachIndexed { i, v -> if (i < Stat.SIZE) (v as? kotlinx.serialization.json.JsonPrimitive)?.intOrNull?.let { p.statistics[i] = it } }
                     }
                 }
             }
@@ -1070,7 +1104,7 @@ class Game(
     internal suspend fun save(p: Player) = db.tx { c ->
         c.prepareStatement(
             "UPDATE characters SET location = ?, hp = ?, mana = ?, ghost = ?, exp = ?, skill_points = ?, " +
-                "str = ?, dex = ?, intel = ?, skills = ?::jsonb WHERE id = ?"
+                "str = ?, dex = ?, intel = ?, skills = ?::jsonb, stats = ?::jsonb WHERE id = ?"
         ).use { st ->
             st.setString(1, p.location)
             st.setInt(2, p.hp.coerceAtLeast(0))
@@ -1082,7 +1116,8 @@ class Game(
             st.setInt(8, p.dex)
             st.setInt(9, p.int)
             st.setString(10, kotlinx.serialization.json.JsonObject(p.other.filterValues { it != 0 }.mapValues { kotlinx.serialization.json.JsonPrimitive(it.value) }).toString())
-            st.setLong(11, p.id)
+            st.setString(11, p.statistics.joinToString(",", "[", "]"))
+            st.setLong(12, p.id)
             st.executeUpdate()
         }
     }
@@ -1155,6 +1190,8 @@ class Game(
             poisoned = now < p.poisonUntil,
             ghost = p.ghost, exp = p.exp, expNext = Formulas.expThreshold(p.skills()),
             hit = s.hit, dmgMin = s.dmgMin, dmgMax = s.dmgMax, armor = s.armor, dodge = s.dodge,
+            parry = s.parry, magicDodge = s.magicDodge, magicParry = s.magicParry, magicResist = s.magicResist,
+            rank = Levels.rank(Levels.percent(p.skills())), title = Levels.title(p.skills()),
         )
         return GameView(
             character, location, inventory,
@@ -1175,6 +1212,7 @@ class Game(
             clan = p.clanName,
             abilities = abilities(p, now),
             stance = p.stance?.takeIf { now < it.until }?.let { "${it.name} (${(it.until - now + 59) / 60} мин)" },
+            peek = p.peekView.also { p.peekView = null },
         )
     }
 
@@ -1208,7 +1246,16 @@ class Game(
             st.executeUpdate() == 1
         }
 
+    /** At most one firebird feather and one death powder, two glass swords (f_additem.dat:23-24). */
+    internal suspend fun checkLimit(p: Player, itemId: String, adding: Int) {
+        val max = LIMITS[itemId] ?: return
+        val have = db.tx { c -> inventoryRows(c, p.id) }.firstOrNull { it.first == itemId }?.second ?: 0
+        if (have + adding > max) throw ApiException(HttpStatusCode.BadRequest, Errors.TOO_MANY)
+    }
+
     companion object {
+        const val FEATHER = "i.q.pjpt"
+        val LIMITS = mapOf("i.q.pjpt" to 1, "i.q.pdeath" to 1, "i.q.ssword" to 2)
         /** Characters active in the last 10 minutes are shown and can be attacked by monsters. */
         const val ACTIVE_SECONDS = 600
         const val JOURNAL_SIZE = 30
