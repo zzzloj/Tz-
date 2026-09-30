@@ -141,6 +141,21 @@ suspend fun Game.message(account: Account, op: String, to: String, text: String)
             }
             notify(toId)
         }
+        // A letter to every contact who has you too (f_msg.dat:166, «всем»).
+        "writeAll" -> {
+            val body = cleanSpeech(text).take(Rules.MESSAGE_MAX)
+            if (body.isEmpty()) throw ApiException(HttpStatusCode.BadRequest, Errors.BAD_REQUEST)
+            val ids = db.tx { c ->
+                val ids = c.prepareStatement("SELECT a.contact_id FROM contacts a JOIN contacts b ON b.character_id = a.contact_id AND b.contact_id = a.character_id WHERE a.character_id = ?").use { st ->
+                    st.setLong(1, p.id); st.executeQuery().use { rs -> buildList { while (rs.next()) add(rs.getLong(1)) } }
+                }
+                for (id in ids) c.prepareStatement("INSERT INTO messages (to_id, from_name, text) VALUES (?, ?, ?)").use { st ->
+                    st.setLong(1, id); st.setString(2, p.name); st.setString(3, body); st.executeUpdate()
+                }
+                ids
+            }
+            for (id in ids) notify(id)
+        }
         else -> throw ApiException(HttpStatusCode.BadRequest, Errors.BAD_REQUEST)
     }
     messagesView(p)

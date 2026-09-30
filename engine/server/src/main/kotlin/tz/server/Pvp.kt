@@ -45,7 +45,8 @@ internal suspend fun Game.commitCrime(p: Game.Player, title: String, now: Long, 
 
 /** Is it no crime to strike this character? */
 internal fun Game.guiltyPlayer(target: Game.Player, attacker: Game.Player, now: Long): Boolean =
-    target.criminal(now) || target.fightingPlayer == attacker.id ||
+    // The flag holder is fair game; so is one's own husband or wife (f_attackf.dat:56-59).
+    target.criminal(now) || target.fightingPlayer == attacker.id || target.hasFlag || target.id == attacker.spouseId ||
         (target.clanId != null && target.clanId == attacker.clanId) ||
         (Law.wolfIsland(target.location) && (target.faction == "p" || (attacker.faction == "p" && target.faction == "t")))
 
@@ -105,6 +106,7 @@ internal suspend fun Game.playerHitsPlayer(a: Game.Player, b: Game.Player, now: 
     if (h.outcome == Formulas.Outcome.HIT) {
         b.hp -= h.damage
         b.regenFrom = now
+        woundedSpouse(b, now)
         if (b.hp < 1) {
             killPlayer(b, a.name, now, a, attackerWasCriminal)
             return
@@ -132,7 +134,7 @@ internal suspend fun Game.murder(victim: Game.Player, killer: Game.Player, now: 
 internal suspend fun Game.lootCrime(p: Game.Player, corpse: World.Corpse, itemId: String, now: Long) {
     if (corpse.playerId != null && corpse.playerId != p.id && itemId.startsWith("i.q."))
         throw ApiException(HttpStatusCode.BadRequest, Errors.CANNOT_TRADE)
-    val mine = corpse.playerId == p.id || (corpse.clanId != null && corpse.clanId == p.clanId)
+    val mine = corpse.playerId == p.id || (corpse.clanId != null && corpse.clanId == p.clanId) || (corpse.playerId != null && corpse.playerId == p.spouseId)
     if (!corpse.free && !mine && !p.criminal(now)) commitCrime(p, "мародер", now)
 }
 

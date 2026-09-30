@@ -83,6 +83,34 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
 
     suspend fun meditate() = action { game = api.skill("meditation") }
 
+    /** Drops the leadership flag here. */
+    suspend fun dropFlag() = action { game = api.drop("i.flag") }
+
+    /** Goes to the wounded spouse (GameView.stele). */
+    suspend fun stele() = action { game = api.skill("stele") }
+
+    /** Who is online, clans, castles, the flag: shown until [closeWorld]. */
+    var world: WorldView? = null
+        private set
+
+    suspend fun openWorld() = action { world = api.world() }
+
+    fun closeWorld() { world = null }
+
+    /** All locations with coordinates, loaded once for the map. */
+    var map: MapView? = null
+        private set
+    var mapOpen: Boolean = false
+        private set
+
+    suspend fun openMap() = action {
+        if (map == null) map = api.map()
+        if (world == null) world = api.world()
+        mapOpen = true
+    }
+
+    fun closeMap() { mapOpen = false }
+
     /** Gallops two locations on through [exit] (ExitView.gallop). */
     suspend fun gallop(exit: ExitView) = action { game = api.move(exit.target, gallop = true) }
 
@@ -216,6 +244,9 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
     fun closeMail() { mail = null }
 
     suspend fun write(to: String, text: String) = action { mail = api.message("write", to, text) }
+
+    /** A letter to every contact who has you too. */
+    suspend fun writeAll(text: String) = action { mail = api.message("writeAll", "", text) }
 
     suspend fun addContact(name: String) = action { mail = api.message("add", name) }
 

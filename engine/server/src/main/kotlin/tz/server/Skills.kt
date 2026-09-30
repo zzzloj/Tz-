@@ -88,6 +88,7 @@ suspend fun Game.skill(account: Account, skill: String, target: String?, item: S
         "meditation" -> meditate(p, now)
         "steal" -> steal(p, target, item, now)
         "dismount", "animaltaming", "necro" -> petSkill(p, skill, target, now)
+        "stele" -> stele(p, now)
         else -> throw ApiException(HttpStatusCode.BadRequest, Errors.UNKNOWN_ABILITY)
     }
     save(p)

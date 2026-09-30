@@ -201,6 +201,14 @@ private fun Route.accountRoutes(accounts: Accounts, game: Game) {
         val body = call.receive<UseRequest>()
         call.respond(game.use(account, body.item, body.recipe, body.target))
     }
+    get("/api/world") {
+        requireAccount(call, accounts)
+        call.respond(game.worldView())
+    }
+    get("/api/map") {
+        requireAccount(call, accounts)
+        call.respond(game.mapView())
+    }
     post("/api/game/skill") {
         val account = requireAccount(call, accounts)
         val body = call.receive<SkillRequest>()

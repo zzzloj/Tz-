@@ -55,6 +55,7 @@ class Crafting(private val root: JsonObject) {
             "polishGem", "inlayGem", "extractGem", "cutCloth", "sharpen" -> "item"
             "resurrect" -> "player"
             "peekInventory" -> "creature"
+            "bouquet" -> "item"
             else -> null
         }
     }
@@ -63,7 +64,7 @@ class Crafting(private val root: JsonObject) {
         /** Special handlers written so far; the rest (bouquets, peeking) come with their stages. */
         val SUPPORTED = setOf(
             "bandage", "resurrect", "cutCloth", "campfire", "fry", "fillBottle", "polishGem", "inlayGem",
-            "extractGem", "unpack", "emote", "sharpen", "peekInventory",
+            "extractGem", "unpack", "emote", "sharpen", "peekInventory", "bouquet",
         )
 
         fun load(file: File): Crafting =
@@ -458,6 +459,7 @@ private suspend fun Game.special(
                 p.log("Вы заточили ${content.itemName(t)} до +$level")
             } else p.log("Вы не смогли заточить ${content.itemName(t)}, оружие испорчено")
         }
+        "bouquet" -> bouquet(p, tool, target)
         "peekInventory" -> {
             // Thief's gloves: a peek without a roll, a rest or place limits; they wear out (plugin/i.q.pervor.dat).
             val aim = aim(p, target, now)?.takeIf { it !is Aim.Item && !(it is Aim.Pc && it.p.id == p.id) }

@@ -93,6 +93,10 @@ class GameApi(
     suspend fun skill(skill: String, target: String? = null, item: String? = null): GameView =
         postJson<GameView, SkillRequest>("/api/game/skill", SkillRequest(skill, target, item))
 
+    suspend fun world(): WorldView = check(http.get(url("/api/world")) { auth() })
+
+    suspend fun map(): MapView = check(http.get(url("/api/map")) { auth() })
+
     /** Describes a character, an NPC, an item, a spell or a skill (GameView.look). */
     suspend fun look(target: String): GameView = postJson<GameView, LookRequest>("/api/game/look", LookRequest(target))
 

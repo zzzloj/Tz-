@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -45,6 +46,8 @@ import tz.shared.AbilityView
 import tz.shared.Targets
 import tz.shared.ChoiceOption
 import tz.shared.PeekItem
+import tz.shared.WorldView
+import tz.shared.MapView
 import tz.shared.ShopItemView
 import tz.shared.DialogOption
 import tz.shared.Rules
@@ -144,6 +147,12 @@ fun App(session: Session, live: Boolean = true) {
                     tame = { n -> run { session.tame(n) } },
                     raise = { c -> run { session.raise(c) } },
                     gallop = { e -> run { session.gallop(e) } },
+                    openWorld = { run { session.openWorld() } },
+                    closeWorld = { session.closeWorld(); version++ },
+                    openMap = { run { session.openMap() } },
+                    closeMap = { session.closeMap(); version++ },
+                    stele = { run { session.stele() } },
+                    dropFlag = { run { session.dropFlag() } },
                 ),
                 pendingAbility = session.pendingAbility,
                 social = SocialActions(
@@ -165,10 +174,13 @@ fun App(session: Session, live: Boolean = true) {
                     clanOp = { op, name, rank, clan -> run { session.clanOp(op, name, rank, clan) } },
                     castleOp = { op, text -> run { session.castleOp(op, text) } },
                     choose = { o -> run { session.choose(o) } },
+                    writeAll = { t -> run { session.writeAll(t) } },
                     closeChoice = { session.closeChoice(); version++ },
                 ),
                 mail = session.mail,
                 clanInfo = session.clanInfo,
+                worldInfo = session.world,
+                mapView = session.map.takeIf { session.mapOpen },
                 onRefresh = { run { session.refresh() } },
                 onSignOut = { run { session.signOut() } },
             )
@@ -233,6 +245,8 @@ fun Playing(
     social: SocialActions = SocialActions(),
     mail: MessagesView? = null,
     clanInfo: ClanView? = null,
+    worldInfo: WorldView? = null,
+    mapView: MapView? = null,
 ) {
     val c = game.character
     val loc = game.location
@@ -240,6 +254,28 @@ fun Playing(
     Text("${c.name} · HP ${c.hp}/${c.hpMax} · мана ${c.mana}/${c.manaMax}", style = MaterialTheme.typography.labelLarge)
     c.crime?.let { Text("Вы $it — стража ищет вас ещё ${c.crimeMinutes} мин", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.error) }
     if (c.poisoned) Text("Вы отравлены: здоровье убывает", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.error)
+    if (c.flag) Row(verticalAlignment = Alignment.CenterVertically) {
+        Text("У вас флаг лидерства", Modifier.weight(1f), style = MaterialTheme.typography.labelMedium)
+        TextButton(onClick = more.dropFlag, enabled = !busy) { Text("бросить") }
+    }
+    game.stele?.let { place ->
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("${c.spouse ?: "Супруг"} ранен(а): $place", Modifier.weight(1f), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.error)
+            TextButton(onClick = more.stele, enabled = !busy && !c.ghost) { Text("на помощь") }
+        }
+    }
+    game.alarm?.let { castle ->
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("В $castle чужие!", Modifier.weight(1f), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.error)
+            TextButton(onClick = { social.castleOp("tele", null) }, enabled = !busy && !c.ghost) { Text("в замок") }
+        }
+    }
+    Row {
+        TextButton(onClick = more.openWorld, enabled = !busy) { Text("Мир") }
+        TextButton(onClick = more.openMap, enabled = !busy) { Text("Карта") }
+    }
+    worldInfo?.let { WorldPanel(it, more.closeWorld) }
+    mapView?.let { MapPanel(it, c.location, worldInfo?.flagLocationId, more.closeMap) }
     if (c.mounted) Row(verticalAlignment = Alignment.CenterVertically) {
         Text("Вы верхом", Modifier.weight(1f), style = MaterialTheme.typography.labelMedium)
         TextButton(onClick = more.dismount, enabled = !busy) { Text("спешиться") }
@@ -447,6 +483,7 @@ fun Playing(
             Text(
                 person.name + (person.clan?.let { " *$it*" } ?: "") + (person.crime?.let { " [$it]" } ?: "") +
                     (person.faction?.let { " $it" } ?: "") + (person.hpPercent?.let { " $it%" } ?: "") + (if (person.rider) " (всадник)" else "") +
+                    (if (person.flag) " с флагом!" else "") +
                     (person.attacking?.let { " · атакует $it" } ?: "") + if (person.ghost) " (призрак)" else "",
                 Modifier.weight(1f), style = small,
                 color = if (person.crime != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
@@ -539,8 +576,58 @@ class SocialActions(
     val clanOp: (String, String?, String?, String?) -> Unit = { _, _, _, _ -> },
     val castleOp: (String, String?) -> Unit = { _, _ -> },
     val choose: (ChoiceOption) -> Unit = {},
+    val writeAll: (String) -> Unit = {},
     val closeChoice: () -> Unit = {},
 )
+
+@Composable
+fun WorldPanel(w: WorldView, onClose: () -> Unit) {
+    val small = MaterialTheme.typography.bodySmall
+    Panel("Мир", onClose) {
+        Text("Флаг лидерства: " + (w.flagHolder?.let { "у $it (${w.flagLocation ?: "?"})" } ?: "лежит: ${w.flagLocation ?: "неизвестно где"}"), style = small)
+        Text("Замки:", style = MaterialTheme.typography.labelMedium)
+        w.castles.forEach { Text("${it.name}: ${it.owner ?: "ничей"}", style = small) }
+        Text("Кланы:", style = MaterialTheme.typography.labelMedium)
+        if (w.clans.isEmpty()) Text("пока нет", style = small)
+        w.clans.forEach { Text("${it.name} — ${it.members}", style = small) }
+        Text("Сейчас в игре ${w.online.size}:", style = MaterialTheme.typography.labelMedium)
+        w.online.forEach { o -> Text("${o.name} [${o.level}]" + (o.clan?.let { " *$it*" } ?: "") + (o.crime?.let { " $it" } ?: ""), style = small) }
+    }
+}
+
+/** The map (m.php): the locations of this part of the world as dots, you, the flag and the castles. */
+@Composable
+fun MapPanel(m: MapView, here: String, flagAt: String?, onClose: () -> Unit) {
+    val me = Rules.mapPoint(here)
+    val region = me?.third ?: 0
+    fun regionOf(x: Int, y: Int) = if (y > 1101) 2 else if (x > 1650) 1 else 0
+    val pts = m.points.filter { regionOf(it.x, it.y) == region }
+    val title = when (region) { 1 -> "Карта: Ансалон"; 2 -> "Карта: Волчий остров"; else -> "Карта: основная территория" }
+    Panel(title, onClose) {
+        if (pts.isEmpty()) { Text("Нет данных"); return@Panel }
+        val minX = pts.minOf { it.x }; val maxX = pts.maxOf { it.x }
+        val minY = pts.minOf { it.y }; val maxY = pts.maxOf { it.y }
+        val guarded = MaterialTheme.colorScheme.primary
+        val plain = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f)
+        val mine = MaterialTheme.colorScheme.error
+        val flagColor = androidx.compose.ui.graphics.Color(0xFFE0B000)
+        val castle = androidx.compose.ui.graphics.Color(0xFFB03030)
+        val castles = listOf("c.1.gate", "c.2.gate", "c.3.gate", "c.4.gate").mapNotNull { Rules.mapPoint(it) }.filter { it.third == region }
+        val flag = flagAt?.let { Rules.mapPoint(it) }?.takeIf { it.third == region }
+        androidx.compose.foundation.Canvas(Modifier.fillMaxWidth().height(260.dp)) {
+            val w = size.width; val h = size.height
+            val sx = w / (maxX - minX + 1).coerceAtLeast(1); val sy = h / (maxY - minY + 1).coerceAtLeast(1)
+            val k = minOf(sx, sy)
+            fun at(x: Int, y: Int) = androidx.compose.ui.geometry.Offset((x - minX) * k, (y - minY) * k)
+            val d = (k * 6).coerceIn(2f, 6f)
+            for (p in pts) drawCircle(if (p.zone == 1) guarded else plain, radius = d / 2, center = at(p.x, p.y))
+            for (c in castles) drawCircle(castle, radius = d * 1.5f, center = at(c.first, c.second))
+            flag?.let { drawCircle(flagColor, radius = d * 1.5f, center = at(it.first, it.second)) }
+            me?.let { drawCircle(mine, radius = d * 2, center = at(it.first, it.second)) }
+        }
+        Text("красное — вы, жёлтое — флаг лидерства, бордовое — замки, яркие точки — охраняемые улицы", style = MaterialTheme.typography.bodySmall)
+    }
+}
 
 @Composable
 fun MailPanel(m: MessagesView, busy: Boolean, social: SocialActions) {
@@ -557,9 +644,10 @@ fun MailPanel(m: MessagesView, busy: Boolean, social: SocialActions) {
                 TextButton(onClick = { social.removeContact(ct.name) }, enabled = !busy) { Text("убрать") }
             }
         }
+        if (m.contacts.any { it.mutual }) TextButton(onClick = { to = "*" }, enabled = !busy) { Text("написать всем") }
         to?.let { name ->
-            OutlinedTextField(text, { text = it }, label = { Text("Сообщение для $name") }, modifier = Modifier.fillMaxWidth())
-            Button(onClick = { social.write(name, text); text = ""; to = null }, enabled = !busy && text.isNotBlank()) { Text("Отправить") }
+            OutlinedTextField(text, { text = it }, label = { Text(if (name == "*") "Сообщение всем контактам" else "Сообщение для $name") }, modifier = Modifier.fillMaxWidth())
+            Button(onClick = { if (name == "*") social.writeAll(text) else social.write(name, text); text = ""; to = null }, enabled = !busy && text.isNotBlank()) { Text("Отправить") }
         }
         Text("Сообщения:", style = MaterialTheme.typography.labelMedium)
         if (m.messages.isEmpty()) Text("нет сообщений", style = MaterialTheme.typography.bodySmall)
@@ -628,6 +716,12 @@ class MoreActions(
     val tame: (NpcView) -> Unit = {},
     val raise: (CorpseView) -> Unit = {},
     val gallop: (ExitView) -> Unit = {},
+    val openWorld: () -> Unit = {},
+    val closeWorld: () -> Unit = {},
+    val openMap: () -> Unit = {},
+    val closeMap: () -> Unit = {},
+    val stele: () -> Unit = {},
+    val dropFlag: () -> Unit = {},
 )
 
 @Composable

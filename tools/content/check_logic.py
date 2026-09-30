@@ -24,7 +24,9 @@ HANDLERS = {"arena-count", "hide-item-random", "repair-boat", "lower-int", "npc-
             "castle-keeper-access", "castle-rune-list", "castle-contract", "castle-teleport",
             "arena-enter", "bounty-list", "bounty-form", "bounty-place", "bounty-claim",
             "hire-mercenary", "buy-pet", "pet-owned-here", "pet-free", "sell-pet", "pet-return", "marten-unicorn",
-            "sacrifice-pet", "hire-fairy", "kasten-squad", "escort"}
+            "sacrifice-pet", "hire-fairy", "kasten-squad", "escort",
+            "wedding", "tomrak-armor", "tomrak-life", "gred-bouquet-give", "gred-bouquet-take", "thieves-contract",
+            "smsCode", "claim-dublons"}
 
 
 def handler_supported(a):

@@ -100,6 +100,15 @@ class Game(
         var poisonUntil = 0L
         /** The horse under this character (character_state "mount"). */
         var mount: Mount? = null
+        /** Holds the leadership flag (Society.kt). */
+        var hasFlag = false
+        /** Husband or wife (character_state "spouse" = "<id>|<name>"). */
+        var spouseId: Long? = null
+        var spouseName: String? = null
+        /** Where the wounded spouse is, till when one may go there, and when this one may call again. */
+        var steleTo: String? = null
+        var steleUntil = 0L
+        var steleNext = 0L
         /** Defensive stance (p.d.*), one at a time (Magic.kt). */
         var stance: Stance? = null
         /** When each spell or technique may be used again (unix time). */
@@ -117,7 +126,7 @@ class Game(
         fun skills() = Skills.of(str, dex, int, exp, points).also { s ->
             for ((key, index, _) in Rules.SKILLS) if (index > 4) s[index] = other[key] ?: 0
         }
-        val hpMax get() = (Rules.hpMax(str) + stats.hpBonus + hpBuff).coerceAtLeast(1)
+        val hpMax get() = (Rules.hpMax(str) + stats.hpBonus + hpBuff + (if (hasFlag) 10 else 0)).coerceAtLeast(1)
         val manaMax get() = (Rules.manaMax(int) + stats.manaBonus + manaBuff).coerceAtLeast(0)
 
         fun clearBuffs() { armorBuff = 0; hpBuff = 0; manaBuff = 0 }
@@ -129,6 +138,12 @@ class Game(
     }
 
     internal val players = ConcurrentHashMap<Long, Player>()
+    /** The leadership flag: who holds it, or where it lies (Society.kt). */
+    internal var flagHolder: Long? = null
+    internal var flagLoc: String? = null
+    internal var flagLoaded = false
+    /** Lajma's marriage proposals: whom → who proposed. */
+    internal val proposals = HashMap<Long, Long>()
     /** Castles and their hired guards (Castles.kt), loaded on first use. */
     internal var castleCache: HashMap<Int, CastleState>? = null
     internal val castleGuards = HashMap<String, CastleGuard>()
@@ -182,6 +197,7 @@ class Game(
         val now = clock()
         if (itemId.startsWith(Spells.PORTAL)) { usePortal(p, itemId, now); return@withLock viewLocked(p) }
         if (itemId == Travel.BOAT) { val choice = sail(p, arg, now); return@withLock viewLocked(p).copy(choice = choice) }
+        if (itemId == Society.FLAG) { takeFlag(p, now); return@withLock viewLocked(p) }
         if (itemId.startsWith("i.s.")) throw ApiException(HttpStatusCode.BadRequest, Errors.CANNOT_TAKE)
         if (p.stance?.id == "p.d.o" && now < p.stance!!.until) { p.log("В глухой обороне брать предметы нельзя"); return@withLock viewLocked(p) }
         val lying = world.itemsAt(p.location, now).firstOrNull { it.id == itemId } ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NO_SUCH_ITEM)
@@ -203,6 +219,12 @@ class Game(
 
     suspend fun drop(account: Account, itemId: String, count: Int? = null): GameView = lock.withLock {
         val p = alive(player(account))
+        if (itemId == Society.FLAG) {
+            if (!p.hasFlag) throw ApiException(HttpStatusCode.BadRequest, Errors.NOT_IN_INVENTORY)
+            dropFlag(p, "${p.name} бросил флаг!")
+            p.log("Вы бросили флаг лидерства")
+            return@withLock viewLocked(p)
+        }
         // Quest things stay with you (f_drop.dat:9): otherwise the trade ban would mean nothing.
         if (!Rules.tradeable(itemId)) throw ApiException(HttpStatusCode.BadRequest, Errors.CANNOT_DROP)
         val have = db.tx { c -> inventoryRows(c, p.id) }.firstOrNull { it.first == itemId }?.second
@@ -544,6 +566,7 @@ class Game(
         // Killing players comes with PvP; until then nobody has.
         "require-pk" -> stateOf(ctx.p.id, "pk") != null
         "npc-hand-over" -> world.npcHas(a.str("npc")!!, a.str("location") ?: ctx.p.location, a.str("item")!!)
+        "wedding" -> a.str("step") != "pending" || ctx.p.id in proposals
         else -> petGuard(ctx.p, a)
     }
 
@@ -573,6 +596,8 @@ class Game(
                 return keeperHandler(ctx.p, ctx.npc.key, a, ctx.arg) { ctx.handlerOptions = it }
             "hire-mercenary", "buy-pet", "pet-owned-here", "pet-free", "sell-pet", "pet-return", "marten-unicorn", "sacrifice-pet",
             "hire-fairy", "kasten-squad", "escort" -> return petHandler(ctx.p, a, ctx.vars)
+            "wedding", "tomrak-armor", "tomrak-life", "gred-bouquet-give", "gred-bouquet-take", "thieves-contract", "smsCode", "claim-dublons" ->
+                return societyHandler(ctx.p, a, ctx.arg, ctx.vars) { ctx.handlerOptions = it }
             "arena-enter", "bounty-list", "bounty-form", "bounty-place", "bounty-claim" ->
                 return pvpHandler(ctx.p, a, ctx.arg) { ctx.inputTopic = it }
             "npc-hand-over" -> {
@@ -824,6 +849,9 @@ class Game(
     suspend fun tick(now: Long) = lock.withLock {
         world.tick(now)
         npcMoveLines(now)
+        ensureFlag(now)
+        // Leaving the game drops the flag where one stood (f_logout.dat:18-24).
+        flagHolder?.let { id -> players[id]?.takeIf { now - it.lastSeen >= ACTIVE_SECONDS || it.ghost }?.let { dropFlag(it, "${it.name} потерял флаг!") } }
         if (now - lastGuardCheck >= 60) { lastGuardCheck = now; castles(); expireGuards(now) }
         val active = players.values.filter { now - it.lastSeen < ACTIVE_SECONDS }
         for (p in active) if (!p.ghost) regen(p, now)
@@ -925,6 +953,7 @@ class Game(
         if (h.outcome == Formulas.Outcome.HIT) {
             p.hp -= h.damage
             p.regenFrom = now
+            woundedSpouse(p, now)
         }
         // Only a blow that lands kills: just resurrected at 0 HP, a miss leaves the character alive.
         if (h.outcome == Formulas.Outcome.HIT && p.hp < 1) {
@@ -938,6 +967,7 @@ class Game(
     internal suspend fun killNpc(p: Player, npc: World.Npc, now: Long) {
         world.kill(npc, now)
         p.count(Stat.MONSTERS)
+        killOrder(p, npc)
         p.log("${npc.name} погибает.")
         tellOthers(p.location, p.id, "${npc.name} погибает.")
         addExp(p, npc.stats.expValue)
@@ -967,6 +997,7 @@ class Game(
         p.attackTarget = null
         p.poisonUntil = 0
         if (p.mount != null) leaveHorse(p, now, hour = false)
+        if (p.hasFlag) dropFlag(p, "${p.name} потерял флаг!")
         p.count(Stat.DEATHS)
         by?.count(Stat.PLAYERS)
         if (p.location == Rules.ARENA) {
@@ -1097,18 +1128,20 @@ class Game(
             }
         }
         db.tx { c ->
-            c.prepareStatement("SELECT key, value, until FROM character_state WHERE character_id = ? AND key IN ('crime', 'faction', 'mount')").use { st ->
+            c.prepareStatement("SELECT key, value, until FROM character_state WHERE character_id = ? AND key IN ('crime', 'faction', 'mount', 'spouse')").use { st ->
                 st.setLong(1, p.id)
                 st.executeQuery().use { rs ->
                     while (rs.next()) when (rs.getString(1)) {
                         "crime" -> { p.crime = rs.getString(2); p.crimeUntil = rs.getLong(3) }
                         "faction" -> p.faction = rs.getString(2).takeIf { it.isNotEmpty() }
                         "mount" -> rs.getString(2).split('|').let { m -> p.mount = Mount(m[0].toIntOrNull() ?: 1, m.getOrNull(1)?.takeIf { it.isNotEmpty() }) }
+                        "spouse" -> rs.getString(2).split('|', limit = 2).let { m -> p.spouseId = m[0].toLongOrNull(); p.spouseName = m.getOrNull(1) }
                     }
                 }
             }
         }
         loadClan(p)
+        checkMarriage(p)
         afterBreak(p, 0)
         p.regenFrom = clock()
         refreshStats(p)
@@ -1217,6 +1250,8 @@ class Game(
             crime = p.crime.takeIf { p.criminal(now) }, crimeMinutes = if (p.criminal(now)) (p.crimeUntil - now + 59) / 60 else 0,
             poisoned = now < p.poisonUntil,
             mounted = p.mount != null,
+            flag = p.hasFlag,
+            spouse = p.spouseName,
             ghost = p.ghost, exp = p.exp, expNext = Formulas.expThreshold(p.skills()),
             hit = s.hit, dmgMin = s.dmgMin, dmgMax = s.dmgMax, armor = s.armor, dodge = s.dodge,
             parry = s.parry, magicDodge = s.magicDodge, magicParry = s.magicParry, magicResist = s.magicResist,
@@ -1236,6 +1271,7 @@ class Game(
                     hpPercent = if (!q.ghost && q.hp < q.hpMax) q.hp.coerceAtLeast(0) * 100 / q.hpMax else null,
                     attacking = if (q.ghost) null else attackingOf(q.attackTarget),
                     rider = q.mount != null,
+                    flag = q.hasFlag,
                     faction = if (Law.wolfIsland(loc.id) && (Regex("x(\\d+)$").find(loc.id)?.groupValues?.get(1)?.toIntOrNull() ?: 0) <= 1370)
                         when (q.faction) { "t" -> "тамплиер"; "p" -> "пират"; else -> null } else null)
             },
@@ -1243,6 +1279,8 @@ class Game(
             abilities = abilities(p, now),
             stance = p.stance?.takeIf { now < it.until }?.let { "${it.name} (${(it.until - now + 59) / 60} мин)" },
             peek = p.peekView.also { p.peekView = null },
+            stele = p.steleTo?.takeIf { now < p.steleUntil }?.let { content.locations[it]?.name ?: it },
+            alarm = castleAlarm(p, now)?.let { (n, _) -> content.locations["c.$n.gate"]?.name ?: "Замок $n" },
         )
     }
 

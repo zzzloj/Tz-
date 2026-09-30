@@ -70,7 +70,9 @@ private suspend fun Game.lookPlayer(q: Game.Player): LookView {
     lines += (if (female) "Женщ." else "Мужч.") + ", в игре $days дн."
     lines += Levels.rank(Levels.percent(s)) + " " + Levels.title(s)
     lines += Levels.build(q.str, q.dex, q.int)
+    q.spouseName?.let { lines += if (female) "Замужем за $it" else "Женат на $it" }
     q.clanName?.let { clan -> lines += (Rules.CLAN_RANKS[q.clanRank] ?: "Состоит в") + " клана $clan" }
+    if (q.hasFlag) lines += "Держит в руках флаг лидерства (нападение не будет преступлением)"
     if (q.ghost) lines += "Призрак"
     lines += equipmentLines(q.equipped)
     lines += "— Статистика —"

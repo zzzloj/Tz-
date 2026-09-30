@@ -155,6 +155,10 @@ data class CharacterView(
     val poisoned: Boolean = false,
     /** On horseback (dismount: POST /api/game/skill "dismount"). */
     val mounted: Boolean = false,
+    /** Holds the leadership flag: +10 health, +20 to spells, +10 to techniques — and anyone may strike you. */
+    val flag: Boolean = false,
+    /** Husband or wife. */
+    val spouse: String? = null,
     /** Skills above 0 by key (Rules.SKILLS), spells and techniques learnt. */
     val skills: Map<String, Int> = emptyMap(),
     val known: List<String> = emptyList(),
@@ -221,7 +225,39 @@ data class GameView(
     val peek: PeekView? = null,
     /** Answer to POST /api/game/look: a character, an NPC, an item, a spell or a skill described. */
     val look: LookView? = null,
+    /** Your spouse was wounded there: go to them for 5 minutes (POST /api/game/skill "stele"). */
+    val stele: String? = null,
+    /** Strangers in your clan's castle: go and defend it (POST /api/game/castle op "tele"). */
+    val alarm: String? = null,
 )
+
+/** GET /api/world: who is online, clans, castles, the leadership flag (the old site pages). */
+@Serializable
+data class WorldView(
+    val online: List<OnlineView> = emptyList(),
+    val clans: List<ClanSummary> = emptyList(),
+    val castles: List<CastleSummary> = emptyList(),
+    /** Who holds the leadership flag (null — it lies somewhere) and where. */
+    val flagHolder: String? = null,
+    val flagLocation: String? = null,
+    val flagLocationId: String? = null,
+)
+
+@Serializable
+data class OnlineView(val name: String, val level: Int, val clan: String? = null, val crime: String? = null)
+
+@Serializable
+data class ClanSummary(val name: String, val members: Int)
+
+@Serializable
+data class CastleSummary(val id: Int, val name: String, val owner: String? = null)
+
+/** GET /api/map: every location with coordinates (x, y from its id "x<X>x<Y>") and zone, for drawing the map. */
+@Serializable
+data class MapView(val points: List<MapPoint> = emptyList())
+
+@Serializable
+data class MapPoint(val id: String, val x: Int, val y: Int, val zone: Int)
 
 @Serializable
 data class PeekItem(val id: String, val name: String, val count: Int, val equipped: Boolean = false)
@@ -308,6 +344,7 @@ data class PersonView(
     /** On the Wolf island: тамплиер or пират. */
     val faction: String? = null,
     val rider: Boolean = false,
+    val flag: Boolean = false,
 )
 
 @Serializable
@@ -626,6 +663,27 @@ object Rules {
     const val BANK_MONEY_MAX = 70000
     /** The old cell held an 800-character string; here: different stacks. */
     const val BANK_STACKS_MAX = 40
+
+    /**
+     * Where a location is on the map (m.php calctc): coordinates from its id,
+     * special places pinned (start, arena, castles 1–4), and the map it is on:
+     * 0 — the main land, 1 — Ansalon (X > 1650), 2 — the Wolf island (Y > 1101).
+     */
+    fun mapPoint(loc: String): Triple<Int, Int, Int>? {
+        val id = when {
+            loc == "_begin" -> "x1158x523"
+            loc == "arena" -> "x1086x501"
+            loc.startsWith("c.1.") -> "x1429x168"
+            loc.startsWith("c.2.") -> "x781x429"
+            loc.startsWith("c.3.") -> "x1129x369"
+            loc.startsWith("c.4.") -> "x2320x348"
+            else -> loc
+        }
+        val m = Regex("^x(\\d+)x(\\d+)$").find(id) ?: return null
+        val x = m.groupValues[1].toInt()
+        val y = m.groupValues[2].toInt()
+        return Triple(x, y, if (y > 1101) 2 else if (x > 1650) 1 else 0)
+    }
 
     fun hpMax(str: Int) = 10 + str * 10
     fun manaMax(int: Int) = 10 + int * 10

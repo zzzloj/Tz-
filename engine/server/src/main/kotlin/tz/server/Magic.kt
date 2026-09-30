@@ -235,7 +235,7 @@ suspend fun Game.technique(account: Account, id: String, target: String?): GameV
     val name = def.str("name") ?: id
     val cooldown = (def.int("cooldown") ?: 0).toLong()
     // Intelligence spoils the aim of techniques, and so does the saddle (f_usepriem.dat:24-26).
-    val intPenalty = (p.int - 1) * 10 + (if (p.mount != null) 10 else 0)
+    val intPenalty = (p.int - 1) * 10 + (if (p.mount != null) 10 else 0) - (if (p.hasFlag) 10 else 0)
     if (p.stats.ranged) {
         p.log("Приемы можно использовать только в рукопашном бою или с холодным оружием ближнего боя")
         return@withLock viewLocked(p)
@@ -402,7 +402,8 @@ internal suspend fun Game.castSpell(p: Game.Player, spell: String, target: Strin
     val level = def.int("level") ?: 1
     val strPenalty = (maxOf(p.str, 2) - 2) * 4
     // On horseback −10 (f_usemagic.dat:25).
-    val chance = ((magicSkill * 0.5 + p.int * 1.5) * 10 - level * 10 + 10 - strPenalty - (if (p.mount != null) 10 else 0)).coerceAtMost(95.0)
+    // On horseback −10 (f_usemagic.dat:25), the flag +20 (:26).
+    val chance = ((magicSkill * 0.5 + p.int * 1.5) * 10 - level * 10 + 10 - strPenalty - (if (p.mount != null) 10 else 0) + (if (p.hasFlag) 20 else 0)).coerceAtMost(95.0)
     if (chance <= 0 || magicSkill == 0) { p.log("Слишком слабый навык магии"); return }
     p.mana -= cost
     p.busyUntil = now + (def.int("cast_time") ?: 0) + 3 - p.dex + strPenalty
@@ -692,6 +693,7 @@ private suspend fun Game.search(p: Game.Player, now: Long) {
 internal suspend fun Game.useMagicItem(p: Game.Player, itemId: String, target: String?): Boolean {
     Spells.BOTTLES[itemId]?.let { useBottle(p, itemId, it, target); return true }
     if (summonScroll(p, itemId, clock())) return true
+    if (itemId == "i.q.dv") return demonVial(p, clock())
     Spells.spellOfItem(itemId)?.takeIf { content.items[it] != null }?.let { spell ->
         castSpell(p, spell, target, scroll = itemId)
         return true
