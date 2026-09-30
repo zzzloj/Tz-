@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Smoke test of a deployed game server: register, character, walk.
+"""Smoke test of a deployed game server: register, character, walk, site, recovery, deletion.
 
 usage: smoke.py <base url>
 Prints a GitHub annotation with the result; exits 1 on failure.
@@ -122,10 +122,28 @@ try:
     assert status == 401
     steps.append("cheat move refused, forged token refused")
 
+    status, page = call("GET", "/")
+    assert status == 200 and "Территория Зла" in page, (status, page[:200])
+    status, forum = call("GET", "/api/forum")
+    assert status == 200 and len(forum["sections"]) >= 6, (status, forum)
+    status, acc = call("POST", "/api/account", {"op": "recovery", "password": "smoke-pass-123"}, token)
+    assert status == 200 and acc.get("recoveryCode"), (status, acc)
+    steps.append(f"site and forum ({len(forum['sections'])} sections) ok, recovery code issued")
+
     status, _ = call("POST", "/api/auth/logout", {}, token)
     status, _ = call("GET", "/api/me", token=token)
     assert status == 401
     steps.append("logout ok")
+
+    # Recover with the code, then delete the account: smoke runs leave nothing behind.
+    status, auth = call("POST", "/api/auth/recover", {"login": login, "code": acc["recoveryCode"], "newPassword": "smoke-pass-456"})
+    assert status == 200, (status, auth)
+    token = auth["token"]
+    status, err = call("POST", "/api/account", {"op": "delete", "password": "smoke-pass-456"}, token)
+    assert status == 204, (status, err)
+    status, err = call("POST", "/api/auth/login", {"login": login, "password": "smoke-pass-456"})
+    assert status == 401, (status, err)
+    steps.append("password recovered by the code; the smoke account deleted")
     print("::notice title=Smoke " + base + "::" + "%0A".join(steps))
 except Exception as e:
     print("::error title=Smoke " + base + "::" + "%0A".join(steps + [f"FAILED: {e!r}"])[:3000])

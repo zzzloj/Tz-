@@ -188,7 +188,8 @@ class SiteTest {
 
         // A ban ends the sessions and closes the door; lifting it opens it again.
         game.admin(admin, AdminRequest("ban", names[2], "читы", minutes = 0))
-        assertEquals(Errors.BANNED, assertFailsWith<ApiException> { accounts.authenticate(tokens[2]) }.code)
+        assertNull(accounts.authenticate(tokens[2]))
+        assertEquals(Errors.BANNED, assertFailsWith<ApiException> { accounts.login(player.login, "secret-123") }.code)
         assertTrue(game.players.values.none { it.accountId == player.id })
         game.admin(admin, AdminRequest("unban", names[2]))
         val back = accounts.login(player.login, "secret-123")
@@ -210,9 +211,9 @@ class SiteTest {
         assertEquals(Errors.FORBIDDEN, assertFailsWith<ApiException> { forum.act(player, ForumRequest("topic", news.id, title = "Моя новость", text = "Текст")) }.code)
         var v = forum.act(player, ForumRequest("topic", talk.id, title = "Где <b>найти</b> лук? " + unique(""), text = "Подскажите, где купить лук"))
         val topic = assertNotNull(v.topic)
-        assertTrue(!topic.title.contains("<b>"))
+        assertTrue(!topic.title.contains("<b>"), "forum check 1")
         assertEquals(names[2], v.posts.single().author)
-        assertTrue(v.posts.single().mine)
+        assertTrue(v.posts.single().mine, "forum check 2")
         // Too fast, then a reply; the same text twice is refused.
         assertEquals(Errors.TOO_FAST, assertFailsWith<ApiException> { forum.act(player, ForumRequest("post", topic = topic.id, text = "Ещё")) }.code)
         clock[0] += 30
@@ -222,11 +223,11 @@ class SiteTest {
         assertEquals(Errors.SAID_ALREADY, assertFailsWith<ApiException> { forum.act(player, ForumRequest("post", topic = topic.id, text = "Ау?")) }.code)
         // Moderators answer quickly, close, pin and rename.
         v = forum.act(moder, ForumRequest("post", topic = topic.id, text = "У Милты"))
-        assertTrue(!v.posts.last().mine)
+        assertTrue(!v.posts.last().mine, "forum check 3")
         forum.act(moder, ForumRequest("close", topic = topic.id))
         clock[0] += 30
         assertEquals(Errors.TOPIC_LOCKED, assertFailsWith<ApiException> { forum.act(player, ForumRequest("post", topic = topic.id, text = "Спасибо")) }.code)
-        assertTrue(!forum.topic(player, topic.id, 0).canWrite)
+        assertTrue(!forum.topic(player, topic.id, 0).canWrite, "forum check 4")
         v = forum.act(moder, ForumRequest("rename", topic = topic.id, title = "Лук: где купить"))
         assertEquals("Лук: где купить", v.topic!!.title)
         forum.act(moder, ForumRequest("pin", topic = topic.id))
@@ -239,9 +240,9 @@ class SiteTest {
         assertEquals(names[2], v.posts.first { it.id == mine.id }.editedBy)
         // Deleting a post, then the whole topic.
         v = forum.act(moder, ForumRequest("delete", post = his.id))
-        assertTrue(v.posts.none { it.id == his.id })
+        assertTrue(v.posts.none { it.id == his.id }, "forum check 5")
         v = forum.act(moder, ForumRequest("delete", topic = topic.id))
-        assertTrue(v.topics.none { it.id == topic.id })
+        assertTrue(v.topics.none { it.id == topic.id }, "forum check 6")
         // News from moderators reach the notice board.
         forum.act(moder, ForumRequest("topic", news.id, title = "Открытие " + unique(""), text = "Игра снова работает"))
         val board = assertNotNull(game.look(player, "i.s.book.news").look)

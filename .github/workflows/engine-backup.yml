@@ -1,0 +1,45 @@
+name: engine-backup
+
+# A nightly pg_dump of the game database, encrypted, kept as a workflow
+# artifact for 30 days. The repository is public, so the dump is encrypted
+# with BACKUP_PASSPHRASE (AES-256, openssl) before it is uploaded.
+# Needs two repository secrets; without them the job only says so:
+#   DATABASE_PUBLIC_URL — Railway → Postgres → Variables → DATABASE_PUBLIC_URL
+#   BACKUP_PASSPHRASE   — any long random string, kept somewhere safe
+# Restore: openssl enc -d -aes-256-cbc -pbkdf2 -in tz.dump.enc -out tz.dump
+#          pg_restore --clean --no-owner -d "$DATABASE_URL" tz.dump
+on:
+  schedule:
+    - cron: "17 1 * * *"
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Dump and encrypt
+        env:
+          DATABASE_PUBLIC_URL: ${{ secrets.DATABASE_PUBLIC_URL }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          if [ -z "$DATABASE_PUBLIC_URL" ] || [ -z "$BACKUP_PASSPHRASE" ]; then
+            echo "::warning title=Backup skipped::Set the DATABASE_PUBLIC_URL and BACKUP_PASSPHRASE repository secrets to enable backups."
+            exit 0
+          fi
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSo /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt noble-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update -q && sudo apt-get install -yq postgresql-client-17
+          /usr/lib/postgresql/17/bin/pg_dump --format=custom --no-owner "$DATABASE_PUBLIC_URL" -f tz.dump
+          openssl enc -aes-256-cbc -pbkdf2 -salt -pass env:BACKUP_PASSPHRASE -in tz.dump -out tz.dump.enc
+          rm tz.dump
+          ls -l tz.dump.enc
+          echo "HAVE_DUMP=1" >> "$GITHUB_ENV"
+      - name: Keep for 30 days
+        if: env.HAVE_DUMP == '1'
+        uses: actions/upload-artifact@v4
+        with:
+          name: tz-db-${{ github.run_id }}
+          path: tz.dump.enc
+          retention-days: 30
