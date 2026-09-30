@@ -339,9 +339,9 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
 
     fun closeAccount() { account = null; info = null }
 
-    suspend fun changePassword(old: String, new: String) = action {
-        if (new.length < Rules.PASSWORD_MIN) throw ApiError(Errors.WEAK_PASSWORD)
-        account = api.account("password", old, new)
+    suspend fun changePassword(old: String, newPassword: String) = action {
+        if (newPassword.length < Rules.PASSWORD_MIN) throw ApiError(Errors.WEAK_PASSWORD)
+        account = api.account("password", old, newPassword)
         info = "Пароль изменён. На других устройствах нужно войти заново."
     }
 
@@ -398,7 +398,7 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
 
     fun closeForum() { forum = null }
 
-    suspend fun newTopic(title: String, text: String) = action {
+    suspend fun startTopic(title: String, text: String) = action {
         val s = forum?.section ?: return@action
         forum = api.forum(ForumRequest("topic", section = s.id, title = title.trim(), text = text.trim()))
     }

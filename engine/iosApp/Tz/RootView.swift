@@ -33,21 +33,85 @@ final class SessionModel: ObservableObject {
 
 struct RootView: View {
     @StateObject private var model = SessionModel()
+    @State private var recovering = false
+
+    private func siteActions() -> SiteActions {
+        let model = self.model
+        return SiteActions(
+            closeAccount: { model.run { $0.closeAccount() } },
+            changePassword: { o, n in model.run { try await $0.changePassword(old: o, newPassword: n) } },
+            makeRecovery: { p in model.run { try await $0.makeRecoveryCode(password: p) } },
+            setAbout: { t in model.run { try await $0.setAbout(text: t) } },
+            deleteAccount: { p in model.run { try await $0.deleteAccount(password: p) } },
+            openSection: { sec in model.run { try await $0.openSection(section: sec, page: 0) } },
+            openTopic: { t in model.run { try await $0.openTopic(topic: t, page: 0) } },
+            forumPage: { n in model.run { try await $0.forumPage(page: Int32(n)) } },
+            forumBack: { model.run { try await $0.forumBack() } },
+            closeForum: { model.run { $0.closeForum() } },
+            newTopic: { t, x in model.run { try await $0.startTopic(title: t, text: x) } },
+            reply: { x in model.run { try await $0.reply(text: x) } },
+            editPost: { p, x in model.run { try await $0.editPost(post: p, text: x) } },
+            moderateTopic: { op in model.run { try await $0.moderateTopic(op: op) } },
+            renameTopic: { t in model.run { try await $0.renameTopic(title: t) } },
+            deletePost: { p in model.run { try await $0.deletePost(post: p) } },
+            openPage: { p in model.run { try await $0.openPage(summary: p) } },
+            closePage: { model.run { $0.closePage() } },
+            closePages: { model.run { $0.closePages() } },
+            adminOp: { op, target, text, item, count, minutes in
+                model.run { try await $0.adminOp(op: op, target: target, text: text, item: item, count: Int32(count), minutes: Int32(minutes)) }
+            },
+            closeAdmin: { model.run { $0.closeAdmin() } })
+    }
 
     var body: some View {
         let _ = model.version   // redraw after every session call
         let s = model.session
         NavigationStack {
             Form {
-                if s.screen == Screen.signIn {
+                if let a = s.account {
+                    AccountView_(account: a, info: s.info, busy: s.busy, act: siteActions())
+                } else if let ad = s.admin {
+                    AdminView_(admin: ad, busy: s.busy, act: siteActions())
+                } else if let f = s.forum {
+                    ForumView_(forum: f, busy: s.busy, act: siteActions())
+                } else if let pg = s.pages {
+                    PagesView_(pages: pg, page: s.page, busy: s.busy, act: siteActions())
+                } else if s.screen == Screen.signIn && recovering {
+                    RecoverView(busy: s.busy,
+                                onRecover: { l, c, p in
+                                    model.run { session in
+                                        try await session.recover(login: l, code: c, newPassword: p)
+                                        if session.error == nil { await MainActor.run { recovering = false } }
+                                    }
+                                },
+                                onCancel: { recovering = false })
+                } else if s.screen == Screen.signIn {
                     SignInView(busy: s.busy,
                                onSignIn: { l, p in model.run { try await $0.signIn(login: l, password: p) } },
                                onRegister: { l, p in model.run { try await $0.register(login: l, password: p) } })
+                    Section {
+                        Button("Забыли пароль?") { recovering = true }
+                        Button("Форум") { model.run { try await $0.openForum() } }.disabled(s.busy)
+                        Button("Об игре") { model.run { try await $0.openPages() } }.disabled(s.busy)
+                    }
                 } else if s.screen == Screen.createCharacter {
                     CreateCharacterView(busy: s.busy) { name, female in
                         model.run { try await $0.createCharacter(name: name, female: female) }
                     }
                 } else if s.screen == Screen.playing, let game = s.game {
+                    Section {
+                        HStack {
+                            Button("Форум") { model.run { try await $0.openForum() } }
+                            Spacer()
+                            Button("Помощь") { model.run { try await $0.openPages() } }
+                            Spacer()
+                            Button("Аккаунт") { model.run { try await $0.openAccount() } }
+                            if s.moderator {
+                                Spacer()
+                                Button("Модерация") { model.run { try await $0.openAdmin() } }
+                            }
+                        }.buttonStyle(.borderless).disabled(s.busy)
+                    }
                     PlayingView(game: game, busy: s.busy,
                                 onGo: { exit in model.run { try await $0.go(exit: exit) } },
                                 onTake: { item in model.run { try await $0.take(item: item, count: nil) } },
@@ -89,7 +153,8 @@ struct RootView: View {
                                     openMap: { model.run { try await $0.openMap() } },
                                     closeMap: { model.run { $0.closeMap() } },
                                     stele: { model.run { try await $0.stele() } },
-                                    dropFlag: { model.run { try await $0.dropFlag() } }),
+                                    dropFlag: { model.run { try await $0.dropFlag() } },
+                                    openSite: { page in model.run { session in if page == "news" { try await session.openNews() } else { try await session.openPages() } } }),
                                 pendingAbility: s.pendingAbility,
                                 social: SocialActions(
                                     answerText: { t in model.run { try await $0.answerText(text: t) } },
@@ -120,6 +185,9 @@ struct RootView: View {
                                 onSignOut: { model.run { try await $0.signOut() } })
                 } else if s.error != nil {
                     Button("Повторить") { model.run { try await $0.refresh() } }
+                }
+                if s.account == nil, let info = s.info {
+                    Text(info).foregroundStyle(Color.accentColor)
                 }
                 if let error = s.error {
                     Text(error).foregroundStyle(.red)
@@ -597,6 +665,8 @@ struct MoreActions {
     let closeMap: () -> Void
     let stele: () -> Void
     let dropFlag: () -> Void
+    /// A notice board or a bookshelf: "news" or "pages".
+    let openSite: (String) -> Void
 }
 
 /// Spells, techniques and stances learnt, and the «на кого?» list for one that needs a target.
@@ -682,6 +752,9 @@ struct CharacterSection: View {
         if let l = game.look {
             Section(l.title) {
                 Text(l.text).font(.footnote)
+                if let pg = l.page {
+                    Button(pg == "news" ? "Все новости" : "Выбрать книгу") { more.openSite(pg) }.disabled(busy)
+                }
                 Button("закрыть") { more.closeLook() }
             }
         }
