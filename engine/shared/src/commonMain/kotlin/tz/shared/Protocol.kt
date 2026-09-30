@@ -257,7 +257,10 @@ data class CastleSummary(val id: Int, val name: String, val owner: String? = nul
 data class MapView(val points: List<MapPoint> = emptyList())
 
 @Serializable
-data class MapPoint(val id: String, val mapX: Int, val mapY: Int, val zone: Int)
+data class MapPoint(val id: String, val mapX: Int, val mapY: Int, val zone: Int) {
+    /** A guarded street. (Swift sees `zone` as NSObject's zone(), so the apps use this.) */
+    val guarded: Boolean get() = zone == 1
+}
 
 @Serializable
 data class PeekItem(val id: String, val name: String, val count: Int, val equipped: Boolean = false)

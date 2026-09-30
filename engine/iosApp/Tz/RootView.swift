@@ -791,7 +791,7 @@ struct MapCanvas: View {
             let px = CGFloat(Double(point.mapX))
             let py = CGFloat(Double(point.mapY))
             let r = py > 1101 ? 2 : (px > 1650 ? 1 : 0)
-            if r == region { dots.append((px, py, point.zone == 1)) }
+            if r == region { dots.append((px, py, point.guarded)) }
         }
         let castles = ["c.1.gate", "c.2.gate", "c.3.gate", "c.4.gate"].compactMap { MapCanvas.point($0) }.filter { $0.2 == region }
         let flag = flagAt.flatMap { MapCanvas.point($0) }.flatMap { $0.2 == region ? $0 : nil }
