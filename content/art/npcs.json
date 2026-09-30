@@ -1,0 +1,98 @@
+{
+  "_doc": "NPC portraits: first regex (case-insensitive) matching the NPC's display name picks content/art/npcs/<key>.webp (640×640). A name matching `undead` is the risen corpse of that NPC: same portrait, drawn with the undead tint. Keys with no picture yet show no portrait.",
+  "undead": "-зомби$",
+  "rules": [
+    [
+      "маг-стражник|маг-охранник|^(Аурон|Торвилл)",
+      "npc-mage-guard"
+    ],
+    [
+      "^гном",
+      "npc-dwarf"
+    ],
+    [
+      "^(Лукас|Антуан|Сантьяго)( \\[|-зомби|$)",
+      "npc-bankir"
+    ],
+    [
+      "^(Санчес)( \\[|-зомби|$)",
+      "npc-officer"
+    ],
+    [
+      "^(Кениус)( \\[|-зомби|$)",
+      "npc-kenius"
+    ],
+    [
+      "^(Мирандер)( \\[|-зомби|$)",
+      "npc-guildmaster"
+    ],
+    [
+      "^(Дэн)( \\[|-зомби|$)",
+      "npc-den"
+    ],
+    [
+      "^(Плант|Тэд|Арант|Навзил)( \\[|-зомби|$)",
+      "npc-merchant-weapons"
+    ],
+    [
+      "^(Силт|Кода)( \\[|-зомби|$)",
+      "npc-merchant-armor"
+    ],
+    [
+      "^(Катрина|Сильвия)( \\[|-зомби|$)",
+      "npc-merchant-clothes"
+    ],
+    [
+      "^(Махмет)( \\[|-зомби|$)",
+      "npc-merchant-jewels"
+    ],
+    [
+      "^(Гостон|Руф|Словен|Слейтер|Стен|Поло|Торговец)( \\[|-зомби|$)",
+      "npc-merchant-goods"
+    ],
+    [
+      "^(Милта)( \\[|-зомби|$)",
+      "npc-milta"
+    ],
+    [
+      "^(Сван|Грегор)( \\[|-зомби|$)",
+      "npc-svan"
+    ],
+    [
+      "^(Мартен)( \\[|-зомби|$)",
+      "npc-marten"
+    ],
+    [
+      "^(Милтон)( \\[|-зомби|$)",
+      "npc-milton"
+    ],
+    [
+      "^(Антонио)( \\[|-зомби|$)",
+      "npc-antonio"
+    ],
+    [
+      "^(Томрак)( \\[|-зомби|$)",
+      "npc-telemag"
+    ],
+    [
+      "^(Франческо)( \\[|-зомби|$)",
+      "npc-franchesko"
+    ],
+    [
+      "^(Клавдиус)( \\[|-зомби|$)",
+      "npc-klavdius"
+    ],
+    [
+      "^(Серпент)( \\[|-зомби|$)",
+      "npc-serpent"
+    ],
+    [
+      "^(Лансет)( \\[|-зомби|$)",
+      "npc-lanset"
+    ],
+    [
+      "стражник|стража|^страж ",
+      "npc-guard"
+    ]
+  ]
+}

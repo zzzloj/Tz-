@@ -8,3 +8,6 @@ owner from the prompt pack; one picture per key, 1280×720 WebP.
   matching rule on the location name wins; `fallback` covers keys whose picture is missing — empty now, all 34 drawn).
 
 Game icons elsewhere in the apps: game-icons.net, CC BY 3.0.
+- `npcs/<key>.webp` — NPC portraits (square, 640×640), shown in dialogs and when
+  looking at an NPC. `npcs.json` maps the NPC's display name to a key; a risen
+  corpse («…-зомби») reuses the living NPC's portrait with an undead tint.
