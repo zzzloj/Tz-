@@ -86,9 +86,17 @@ class GameApi(
 
     suspend fun move(target: String): GameView = postJson<GameView, MoveRequest>("/api/game/move", MoveRequest(target))
 
-    suspend fun take(item: String, arg: String? = null): GameView = postJson<GameView, ItemRequest>("/api/game/take", ItemRequest(item, arg))
+    suspend fun take(item: String, arg: String? = null, count: Int? = null): GameView =
+        postJson<GameView, ItemRequest>("/api/game/take", ItemRequest(item, arg, count))
 
-    suspend fun drop(item: String): GameView = postJson<GameView, ItemRequest>("/api/game/drop", ItemRequest(item))
+    /** Meditation, or stealing: without [item] peeks into [target]'s backpack. */
+    suspend fun skill(skill: String, target: String? = null, item: String? = null): GameView =
+        postJson<GameView, SkillRequest>("/api/game/skill", SkillRequest(skill, target, item))
+
+    /** Describes a character, an NPC, an item, a spell or a skill (GameView.look). */
+    suspend fun look(target: String): GameView = postJson<GameView, LookRequest>("/api/game/look", LookRequest(target))
+
+    suspend fun drop(item: String, count: Int? = null): GameView = postJson<GameView, ItemRequest>("/api/game/drop", ItemRequest(item, count = count))
 
     suspend fun equip(item: String): GameView = postJson<GameView, ItemRequest>("/api/game/equip", ItemRequest(item))
 

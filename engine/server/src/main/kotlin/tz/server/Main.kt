@@ -30,6 +30,8 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import tz.shared.AuthResponse
 import tz.shared.CastRequest
+import tz.shared.SkillRequest
+import tz.shared.LookRequest
 import tz.shared.TechniqueRequest
 import tz.shared.Credentials
 import tz.shared.ErrorResponse
@@ -149,11 +151,12 @@ private fun Route.accountRoutes(accounts: Accounts, game: Game) {
     post("/api/game/take") {
         val account = requireAccount(call, accounts)
         val body = call.receive<ItemRequest>()
-        call.respond(game.take(account, body.item, body.arg))
+        call.respond(game.take(account, body.item, body.arg, body.count))
     }
     post("/api/game/drop") {
         val account = requireAccount(call, accounts)
-        call.respond(game.drop(account, call.receive<ItemRequest>().item))
+        val body = call.receive<ItemRequest>()
+        call.respond(game.drop(account, body.item, body.count))
     }
     post("/api/game/equip") {
         val account = requireAccount(call, accounts)
@@ -196,6 +199,15 @@ private fun Route.accountRoutes(accounts: Accounts, game: Game) {
         val account = requireAccount(call, accounts)
         val body = call.receive<UseRequest>()
         call.respond(game.use(account, body.item, body.recipe, body.target))
+    }
+    post("/api/game/skill") {
+        val account = requireAccount(call, accounts)
+        val body = call.receive<SkillRequest>()
+        call.respond(game.skill(account, body.skill, body.target, body.item))
+    }
+    post("/api/game/look") {
+        val account = requireAccount(call, accounts)
+        call.respond(game.look(account, call.receive<LookRequest>().target))
     }
     post("/api/game/cast") {
         val account = requireAccount(call, accounts)

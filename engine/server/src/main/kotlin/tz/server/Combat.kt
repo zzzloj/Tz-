@@ -26,6 +26,8 @@ data class Stats(
     /** Gems (i.i.am, i.i.ne…) change maximum HP and mana (char[2], char[4]). */
     val hpBonus: Int = 0,
     val manaBonus: Int = 0,
+    /** Extra crit chance in percent (the ..kp gem, f_attackf.dat:99). */
+    val critBonus: Int = 0,
 ) {
     val magic: Boolean get() = verb == "магией" || verb == "молнией"
 }
@@ -129,6 +131,8 @@ object Formulas {
                     dmgMin += min - strDef * 2 - intDef * 2
                     dmgMax += max - strDef * 2 - intDef * 2
                 }
+                // Sharpening "-N-" adds up to +6 (f_calcparam.dat:68-70).
+                SHARP.find(id)?.groupValues?.get(1)?.toIntOrNull()?.let { val n = it.coerceAtMost(6); dmgMin += n; dmgMax += n }
                 if (!id.startsWith("i.w.r.c.")) { dmgMin += str; dmgMax += str }
             }
             // Gems: each kind counts once however many items carry it.
@@ -150,6 +154,14 @@ object Formulas {
             if (mounted) hit -= 20
             delay = 5 - phpRound(dex / 2.0)
             verb = "кулаками"
+        }
+        // Sets (f_calcparam.dat:100-102): the adamant one, and the ogre and troll one with a wolf's head.
+        fun wears(part: String) = equipped.any { part in it }
+        if (wears("i.a.h.ms") && wears("i.a.b.sborn") && wears("i.a.p.ms") && wears("i.a.l.ms") && wears("i.w.s.master")) {
+            hpBonus += 5; manaBonus += 5; hit += 5; armor += 5; dmgMin += 4; dmgMax += 3
+        }
+        if (wears("i.a.l.ogr") && wears("i.a.p.ogr") && wears("i.a.b.troll") && (wears("i.a.h.whitewolf") || wears("i.a.h.wolf"))) {
+            hpBonus += 5; manaBonus += 5; armor += 4
         }
         if (equipped.any { it.contains("..do") }) hitPenalty += 20   // dolerite: −20 % accuracy
         hit -= hitPenalty
@@ -174,9 +186,11 @@ object Formulas {
             ammo = ammo,
             hpBonus = hpBonus,
             manaBonus = manaBonus,
+            critBonus = if (equipped.any { it.contains("..kp") }) 4 else 0,
         )
     }
 
+    private val SHARP = Regex("""-(\d+)-""")
     private val GEM = Regex("""\.\.([A-Za-z0-9]+)""")
 
     /** "str:dex:int[:hp]" of armour (field req) or a weapon (field req). */
@@ -246,7 +260,7 @@ object Formulas {
         }
         if (!magic && d.armor > 0) damage -= dice.roll(0, d.armor)
         if (damage < 0) damage = 0
-        val critChance = if (a.ranged) 5 else if (magic) 4 else 2
+        val critChance = (if (a.ranged) 5 else if (magic) 4 else 2) + a.critBonus
         var crit = false
         if (damage > 0 && dice.roll(0, 100) < critChance) { damage *= 2; crit = true }
         return Hit(Outcome.HIT, damage, crit, shieldCut, resisted)

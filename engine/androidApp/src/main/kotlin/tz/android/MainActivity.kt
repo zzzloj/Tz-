@@ -44,6 +44,7 @@ import tz.shared.PersonView
 import tz.shared.AbilityView
 import tz.shared.Targets
 import tz.shared.ChoiceOption
+import tz.shared.PeekItem
 import tz.shared.ShopItemView
 import tz.shared.DialogOption
 import tz.shared.Rules
@@ -131,6 +132,14 @@ fun App(session: Session, live: Boolean = true) {
                     useAbility = { a -> run { session.useAbility(a) } },
                     aimAbility = { t -> run { session.aimAbility(t) } },
                     cancelAbility = { session.cancelAbility(); version++ },
+                    meditate = { run { session.meditate() } },
+                    peek = { t -> run { session.peek(t) } },
+                    steal = { i -> run { session.steal(i) } },
+                    closePeek = { session.closePeek(); version++ },
+                    look = { t -> run { session.look(t) } },
+                    closeLook = { session.closeLook(); version++ },
+                    dropOne = { i -> run { session.drop(i, 1) } },
+                    takeOne = { i -> run { session.take(i, 1) } },
                 ),
                 pendingAbility = session.pendingAbility,
                 social = SocialActions(
@@ -355,14 +364,38 @@ fun Playing(
                 )
                 val verb = when (a.kind) { "spell" -> "читать"; "stance" -> "встать"; else -> "ударить" }
                 TextButton(onClick = { more.useAbility(a) }, enabled = !busy && a.readyIn == 0L && !a.later) { Text(verb) }
+                TextButton(onClick = { more.look(a.id) }, enabled = !busy) { Text("?") }
             }
         }
     }
-    if (c.skills.isNotEmpty()) Text(
-        "навыки: " + c.skills.entries.joinToString { (k, v) -> "${Rules.skillTitle(k)} $v" } +
-            (if (c.known.isNotEmpty()) " · изучено: ${c.known.size}" else ""),
-        style = MaterialTheme.typography.labelMedium,
-    )
+    game.look?.let { l ->
+        Panel(l.title, more.closeLook) { Text(l.text, style = small) }
+    }
+    game.peek?.let { pk ->
+        Panel("Рюкзак: ${pk.targetName}", more.closePeek) {
+            pk.items.forEach { pi ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(pi.name + (if (pi.count > 1) " ×${pi.count}" else "") + (if (pi.equipped) " (надето)" else ""), Modifier.weight(1f), style = small)
+                    TextButton(onClick = { more.steal(pi) }, enabled = !busy) { Text("украсть") }
+                }
+            }
+        }
+    }
+    run {
+        var open by remember { mutableStateOf(false) }
+        TextButton(onClick = { open = !open }) { Text(if (open) "Персонаж ▲" else "Персонаж ▼") }
+        if (open) {
+            Text("${c.rank} ${c.title}", style = small)
+            Text("парирование ${c.parry} · уклон от магии ${c.magicDodge} · защита от магии ${c.magicParry} · сопр. магии ${c.magicResist}", style = small)
+            c.skills.forEach { (k, v) ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("${Rules.skillTitle(k)} $v", Modifier.weight(1f), style = small)
+                    if (k == "meditation" && !c.ghost) TextButton(onClick = more.meditate, enabled = !busy) { Text("медитировать") }
+                    TextButton(onClick = { more.look("skill.$k") }, enabled = !busy) { Text("?") }
+                }
+            }
+        }
+    }
     Text(loc.name, style = MaterialTheme.typography.headlineSmall)
     game.castle?.let { cs ->
         Text(
@@ -385,6 +418,7 @@ fun Playing(
         }
     }
     loc.description?.let { Text(it, style = small) }
+    val thief = (c.skills["steal"] ?: 0) > 0 || (c.skills["steallook"] ?: 0) > 0
     loc.npcs.forEach { npc ->
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
@@ -393,6 +427,8 @@ fun Playing(
                 color = if (npc.fightingYou) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
             )
             if (npc.canTalk) TextButton(onClick = { onTalk(npc) }, enabled = !busy) { Text("говорить") }
+            TextButton(onClick = { more.look(npc.id) }, enabled = !busy) { Text("?") }
+            if (thief && !c.ghost) TextButton(onClick = { more.peek(npc.id) }, enabled = !busy) { Text("подглядеть") }
             if (npc.attackable && !c.ghost) TextButton(onClick = { onAttack(npc) }, enabled = !busy) { Text("атаковать") }
         }
     }
@@ -406,6 +442,8 @@ fun Playing(
                 color = if (person.crime != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
             )
             if (!c.ghost && !person.ghost) TextButton(onClick = { social.attackPlayer(person) }, enabled = !busy) { Text("атаковать") }
+            TextButton(onClick = { more.look(person.name) }, enabled = !busy) { Text("?") }
+            if (thief && !c.ghost && !person.ghost) TextButton(onClick = { more.peek(person.name) }, enabled = !busy) { Text("подглядеть") }
             if (!c.ghost && !person.ghost) TextButton(onClick = { social.startExchange(person) }, enabled = !busy) { Text("обмен") }
             TextButton(onClick = { social.addContact(person.name) }, enabled = !busy) { Text("в контакты") }
             if (game.clan != null && person.clan == null) TextButton(onClick = { social.clanOp("invite", person.name, null, null) }, enabled = !busy) { Text("в клан") }
@@ -415,6 +453,8 @@ fun Playing(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("${item.name}${if (item.count > 1) " ×${item.count}" else ""}", Modifier.weight(1f))
             if (item.takeable) TextButton(onClick = { onTake(item) }, enabled = !busy) { Text(if (item.id.startsWith("i.s.")) "использовать" else "взять") }
+            if (item.takeable && item.count > 1) TextButton(onClick = { more.takeOne(item) }, enabled = !busy) { Text("1") }
+            TextButton(onClick = { more.look(item.id) }, enabled = !busy) { Text("?") }
         }
     }
     loc.corpses.forEach { corpse ->
@@ -458,6 +498,8 @@ fun Playing(
                 Text(if (item.equipped) "снять" else "надеть")
             }
             if (item.usable && !c.ghost) TextButton(onClick = { more.use(item) }, enabled = !busy) { Text("исп.") }
+            TextButton(onClick = { more.look(item.id) }, enabled = !busy) { Text("?") }
+            if (item.count > 1) TextButton(onClick = { more.dropOne(item) }, enabled = !busy) { Text("−1") }
             TextButton(onClick = { onDrop(item) }, enabled = !busy) { Text("бросить") }
         }
     }
@@ -560,6 +602,14 @@ class MoreActions(
     val useAbility: (AbilityView) -> Unit = {},
     val aimAbility: (String) -> Unit = {},
     val cancelAbility: () -> Unit = {},
+    val meditate: () -> Unit = {},
+    val peek: (String) -> Unit = {},
+    val steal: (PeekItem) -> Unit = {},
+    val closePeek: () -> Unit = {},
+    val look: (String) -> Unit = {},
+    val closeLook: () -> Unit = {},
+    val dropOne: (InventoryItemView) -> Unit = {},
+    val takeOne: (GroundItemView) -> Unit = {},
 )
 
 @Composable

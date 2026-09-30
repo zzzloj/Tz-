@@ -68,7 +68,7 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
         game = api.move(exit.target)
     }
 
-    suspend fun take(item: GroundItemView) = action { game = api.take(item.id) }
+    suspend fun take(item: GroundItemView, count: Int? = null) = action { game = api.take(item.id, count = count) }
 
     /** Answers a thing's question (GameView.choice: where to sail the boat). */
     suspend fun choose(option: ChoiceOption) = action {
@@ -79,7 +79,25 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
     /** Closes a thing's question without answering. */
     fun closeChoice() { game = game?.copy(choice = null) }
 
-    suspend fun drop(item: InventoryItemView) = action { game = api.drop(item.id) }
+    suspend fun drop(item: InventoryItemView, count: Int? = null) = action { game = api.drop(item.id, count) }
+
+    suspend fun meditate() = action { game = api.skill("meditation") }
+
+    /** Peeks into [target]'s backpack (an NPC id or a character's name); what was seen comes in GameView.peek. */
+    suspend fun peek(target: String) = action { game = api.skill("steal", target) }
+
+    /** Steals a whole stack seen in the last peek. */
+    suspend fun steal(item: PeekItem) = action {
+        val p = game?.peek ?: return@action
+        game = api.skill("steal", p.target, item.id)
+    }
+
+    fun closePeek() { game = game?.copy(peek = null) }
+
+    /** Describes something (GameView.look): an NPC id, a character's name, an item, a spell or skill.<key>. */
+    suspend fun look(target: String) = action { game = api.look(target) }
+
+    fun closeLook() { game = game?.copy(look = null) }
 
     /** Puts the item on, or takes it off if it is on. */
     suspend fun toggleEquip(item: InventoryItemView) = action {
