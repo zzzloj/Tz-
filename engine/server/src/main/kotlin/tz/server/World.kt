@@ -2,6 +2,7 @@ package tz.server
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -28,11 +29,11 @@ class World(
     private val random: Random = Random.Default,
     now: Long = System.currentTimeMillis() / 1000,
 ) {
-    data class Wander(val steps: Int, val minDelay: Int, val maxDelay: Int)
-    data class Respawn(val location: String, val min: Int, val max: Int)
-    data class RandomLoot(val id: String, val chance: Int, val min: Int, val max: Int)
+    @Serializable data class Wander(val steps: Int, val minDelay: Int, val maxDelay: Int)
+    @Serializable data class Respawn(val location: String, val min: Int, val max: Int)
+    @Serializable data class RandomLoot(val id: String, val chance: Int, val min: Int, val max: Int)
     /** One line of a trader's goods (`bank` "chance:min:max=id:count", f_speakbuy.dat). */
-    data class StockLine(val id: String, val chance: Int, val min: Int, val max: Int, val initial: Int)
+    @Serializable data class StockLine(val id: String, val chance: Int, val min: Int, val max: Int, val initial: Int)
 
     /** What an NPC is made of; kept so it can come back after death. */
     class Proto(
@@ -86,6 +87,8 @@ class World(
         var poisonUntil = 0L
         /** Monsters (n.c.*) attack players on sight. */
         val aggressive get() = key.startsWith("n.c.")
+        /** Who it is across restarts: the same key may stand in several places. */
+        val id get() = "$home|$key"
     }
 
     /**
@@ -174,7 +177,11 @@ class World(
             }
             for (t in entries) parseTimer(locId, t)?.let { timers += now to it }
         }
+        for (list in npcs.values) for (n in list.values) initialIds += n.id
     }
+
+    /** NPCs placed by content/ at start, "home|key" (WorldStore: which of them died). */
+    private val initialIds = HashSet<String>()
 
     // ---- building from content ------------------------------------------------
 
@@ -588,7 +595,7 @@ class World(
 
     // ---- crafting ------------------------------------------------------------------
 
-    private class NodeState(var stock: Int, var regrowAt: Long)
+    internal class NodeState(var stock: Int, var regrowAt: Long)
     private val nodes = HashMap<String, NodeState>()
 
     /**
@@ -622,6 +629,83 @@ class World(
     suspend fun placeFor(loc: String, itemId: String, seconds: Int, now: Long) = mutex.withLock {
         putItem(loc, GroundItem(itemId, content.itemName(itemId), 1, now + seconds))
     }
+
+    // ---- saving and restoring (WorldStore.kt) ------------------------------------------
+
+    suspend fun snapshot(now: Long): WorldSnapshot = mutex.withLock {
+        WorldSnapshot(
+            savedAt = now,
+            initial = initialIds.toList(),
+            npcs = npcs.values.flatMap { it.values }.filter { it.expiresAt == 0L || it.expiresAt > now }.map { n ->
+                NpcDto(
+                    n.key, n.home, n.location, n.hp, HashMap(n.items), n.proto.dto(), n.customName, n.owner?.dto(), n.criminal,
+                    HashMap(n.goods), n.restockAt, n.expiresAt, n.poisonUntil,
+                )
+            },
+            items = ground.flatMap { (loc, g) -> g.values.filter { it.expiresAt == 0L || it.expiresAt > now }.map { ItemDto(loc, it.id, it.name, it.count, it.expiresAt) } },
+            corpses = corpses.flatMap { (loc, list) ->
+                list.values.filter { it.expiresAt > now }.map { c ->
+                    CorpseDto(loc, c.id, c.name, HashMap(c.items), HashMap(c.butcher), c.expiresAt, c.playerId, c.free, c.clanId, c.template)
+                }
+            },
+            timers = timers.mapNotNull { (at, t) -> (t as? NpcSpawn)?.takeIf { it.proto != null }?.let { TimerDto(at, it.location, it.key, it.proto!!.dto()) } },
+            nodes = nodes.map { (k, v) -> NodeDto(k, v.stock, v.regrowAt) },
+        )
+    }
+
+    /**
+     * Puts the saved world over the one just built from content/: NPCs where
+     * they were (content NPCs keep their content stats), those that were dead
+     * wait for their respawn, pets keep their owners, things on the ground and
+     * corpses come back. Content fixtures missing from the save stay.
+     */
+    suspend fun restore(s: WorldSnapshot, now: Long) = mutex.withLock {
+        val fresh = HashMap<String, Npc>()
+        for (list in npcs.values) for (n in list.values) fresh[n.id] = n
+        val saved = s.npcs.filter { it.location in content.locations }
+        val savedIds = saved.map { "${it.home}|${it.key}" }.toSet()
+        val waiting = s.timers.map { "${it.location}|${it.key}" }.toSet()
+        val wasInitial = s.initial.toSet()
+        for ((id, n) in fresh) if (id in wasInitial && id !in savedIds) npcs[n.location]?.remove(n.key)
+        for (d in saved) {
+            val n = fresh["${d.home}|${d.key}"]?.takeIf { it.id in savedIds }
+                ?: Npc(d.key, d.proto.proto(), d.hp, d.location, d.home, Long.MAX_VALUE, HashMap()).also { it.nextMoveAt = nextMove(now, it.proto.wander) }
+            npcs[n.location]?.remove(n.key)
+            n.location = d.location
+            n.hp = d.hp.coerceIn(1, n.proto.hpMax)
+            n.items.clear(); n.items.putAll(d.items)
+            n.customName = d.customName
+            n.owner = d.owner?.owner()
+            n.criminal = d.criminal
+            for ((id, count) in d.goods) if (id in n.goods) n.goods[id] = count
+            n.restockAt = d.restockAt
+            n.expiresAt = d.expiresAt
+            n.poisonUntil = d.poisonUntil
+            n.regenFrom = now
+            n.trail.clear()
+            addNpc(n)
+        }
+        timers.removeAll { (_, t) -> t is NpcSpawn && t.proto == null && "${t.location}|${t.key}".let { it in savedIds || it in waiting } }
+        for (t in s.timers) if (t.location in content.locations) timers += maxOf(t.at, now) to NpcSpawn(t.location, t.key, "", t.proto.wander, t.proto.proto())
+
+        val fixtures = ground.mapValues { (_, g) -> g.values.filter { it.id.startsWith("i.s.") } }
+        ground.clear()
+        for (i in s.items) if (i.location in content.locations && (i.expiresAt == 0L || i.expiresAt > now)) putItem(i.location, GroundItem(i.id, i.name, i.count, i.expiresAt))
+        for ((loc, list) in fixtures) for (f in list) if (ground[loc]?.containsKey(f.id) != true) putItem(loc, f)
+
+        corpses.clear()
+        for (c in s.corpses) if (c.location in content.locations && c.expiresAt > now) {
+            corpses.getOrPut(c.location) { LinkedHashMap() }[c.id] =
+                Corpse(c.id, c.name, LinkedHashMap(c.items), LinkedHashMap(c.butcher), c.expiresAt, c.playerId, c.free, c.clanId).also { it.template = c.template }
+            c.id.removePrefix("c").toIntOrNull()?.let { if (it > corpseSeq) corpseSeq = it }
+        }
+        for (n in s.nodes) nodes[n.key] = NodeState(n.stock, n.regrowAt)
+    }
+
+    private fun Proto.dto() = ProtoDto(template, name, hpMax, stats, items, randomItems, butcher, wander, respawn, stock)
+    private fun ProtoDto.proto() = Proto(template, name, hpMax, stats, items, randomItems, butcher, wander, respawn, stock)
+    private fun Owner.dto() = OwnerDto(ownerId, follow, guard, until, vanish, idleUntil, home, flag, flagBelowY, guardNpc, healAt)
+    private fun OwnerDto.owner() = Owner(ownerId, follow, guard, until, vanish, idleUntil, home, flag, flagBelowY).also { it.guardNpc = guardNpc; it.healAt = healAt }
 
     // ---- for tests and diagnostics --------------------------------------------------
 

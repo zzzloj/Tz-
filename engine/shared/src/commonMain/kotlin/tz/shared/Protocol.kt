@@ -181,6 +181,8 @@ data class CharacterView(
 data class MeView(
     val login: String,
     val character: CharacterView? = null,
+    /** player, moder (chat bans, teleport, forum) or admin (everything, AdminRequest). */
+    val role: String = "player",
 )
 
 /** Everything the game screen needs after any action. */
@@ -269,7 +271,12 @@ data class PeekItem(val id: String, val name: String, val count: Int, val equipp
 data class PeekView(val target: String, val targetName: String, val items: List<PeekItem> = emptyList())
 
 @Serializable
-data class LookView(val title: String, val text: String)
+data class LookView(
+    val title: String,
+    val text: String,
+    /** A notice board or a bookshelf: "news" opens the forum's news, "pages" the site pages. */
+    val page: String? = null,
+)
 
 /** skill: meditation, or steal ([target]; without [item] — peek into the backpack first). */
 @Serializable
@@ -525,6 +532,13 @@ object Errors {
     const val UNKNOWN_ABILITY = "unknown_ability"
     const val CANNOT_DROP = "cannot_drop"
     const val TOO_MANY = "too_many"
+    const val FORBIDDEN = "forbidden"
+    const val BANNED = "banned"
+    const val MUTED = "muted"
+    const val WRONG_CODE = "wrong_code"
+    const val NOT_FOUND = "not_found"
+    const val TOO_FAST = "too_fast"
+    const val TOPIC_LOCKED = "topic_locked"
 
     fun text(code: String): String = when (code) {
         UNAUTHORIZED -> "Нужно войти заново"
@@ -571,6 +585,13 @@ object Errors {
         UNKNOWN_ABILITY -> "Вы этого не умеете: найдите учителя"
         CANNOT_DROP -> "Квестовую вещь бросить нельзя"
         TOO_MANY -> "Больше таких носить нельзя"
+        FORBIDDEN -> "Нет прав"
+        BANNED -> "Вход в игру закрыт администрацией"
+        MUTED -> "Вам временно запрещено писать"
+        WRONG_CODE -> "Неверный логин или код восстановления"
+        NOT_FOUND -> "Не найдено"
+        TOO_FAST -> "Не так быстро: подождите немного"
+        TOPIC_LOCKED -> "Тема закрыта"
         else -> "Ошибка сервера"
     }
 }
@@ -688,6 +709,149 @@ object Rules {
         return Triple(x, y, if (y > 1101) 2 else if (x > 1650) 1 else 0)
     }
 
+    /** «О себе». */
+    const val ABOUT_MAX = 300
+    /** Forum: a topic title and a post. */
+    const val TITLE_MAX = 80
+    const val POST_MAX = 3000
+    const val FORUM_PAGE = 20
+
     fun hpMax(str: Int) = 10 + str * 10
     fun manaMax(int: Int) = 10 + int * 10
 }
+
+// ---- account, site, forum, moderation (stage 13) ------------------------------------
+
+/** GET /api/account and the answer to POST /api/account. */
+@Serializable
+data class AccountView(
+    val login: String,
+    val role: String = "player",
+    val character: String? = null,
+    /** «О себе», shown when others look at the character. */
+    val about: String = "",
+    /** A recovery code was made (the code itself is shown once, in [recoveryCode]). */
+    val hasRecovery: Boolean = false,
+    /** Muted (no chat, letters or forum) until this unix time; 0 — not. */
+    val mutedUntil: Long = 0,
+    /** A new recovery code, only in the answer that made it. */
+    val recoveryCode: String? = null,
+)
+
+/**
+ * op: password ([password] → [newPassword], other sessions end), recovery
+ * (a new recovery code, needs [password]), about ([text]), delete (the
+ * account and character for good, needs [password]).
+ */
+@Serializable
+data class AccountRequest(val op: String, val password: String = "", val newPassword: String = "", val text: String = "")
+
+/** POST /api/auth/recover: a new password by the recovery code; answers like login. */
+@Serializable
+data class RecoverRequest(val login: String, val code: String, val newPassword: String)
+
+/**
+ * POST /api/admin. Moderators: mute/unmute ([target] name, [minutes]),
+ * teleport ([target] name or empty for oneself → location [text]), summon
+ * ([target] to you), broadcast ([text]), kick. Administrators also: ban/unban
+ * ([minutes] 0 — for good, [text] reason), give ([item] × [count] to
+ * [target]), role ([target] name, [text] player/moder).
+ */
+@Serializable
+data class AdminRequest(
+    val op: String,
+    val target: String = "",
+    val text: String = "",
+    val item: String = "",
+    val count: Int = 1,
+    val minutes: Int = 0,
+)
+
+@Serializable
+data class AdminView(
+    val role: String,
+    /** What the last action did. */
+    val message: String? = null,
+    /** Latest moderator actions, newest first: "30.09 12:00 admin mute Вася (60 мин)". */
+    val log: List<String> = emptyList(),
+    /** Places to teleport to quickly (the old f_admin.dat list): name → location id. */
+    val places: List<ChoiceOption> = emptyList(),
+)
+
+@Serializable
+data class ForumSection(
+    val id: Int,
+    val title: String,
+    val info: String = "",
+    val topics: Int = 0,
+    val posts: Int = 0,
+    /** Only moderators start topics here (news). */
+    val staffOnly: Boolean = false,
+)
+
+@Serializable
+data class ForumTopic(
+    val id: Long,
+    val section: Int,
+    val title: String,
+    val author: String,
+    /** Last post, unix time. */
+    val updated: Long,
+    val posts: Int = 0,
+    val pinned: Boolean = false,
+    val closed: Boolean = false,
+    val lastAuthor: String? = null,
+)
+
+@Serializable
+data class ForumPost(
+    val id: Long,
+    val author: String,
+    val text: String,
+    val created: Long,
+    val editedBy: String? = null,
+    /** Written by the one asking: he may edit it. */
+    val mine: Boolean = false,
+)
+
+/**
+ * GET /api/forum (sections), /api/forum/section/{id}?page= (topics),
+ * /api/forum/topic/{id}?page= (posts), and the answer to POST /api/forum.
+ */
+@Serializable
+data class ForumView(
+    val sections: List<ForumSection> = emptyList(),
+    val section: ForumSection? = null,
+    val topics: List<ForumTopic> = emptyList(),
+    val topic: ForumTopic? = null,
+    val posts: List<ForumPost> = emptyList(),
+    val page: Int = 0,
+    val pages: Int = 1,
+    /** The one asking may moderate (delete, close, pin, rename). */
+    val moderator: Boolean = false,
+    /** The one asking may write (signed in, not muted). */
+    val canWrite: Boolean = false,
+)
+
+/**
+ * POST /api/forum. op: topic ([section], [title], [text]), post ([topic],
+ * [text]), edit ([post], [text]: one's own, or any for moderators);
+ * moderators: delete ([post] or [topic]), close, open, pin, unpin, rename
+ * ([topic], [title]).
+ */
+@Serializable
+data class ForumRequest(
+    val op: String,
+    val section: Int? = null,
+    val topic: Long? = null,
+    val post: Long? = null,
+    val title: String = "",
+    val text: String = "",
+)
+
+/** GET /api/pages: rules, help, stories (content/pages/*.md). */
+@Serializable
+data class PageSummary(val id: String, val title: String)
+
+@Serializable
+data class PageView(val id: String, val title: String, val text: String)

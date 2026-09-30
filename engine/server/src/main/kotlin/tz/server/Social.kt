@@ -41,6 +41,7 @@ internal fun cleanSpeech(text: String): String {
 /** Says something to everyone here, or to the clan (online or not: it goes to their messages). */
 suspend fun Game.say(account: Account, raw: String, channel: String): GameView = lock.withLock {
     val p = player(account)
+    if (account.muted) { p.log("Бан! Вам временно запрещено говорить."); return@withLock viewLocked(p) }
     val text = cleanSpeech(raw)
     if (text.isEmpty()) throw ApiException(HttpStatusCode.BadRequest, Errors.BAD_REQUEST)
     if (text == p.lastSaid) throw ApiException(HttpStatusCode.Conflict, Errors.SAID_ALREADY)
@@ -111,6 +112,7 @@ private suspend fun Game.messagesView(p: Game.Player): MessagesView = db.tx { c 
  */
 suspend fun Game.message(account: Account, op: String, to: String, text: String): MessagesView = lock.withLock {
     val p = player(account)
+    if ((op == "write" || op == "writeAll") && account.muted) throw ApiException(HttpStatusCode.Forbidden, Errors.MUTED)
     when (op) {
         "add" -> {
             val q = players.values.firstOrNull { it.location == p.location && it.name.equals(to.trim(), ignoreCase = true) && it.id != p.id }
@@ -244,7 +246,7 @@ suspend fun Game.exchange(account: Account, op: String, with: String?, itemId: S
     viewLocked(p)
 }
 
-private fun Game.cancelExchange(p: Game.Player) {
+internal fun Game.cancelExchange(p: Game.Player) {
     val mine = exchanges.remove(p.id) ?: return
     val q = players[mine.partner] ?: return
     if (exchanges[q.id]?.partner == p.id) exchanges.remove(q.id)

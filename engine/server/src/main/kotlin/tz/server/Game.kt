@@ -35,7 +35,7 @@ import kotlin.random.Random
 class Game(
     internal val content: Content,
     internal val db: Db,
-    private val accounts: Accounts,
+    internal val accounts: Accounts,
     val world: World,
     internal val clock: () -> Long = { System.currentTimeMillis() / 1000 },
     random: Random = Random.Default,
@@ -138,6 +138,8 @@ class Game(
     }
 
     internal val players = ConcurrentHashMap<Long, Player>()
+    /** The forum (Forum.kt): the notice boards show its news. */
+    val forum by lazy { Forum(db) }
     /** The leadership flag: who holds it, or where it lies (Society.kt). */
     internal var flagHolder: Long? = null
     internal var flagLoc: String? = null
@@ -151,8 +153,8 @@ class Game(
 
     /** Open exchanges by character id (Social.kt). */
     internal val exchanges = HashMap<Long, ExchangeSide>()
-    private val byAccount = ConcurrentHashMap<Long, Long>()
-    private val events = ConcurrentHashMap<Long, MutableSharedFlow<Unit>>()
+    internal val byAccount = ConcurrentHashMap<Long, Long>()
+    internal val events = ConcurrentHashMap<Long, MutableSharedFlow<Unit>>()
 
     // ---- public actions -----------------------------------------------------------
 

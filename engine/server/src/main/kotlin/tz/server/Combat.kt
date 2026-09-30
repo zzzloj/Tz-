@@ -7,6 +7,7 @@ import kotlin.random.Random
  * Combat parameters of a character or NPC — the old engine's `war` string
  * with names (docs/data-fields.md §3.2, docs/mechanics-combat.md §1).
  */
+@kotlinx.serialization.Serializable
 data class Stats(
     val hit: Int,
     val dmgMin: Int,
