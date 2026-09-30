@@ -223,7 +223,7 @@ class SiteTest {
         assertEquals(Errors.SAID_ALREADY, assertFailsWith<ApiException> { forum.act(player, ForumRequest("post", topic = topic.id, text = "Ау?")) }.code)
         // Moderators answer quickly, close, pin and rename.
         v = forum.act(moder, ForumRequest("post", topic = topic.id, text = "У Милты"))
-        assertTrue(!v.posts.last().mine, "forum check 3")
+        assertTrue(v.posts.last().mine && !forum.topic(player, topic.id, -1).posts.last().mine, "forum check 3")
         forum.act(moder, ForumRequest("close", topic = topic.id))
         clock[0] += 30
         assertEquals(Errors.TOPIC_LOCKED, assertFailsWith<ApiException> { forum.act(player, ForumRequest("post", topic = topic.id, text = "Спасибо")) }.code)
