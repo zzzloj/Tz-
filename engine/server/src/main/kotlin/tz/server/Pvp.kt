@@ -17,6 +17,10 @@ internal object Law {
     /** Crimes do not count inside castles (except at the gate outside) and on the arena (f_docrim.dat:5-6). */
     fun lawless(loc: String) = CastleRules.inside(loc) || loc == Rules.ARENA
 
+    /** In the bank nobody fights, unless one of the two is a criminal (f_attackf.dat:13-15). */
+    fun mayFight(a: Game.Player, b: Game.Player?, now: Long) =
+        a.location != Rules.BANK_LOCATION || a.criminal(now) || b?.criminal(now) == true
+
     /** The Wolf island: Y >= 1099, where templars and pirates are at war (f_attackf.dat:57). */
     fun wolfIsland(loc: String): Boolean = Regex("^x\\d+x(\\d+)$").find(loc)?.groupValues?.get(1)?.toIntOrNull()?.let { it >= 1099 } == true
 
@@ -64,7 +68,7 @@ suspend fun Game.attackPlayer(account: Account, name: String): GameView = lock.w
     val t = players.values.firstOrNull { it.id != p.id && it.name.equals(name.trim(), ignoreCase = true) && it.location == p.location && now - it.lastSeen < Game.ACTIVE_SECONDS }
         ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NO_SUCH_PLAYER)
     if (t.ghost) throw ApiException(HttpStatusCode.Conflict, Errors.GHOST)
-    if (p.location == Rules.BANK_LOCATION) throw ApiException(HttpStatusCode.BadRequest, Errors.NO_FIGHT_HERE)
+    if (!Law.mayFight(p, t, now)) throw ApiException(HttpStatusCode.BadRequest, Errors.NO_FIGHT_HERE)
     if (now < p.busyUntil) throw ApiException(HttpStatusCode.Conflict, Errors.RESTING)
     p.busyUntil = now + p.stats.delay
     if (p.stats.ammo.isNotEmpty() && !useAmmo(p)) throw ApiException(HttpStatusCode.BadRequest, Errors.NO_AMMO)
@@ -82,16 +86,19 @@ internal suspend fun Game.castleBonus(p: Game.Player, h: Formulas.Hit): Formulas
     return if (p.clanId != null && castles()[n]?.clanId == p.clanId) h.copy(damage = h.damage + dice.roll(0, 10)) else h
 }
 
-internal suspend fun Game.playerHitsPlayer(a: Game.Player, b: Game.Player, now: Long, answer: Boolean, attackerWasCriminal: Boolean) {
-    val h = castleBonus(a, Formulas.attack(a.stats, b.stats, dice))
-    if (h.outcome == Formulas.Outcome.FIZZLED) return
-    val text = describe(h, a.stats.verb)
+internal suspend fun Game.playerHitsPlayer(a: Game.Player, b: Game.Player, now: Long, answer: Boolean, attackerWasCriminal: Boolean, blow: Blow? = null) {
+    val stats = blow?.stats ?: a.stats
+    val r = strike(stats, a, b.stats, b, blow, now)
+    if (r.hit.outcome == Formulas.Outcome.FIZZLED) return
+    val h = castleBonus(a, r.hit)
+    val text = describe(h, stats.verb) + r.note
+    val t = blow?.title?.let { " ($it)" } ?: ""
     // Only the one who strikes first is «fighting»; answering blows are self-defence and keep the victim innocent.
     if (answer) a.fightingPlayer = b.id
-    a.log(if (answer) "Вы по ${b.name} $text" else "  вы отвечаете: $text")
-    b.log(if (answer) "${a.name} по вам $text" else "  ${a.name} отвечает: $text")
+    a.log(if (answer) "Вы$t по ${b.name} $text" else "  вы отвечаете: $text")
+    b.log(if (answer) "${a.name}$t по вам $text" else "  ${a.name} отвечает: $text")
     for (q in players.values) if (q.id != a.id && q.id != b.id && q.location == a.location && now - q.lastSeen < Game.ACTIVE_SECONDS) {
-        q.log("${a.name} по ${b.name} $text"); notify(q.id)
+        q.log("${a.name}$t по ${b.name} $text"); notify(q.id)
     }
     notify(b.id)
     if (h.outcome == Formulas.Outcome.HIT) {
@@ -102,8 +109,8 @@ internal suspend fun Game.playerHitsPlayer(a: Game.Player, b: Game.Player, now: 
             return
         }
     }
-    // The victim answers at once if not resting — self-defence, no crime.
-    if (answer && now >= b.busyUntil && !b.ghost) playerHitsPlayer(b, a, now, answer = false, attackerWasCriminal = b.criminal(now))
+    // The victim answers at once if not resting — self-defence, no crime. Spells get no answer.
+    if (answer && blow?.rmagic != true && now >= b.busyUntil && !b.ghost) playerHitsPlayer(b, a, now, answer = false, attackerWasCriminal = b.criminal(now))
 }
 
 /**

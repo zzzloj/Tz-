@@ -446,7 +446,7 @@ class World(
 
     suspend fun itemsAt(loc: String, now: Long): List<GroundItemView> = mutex.withLock {
         ground[loc]?.values?.filter { it.expiresAt == 0L || it.expiresAt > now }
-            ?.map { GroundItemView(it.id, it.name, it.count, takeable = !it.id.startsWith("i.s.")) } ?: emptyList()
+            ?.map { GroundItemView(it.id, it.name, it.count, takeable = !it.id.startsWith("i.s.") || it.id == "i.s.arena" || it.id.startsWith(Spells.PORTAL)) } ?: emptyList()
     }
 
     /** True if a fixture with an id starting with [prefix] stands here (e.g. i.s.res — resurrection stone). */

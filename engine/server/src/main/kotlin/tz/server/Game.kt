@@ -88,6 +88,14 @@ class Game(
         var fightingPlayer: Long? = null
         /** Last thing said, to refuse repeats (f_say.dat:65). */
         var lastSaid: String? = null
+        /** Defensive stance (p.d.*), one at a time (Magic.kt). */
+        var stance: Stance? = null
+        /** When each spell or technique may be used again (unix time). */
+        val cooldowns = HashMap<String, Long>()
+        /** Spell buffs (m.armor, m.str, m.man): kept until equipment changes or death, like the old calcparam reset. */
+        var armorBuff = 0
+        var hpBuff = 0
+        var manaBuff = 0
 
         fun skill(key: String): Int = when (key) {
             "str" -> str; "dex" -> dex; "int" -> int; "exp" -> exp; "points" -> points
@@ -97,8 +105,10 @@ class Game(
         fun skills() = Skills.of(str, dex, int, exp, points).also { s ->
             for ((key, index, _) in Rules.SKILLS) if (index > 4) s[index] = other[key] ?: 0
         }
-        val hpMax get() = (Rules.hpMax(str) + stats.hpBonus).coerceAtLeast(1)
-        val manaMax get() = (Rules.manaMax(int) + stats.manaBonus).coerceAtLeast(0)
+        val hpMax get() = (Rules.hpMax(str) + stats.hpBonus + hpBuff).coerceAtLeast(1)
+        val manaMax get() = (Rules.manaMax(int) + stats.manaBonus + manaBuff).coerceAtLeast(0)
+
+        fun clearBuffs() { armorBuff = 0; hpBuff = 0; manaBuff = 0 }
 
         fun log(line: String) {
             journal.addLast(line)
@@ -141,8 +151,10 @@ class Game(
             return@withLock viewLocked(q)
         }
         val p = alive(player(account))
-        if (itemId.startsWith("i.s.")) throw ApiException(HttpStatusCode.BadRequest, Errors.CANNOT_TAKE)
         val now = clock()
+        if (itemId.startsWith(Spells.PORTAL)) { usePortal(p, itemId, now); return@withLock viewLocked(p) }
+        if (itemId.startsWith("i.s.")) throw ApiException(HttpStatusCode.BadRequest, Errors.CANNOT_TAKE)
+        if (p.stance?.id == "p.d.o" && now < p.stance!!.until) { p.log("В глухой обороне брать предметы нельзя"); return@withLock viewLocked(p) }
         val item = world.take(p.location, itemId, now) ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NO_SUCH_ITEM)
         try {
             db.tx { c -> addItem(c, p.id, item.id, item.count) }
@@ -180,6 +192,7 @@ class Game(
             for (id in off) setEquipped(c, p.id, id, false)
             setEquipped(c, p.id, itemId, true)
         }
+        p.clearBuffs()
         refreshStats(p)
         viewLocked(p)
     }
@@ -189,6 +202,7 @@ class Game(
         db.tx { c ->
             if (!setEquipped(c, p.id, itemId, false)) throw ApiException(HttpStatusCode.BadRequest, Errors.NOT_IN_INVENTORY)
         }
+        p.clearBuffs()
         refreshStats(p)
         viewLocked(p)
     }
@@ -198,7 +212,7 @@ class Game(
         val p = alive(player(account))
         val now = clock()
         val npc = world.npc(p.location, target) ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NO_TARGET)
-        if (p.location == Rules.BANK_LOCATION) throw ApiException(HttpStatusCode.BadRequest, Errors.NO_FIGHT_HERE)
+        if (!Law.mayFight(p, null, now)) throw ApiException(HttpStatusCode.BadRequest, Errors.NO_FIGHT_HERE)
         if (now < p.busyUntil) throw ApiException(HttpStatusCode.Conflict, Errors.RESTING)
         npcAttackCrime(p, npc, now)
         p.busyUntil = now + p.stats.delay
@@ -808,12 +822,15 @@ class Game(
         }
     }
 
-    internal suspend fun playerHits(p: Player, npc: World.Npc, now: Long, answer: Boolean) {
-        val h = castleBonus(p, Formulas.attack(p.stats, npc.stats, dice))
-        if (h.outcome == Formulas.Outcome.FIZZLED) return
-        val text = describe(h, p.stats.verb)
-        p.log(if (answer) "Вы по ${npc.name} $text" else "  вы отвечаете: $text")
-        tellOthers(p.location, p.id, if (answer) "${p.name} по ${npc.name} $text" else "${p.name} отвечает: $text")
+    internal suspend fun playerHits(p: Player, npc: World.Npc, now: Long, answer: Boolean, blow: Blow? = null) {
+        val stats = blow?.stats ?: p.stats
+        val r = strike(stats, p, npc.stats, null, blow, now)
+        if (r.hit.outcome == Formulas.Outcome.FIZZLED) return
+        val h = castleBonus(p, r.hit)
+        val text = describe(h, stats.verb) + r.note
+        val t = blow?.title?.let { " ($it)" } ?: ""
+        p.log(if (answer) "Вы$t по ${npc.name} $text" else "  вы отвечаете: $text")
+        tellOthers(p.location, p.id, if (answer) "${p.name}$t по ${npc.name} $text" else "${p.name} отвечает: $text")
         if (h.outcome == Formulas.Outcome.HIT) {
             npc.hp -= h.damage
             npc.regenFrom = now
@@ -824,14 +841,15 @@ class Game(
             killNpc(p, npc, now)
             return
         }
-        // Free counter-blow of a target that is not resting (f_attackf.dat:171).
-        if (answer && now >= npc.busyUntil) npcHits(npc, p, now, answer = false)
+        // Free counter-blow of a target that is not resting (f_attackf.dat:171); spells get none.
+        if (answer && blow?.rmagic != true && now >= npc.busyUntil) npcHits(npc, p, now, answer = false)
     }
 
     internal suspend fun npcHits(npc: World.Npc, p: Player, now: Long, answer: Boolean) {
-        val h = Formulas.attack(npc.stats, p.stats, dice)
+        val r = strike(npc.stats, null, p.stats, p, null, now)
+        val h = r.hit
         if (h.outcome == Formulas.Outcome.FIZZLED) return
-        val text = describe(h, npc.stats.verb)
+        val text = describe(h, npc.stats.verb) + r.note
         p.log(if (answer) "${npc.name} по вам $text" else "  ${npc.name} отвечает: $text")
         tellOthers(p.location, p.id, "${npc.name} по ${p.name} $text")
         notify(p.id)
@@ -874,6 +892,8 @@ class Game(
         p.hp = 0
         p.ghost = true
         p.fightingPlayer = null
+        p.stance = null
+        p.clearBuffs()
         if (p.location == Rules.ARENA) {
             // On the arena things stay with the fallen (f_kill.dat:19).
             p.log("Вас победил $killer. Вы призрак: покинуть арену можно через камень выхода.")
@@ -1004,7 +1024,7 @@ class Game(
 
     internal suspend fun refreshStats(p: Player) {
         p.equipped = db.tx { c -> inventoryRows(c, p.id) }.filter { it.third }.map { it.first }
-        p.stats = Formulas.player(p.skills(), p.equipped, { content.items[it] })
+        p.stats = Formulas.player(p.skills(), p.equipped, { content.items[it] }).let { if (p.armorBuff != 0) it.copy(armor = it.armor + p.armorBuff) else it }
         p.hp = p.hp.coerceAtMost(p.hpMax)
         p.mana = p.mana.coerceAtMost(p.manaMax)
     }
@@ -1066,7 +1086,7 @@ class Game(
         )
         val inventory = db.tx { c -> inventoryRows(c, p.id) }.map { (id, count, equipped) ->
             InventoryItemView(id, content.itemName(id), count, equipped, Rules.equipSlot(id) != null,
-                content.crafting.find(id) != null, content.crafting.targetOf(id))
+                content.crafting.find(id) != null || Spells.usable(content, id), content.crafting.targetOf(id) ?: Spells.itemTarget(content, id))
         }
         val s = p.stats
         val character = CharacterView(
@@ -1089,6 +1109,8 @@ class Game(
             clanInvites = clanInvites(p),
             people = here.map { q -> PersonView(q.name, q.clanName, q.ghost, q.crime.takeIf { q.criminal(now) }) },
             clan = p.clanName,
+            abilities = abilities(p, now),
+            stance = p.stance?.takeIf { now < it.until }?.let { "${it.name} (${(it.until - now + 59) / 60} мин)" },
         )
     }
 

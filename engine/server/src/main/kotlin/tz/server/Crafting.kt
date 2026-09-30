@@ -132,6 +132,11 @@ suspend fun Game.use(account: Account, itemId: String, recipe: Int?, target: Str
     val inventory = inventoryMap(p).toMutableMap()
     if ((inventory[itemId] ?: 0) < 1) throw ApiException(HttpStatusCode.BadRequest, Errors.NOT_IN_INVENTORY)
     val c = content.crafting
+    // Scrolls, runes of spells and teleport runes (Magic.kt).
+    if (c.find(itemId) == null && useMagicItem(p, itemId, target)) {
+        save(p)
+        return@withLock viewLocked(p)
+    }
     val (kind, key) = c.find(itemId) ?: throw ApiException(HttpStatusCode.BadRequest, Errors.CANNOT_USE)
     if (now < p.busyUntil) throw ApiException(HttpStatusCode.Conflict, Errors.RESTING)
     var menu: CraftView? = null
