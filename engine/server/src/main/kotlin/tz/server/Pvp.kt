@@ -50,15 +50,16 @@ internal fun Game.guiltyPlayer(target: Game.Player, attacker: Game.Player, now: 
         (Law.wolfIsland(target.location) && (target.faction == "p" || (attacker.faction == "p" && target.faction == "t")))
 
 internal fun guiltyNpc(npc: World.Npc, attacker: Game.Player, loc: String): Boolean =
-    Law.outlawNpc(npc.key) || npc.key.startsWith("n.a.") && !npc.key.startsWith("n.o.") || attacker.id in npc.enemies ||
+    Law.outlawNpc(npc.key) || npc.criminal || npc.key.startsWith("n.a.") && npc.owner == null || attacker.id in npc.enemies ||
         (Law.wolfIsland(loc) && (npc.key.startsWith("n.p.") || (attacker.faction == "p" && npc.key.startsWith("n.t."))))
 
 /** Crime for striking an NPC (f_attackf.dat:54-61): «живодер» for a hired guard, «бандит» for anyone innocent. */
 internal suspend fun Game.npcAttackCrime(p: Game.Player, npc: World.Npc, now: Long) {
     if (p.criminal(now) || guiltyNpc(npc, p, p.location)) return
-    // A castle's own guards serve its owners: no crime for them.
+    // A castle's own guards serve its owners: no crime for them; nor is striking your own pet.
     if (npc.key.startsWith("n.o.") && castleGuards[npc.key]?.let { g -> castles()[g.castle]?.clanId == p.clanId } == true) return
-    commitCrime(p, if (npc.key.startsWith("n.o.")) "живодер" else "бандит", now)
+    if (npc.owner?.ownerId == p.id) return
+    commitCrime(p, if (npc.key.startsWith("n.o.") || npc.owner != null) "живодер" else "бандит", now)
 }
 
 /** Strikes another character here. */
@@ -146,7 +147,7 @@ internal suspend fun Game.lootCrime(p: Game.Player, corpse: World.Corpse, itemId
 internal suspend fun Game.lawTick(loc: String, living: List<Game.Player>, now: Long) {
     val zone = content.locations[loc]?.zone ?: 0
     val npcs = world.npcsIn(loc)
-    val monsters = npcs.filter { it.key.startsWith("n.c.") }
+    val monsters = npcs.filter { it.key.startsWith("n.c.") || it.criminal }
     val criminals = living.filter { it.criminal(now) }
     if (zone == 1 && (criminals.isNotEmpty() || monsters.isNotEmpty()) && npcs.none { it.key.startsWith("n.g.") }) {
         val name = Law.GUARD_NAMES[rnd.nextInt(Law.GUARD_NAMES.size)] + " [стража]"
@@ -187,6 +188,7 @@ internal suspend fun Game.npcHitsNpc(a: World.Npc, b: World.Npc, now: Long, livi
         b.hp -= h.damage
         b.regenFrom = now
         if (b.hp < 1) {
+            petKillExp(a, b)
             world.kill(b, now)
             a.npcTarget = null
             for (q in living) q.log("${b.name} погибает.")

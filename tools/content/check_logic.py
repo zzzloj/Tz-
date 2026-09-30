@@ -22,12 +22,14 @@ SKILLS = {"str", "dex", "int", "meditation", "steal", "animaltaming", "hand", "c
 HANDLERS = {"arena-count", "hide-item-random", "repair-boat", "lower-int", "npc-hand-over", "require-pk",
             "clan-status", "clan-leave", "clan-name-input", "clan-create", "clan-restore",
             "castle-keeper-access", "castle-rune-list", "castle-contract", "castle-teleport",
-            "arena-enter", "bounty-list", "bounty-form", "bounty-place", "bounty-claim"}
+            "arena-enter", "bounty-list", "bounty-form", "bounty-place", "bounty-claim",
+            "hire-mercenary", "buy-pet", "pet-owned-here", "pet-free", "sell-pet", "pet-return", "marten-unicorn",
+            "sacrifice-pet", "hire-fairy", "kasten-squad", "escort"}
 
 
 def handler_supported(a):
     h = a.get("handler")
-    return h is None or h in HANDLERS or (h == "hire-mercenary" and str(a.get("template", "")).startswith("n.o."))
+    return h is None or h in HANDLERS
 ENGINE_TOPICS = {"buy", "buy2", "sell", "tobank", "frombank"}
 
 root = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("-") else

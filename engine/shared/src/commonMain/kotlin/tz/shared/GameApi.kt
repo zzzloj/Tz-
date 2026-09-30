@@ -84,7 +84,7 @@ class GameApi(
 
     suspend fun game(): GameView = check(http.get(url("/api/game")) { auth() })
 
-    suspend fun move(target: String): GameView = postJson<GameView, MoveRequest>("/api/game/move", MoveRequest(target))
+    suspend fun move(target: String, gallop: Boolean = false): GameView = postJson<GameView, MoveRequest>("/api/game/move", MoveRequest(target, gallop))
 
     suspend fun take(item: String, arg: String? = null, count: Int? = null): GameView =
         postJson<GameView, ItemRequest>("/api/game/take", ItemRequest(item, arg, count))

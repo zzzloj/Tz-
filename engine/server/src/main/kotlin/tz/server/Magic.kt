@@ -38,8 +38,9 @@ object Spells {
     val TAVERN = setOf("x1087x543", "x1080x539", "x1087x528", "x1080x532")
     const val FALLBACK = "x2121x212"
 
-    /** Spells that wait for pets and horses (stage 10) or are the old admins' tools. */
-    fun later(id: String) = id.startsWith("m.s.") || id == "m.charm" || id == "m.kon"
+    /** Nothing waits any more: summoning, charming and «Сбить с коня» came with subordinates (Pets.kt). */
+    fun later(@Suppress("UNUSED_PARAMETER") id: String) = false
+    /** The old admins' tools. */
     fun admin(id: String) = id == "m.modes" || id == "m.qv" || id == "m.w.a.qv"
 
     /**
@@ -72,7 +73,7 @@ object Spells {
     }
 
     fun usable(content: Content, id: String): Boolean =
-        spellOfItem(id)?.let { content.items[it] != null } == true || (id.startsWith("i.rr.") && id != EMPTY_RUNE) || id in BOTTLES
+        spellOfItem(id)?.let { content.items[it] != null } == true || (id.startsWith("i.rr.") && id != EMPTY_RUNE) || id in BOTTLES || id.startsWith("i.ms_")
 
     fun itemTarget(content: Content, id: String): String? =
         BOTTLES[id]?.let { if (it.single) "creature" else null } ?: spellOfItem(id)?.let { target(it, content.items[it]) }
@@ -115,6 +116,8 @@ internal fun Game.strike(a: Stats, attacker: Game.Player?, d: Stats, defender: G
     var note = ""
     val rmagic = blow?.rmagic == true
     defender?.stance?.let { if (now >= it.until) defender.stance = null }
+    // A rider is harder to hit, except by magic (f_attackf.dat:72).
+    if (defender?.mount != null && !rmagic && !a.magic) aw = aw.copy(hit = aw.hit - 10)
     attacker?.stance?.let { if (now >= it.until) attacker.stance = null }
     val ds = defender?.stance
     fun spend(s: Stance) { defender?.stance = null; note = " (${s.name})" }
@@ -231,7 +234,8 @@ suspend fun Game.technique(account: Account, id: String, target: String?): GameV
         ?: throw ApiException(HttpStatusCode.BadRequest, Errors.UNKNOWN_ABILITY)
     val name = def.str("name") ?: id
     val cooldown = (def.int("cooldown") ?: 0).toLong()
-    val intPenalty = (p.int - 1) * 10
+    // Intelligence spoils the aim of techniques, and so does the saddle (f_usepriem.dat:24-26).
+    val intPenalty = (p.int - 1) * 10 + (if (p.mount != null) 10 else 0)
     if (p.stats.ranged) {
         p.log("Приемы можно использовать только в рукопашном бою или с холодным оружием ближнего боя")
         return@withLock viewLocked(p)
@@ -329,8 +333,7 @@ private suspend fun Game.afterEffects(p: Game.Player, aim: Aim, id: String, hit:
             val shield = tp.equipped.firstOrNull { it.startsWith("i.a.s.") }
             if (dice.roll(0, 100) <= hit - 40 && shield != null) knockOut(p, tp, shield, "щит", now)
         }
-        // p.vs knocks a rider out of the saddle: nobody rides yet (horses come in stage 10).
-        "p.vs" -> guarded("p.d.s")
+        "p.vs" -> if (tp?.mount != null && dice.roll(0, 100) <= hit - 50 && !guarded("p.d.s")) unhorse(tp, now) else guarded("p.d.s")
     }
 }
 
@@ -370,7 +373,6 @@ internal suspend fun Game.castSpell(p: Game.Player, spell: String, target: Strin
     val now = clock()
     val def = content.items[spell] ?: throw ApiException(HttpStatusCode.BadRequest, Errors.UNKNOWN_ABILITY)
     val name = def.str("name") ?: spell
-    if (Spells.later(spell)) { p.log("Заклинание «$name» заработает вместе с питомцами и лошадьми"); return }
     if (now < p.busyUntil) throw ApiException(HttpStatusCode.Conflict, Errors.RESTING)
     val kind = Spells.target(spell, def)
     val aim: Aim? = when (kind) {
@@ -399,7 +401,8 @@ internal suspend fun Game.castSpell(p: Game.Player, spell: String, target: Strin
     val magicSkill = p.skill("magic")
     val level = def.int("level") ?: 1
     val strPenalty = (maxOf(p.str, 2) - 2) * 4
-    val chance = ((magicSkill * 0.5 + p.int * 1.5) * 10 - level * 10 + 10 - strPenalty).coerceAtMost(95.0)
+    // On horseback −10 (f_usemagic.dat:25).
+    val chance = ((magicSkill * 0.5 + p.int * 1.5) * 10 - level * 10 + 10 - strPenalty - (if (p.mount != null) 10 else 0)).coerceAtMost(95.0)
     if (chance <= 0 || magicSkill == 0) { p.log("Слишком слабый навык магии"); return }
     p.mana -= cost
     p.busyUntil = now + (def.int("cast_time") ?: 0) + 3 - p.dex + strPenalty
@@ -442,6 +445,15 @@ private suspend fun Game.spellEffect(p: Game.Player, spell: String, def: JsonObj
         spell == "m.peace" -> { val n = (aim as Aim.Npc).npc; n.enemies.clear(); n.npcTarget = null; p.log("${n.name} успокаивается") }
         spell == "m.silence" -> { for (n in world.npcsIn(p.location)) { n.enemies.clear(); n.npcTarget = null }; p.log("Все вокруг успокаиваются") }
         spell == "m.charm.enemy" -> p.log("Заклинание на него не подействует")   // never worked in the old game either
+        spell.startsWith("m.s.") -> summon(p, spell, now)
+        spell == "m.charm" -> charm(p, (aim as Aim.Npc).npc, now)
+        spell == "m.kon" -> {
+            val t = (aim as Aim.Pc).p
+            if (t.mount == null) { p.log("Выбить из седла можно только всадника"); return }
+            // A blow of 0 only for the crime (plugin/m.kon.dat:6-17).
+            crimeFor(p, aim, now)
+            unhorse(t, now)
+        }
         spell == "m.armor" -> buff(p, (aim as Aim.Pc).p, "Броня", int) { it.armorBuff = int; refreshStats(it) }
         spell == "m.str" -> buff(p, (aim as Aim.Pc).p, "Макс.жизнь", int * 2) { it.hpBuff = int * 2 }
         spell == "m.man" -> buff(p, (aim as Aim.Pc).p, "Макс.мана", int * 2) { it.manaBuff = int * 2 }
@@ -679,6 +691,7 @@ private suspend fun Game.search(p: Game.Player, now: Long) {
  */
 internal suspend fun Game.useMagicItem(p: Game.Player, itemId: String, target: String?): Boolean {
     Spells.BOTTLES[itemId]?.let { useBottle(p, itemId, it, target); return true }
+    if (summonScroll(p, itemId, clock())) return true
     Spells.spellOfItem(itemId)?.takeIf { content.items[it] != null }?.let { spell ->
         castSpell(p, spell, target, scroll = itemId)
         return true

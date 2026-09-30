@@ -98,6 +98,8 @@ class Game(
         var attackTarget: String? = null
         /** Poisoned till then (i.b.jad.c): health goes down instead of regenerating. */
         var poisonUntil = 0L
+        /** The horse under this character (character_state "mount"). */
+        var mount: Mount? = null
         /** Defensive stance (p.d.*), one at a time (Magic.kt). */
         var stance: Stance? = null
         /** When each spell or technique may be used again (unix time). */
@@ -141,7 +143,7 @@ class Game(
 
     suspend fun view(account: Account): GameView = lock.withLock { viewLocked(player(account)) }
 
-    suspend fun move(account: Account, target: String): GameView = lock.withLock {
+    suspend fun move(account: Account, target: String, gallop: Boolean = false): GameView = lock.withLock {
         val p = player(account)
         val here = content.locations[p.location]
         val exit = here?.exits?.firstOrNull { it.target == target }
@@ -157,6 +159,14 @@ class Game(
         p.location = target
         p.attackTarget = null
         walkLines(p, from, target, exit.label, hidden)
+        // Gallop (g.php:264): on horseback, on through the exit with the same label.
+        if (gallop && p.mount != null) content.locations[target]?.exits?.firstOrNull { it.label == exit.label && it.target != from && it.target in content.locations }?.let { next ->
+            if (Travel.locked(target, next.target) { false } == null && castleEntry(p, target, next.target) == null) {
+                p.location = next.target
+                walkLines(p, target, next.target, next.label, hidden)
+                p.log("Вы проскакали галопом ${exit.label}")
+            }
+        }
         save(p)
         notifyLocation(target, except = p.id)
         viewLocked(p)
@@ -320,6 +330,15 @@ class Game(
         val p = player(account)
         val now = clock()
         val npc = world.npc(p.location, npcKey) ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NO_TARGET)
+        // Someone's subordinate: orders from its owner (f_speak.dat:14-16), nobody else talks to it.
+        npc.owner?.let { o ->
+            val view = if (o.ownerId == p.id) petDialog(p, npc, topic.takeIf { it == "begin" || (it to arg) in p.talkChoices || (it == p.talkInput && p.talkingTo == npcKey) } ?: "begin", arg)
+                else DialogView(npcKey, npc.name, "${npc.name} принадлежит другому персонажу")
+            p.talkingTo = npcKey
+            p.talkChoices = view.options.map { it.topic to it.arg }.toSet()
+            p.talkInput = view.inputTopic
+            return@withLock viewLocked(p).copy(dialog = view)
+        }
         castles()
         castleGuards[npcKey]?.let { g ->
             val view = guardDialog(p, npc, g, topic.takeIf { it == "begin" || (topic to arg) in p.talkChoices } ?: "begin", arg)
@@ -525,7 +544,7 @@ class Game(
         // Killing players comes with PvP; until then nobody has.
         "require-pk" -> stateOf(ctx.p.id, "pk") != null
         "npc-hand-over" -> world.npcHas(a.str("npc")!!, a.str("location") ?: ctx.p.location, a.str("item")!!)
-        else -> true
+        else -> petGuard(ctx.p, a)
     }
 
     /** Handlers implemented in code (Dialogs.HANDLERS); returns text to put before the NPC's line. */
@@ -552,7 +571,8 @@ class Game(
             "clan-status", "clan-leave", "clan-name-input", "clan-create", "clan-restore" -> return clanHandler(ctx.p, a, ctx.vars) { ctx.inputTopic = it }
             "castle-keeper-access", "castle-rune-list", "castle-contract", "castle-teleport" ->
                 return keeperHandler(ctx.p, ctx.npc.key, a, ctx.arg) { ctx.handlerOptions = it }
-            "hire-mercenary" -> { hireCastleGuard(ctx.p, a.str("template")!!); return null }
+            "hire-mercenary", "buy-pet", "pet-owned-here", "pet-free", "sell-pet", "pet-return", "marten-unicorn", "sacrifice-pet",
+            "hire-fairy", "kasten-squad", "escort" -> return petHandler(ctx.p, a, ctx.vars)
             "arena-enter", "bounty-list", "bounty-form", "bounty-place", "bounty-claim" ->
                 return pvpHandler(ctx.p, a, ctx.arg) { ctx.inputTopic = it }
             "npc-hand-over" -> {
@@ -818,6 +838,7 @@ class Game(
             lawTick(loc, living, now)
             for (npc in world.npcsIn(loc)) {
                 regenNpc(npc, now)
+                if (npc.owner != null && ownerTick(npc, loc, now)) continue
                 // Fighting another NPC (a guard and a monster).
                 npc.npcTarget?.let { key ->
                     val other = world.npc(loc, key)
@@ -829,10 +850,10 @@ class Game(
                 // Its target walked off: follow (f_goto.dat); the others who left or died are forgotten.
                 val livingIds = living.map { it.id }.toSet()
                 val first = npc.enemies.firstOrNull()
-                if (first != null && first !in livingIds && chase(npc, first, loc, now)) continue
+                if (first != null && first !in livingIds && npc.owner?.follow == null && chase(npc, first, loc, now)) continue
                 npc.enemies.retainAll(livingIds)
                 // A monster picks its victim among those it notices: hiding·6 % of the time you are unseen (g.php:680).
-                if (npc.enemies.isEmpty() && npc.npcTarget == null && npc.aggressive) {
+                if (npc.enemies.isEmpty() && npc.npcTarget == null && (npc.aggressive || npc.criminal) && npc.owner?.guard == null) {
                     val seen = living.filter { dice.roll(0, 100) > it.skill("hiding") * 6 }
                     if (seen.isNotEmpty()) npc.enemies += seen[rnd.nextInt(seen.size)].id
                 }
@@ -945,6 +966,7 @@ class Game(
         p.clearBuffs()
         p.attackTarget = null
         p.poisonUntil = 0
+        if (p.mount != null) leaveHorse(p, now, hour = false)
         p.count(Stat.DEATHS)
         by?.count(Stat.PLAYERS)
         if (p.location == Rules.ARENA) {
@@ -1075,12 +1097,13 @@ class Game(
             }
         }
         db.tx { c ->
-            c.prepareStatement("SELECT key, value, until FROM character_state WHERE character_id = ? AND key IN ('crime', 'faction')").use { st ->
+            c.prepareStatement("SELECT key, value, until FROM character_state WHERE character_id = ? AND key IN ('crime', 'faction', 'mount')").use { st ->
                 st.setLong(1, p.id)
                 st.executeQuery().use { rs ->
                     while (rs.next()) when (rs.getString(1)) {
                         "crime" -> { p.crime = rs.getString(2); p.crimeUntil = rs.getLong(3) }
                         "faction" -> p.faction = rs.getString(2).takeIf { it.isNotEmpty() }
+                        "mount" -> rs.getString(2).split('|').let { m -> p.mount = Mount(m[0].toIntOrNull() ?: 1, m.getOrNull(1)?.takeIf { it.isNotEmpty() }) }
                     }
                 }
             }
@@ -1096,7 +1119,7 @@ class Game(
 
     internal suspend fun refreshStats(p: Player) {
         p.equipped = db.tx { c -> inventoryRows(c, p.id) }.filter { it.third }.map { it.first }
-        p.stats = Formulas.player(p.skills(), p.equipped, { content.items[it] }).let { if (p.armorBuff != 0) it.copy(armor = it.armor + p.armorBuff) else it }
+        p.stats = Formulas.player(p.skills(), p.equipped, { content.items[it] }, mounted = p.mount != null).let { if (p.armorBuff != 0) it.copy(armor = it.armor + p.armorBuff) else it }
         p.hp = p.hp.coerceAtMost(p.hpMax)
         p.mana = p.mana.coerceAtMost(p.manaMax)
     }
@@ -1163,14 +1186,19 @@ class Game(
         }
         val npcs = npcsHere.map {
             NpcView(it.key, it.name, it.hp, it.proto.hpMax, p.id in it.enemies, true,
-                content.logic.hasDialog(if (it.key.startsWith("n.g.")) "n.g.guard" else it.key),
-                attacking = whom(it.enemies.firstOrNull()) ?: it.npcTarget?.let { k -> npcsHere.firstOrNull { n -> n.key == k }?.name })
+                content.logic.hasDialog(if (it.key.startsWith("n.g.")) "n.g.guard" else it.key) || it.owner?.ownerId == p.id,
+                attacking = whom(it.enemies.firstOrNull()) ?: it.npcTarget?.let { k -> npcsHere.firstOrNull { n -> n.key == k }?.name },
+                mine = it.owner?.ownerId == p.id,
+                owner = it.owner?.let { o -> if (o.ownerId == p.id) "вы" else players[o.ownerId]?.name })
         }
         val occupied = loc.exits.map { it.target }.distinct().filter { t ->
             t != loc.id && (world.npcsIn(t).isNotEmpty() || players.values.any { it.location == t && now - it.lastSeen < ACTIVE_SECONDS })
         }.toSet()
         val location = loc.view().copy(
-            exits = loc.exits.map { it.copy(occupied = it.target in occupied) },
+            exits = loc.exits.map { e ->
+                e.copy(occupied = e.target in occupied,
+                    gallop = p.mount != null && content.locations[e.target]?.exits?.any { it.label == e.label && it.target != loc.id } == true)
+            },
             npcs = npcs,
             items = world.itemsAt(loc.id, now),
             players = others,
@@ -1188,6 +1216,7 @@ class Game(
             skills = p.other.filterValues { it > 0 }.toSortedMap(), known = p.known.sorted(),
             crime = p.crime.takeIf { p.criminal(now) }, crimeMinutes = if (p.criminal(now)) (p.crimeUntil - now + 59) / 60 else 0,
             poisoned = now < p.poisonUntil,
+            mounted = p.mount != null,
             ghost = p.ghost, exp = p.exp, expNext = Formulas.expThreshold(p.skills()),
             hit = s.hit, dmgMin = s.dmgMin, dmgMax = s.dmgMax, armor = s.armor, dodge = s.dodge,
             parry = s.parry, magicDodge = s.magicDodge, magicParry = s.magicParry, magicResist = s.magicResist,
@@ -1206,6 +1235,7 @@ class Game(
                 PersonView(q.name, q.clanName, q.ghost, q.crime.takeIf { q.criminal(now) },
                     hpPercent = if (!q.ghost && q.hp < q.hpMax) q.hp.coerceAtLeast(0) * 100 / q.hpMax else null,
                     attacking = if (q.ghost) null else attackingOf(q.attackTarget),
+                    rider = q.mount != null,
                     faction = if (Law.wolfIsland(loc.id) && (Regex("x(\\d+)$").find(loc.id)?.groupValues?.get(1)?.toIntOrNull() ?: 0) <= 1370)
                         when (q.faction) { "t" -> "тамплиер"; "p" -> "пират"; else -> null } else null)
             },

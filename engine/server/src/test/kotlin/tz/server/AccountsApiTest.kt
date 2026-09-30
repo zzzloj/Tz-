@@ -34,7 +34,7 @@ class AccountsApiTest {
 
     companion object {
         private val content by lazy { Content.load(contentDir()) }
-        private val db: Db? by lazy { System.getenv("TZ_TEST_DATABASE_URL")?.let { Db.fromUrl(it).also(Db::migrate) } }
+        private val db: Db? get() = TestDb.db
     }
 
     private fun unique(prefix: String) = prefix + (1..8).map { ('a'..'z').random() }.joinToString("")

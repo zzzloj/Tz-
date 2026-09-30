@@ -79,7 +79,11 @@ struct RootView: View {
                                     look: { t in model.run { try await $0.look(target: t) } },
                                     closeLook: { model.run { $0.closeLook() } },
                                     dropOne: { i in model.run { try await $0.drop(item: i, count: KotlinInt(int: 1)) } },
-                                    takeOne: { i in model.run { try await $0.take(item: i, count: KotlinInt(int: 1)) } }),
+                                    takeOne: { i in model.run { try await $0.take(item: i, count: KotlinInt(int: 1)) } },
+                                    dismount: { model.run { try await $0.dismount() } },
+                                    tame: { n in model.run { try await $0.tame(npc: n) } },
+                                    raise: { c in model.run { try await $0.raise(corpse: c) } },
+                                    gallop: { e in model.run { try await $0.gallop(exit: e) } }),
                                 pendingAbility: s.pendingAbility,
                                 social: SocialActions(
                                     answerText: { t in model.run { try await $0.answerText(text: t) } },
@@ -203,6 +207,7 @@ struct PlayingView: View {
         if let f = p.faction { s += " \(f)" }
         if let hp = p.hpPercent { s += " \(hp.intValue)%" }
         if let a = p.attacking { s += " · атакует \(a)" }
+        if p.rider { s += " (всадник)" }
         if p.ghost { s += " (призрак)" }
         return s
     }
@@ -210,6 +215,19 @@ struct PlayingView: View {
     private func crimeLine(_ c: CharacterView) -> String? {
         guard let crime = c.crime else { return nil }
         return "Вы \(crime) — стража ищет вас ещё \(c.crimeMinutes) мин"
+    }
+
+    private func canTame(_ npc: NpcView) -> Bool {
+        let c = game.character
+        return !c.ghost && !npc.mine && npc.owner == nil && npc.id.hasPrefix("n.a.") && (c.skills["animaltaming"]?.intValue ?? 0) > 0
+    }
+
+    private func npcLine(_ npc: NpcView) -> String {
+        var s = npc.name
+        if let o = npc.owner { s += npc.mine ? " (ваш)" : " (\(o))" }
+        if npc.attackable { s += " · HP \(npc.hp)/\(npc.hpMax)" }
+        if let a = npc.attacking { s += " · атакует \(a)" }
+        return s
     }
 
     private func isThief(_ c: CharacterView) -> Bool {
@@ -243,6 +261,7 @@ struct PlayingView: View {
                 Text(line).font(.caption).foregroundStyle(.red)
             }
             if c.poisoned { Text("Вы отравлены: здоровье убывает").font(.caption).foregroundStyle(.red) }
+            if c.mounted { Button("Вы верхом — спешиться") { more.dismount() }.disabled(busy) }
             if !c.skills.isEmpty {
                 Text("навыки: " + c.skills.keys.sorted().map { "\(Rules.shared.skillTitle(key: $0)) \(c.skills[$0]?.intValue ?? 0)" }.joined(separator: ", "))
                     .font(.caption).foregroundStyle(.secondary)
@@ -269,15 +288,14 @@ struct PlayingView: View {
             }
             ForEach(loc.npcs, id: \.id) { npc in
                 HStack {
-                    Text(npc.name
-                         + (npc.attackable ? " · HP \(npc.hp)/\(npc.hpMax)" : "")
-                         + (npc.attacking.map { " · атакует \($0)" } ?? ""))
+                    Text(npcLine(npc))
                         .foregroundStyle(npc.fightingYou ? .red : .primary)
                     Spacer()
                     if npc.canTalk {
                         Button("говорить") { onTalk(npc) }.disabled(busy).buttonStyle(.borderless)
                     }
                     Button("?") { more.look(npc.id) }.disabled(busy).buttonStyle(.borderless)
+                    if canTame(npc) { Button("приручить") { more.tame(npc) }.disabled(busy).buttonStyle(.borderless) }
                     if isThief(c) {
                         Button("подглядеть") { more.peek(npc.id) }.disabled(busy).buttonStyle(.borderless)
                     }
@@ -327,6 +345,9 @@ struct PlayingView: View {
                         }
                     }
                 }
+                if corpse.canRaise && !c.ghost && (c.skills["necro"]?.intValue ?? 0) > 0 {
+                    Button("поднять") { more.raise(corpse) }.disabled(busy)
+                }
                 if corpse.canButcher && !c.ghost {
                     Button("разделать") { onButcher(corpse) }.disabled(busy)
                 }
@@ -334,7 +355,10 @@ struct PlayingView: View {
         }
         Section("Выходы") {
             ForEach(loc.exits, id: \.target) { exit in
-                Button(exit.label + (exit.occupied ? " !" : "")) { onGo(exit) }.disabled(busy)
+                HStack {
+                    Button(exit.label + (exit.occupied ? " !" : "")) { onGo(exit) }.disabled(busy).buttonStyle(.borderless)
+                    if exit.gallop { Spacer(); Button("галопом") { more.gallop(exit) }.disabled(busy).buttonStyle(.borderless) }
+                }
             }
             Button("осмотреться") { onRefresh() }.disabled(busy)
         }
@@ -544,6 +568,10 @@ struct MoreActions {
     let closeLook: () -> Void
     let dropOne: (InventoryItemView) -> Void
     let takeOne: (GroundItemView) -> Void
+    let dismount: () -> Void
+    let tame: (NpcView) -> Void
+    let raise: (CorpseView) -> Void
+    let gallop: (ExitView) -> Void
 }
 
 /// Spells, techniques and stances learnt, and the «на кого?» list for one that needs a target.

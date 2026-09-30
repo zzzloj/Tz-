@@ -14,6 +14,8 @@ data class ExitView(
     val target: String,
     /** «Звуки»: someone (a character or an NPC) is there. */
     val occupied: Boolean = false,
+    /** On horseback: the next location has an exit with the same label — gallop two locations at once (MoveRequest.gallop). */
+    val gallop: Boolean = false,
 )
 
 @Serializable
@@ -30,6 +32,10 @@ data class NpcView(
     val canTalk: Boolean = false,
     /** Whom it is fighting: "вас" or a name; null — nobody. */
     val attacking: String? = null,
+    /** Yours (a pet, a horse, a mercenary…): talk to it to give orders. */
+    val mine: Boolean = false,
+    /** Whose it is, if someone's. */
+    val owner: String? = null,
 )
 
 @Serializable
@@ -41,6 +47,8 @@ data class CorpseView(
     val canButcher: Boolean = false,
     /** Taking from it is looting (мародёрство): the corpse of an innocent that is not yours or your clan's. */
     val looting: Boolean = false,
+    /** A monster's or animal's: a necromancer can raise it (POST /api/game/skill "necro"). */
+    val canRaise: Boolean = false,
 )
 
 @Serializable
@@ -145,6 +153,8 @@ data class CharacterView(
     val crimeMinutes: Long = 0,
     /** Poisoned: health goes down instead of coming back (never below 1). */
     val poisoned: Boolean = false,
+    /** On horseback (dismount: POST /api/game/skill "dismount"). */
+    val mounted: Boolean = false,
     /** Skills above 0 by key (Rules.SKILLS), spells and techniques learnt. */
     val skills: Map<String, Int> = emptyMap(),
     val known: List<String> = emptyList(),
@@ -297,6 +307,7 @@ data class PersonView(
     val attacking: String? = null,
     /** On the Wolf island: тамплиер or пират. */
     val faction: String? = null,
+    val rider: Boolean = false,
 )
 
 @Serializable
@@ -419,7 +430,7 @@ data class TargetRequest(val target: String, /** target is a character name, not
 data class LootRequest(val corpse: String, val item: String = "")
 
 @Serializable
-data class MoveRequest(val target: String)
+data class MoveRequest(val target: String, /** gallop on through the exit with the same label */ val gallop: Boolean = false)
 
 @Serializable
 data class ErrorResponse(
