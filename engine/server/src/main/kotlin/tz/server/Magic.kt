@@ -72,9 +72,28 @@ object Spells {
     }
 
     fun usable(content: Content, id: String): Boolean =
-        spellOfItem(id)?.let { content.items[it] != null } == true || (id.startsWith("i.rr.") && id != EMPTY_RUNE)
+        spellOfItem(id)?.let { content.items[it] != null } == true || (id.startsWith("i.rr.") && id != EMPTY_RUNE) || id in BOTTLES
 
-    fun itemTarget(content: Content, id: String): String? = spellOfItem(id)?.let { target(it, content.items[it]) }
+    fun itemTarget(content: Content, id: String): String? =
+        BOTTLES[id]?.let { if (it.single) "creature" else null } ?: spellOfItem(id)?.let { target(it, content.items[it]) }
+
+    /**
+     * Bottles and one-shot weapons (plugin/i.b.*.dat, i.q.pdeath.dat,
+     * i.q.ssword.dat): damage, verb, rest; [single] — at one target, else at
+     * everyone here; [holy] — only criminals and monsters; [magic] — the
+     * magic branch (armour does not count, no counter-blow).
+     */
+    class Bottle(val min: Int, val max: Int, val verb: String, val rest: Int, val single: Boolean,
+                 val magic: Boolean = true, val holy: Boolean = false, val poison: Boolean = false, val notInBank: Boolean = false)
+    val BOTTLES = mapOf(
+        "i.b.fire" to Bottle(1, 24, "огнем", 10, single = false),
+        "i.b.holy" to Bottle(6, 24, "святой водой", 5, single = false, holy = true),
+        "i.b.jad" to Bottle(1, 28, "ядом", 8, single = true),
+        "i.b.jad.c" to Bottle(0, 0, "ядом", 8, single = true, poison = true),
+        "i.q.pdeath" to Bottle(0, 90, "порошком смерти", 10, single = false, notInBank = true),
+        "i.q.ssword" to Bottle(0, 90, "стекл.мечом", 7, single = true, magic = false, notInBank = true),
+    )
+    const val POISON_SECONDS = 300L
 
     /** Where a marked rune leads; null for an empty one. */
     fun runePlace(id: String): String? = id.removePrefix("i.rr.").takeIf { id.startsWith("i.rr.") && id != EMPTY_RUNE && it.isNotEmpty() }
@@ -659,6 +678,7 @@ private suspend fun Game.search(p: Game.Player, now: Long) {
  * Returns false if the item is not magic.
  */
 internal suspend fun Game.useMagicItem(p: Game.Player, itemId: String, target: String?): Boolean {
+    Spells.BOTTLES[itemId]?.let { useBottle(p, itemId, it, target); return true }
     Spells.spellOfItem(itemId)?.takeIf { content.items[it] != null }?.let { spell ->
         castSpell(p, spell, target, scroll = itemId)
         return true
@@ -680,4 +700,36 @@ internal suspend fun Game.useMagicItem(p: Game.Player, itemId: String, target: S
     teleport(p, place)
     p.log("Вы исчезаете в клубах серого дыма и оказываетесь в совершенно другом месте.")
     return true
+}
+
+/** Throws a bottle or strikes with a one-shot weapon (Spells.BOTTLES). */
+private suspend fun Game.useBottle(p: Game.Player, itemId: String, b: Spells.Bottle, target: String?) {
+    val now = clock()
+    if (now < p.busyUntil) throw ApiException(HttpStatusCode.Conflict, Errors.RESTING)
+    val name = content.itemName(itemId)
+    if (b.notInBank && p.location == Rules.BANK_LOCATION) { p.log("В банке нельзя использовать: $name"); return }
+    if (itemId == "i.q.ssword" && (p.str < 5 || p.dex < 4)) { p.log("Необходимо минимум сила 5 и ловкость 4"); return }
+    val targets: List<Aim> = if (b.single) {
+        listOfNotNull(aim(p, target, now)?.takeIf { it !is Aim.Item }).ifEmpty { p.log("Нет цели"); return }
+    } else othersHere(p, now).filter { t ->
+        !b.holy || when (t) { is Aim.Npc -> t.npc.key.startsWith("n.c."); is Aim.Pc -> t.p.criminal(now); is Aim.Item -> false }
+    }
+    changeItem(p, itemId, -1)
+    p.busyUntil = now + b.rest
+    if (itemId == "i.q.pdeath" && p.location == "x2375x934") {
+        val line = "[громовой голос] КАК ТЫ СМЕЕШЬ МЕНЯ ТРЕВОЖИТЬ, ${p.name.uppercase()}?"
+        p.log(line); tellHere(p, line)
+    }
+    val stats = p.stats.copy(hit = 100, dmgMin = b.min, dmgMax = b.max, delay = b.rest, ranged = false, verb = b.verb, ammo = "")
+    val blow = Blow(stats, rmagic = b.magic)
+    for (t in targets) {
+        if (p.ghost) break
+        if (!Law.mayFight(p, (t as? Aim.Pc)?.p, now)) continue
+        if (b.poison) when (t) {
+            is Aim.Npc -> t.npc.poisonUntil = now + Spells.POISON_SECONDS
+            is Aim.Pc -> { t.p.poisonUntil = now + Spells.POISON_SECONDS; t.p.log("Вас отравили!"); notify(t.p.id) }
+            is Aim.Item -> {}
+        }
+        blowAt(p, t, blow, now)
+    }
 }

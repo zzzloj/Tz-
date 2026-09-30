@@ -166,6 +166,8 @@ private suspend fun Game.eat(p: Game.Player, itemId: String, food: JsonObject, n
     p.hp = (p.hp + hp).coerceAtMost(p.hpMax)
     p.mana = (p.mana + mana).coerceAtMost(p.manaMax)
     p.busyUntil = now + (food.int("busy") ?: 0)
+    // The antidote shortens poisoning (plugin/i.b.antidot.dat).
+    food.int("curesPoisonSeconds")?.let { p.poisonUntil -= it }
     p.log(food.str("message") ?: buildString {
         append("Вы съели: ").append(content.itemName(itemId))
         if (hp > 0) append(", HP +").append(hp)

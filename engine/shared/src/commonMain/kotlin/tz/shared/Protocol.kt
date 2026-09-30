@@ -12,6 +12,8 @@ data class ExitView(
     val label: String,
     /** Location id the exit leads to. */
     val target: String,
+    /** «Звуки»: someone (a character or an NPC) is there. */
+    val occupied: Boolean = false,
 )
 
 @Serializable
@@ -26,6 +28,8 @@ data class NpcView(
     val attackable: Boolean = false,
     /** Has a dialog: POST /api/game/talk. */
     val canTalk: Boolean = false,
+    /** Whom it is fighting: "вас" or a name; null — nobody. */
+    val attacking: String? = null,
 )
 
 @Serializable
@@ -77,8 +81,9 @@ data class InventoryItemView(
     val target: String? = null,
 )
 
+/** [arg]: a choice some things ask for (where to sail the boat). */
 @Serializable
-data class ItemRequest(val item: String)
+data class ItemRequest(val item: String, val arg: String? = null)
 
 @Serializable
 data class ContentReport(
@@ -138,6 +143,8 @@ data class CharacterView(
     /** Criminal title (бандит, убийца, мародер…) and minutes left; null — innocent. */
     val crime: String? = null,
     val crimeMinutes: Long = 0,
+    /** Poisoned: health goes down instead of coming back (never below 1). */
+    val poisoned: Boolean = false,
     /** Skills above 0 by key (Rules.SKILLS), spells and techniques learnt. */
     val skills: Map<String, Int> = emptyMap(),
     val known: List<String> = emptyList(),
@@ -191,7 +198,16 @@ data class GameView(
     val abilities: List<AbilityView> = emptyList(),
     /** The defensive stance held, "реакция (1 мин)"; null — none. */
     val stance: String? = null,
+    /** A question from a thing (the boat: where to?): answer by repeating the action with the option's value as arg. */
+    val choice: ChoiceView? = null,
 )
+
+/** A choice a thing asks for: [item] is taken again with arg = the chosen option's value. */
+@Serializable
+data class ChoiceView(val item: String, val title: String, val options: List<ChoiceOption> = emptyList())
+
+@Serializable
+data class ChoiceOption(val label: String, val value: String)
 
 /** A spell (POST /api/game/cast) or a technique or stance (POST /api/game/technique). */
 @Serializable
@@ -242,7 +258,18 @@ data class CastleView(
 data class CastleRequest(val op: String, val text: String? = null)
 
 @Serializable
-data class PersonView(val name: String, val clan: String? = null, val ghost: Boolean = false, val crime: String? = null)
+data class PersonView(
+    val name: String,
+    val clan: String? = null,
+    val ghost: Boolean = false,
+    val crime: String? = null,
+    /** Health in percent when below 100; null — unhurt. */
+    val hpPercent: Int? = null,
+    /** Whom this character is fighting: "вас" or a name. */
+    val attacking: String? = null,
+    /** On the Wolf island: тамплиер or пират. */
+    val faction: String? = null,
+)
 
 @Serializable
 data class ExchangeView(

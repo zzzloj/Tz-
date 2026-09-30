@@ -90,7 +90,9 @@ struct RootView: View {
                                     openClan: { model.run { try await $0.openClan() } },
                                     closeClan: { model.run { $0.closeClan() } },
                                     clanOp: { op, name, rank, clan in model.run { try await $0.clanOp(op: op, name: name, rank: rank, clan: clan, text: nil) } },
-                                    castleOp: { op, text in model.run { try await $0.castleOp(op: op, text: text) } }),
+                                    castleOp: { op, text in model.run { try await $0.castleOp(op: op, text: text) } },
+                                    choose: { o in model.run { try await $0.choose(option: o) } },
+                                    closeChoice: { model.run { $0.closeChoice() } }),
                                 mail: s.mail,
                                 clanInfo: s.clanInfo,
                                 onRefresh: { model.run { try await $0.refresh() } },
@@ -190,6 +192,9 @@ struct PlayingView: View {
         var s = p.name
         if let clan = p.clan { s += " *\(clan)*" }
         if let crime = p.crime { s += " [\(crime)]" }
+        if let f = p.faction { s += " \(f)" }
+        if let hp = p.hpPercent { s += " \(hp.intValue)%" }
+        if let a = p.attacking { s += " · атакует \(a)" }
         if p.ghost { s += " (призрак)" }
         return s
     }
@@ -225,6 +230,7 @@ struct PlayingView: View {
             if let line = crimeLine(c) {
                 Text(line).font(.caption).foregroundStyle(.red)
             }
+            if c.poisoned { Text("Вы отравлены: здоровье убывает").font(.caption).foregroundStyle(.red) }
             if !c.skills.isEmpty {
                 Text("навыки: " + c.skills.keys.sorted().map { "\(Rules.shared.skillTitle(key: $0)) \(c.skills[$0]?.intValue ?? 0)" }.joined(separator: ", "))
                     .font(.caption).foregroundStyle(.secondary)
@@ -253,7 +259,7 @@ struct PlayingView: View {
                 HStack {
                     Text(npc.name
                          + (npc.attackable ? " · HP \(npc.hp)/\(npc.hpMax)" : "")
-                         + (npc.fightingYou ? " · бьёт вас" : ""))
+                         + (npc.attacking.map { " · атакует \($0)" } ?? ""))
                         .foregroundStyle(npc.fightingYou ? .red : .primary)
                     Spacer()
                     if npc.canTalk {
@@ -284,7 +290,7 @@ struct PlayingView: View {
                     Text(label(item.name, item.count))
                     Spacer()
                     if item.takeable {
-                        Button("взять") { onTake(item) }.disabled(busy).buttonStyle(.borderless)
+                        Button(item.id.hasPrefix("i.s.") ? "использовать" : "взять") { onTake(item) }.disabled(busy).buttonStyle(.borderless)
                     }
                 }
             }
@@ -310,7 +316,7 @@ struct PlayingView: View {
         }
         Section("Выходы") {
             ForEach(loc.exits, id: \.target) { exit in
-                Button(exit.label) { onGo(exit) }.disabled(busy)
+                Button(exit.label + (exit.occupied ? " !" : "")) { onGo(exit) }.disabled(busy)
             }
             Button("осмотреться") { onRefresh() }.disabled(busy)
         }
@@ -458,6 +464,12 @@ struct PlayingView: View {
             }
         }
         MagicSection(game: game, busy: busy, pending: pendingAbility, more: more)
+        if let ch = game.choice {
+            Section(ch.title) {
+                ForEach(ch.options, id: \.value) { o in Button(o.label) { social.choose(o) }.disabled(busy) }
+                Button("отмена") { social.closeChoice() }
+            }
+        }
         Section("Сказать") {
             TextField("Текст", text: $speech)
             HStack {
@@ -571,4 +583,6 @@ struct SocialActions {
     let closeClan: () -> Void
     let clanOp: (String, String?, String?, String?) -> Void
     let castleOp: (String, String?) -> Void
+    let choose: (ChoiceOption) -> Void
+    let closeChoice: () -> Void
 }

@@ -43,6 +43,7 @@ import tz.shared.MessagesView
 import tz.shared.PersonView
 import tz.shared.AbilityView
 import tz.shared.Targets
+import tz.shared.ChoiceOption
 import tz.shared.ShopItemView
 import tz.shared.DialogOption
 import tz.shared.Rules
@@ -150,6 +151,8 @@ fun App(session: Session, live: Boolean = true) {
                     closeClan = { session.closeClan(); version++ },
                     clanOp = { op, name, rank, clan -> run { session.clanOp(op, name, rank, clan) } },
                     castleOp = { op, text -> run { session.castleOp(op, text) } },
+                    choose = { o -> run { session.choose(o) } },
+                    closeChoice = { session.closeChoice(); version++ },
                 ),
                 mail = session.mail,
                 clanInfo = session.clanInfo,
@@ -223,6 +226,12 @@ fun Playing(
     val small = MaterialTheme.typography.bodyMedium
     Text("${c.name} · HP ${c.hp}/${c.hpMax} · мана ${c.mana}/${c.manaMax}", style = MaterialTheme.typography.labelLarge)
     c.crime?.let { Text("Вы $it — стража ищет вас ещё ${c.crimeMinutes} мин", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.error) }
+    if (c.poisoned) Text("Вы отравлены: здоровье убывает", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.error)
+    game.choice?.let { ch ->
+        Panel(ch.title, social.closeChoice) {
+            ch.options.forEach { o -> TextButton(onClick = { social.choose(o) }, enabled = !busy) { Text(o.label) } }
+        }
+    }
     Text(
         "удар ${c.hit}% · урон ${c.dmgMin}–${c.dmgMax} · броня ${c.armor} · уклон ${c.dodge} · опыт ${c.exp}/${c.expNext}" +
             (if (c.skillPoints > 0) " · очков ${c.skillPoints}" else "") +
@@ -379,7 +388,7 @@ fun Playing(
     loc.npcs.forEach { npc ->
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                npc.name + (if (npc.attackable) " · HP ${npc.hp}/${npc.hpMax}" else "") + (if (npc.fightingYou) " · бьёт вас" else ""),
+                npc.name + (if (npc.attackable) " · HP ${npc.hp}/${npc.hpMax}" else "") + (npc.attacking?.let { " · атакует $it" } ?: ""),
                 Modifier.weight(1f), style = small,
                 color = if (npc.fightingYou) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
             )
@@ -390,7 +399,9 @@ fun Playing(
     game.people.forEach { person ->
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                person.name + (person.clan?.let { " *$it*" } ?: "") + (person.crime?.let { " [$it]" } ?: "") + if (person.ghost) " (призрак)" else "",
+                person.name + (person.clan?.let { " *$it*" } ?: "") + (person.crime?.let { " [$it]" } ?: "") +
+                    (person.faction?.let { " $it" } ?: "") + (person.hpPercent?.let { " $it%" } ?: "") +
+                    (person.attacking?.let { " · атакует $it" } ?: "") + if (person.ghost) " (призрак)" else "",
                 Modifier.weight(1f), style = small,
                 color = if (person.crime != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
             )
@@ -403,7 +414,7 @@ fun Playing(
     loc.items.forEach { item ->
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("${item.name}${if (item.count > 1) " ×${item.count}" else ""}", Modifier.weight(1f))
-            if (item.takeable) TextButton(onClick = { onTake(item) }, enabled = !busy) { Text("взять") }
+            if (item.takeable) TextButton(onClick = { onTake(item) }, enabled = !busy) { Text(if (item.id.startsWith("i.s.")) "использовать" else "взять") }
         }
     }
     loc.corpses.forEach { corpse ->
@@ -420,7 +431,7 @@ fun Playing(
         }
     }
     loc.exits.forEach { exit ->
-        OutlinedButton(onClick = { onGo(exit) }, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text(exit.label) }
+        OutlinedButton(onClick = { onGo(exit) }, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text(exit.label + if (exit.occupied) " !" else "") }
     }
     TextButton(onClick = onRefresh, enabled = !busy) { Text("осмотреться") }
 
@@ -471,6 +482,8 @@ class SocialActions(
     val closeClan: () -> Unit = {},
     val clanOp: (String, String?, String?, String?) -> Unit = { _, _, _, _ -> },
     val castleOp: (String, String?) -> Unit = { _, _ -> },
+    val choose: (ChoiceOption) -> Unit = {},
+    val closeChoice: () -> Unit = {},
 )
 
 @Composable

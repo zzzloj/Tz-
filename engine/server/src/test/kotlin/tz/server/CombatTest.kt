@@ -96,8 +96,9 @@ class CombatTest {
         val guard = game.world.npcsIn(npc.location).firstOrNull { it.key.startsWith("n.g.") }
         assertNotNull(guard, "a guard appears")
         assertTrue(guard.name.endsWith("[стража]"))
-        // After 30 minutes the crime is over and the guard (10 minutes) is gone.
-        clock[0] += 1801
+        // After 30 minutes online the crime is over and the guard (10 minutes) is gone.
+        repeat(6) { clock[0] += 300; game.view(account) }
+        clock[0] += 1
         game.tick(clock[0])
         assertEquals(null, game.view(account).character.crime)
         assertTrue(game.world.npcsIn(npc.location).none { it.key.startsWith("n.g.") })

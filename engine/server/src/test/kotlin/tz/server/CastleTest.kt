@@ -77,6 +77,7 @@ class CastleTest {
             d = game.talk(a, guard.key, "close", "yes").dialog!!
             assertTrue(d.text.contains("не можем закрыть"), d.text)
             clock[0] += 2 * 3600 + 1
+            game.place(a, "c.1.gate")   // back after two hours away, the owner wakes up inside and walks to the gate again
             game.talk(a, guard.key, "begin", null)
             game.talk(a, guard.key, "close", null)
             d = game.talk(a, guard.key, "close", "yes").dialog!!
