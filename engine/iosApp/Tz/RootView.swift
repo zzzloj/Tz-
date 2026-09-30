@@ -785,10 +785,10 @@ struct MapCanvas: View {
     var body: some View {
         let me = MapCanvas.point(here)
         let region = me?.2 ?? 0
-        let pts = points.filter { p in (p.y > 1101 ? 2 : (p.x > 1650 ? 1 : 0)) == region }
+        let pts = points.filter { p in (p.mapY > 1101 ? 2 : (p.mapX > 1650 ? 1 : 0)) == region }
         let castles = ["c.1.gate", "c.2.gate", "c.3.gate", "c.4.gate"].compactMap { MapCanvas.point($0) }.filter { $0.2 == region }
         let flag = flagAt.flatMap { MapCanvas.point($0) }.flatMap { $0.2 == region ? $0 : nil }
-        let dots: [(Int, Int, Bool)] = pts.map { (Int($0.x), Int($0.y), $0.zone == 1) }
+        let dots: [(Int, Int, Bool)] = pts.map { (Int($0.mapX), Int($0.mapY), $0.zone == 1) }
         return Canvas { ctx, size in
             guard let minX = dots.map({ $0.0 }).min(), let maxX = dots.map({ $0.0 }).max(),
                   let minY = dots.map({ $0.1 }).min(), let maxY = dots.map({ $0.1 }).max() else { return }

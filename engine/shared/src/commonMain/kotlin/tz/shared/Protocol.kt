@@ -257,7 +257,7 @@ data class CastleSummary(val id: Int, val name: String, val owner: String? = nul
 data class MapView(val points: List<MapPoint> = emptyList())
 
 @Serializable
-data class MapPoint(val id: String, val x: Int, val y: Int, val zone: Int)
+data class MapPoint(val id: String, val mapX: Int, val mapY: Int, val zone: Int)
 
 @Serializable
 data class PeekItem(val id: String, val name: String, val count: Int, val equipped: Boolean = false)

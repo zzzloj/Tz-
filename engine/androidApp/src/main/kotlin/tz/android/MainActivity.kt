@@ -601,12 +601,12 @@ fun MapPanel(m: MapView, here: String, flagAt: String?, onClose: () -> Unit) {
     val me = Rules.mapPoint(here)
     val region = me?.third ?: 0
     fun regionOf(x: Int, y: Int) = if (y > 1101) 2 else if (x > 1650) 1 else 0
-    val pts = m.points.filter { regionOf(it.x, it.y) == region }
+    val pts = m.points.filter { regionOf(it.mapX, it.mapY) == region }
     val title = when (region) { 1 -> "Карта: Ансалон"; 2 -> "Карта: Волчий остров"; else -> "Карта: основная территория" }
     Panel(title, onClose) {
         if (pts.isEmpty()) { Text("Нет данных"); return@Panel }
-        val minX = pts.minOf { it.x }; val maxX = pts.maxOf { it.x }
-        val minY = pts.minOf { it.y }; val maxY = pts.maxOf { it.y }
+        val minX = pts.minOf { it.mapX }; val maxX = pts.maxOf { it.mapX }
+        val minY = pts.minOf { it.mapY }; val maxY = pts.maxOf { it.mapY }
         val guarded = MaterialTheme.colorScheme.primary
         val plain = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f)
         val mine = MaterialTheme.colorScheme.error
@@ -620,7 +620,7 @@ fun MapPanel(m: MapView, here: String, flagAt: String?, onClose: () -> Unit) {
             val k = minOf(sx, sy)
             fun at(x: Int, y: Int) = androidx.compose.ui.geometry.Offset((x - minX) * k, (y - minY) * k)
             val d = (k * 6).coerceIn(2f, 6f)
-            for (p in pts) drawCircle(if (p.zone == 1) guarded else plain, radius = d / 2, center = at(p.x, p.y))
+            for (p in pts) drawCircle(if (p.zone == 1) guarded else plain, radius = d / 2, center = at(p.mapX, p.mapY))
             for (c in castles) drawCircle(castle, radius = d * 1.5f, center = at(c.first, c.second))
             flag?.let { drawCircle(flagColor, radius = d * 1.5f, center = at(it.first, it.second)) }
             me?.let { drawCircle(mine, radius = d * 2, center = at(it.first, it.second)) }
