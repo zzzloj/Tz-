@@ -176,12 +176,13 @@ class Forum(private val db: Db, private val clock: () -> Long = { System.current
                 }
                 "delete" -> {
                     mod()
-                    if (r.post != null) {
+                    val postId = r.post
+                    if (postId != null) {
                         val topicId = c.prepareStatement("SELECT topic_id FROM forum_posts WHERE id = ?").use { st ->
-                            st.setLong(1, r.post); st.executeQuery().use { rs -> if (rs.next()) rs.getLong(1) else null }
+                            st.setLong(1, postId); st.executeQuery().use { rs -> if (rs.next()) rs.getLong(1) else null }
                         } ?: throw ApiException(HttpStatusCode.NotFound, Errors.NOT_FOUND)
-                        val page = pageOf(c, topicId, r.post)
-                        update("DELETE FROM forum_posts WHERE id = ?", r.post)
+                        val page = pageOf(c, topicId, postId)
+                        update("DELETE FROM forum_posts WHERE id = ?", postId)
                         // The first post gone and nothing left: the topic goes too.
                         val left = c.prepareStatement("SELECT count(*) FROM forum_posts WHERE topic_id = ?").use { st ->
                             st.setLong(1, topicId); st.executeQuery().use { rs -> rs.next(); rs.getInt(1) }
