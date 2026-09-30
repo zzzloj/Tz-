@@ -11,3 +11,5 @@ Game icons elsewhere in the apps: game-icons.net, CC BY 3.0.
 - `npcs/<key>.webp` — NPC portraits (square, 640×640), shown in dialogs and when
   looking at an NPC. `npcs.json` maps the NPC's display name to a key; a risen
   corpse («…-зомби») reuses the living NPC's portrait with an undead tint.
+- `mobs/<key>.webp` — monster and animal portraits (640×640), rules in `mobs.json`,
+  checked after `npcs.json`.

@@ -1,0 +1,89 @@
+{
+  "_doc": "Monster and animal portraits: the first regex (case-insensitive) matching the creature's display name picks content/art/mobs/<key>.webp (640×640). Checked after npcs.json. Keys with no picture yet show no portrait.",
+  "rules": [
+    [
+      "^(скелет)\\s*$",
+      "mob-skelet"
+    ],
+    [
+      "^(скелет-воин)\\s*$",
+      "mob-skeletwar"
+    ],
+    [
+      "^(скелет-лучник)\\s*$",
+      "mob-skeletbow"
+    ],
+    [
+      "^(скелет-лорд)\\s*$",
+      "mob-skeletlord"
+    ],
+    [
+      "^(зомби)\\s*$",
+      "mob-zombie"
+    ],
+    [
+      "^(гхолл)\\s*$",
+      "mob-gholl"
+    ],
+    [
+      "^(призрак)\\s*$",
+      "mob-ghost"
+    ],
+    [
+      "^(лич)\\s*$",
+      "mob-lich"
+    ],
+    [
+      "^(архилич)\\s*$",
+      "mob-licharchy"
+    ],
+    [
+      "^(вампир)\\s*$",
+      "mob-vampire"
+    ],
+    [
+      "^(мумия воин)\\s*$",
+      "mob-mumyv"
+    ],
+    [
+      "^(мумия лучник)\\s*$",
+      "mob-mumyl"
+    ],
+    [
+      "^(мумия маг)\\s*$",
+      "mob-mumym"
+    ],
+    [
+      "^(мумия фараона)\\s*$",
+      "mob-mumyfar"
+    ],
+    [
+      "^(раб пепла)\\s*$",
+      "mob-rabpepla"
+    ],
+    [
+      "^(волк)\\s*$",
+      "mob-wolf"
+    ],
+    [
+      "^(темный волк|тёмный волк)\\s*$",
+      "mob-darkwolf"
+    ],
+    [
+      "^(белый волк)\\s*$",
+      "mob-whitewolf"
+    ],
+    [
+      "^(оборотень)\\s*$",
+      "mob-werwolf"
+    ],
+    [
+      "^(волк-маг)\\s*$",
+      "mob-wolfmag"
+    ],
+    [
+      "^(волк \\[воин\\]|волк \\[свита\\])\\s*$",
+      "mob-wolfwar"
+    ]
+  ]
+}
