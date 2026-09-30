@@ -776,31 +776,32 @@ struct MapCanvas: View {
     let here: String
     let flagAt: String?
 
-    static func point(_ loc: String) -> (Int, Int, Int)? {
+    /// (x, y, map) of a location: m.php's pins and regions, from the shared rules.
+    static func point(_ loc: String) -> (CGFloat, CGFloat, Int)? {
         guard let t = Rules.shared.mapPoint(loc: loc),
               let x = t.first as? KotlinInt, let y = t.second as? KotlinInt, let r = t.third as? KotlinInt else { return nil }
-        return (x.intValue, y.intValue, r.intValue)
+        return (CGFloat(x.doubleValue), CGFloat(y.doubleValue), Int(r.int32Value))
     }
 
     var body: some View {
         let me = MapCanvas.point(here)
         let region = me?.2 ?? 0
-        let pts = points.filter { p in (p.mapY > 1101 ? 2 : (p.mapX > 1650 ? 1 : 0)) == region }
+        var dots: [(CGFloat, CGFloat, Bool)] = []
+        for point in points {
+            let px = CGFloat(Double(point.mapX))
+            let py = CGFloat(Double(point.mapY))
+            let r = py > 1101 ? 2 : (px > 1650 ? 1 : 0)
+            if r == region { dots.append((px, py, point.zone == 1)) }
+        }
         let castles = ["c.1.gate", "c.2.gate", "c.3.gate", "c.4.gate"].compactMap { MapCanvas.point($0) }.filter { $0.2 == region }
         let flag = flagAt.flatMap { MapCanvas.point($0) }.flatMap { $0.2 == region ? $0 : nil }
-        var dots: [(Int, Int, Bool)] = []
-        for point in pts {
-            let x: Int32 = point.mapX
-            let y: Int32 = point.mapY
-            dots.append((Int(x), Int(y), point.zone == 1))
-        }
         return Canvas { ctx, size in
             guard let minX = dots.map({ $0.0 }).min(), let maxX = dots.map({ $0.0 }).max(),
                   let minY = dots.map({ $0.1 }).min(), let maxY = dots.map({ $0.1 }).max() else { return }
-            let k = min(size.width / CGFloat(max(maxX - minX + 1, 1)), size.height / CGFloat(max(maxY - minY + 1, 1)))
+            let k = min(size.width / max(maxX - minX + 1, 1), size.height / max(maxY - minY + 1, 1))
             let d = min(max(k * 6, 2), 6)
-            func dot(_ x: Int, _ y: Int, _ r: CGFloat, _ c: Color) {
-                let cx = CGFloat(x - minX) * k, cy = CGFloat(y - minY) * k
+            func dot(_ x: CGFloat, _ y: CGFloat, _ r: CGFloat, _ c: Color) {
+                let cx = (x - minX) * k, cy = (y - minY) * k
                 ctx.fill(Path(ellipseIn: CGRect(x: cx - r, y: cy - r, width: r * 2, height: r * 2)), with: .color(c))
             }
             for p in dots { dot(p.0, p.1, d / 2, p.2 ? Color.accentColor : Color.gray.opacity(0.4)) }
