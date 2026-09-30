@@ -790,7 +790,12 @@ class Game(
         val active = players.values.filter { now - it.lastSeen < ACTIVE_SECONDS }
         for (p in active) if (!p.ghost) regen(p, now)
         for (p in active) if (p.crime != null && now >= p.crimeUntil) { p.crime = null; p.log("Срок вашего преступления истёк") }
-        for ((loc, here) in active.groupBy { it.location }) {
+        // The players' locations and their neighbours, like the old doai() (g.php:257-259): NPCs next door may follow.
+        val byLoc = active.groupBy { it.location }
+        val locs = LinkedHashSet<String>(byLoc.keys)
+        for (l in byLoc.keys) content.locations[l]?.exits?.forEach { locs += it.target }
+        for (loc in locs) {
+            val here = byLoc[loc] ?: emptyList()
             val living = here.filter { !it.ghost }
             lawTick(loc, living, now)
             for (npc in world.npcsIn(loc)) {
