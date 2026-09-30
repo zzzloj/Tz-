@@ -48,7 +48,7 @@ internal object Pets {
         val sb = StringBuilder()
         val want = dice.roll(4, 6)
         while (sb.length < want) sb.append(SYLLABLES[dice.roll(0, SYLLABLES.size - 1)])
-        return sb.replaceFirstChar { it.uppercase() }.toString()
+        return sb.toString().replaceFirstChar { it.uppercase() }
     }
 
     fun y(loc: String): Int? = Regex("^x\\d+x(\\d+)$").find(loc)?.groupValues?.get(1)?.toIntOrNull()
@@ -362,7 +362,7 @@ private suspend fun Game.raise(p: Game.Player, corpseId: String?, now: Long) {
     val hp = Math.round(base.hpMax * 0.7).toInt().coerceAtLeast(1)
     val stats = base.stats.copy(dmgMin = Math.round(base.stats.dmgMin * 0.7).toInt(), dmgMax = Math.round(base.stats.dmgMax * 0.7).toInt(), expValue = 0)
     val proto = World.Proto(template, "$title-зомби", hp, stats, emptyMap(), emptyList(), emptyMap(), null, null)
-    val key = "n.z.$template." + (1..4).map { ('a'..'z')[dice.roll(0, 25)] }.joinToString("")
+    val key = "n.z.$template." + (1..4).map { 'a' + dice.roll(0, 25) }.joinToString("")
     val zombie = world.spawnProto(key, proto, p.location, now, 0)
     adopt(zombie, p, follow = true, guard = true, until = now + dice.roll(300, 300 + (s + p.int) * 90), vanish = true, now = now)
     p.log("Вы подняли из мёртвых $title")
