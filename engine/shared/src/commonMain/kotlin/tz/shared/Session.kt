@@ -112,6 +112,18 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
 
     fun closeWorld() { world = null }
 
+    /** The world chronicle and the latest news, for «Мир · События». */
+    var chronicle: ChronicleView? = null
+        private set
+    var news: ForumView? = null
+        private set
+
+    suspend fun openEvents() = action {
+        chronicle = api.chronicle()
+        val all = api.forum()
+        news = all.sections.firstOrNull { it.staffOnly }?.let { api.forumSection(it.id) }
+    }
+
     /** All locations with coordinates, loaded once for the map. */
     var map: MapView? = null
         private set

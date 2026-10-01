@@ -249,6 +249,7 @@ internal suspend fun Game.pvpHandler(p: Game.Player, a: JsonObject, arg: String?
                 ).use { st -> st.setLong(1, id); st.setInt(2, amount); st.executeUpdate() }
             }
             clearState(p.id, "bounty.killer")
+            chronicle("Назначена награда за голову $killer")
             return "Награда за голову $killer увеличена на $amount монет."
         }
         "bounty-claim" -> {
@@ -261,6 +262,7 @@ internal suspend fun Game.pvpHandler(p: Game.Player, a: JsonObject, arg: String?
             }
             if (amount <= 0) throw Game.HandlerFailed("За голову $victim награды не назначено, но спасибо за службу.")
             changeItem(p, Rules.MONEY, amount)
+            chronicle("${p.name} получил награду за голову $victim")
             return "Вот твоя награда за $victim: $amount монет."
         }
     }

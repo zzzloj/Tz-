@@ -95,6 +95,8 @@ class GameApi(
 
     suspend fun world(): WorldView = check(http.get(url("/api/world")) { auth() })
 
+    suspend fun chronicle(): ChronicleView = check(http.get(url("/api/chronicle")) { auth() })
+
     suspend fun map(): MapView = check(http.get(url("/api/map")) { auth() })
 
     /** Describes a character, an NPC, an item, a spell or a skill (GameView.look). */

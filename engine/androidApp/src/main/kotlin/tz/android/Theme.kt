@@ -109,6 +109,14 @@ class TzType {
 }
 
 val LocalTzColors = staticCompositionLocalOf { TzColors(Design.night) }
+
+/** The player's theme: "system" (as the phone), "night" or "parchment"; changed on the account page. */
+class ThemeChoice(val mode: String, val set: (String) -> Unit)
+val LocalThemeChoice = staticCompositionLocalOf { ThemeChoice("system") {} }
+
+/** The theme by the player's choice. */
+@Composable
+fun isDark(mode: String): Boolean = when (mode) { "night" -> true; "parchment" -> false; else -> isSystemInDarkTheme() }
 val LocalTzType = staticCompositionLocalOf { TzType() }
 
 /** Shortcuts: Tz.colors, Tz.type inside a TzTheme. */

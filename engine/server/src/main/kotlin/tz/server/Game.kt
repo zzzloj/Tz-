@@ -976,6 +976,7 @@ class Game(
     internal suspend fun killNpc(p: Player, npc: World.Npc, now: Long) {
         world.kill(npc, now)
         p.count(Stat.MONSTERS)
+        if (npc.key == Society.DEMON) chronicle("${p.name} убил Демона")
         killOrder(p, npc)
         p.log("${npc.name} погибает.")
         tellOthers(p.location, p.id, "${npc.name} погибает.")

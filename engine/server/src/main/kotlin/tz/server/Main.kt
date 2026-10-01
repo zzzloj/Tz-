@@ -276,6 +276,10 @@ private fun Route.accountRoutes(accounts: Accounts, game: Game) {
         requireAccount(call, accounts)
         call.respond(game.worldView())
     }
+    get("/api/chronicle") {
+        val account = requireAccount(call, accounts)
+        call.respond(game.chronicleView(account))
+    }
     get("/api/map") {
         requireAccount(call, accounts)
         call.respond(game.mapView())

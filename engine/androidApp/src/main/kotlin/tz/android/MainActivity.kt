@@ -31,6 +31,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -64,9 +66,14 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val session = Session(GameApi(BuildConfig.SERVER_URL), KeystoreTokens(applicationContext))
+        val prefs = getSharedPreferences("ui", MODE_PRIVATE)
         setContent {
-            TzTheme {
-                Surface(Modifier.fillMaxSize(), color = Tz.colors.background) { App(session) }
+            var mode by remember { mutableStateOf(prefs.getString("theme", "system") ?: "system") }
+            val choice = ThemeChoice(mode) { m -> mode = m; prefs.edit().putString("theme", m).apply() }
+            CompositionLocalProvider(LocalThemeChoice provides choice) {
+                TzTheme(dark = isDark(mode)) {
+                    Surface(Modifier.fillMaxSize(), color = Tz.colors.background) { App(session) }
+                }
             }
         }
     }
@@ -119,8 +126,9 @@ fun App(session: Session, live: Boolean = true) {
     val forum = session.forum
     val pages = session.pages
     val playing = account == null && admin == null && forum == null && pages == null && session.screen == Screen.PLAYING && game != null
+    CompositionLocalProvider(LocalArtUrl provides (if (live) session.api::artUrl else null)) {
     if (playing && game != null) {
-        CompositionLocalProvider(LocalArtUrl provides (if (live) session.api::artUrl else null)) {
+        kotlin.run {
             Playing(
                 game,
                 busy,
@@ -201,11 +209,15 @@ fun App(session: Session, live: Boolean = true) {
                     openPages = { run { session.openPages() } },
                     openAccount = { run { session.openAccount() } },
                     openAdmin = if (session.moderator) ({ run { session.openAdmin() } }) else null,
+                    openEvents = { run { session.openEvents() } },
+                    openTopic = { t -> run { session.openTopic(t) } },
                 ),
                 mail = session.mail,
                 clanInfo = session.clanInfo,
                 worldInfo = session.world,
                 mapView = session.map.takeIf { session.mapOpen },
+                chronicle = session.chronicle,
+                news = session.news,
                 onRefresh = { run { session.refresh() } },
                 onSignOut = { run { session.signOut() } },
                 footer = {
@@ -214,9 +226,7 @@ fun App(session: Session, live: Boolean = true) {
                 },
             )
         }
-        return
-    }
-    Column(
+    } else Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -248,13 +258,29 @@ fun App(session: Session, live: Boolean = true) {
         session.error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
         if (busy) CircularProgressIndicator()
     }
+    }
+}
+
+/** The splash picture over the sign-in forms. */
+@Composable
+fun Splash(height: Int = 280) {
+    val c = Tz.colors
+    Box(Modifier.fillMaxWidth().height(height.dp)) {
+        ArtImage("/art/brand/splash-portrait.webp", Modifier.fillMaxSize(), contentScale = androidx.compose.ui.layout.ContentScale.Crop)
+        Box(Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(androidx.compose.ui.graphics.Color.Transparent, c.background))))
+        Text("Территория Зла", Modifier.align(Alignment.BottomCenter).padding(bottom = 8.dp), style = Tz.type.title, color = c.title)
+    }
 }
 
 @Composable
 fun SignIn(busy: Boolean, onSignIn: (String, String) -> Unit, onRegister: (String, String) -> Unit) {
+    val c = Tz.colors
+    var registering by remember { mutableStateOf(false) }
     var login by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    Text("Территория Зла", style = MaterialTheme.typography.headlineMedium)
+    var again by remember { mutableStateOf("") }
+    Splash()
+    Text(if (registering) "Регистрация" else "Вход", style = Tz.type.heading, color = c.title, modifier = Modifier.fillMaxWidth(), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
     OutlinedTextField(login, { login = it }, label = { Text("Логин") }, singleLine = true, modifier = Modifier.fillMaxWidth())
     OutlinedTextField(
         password, { password = it }, label = { Text("Пароль") }, singleLine = true,
@@ -262,23 +288,38 @@ fun SignIn(busy: Boolean, onSignIn: (String, String) -> Unit, onRegister: (Strin
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         modifier = Modifier.fillMaxWidth(),
     )
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Button(onClick = { onSignIn(login, password) }, enabled = !busy) { Text("Войти") }
-        OutlinedButton(onClick = { onRegister(login, password) }, enabled = !busy) { Text("Регистрация") }
+    if (registering) {
+        OutlinedTextField(
+            again, { again = it }, label = { Text("Пароль ещё раз") }, singleLine = true,
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            modifier = Modifier.fillMaxWidth(),
+            isError = again.isNotEmpty() && again != password,
+        )
+        Text("После входа сохраните код восстановления (Персонаж → Аккаунт): по нему вернёте пароль, почту игра не спрашивает.", style = Tz.type.small, color = c.textMuted)
+        Button(onClick = { onRegister(login, password) }, enabled = !busy && login.isNotBlank() && password.isNotEmpty() && again == password, modifier = Modifier.fillMaxWidth()) { Text("Создать аккаунт") }
+        TextButton(onClick = { registering = false }, modifier = Modifier.fillMaxWidth()) { Text("Уже есть аккаунт? Войти") }
+    } else {
+        Button(onClick = { onSignIn(login, password) }, enabled = !busy, modifier = Modifier.fillMaxWidth()) { Text("Войти") }
+        TextButton(onClick = { registering = true }, modifier = Modifier.fillMaxWidth()) { Text("Регистрация") }
     }
 }
 
 @Composable
 fun CreateCharacter(busy: Boolean, onCreate: (String, Boolean) -> Unit) {
+    val c = Tz.colors
     var name by remember { mutableStateOf("") }
     var female by remember { mutableStateOf(false) }
-    Text("Новый персонаж", style = MaterialTheme.typography.headlineSmall)
+    Splash(200)
+    Text("Новый персонаж", style = Tz.type.heading, color = c.title)
     OutlinedTextField(name, { name = it }, label = { Text("Имя") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+    Text("Имя — русскими буквами, его увидят все. Сменить его потом нельзя.", style = Tz.type.small, color = c.textMuted)
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         FilterChip(selected = !female, onClick = { female = false }, label = { Text("Мужской") })
         FilterChip(selected = female, onClick = { female = true }, label = { Text("Женский") })
     }
-    Button(onClick = { onCreate(name, female) }, enabled = !busy) { Text("Создать") }
+    Text("Вы начнёте в Переулке у городских ворот. Привратник Уин расскажет, с чего начать, а Эдвард вручит подарок новичку.", style = Tz.type.body, color = c.text)
+    Button(onClick = { onCreate(name, female) }, enabled = !busy && name.isNotBlank(), modifier = Modifier.fillMaxWidth()) { Text("Создать") }
 }
 
 class SocialActions(

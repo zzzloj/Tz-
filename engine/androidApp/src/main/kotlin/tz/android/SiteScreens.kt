@@ -3,6 +3,7 @@ package tz.android
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.FilterChip
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
@@ -96,6 +97,13 @@ fun AccountPanel(a: AccountView, info: String?, busy: Boolean, act: SiteActions)
     val small = MaterialTheme.typography.bodySmall
     Panel("Аккаунт ${a.login}", act.closeAccount) {
         a.character?.let { Text("Персонаж: $it", style = small) }
+        val theme = LocalThemeChoice.current
+        Text("Тема", style = MaterialTheme.typography.labelMedium)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf("system" to "Как в системе", "night" to "Ночь", "parchment" to "Пергамент").forEach { (key, title) ->
+                FilterChip(selected = theme.mode == key, onClick = { theme.set(key) }, label = { Text(title) })
+            }
+        }
         if (a.role != "player") Text(if (a.role == "admin") "Вы администратор" else "Вы модератор", style = small)
         if (a.mutedUntil * 1000 > System.currentTimeMillis()) Text("Вам запрещено писать до ${date(a.mutedUntil)}", style = small, color = MaterialTheme.colorScheme.error)
         info?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary) }

@@ -285,6 +285,14 @@ object JournalKind {
 @Serializable
 data class PrefsRequest(val slots: List<String>? = null, val belt: List<String>? = null)
 
+/** GET /api/chronicle: the world chronicle of the last 7 days, newest first. */
+@Serializable
+data class ChronicleView(val entries: List<ChronicleEntry> = emptyList())
+
+/** [at] unix seconds; [clan] — an event of the reader's own clan (seen only by it). */
+@Serializable
+data class ChronicleEntry(val at: Long, val text: String, val clan: Boolean = false)
+
 /** GET /api/world: who is online, clans, castles, the leadership flag (the old site pages). */
 @Serializable
 data class WorldView(

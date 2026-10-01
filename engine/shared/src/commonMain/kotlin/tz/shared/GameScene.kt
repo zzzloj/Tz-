@@ -49,6 +49,36 @@ object GameScene {
     fun slots(game: GameView): List<AbilityView?> =
         game.slots.map { id -> game.abilities.firstOrNull { it.id == id && id.isNotEmpty() } }
 
+    /** Equipment slots in the order of the bag screen: key of [Rules.equipSlot] and its title. */
+    val SLOTS: List<Pair<String, String>> = listOf(
+        "weapon" to "Оружие", "i.a.s." to "Щит", "i.a.h." to "Голова", "i.a.o." to "Глаза", "i.a.m." to "Шея",
+        "i.a.d." to "Украшение", "i.a.e." to "Плащ", "i.a.b." to "Доспех", "i.a.r." to "Рубаха", "i.a.p." to "Руки",
+        "i.a.k." to "Кольцо", "i.a.n." to "Браслет", "i.a.w." to "Штаны", "i.a.l." to "Ноги", "i.a.c." to "Обувь", "i.a.a." to "Наряд",
+    )
+
+    /** What is worn, by slot: every slot with the item in it or null. */
+    fun equipment(game: GameView): List<Pair<String, InventoryItemView?>> =
+        SLOTS.map { (key, title) -> title to game.inventory.firstOrNull { it.equipped && Rules.equipSlot(it.id) == key } }
+
+    /** Skills by group for the character screen: group title and skill keys. */
+    val SKILL_GROUPS: List<Pair<String, List<String>>> = listOf(
+        "Атрибуты" to listOf("str", "dex", "int"),
+        "Бой" to listOf("hand", "coldweapon", "ranged", "parring", "uklon"),
+        "Магия" to listOf("magic", "magic_resist", "magic_uklon", "meditation", "spirit", "necro"),
+        "Выживание" to listOf("regeneration", "hiding", "look", "healing"),
+        "Воровство" to listOf("steal", "steallook"),
+        "Звери" to listOf("animaltaming", "animallore", "currier"),
+        "Ремёсла" to listOf("alchemy", "mine", "smith", "lumb", "bow", "stone", "fish", "food", "weaver"),
+    )
+
+    /** A skill's level (attributes from the character, the rest from its skills; 0 — not learnt). */
+    fun skillLevel(c: CharacterView, key: String): Int = when (key) {
+        "str" -> c.str
+        "dex" -> c.dex
+        "int" -> c.int
+        else -> c.skills[key] ?: 0
+    }
+
     /** Icon key (Design.ICONS) of an exit by its label. */
     fun exitIcon(label: String): String = when {
         "север" in label -> "north"

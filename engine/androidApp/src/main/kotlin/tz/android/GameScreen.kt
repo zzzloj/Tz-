@@ -53,6 +53,8 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
@@ -100,6 +102,8 @@ class LayoutActions(
     val openPages: () -> Unit = {},
     val openAccount: () -> Unit = {},
     val openAdmin: (() -> Unit)? = null,
+    val openEvents: () -> Unit = {},
+    val openTopic: (tz.shared.ForumTopic) -> Unit = {},
 )
 
 // ---- pictures from the server -------------------------------------------------------------
@@ -212,6 +216,8 @@ fun Playing(
     clanInfo: ClanView? = null,
     worldInfo: WorldView? = null,
     mapView: MapView? = null,
+    chronicle: tz.shared.ChronicleView? = null,
+    news: tz.shared.ForumView? = null,
     footer: @Composable () -> Unit = {},
 ) {
     val c = Tz.colors
@@ -240,6 +246,7 @@ fun Playing(
                         tab == GameTab.SOCIAL && i == 3 && worldInfo == null -> more.openWorld()
                         tab == GameTab.WORLD && i == 0 && mapView == null -> more.openMap()
                         tab == GameTab.WORLD && i == 1 && worldInfo == null -> more.openWorld()
+                        tab == GameTab.WORLD && i == 2 && chronicle == null -> layout.openEvents()
                     }
                 }
                 when (tab) {
@@ -247,7 +254,7 @@ fun Playing(
                     GameTab.HERO -> HeroTab(game, busy, sub, more, layout, onSignOut)
                     GameTab.BAG -> BagTab(game, busy, onDrop, onToggleEquip, more, layout)
                     GameTab.SOCIAL -> SocialTab(game, busy, sub, social, more, layout, mail, clanInfo, worldInfo)
-                    GameTab.WORLD -> WorldTab(game, busy, sub, social, more, layout, worldInfo, mapView)
+                    GameTab.WORLD -> WorldTab(game, busy, sub, social, more, layout, worldInfo, mapView, chronicle, news)
                 }
                 footer()
             }
@@ -673,11 +680,18 @@ private fun HeroTab(game: GameView, busy: Boolean, sub: Int, more: MoreActions, 
             layout.openAdmin?.let { TextButton(onClick = it, enabled = !busy) { Text("Модерация") } }
             TextButton(onClick = onSignOut) { Text("Выйти") }
         }
-        1 -> ch.skills.forEach { (k, v) ->
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("${Rules.skillTitle(k)} $v", Modifier.weight(1f), style = Tz.type.body, color = c.text)
-                if (k == "meditation" && !ch.ghost) TextButton(onClick = more.meditate, enabled = !busy) { Text("медитировать") }
-                TextButton(onClick = { more.look("skill.$k") }, enabled = !busy) { Text("?") }
+        1 -> {
+            if (ch.skillPoints > 0) Text("Свободных очков: ${ch.skillPoints}. Тратятся у учителей.", style = Tz.type.small, color = c.accent)
+            GameScene.SKILL_GROUPS.forEach { (group, keys) ->
+                SectionTitle(group)
+                keys.forEach { k ->
+                    val v = GameScene.skillLevel(ch, k)
+                    Row(Modifier.fillMaxWidth().clickable(enabled = !busy) { more.look("skill.$k") }, verticalAlignment = Alignment.CenterVertically) {
+                        Text(Rules.skillTitle(k), Modifier.weight(1f), style = Tz.type.body, color = if (v > 0) c.text else c.textFaint)
+                        if (k == "meditation" && v > 0 && !ch.ghost) TextButton(onClick = more.meditate, enabled = !busy) { Text("медитировать") }
+                        Pips(v, Rules.SKILL_MAX)
+                    }
+                }
             }
         }
         else -> {
@@ -709,6 +723,64 @@ private fun HeroTab(game: GameView, busy: Boolean, sub: Int, more: MoreActions, 
     }
 }
 
+/** A skill level as five marks. */
+@Composable
+fun Pips(value: Int, max: Int) {
+    val c = Tz.colors
+    Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+        repeat(max) { i ->
+            Box(Modifier.size(10.dp).clip(RoundedCornerShape(2.dp)).background(if (i < value) c.accent else c.barTrack)
+                .border(Design.Size.BORDER.dp, c.borderSoft, RoundedCornerShape(2.dp)))
+        }
+    }
+}
+
+/** The map of this part of the world: pinch to zoom, drag to move; starts on you. */
+@Composable
+fun ZoomMap(m: MapView, here: String, flagAt: String?) {
+    val c = Tz.colors
+    val me = Rules.mapPoint(here)
+    val region = me?.third ?: 0
+    fun regionOf(x: Int, y: Int) = if (y > 1101) 2 else if (x > 1650) 1 else 0
+    val pts = remember(m, region) { m.points.filter { regionOf(it.mapX, it.mapY) == region } }
+    if (pts.isEmpty()) { Text("Нет данных", style = Tz.type.small); return }
+    val minX = pts.minOf { it.mapX }; val maxX = pts.maxOf { it.mapX }
+    val minY = pts.minOf { it.mapY }; val maxY = pts.maxOf { it.mapY }
+    var scale by remember(region) { mutableStateOf(3f) }
+    var offset by remember(region) { mutableStateOf(androidx.compose.ui.geometry.Offset.Unspecified) }
+    val castles = listOf("c.1.gate", "c.2.gate", "c.3.gate", "c.4.gate").mapNotNull { Rules.mapPoint(it) }.filter { it.third == region }
+    val flag = flagAt?.let { Rules.mapPoint(it) }?.takeIf { it.third == region }
+    Text(when (region) { 1 -> "Ансалон"; 2 -> "Волчий остров"; else -> "Основная территория" }, style = Tz.type.heading, color = c.title)
+    androidx.compose.foundation.Canvas(
+        Modifier.fillMaxWidth().height(360.dp).clip(RoundedCornerShape(Design.Radius.L.dp)).background(c.surfaceSunken)
+            .border(Design.Size.BORDER.dp, c.border, RoundedCornerShape(Design.Radius.L.dp))
+            .pointerInput(region) {
+                detectTransformGestures { _, pan, zoom, _ ->
+                    scale = (scale * zoom).coerceIn(1f, 12f)
+                    offset = (if (offset == androidx.compose.ui.geometry.Offset.Unspecified) androidx.compose.ui.geometry.Offset.Zero else offset) + pan
+                }
+            },
+    ) {
+        val base = minOf(size.width / (maxX - minX + 1).coerceAtLeast(1), size.height / (maxY - minY + 1).coerceAtLeast(1))
+        val k = base * scale
+        // First frame: centre on the character.
+        if (offset == androidx.compose.ui.geometry.Offset.Unspecified) {
+            val cx = ((me?.first ?: (minX + maxX) / 2) - minX) * k; val cy = ((me?.second ?: (minY + maxY) / 2) - minY) * k
+            offset = androidx.compose.ui.geometry.Offset(size.width / 2 - cx, size.height / 2 - cy)
+        }
+        fun at(x: Int, y: Int) = androidx.compose.ui.geometry.Offset((x - minX) * k + offset.x, (y - minY) * k + offset.y)
+        val d = (k * 0.8f).coerceIn(2f, 14f)
+        for (p in pts) drawCircle(if (p.zone == 1) c.link else c.textFaint, radius = d / 2, center = at(p.mapX, p.mapY))
+        for (cs in castles) drawCircle(c.danger, radius = d * 1.4f, center = at(cs.first, cs.second))
+        flag?.let { drawCircle(c.title, radius = d * 1.4f, center = at(it.first, it.second)) }
+        me?.let {
+            drawCircle(c.accent, radius = d * 1.8f, center = at(it.first, it.second))
+            drawCircle(c.background, radius = d * 0.8f, center = at(it.first, it.second))
+        }
+    }
+    Text("золото — вы, красное — замки, светлое — флаг лидерства, голубые точки — охраняемые улицы. Два пальца — масштаб.", style = Tz.type.small, color = c.textMuted)
+}
+
 @Composable
 private fun SectionTitle(text: String) {
     Text(text, style = Tz.type.label, color = Tz.colors.accent, modifier = Modifier.padding(top = Design.Space.S.dp))
@@ -716,6 +788,7 @@ private fun SectionTitle(text: String) {
 
 // ---- Сумка -----------------------------------------------------------------------------------
 
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 private fun BagTab(game: GameView, busy: Boolean, onDrop: (InventoryItemView) -> Unit, onToggleEquip: (InventoryItemView) -> Unit, more: MoreActions, layout: LayoutActions) {
     val c = Tz.colors
@@ -727,6 +800,19 @@ private fun BagTab(game: GameView, busy: Boolean, onDrop: (InventoryItemView) ->
     }
     if (game.inventory.isEmpty()) Text("пусто", style = Tz.type.body, color = c.textMuted)
     val (worn, carried) = game.inventory.filter { it.id != Rules.MONEY }.partition { it.equipped }
+    SectionTitle("Экипировка")
+    androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(Design.Space.XS.dp), verticalArrangement = Arrangement.spacedBy(Design.Space.XS.dp)) {
+        GameScene.equipment(game).forEach { (slot, item) ->
+            Column(Modifier.width(72.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Box(
+                    Modifier.size(Design.Size.ITEM_ICON.dp + 8.dp).clip(RoundedCornerShape(Design.Radius.M.dp))
+                        .border(Design.Size.BORDER.dp, if (item != null) c.border else c.borderSoft, RoundedCornerShape(Design.Radius.M.dp))
+                        .clickable(enabled = item != null && !busy) { item?.let { more.look(it.id) } },
+                ) { if (item != null) ArtImage(GameScene.itemPath(item.id), Modifier.fillMaxSize()) }
+                Text(item?.name ?: slot, style = Tz.type.small, color = if (item != null) c.text else c.textFaint, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
+        }
+    }
     if (worn.isNotEmpty()) SectionTitle("Надето")
     (worn + carried).forEachIndexed { i, item ->
         if (i == worn.size && carried.isNotEmpty()) SectionTitle("В сумке")
@@ -801,10 +887,13 @@ private fun SocialTab(
 // ---- Мир -------------------------------------------------------------------------------------
 
 @Composable
-private fun WorldTab(game: GameView, busy: Boolean, sub: Int, social: SocialActions, more: MoreActions, layout: LayoutActions, worldInfo: WorldView?, mapView: MapView?) {
+private fun WorldTab(
+    game: GameView, busy: Boolean, sub: Int, social: SocialActions, more: MoreActions, layout: LayoutActions,
+    worldInfo: WorldView?, mapView: MapView?, chronicle: tz.shared.ChronicleView?, news: tz.shared.ForumView?,
+) {
     val c = Tz.colors
     when (sub) {
-        0 -> mapView?.let { MapPanel(it, game.character.location, worldInfo?.flagLocationId, more.closeMap) }
+        0 -> mapView?.let { ZoomMap(it, game.character.location, worldInfo?.flagLocationId) }
             ?: OutlinedButton(onClick = more.openMap, enabled = !busy) { Text("Показать карту") }
         1 -> {
             game.castle?.let { CastleBlock(it, busy, social) }
@@ -823,9 +912,29 @@ private fun WorldTab(game: GameView, busy: Boolean, sub: Int, social: SocialActi
         }
         else -> {
             SectionTitle("Новости")
-            Button(onClick = layout.openNews, enabled = !busy) { Text("Новости администрации") }
-            SectionTitle("Летопись мира")
-            Text("Здесь будет летопись последних дней: захваты замков, флаг, громкие убийства.", style = Tz.type.small, color = c.textMuted)
+            val topics = news?.topics.orEmpty().take(5)
+            if (news == null) Text("…", style = Tz.type.small, color = c.textMuted)
+            else if (topics.isEmpty()) Text("Новостей пока нет.", style = Tz.type.small, color = c.textMuted)
+            topics.forEach { t ->
+                Column(Modifier.fillMaxWidth().tzPanel(c).clickable(enabled = !busy) { layout.openTopic(t) }.padding(Design.Space.S.dp)) {
+                    Text(t.title, style = Tz.type.name, color = c.title)
+                    Text("${date(t.updated)} · ${t.author}", style = Tz.type.small, color = c.textMuted)
+                }
+            }
+            TextButton(onClick = layout.openNews, enabled = !busy) { Text("Все новости") }
+            SectionTitle("Летопись мира · 7 дней")
+            val entries = chronicle?.entries.orEmpty()
+            if (chronicle != null && entries.isEmpty()) Text("Пока тихо: ни захватов, ни свадеб.", style = Tz.type.small, color = c.textMuted)
+            var day = ""
+            entries.forEach { e ->
+                val d = date(e.at).substringBefore(' ')
+                if (d != day) { day = d; Text(d, style = Tz.type.label, color = c.textMuted, modifier = Modifier.padding(top = Design.Space.XS.dp)) }
+                Row {
+                    Text(date(e.at).substringAfter(' '), style = Tz.type.number, color = c.textFaint, modifier = Modifier.width(48.dp))
+                    Text(e.text, style = Tz.type.log, color = if (e.clan) c.accent else c.text)
+                }
+            }
+            TextButton(onClick = layout.openEvents, enabled = !busy) { Text("обновить") }
             TextButton(onClick = layout.openPages, enabled = !busy) { Text("Об игре и правила") }
         }
     }
