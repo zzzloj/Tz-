@@ -56,7 +56,7 @@ class PlayingScreenTest {
             override fun save(token: String?) {}
         }
         val session = Session(GameApi("http://test", HttpClient(engine)), tokens)
-        compose.setContent { MaterialTheme { App(session, live = false) } }
+        compose.setContent { TzTheme { App(session, live = false) } }
 
         compose.waitUntil(5_000) { compose.onAllNodesWithTextExists("Переулок") }
         compose.onNodeWithText("на север").performScrollTo().performClick()

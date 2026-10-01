@@ -64,8 +64,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val session = Session(GameApi(BuildConfig.SERVER_URL), KeystoreTokens(applicationContext))
         setContent {
-            MaterialTheme {
-                Surface(Modifier.fillMaxSize()) { App(session) }
+            TzTheme {
+                Surface(Modifier.fillMaxSize(), color = Tz.colors.background) { App(session) }
             }
         }
     }
