@@ -24,6 +24,7 @@ import tz.shared.Protocol
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 /**
  * Needs PostgreSQL: TZ_TEST_DATABASE_URL (CI provides one). Without it the
