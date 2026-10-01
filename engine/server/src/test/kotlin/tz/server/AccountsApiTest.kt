@@ -147,7 +147,7 @@ class AccountsApiTest {
         // A new character carries the starting knife, not yet equipped.
         var g = game(client.getAuth("/api/game", token))
         assertEquals(listOf("i.w.k.begin" to false), g.inventory.map { it.id to it.equipped })
-        assertEquals(listOf("Привратник Уин"), g.location.npcs.map { it.name })
+        assertEquals(listOf("Привратник Уин", "Эдвард"), g.location.npcs.map { it.name })
 
         g = game(client.postJson("/api/game/equip", """{"item":"i.w.k.begin"}""", token))
         assertEquals(true, g.inventory.single().equipped)

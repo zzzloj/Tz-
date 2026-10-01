@@ -15,7 +15,7 @@ class WorldTest {
     fun startingWorldHasItsNpcs() = runTest {
         val world = World(content, Random(1), start)
         // The gatekeeper stands at the starting street (content/locations/_begin.json).
-        assertEquals(listOf("Привратник Уин"), world.npcsIn("_begin").map { it.name })
+        assertEquals(listOf("Привратник Уин", "Эдвард"), world.npcsIn("_begin").map { it.name })
         assertTrue(world.npcCount() > 300, "npcs: ${world.npcCount()}")
         // Pets of the 2007 players are not in the world.
         assertTrue(world.allNpcs().none { it.key.contains(".u.") })
