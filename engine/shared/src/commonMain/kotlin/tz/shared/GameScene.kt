@@ -17,6 +17,23 @@ object GameScene {
         }
     }
 
+    /**
+     * The NPCs of the place in the sections of the combat list (board «Бой списком»):
+     * those striking you, nearest blow first; fights with others; monsters that
+     * have not noticed you yet; everyone else (yours first, then those who talk).
+     */
+    fun groups(game: GameView): NpcGroups {
+        val all = npcs(game)
+        val atYou = all.filter { it.fightingYou }.sortedBy { it.nextBlow ?: Int.MAX_VALUE }
+        val atOthers = all.filter { !it.fightingYou && !it.mine && it.attacking != null }
+        val unaware = all.filter { !it.fightingYou && it.attacking == null && it.hostile && !it.mine }
+        val taken = (atYou + atOthers + unaware).map { it.id }.toSet()
+        return NpcGroups(atYou, atOthers, unaware, all.filter { it.id !in taken })
+    }
+
+    /** A countdown from the server, [elapsed] seconds after the view came. */
+    fun left(seconds: Int?, elapsed: Long): Int = ((seconds ?: 0) - elapsed).coerceAtLeast(0).toInt()
+
     /** The last [n] journal lines with their kinds (old servers send no kinds: sorted by words). */
     fun journal(game: GameView, n: Int): List<Pair<String, String>> {
         val lines = game.journal.takeLast(n)
@@ -52,3 +69,6 @@ object GameScene {
     /** Path of an item's picture. */
     fun itemPath(id: String): String = "/art/item/$id"
 }
+
+/** See [GameScene.groups]. */
+class NpcGroups(val atYou: List<NpcView>, val atOthers: List<NpcView>, val unaware: List<NpcView>, val rest: List<NpcView>)

@@ -493,8 +493,15 @@ class World(
                 canButcher = c.butcher.isNotEmpty(),
                 looting = !c.free && c.playerId != looter && (c.clanId == null || c.clanId != looterClan),
                 canRaise = c.template?.let { it.startsWith("n.c.") || it.startsWith("n.a.") } == true,
+                mine = looter != null && c.playerId == looter,
+                minutesLeft = ((c.expiresAt - now + 59) / 60).toInt(),
             )
         } ?: emptyList()
+    }
+
+    /** Location of a character's own corpse that still holds things. */
+    suspend fun corpseOf(playerId: Long, now: Long): String? = mutex.withLock {
+        corpses.entries.firstOrNull { (_, m) -> m.values.any { it.playerId == playerId && it.expiresAt > now && it.items.isNotEmpty() } }?.key
     }
 
     // ---- reading and changing -----------------------------------------------------

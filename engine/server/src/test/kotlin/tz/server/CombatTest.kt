@@ -118,6 +118,10 @@ class CombatTest {
             clock[0] += 1
             game.tick(clock[0])
             view = game.view(account)
+            view.location.npcs.firstOrNull { it.id == monster.key }?.let { n ->
+                if (n.fightingYou) assertNotNull(n.nextBlow)
+                assertTrue(n.hostile)
+            }
             seconds++
         }
         assertTrue(view.character.ghost, "${monster.name} never killed a 20 HP newbie: ${view.journal.takeLast(5)}")
@@ -125,6 +129,9 @@ class CombatTest {
         assertTrue(view.inventory.isEmpty(), "everything goes into the corpse")
         val corpse = view.location.corpses.single { it.name.startsWith("труп: ") && it.items.any { i -> i.id == "i.w.k.begin" } }
         assertEquals(here, view.character.location)
+        // The ghost is told where its things are and for how long.
+        assertTrue(corpse.mine && corpse.minutesLeft in 1..10, corpse.toString())
+        assertEquals(game.content.locations.getValue(here).name, view.corpseAt)
         // Ghosts cannot take or fight, and monsters leave them alone.
         assertEquals(Errors.GHOST, assertFailsWith<ApiException> { game.loot(account, corpse.id, "i.w.k.begin") }.code)
         assertEquals(Errors.GHOST, assertFailsWith<ApiException> { game.attack(account, monster.key) }.code)

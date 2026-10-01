@@ -1235,7 +1235,9 @@ class Game(
                 attacking = whom(it.enemies.firstOrNull()) ?: it.npcTarget?.let { k -> npcsHere.firstOrNull { n -> n.key == k }?.name },
                 mine = it.owner?.ownerId == p.id,
                 owner = it.owner?.let { o -> if (o.ownerId == p.id) "вы" else players[o.ownerId]?.name },
-                art = pic?.first, undead = pic?.second == true)
+                art = pic?.first, undead = pic?.second == true,
+                nextBlow = it.enemies.indexOf(p.id).takeIf { i -> i >= 0 }?.let { i -> ((it.busyUntil - now).coerceAtLeast(0) + i.toLong() * it.stats.delay).toInt() },
+                hostile = (it.aggressive || it.criminal) && it.owner == null)
         }
         val occupied = loc.exits.map { it.target }.distinct().filter { t ->
             t != loc.id && (world.npcsIn(t).isNotEmpty() || players.values.any { it.location == t && now - it.lastSeen < ACTIVE_SECONDS })
@@ -1276,6 +1278,7 @@ class Game(
             character, location, inventory,
             journal = p.journal.toList(),
             journalKinds = p.journalKinds.toList(),
+            corpseAt = if (p.ghost) world.corpseOf(p.id, now)?.let { content.locations[it]?.name ?: it } else null,
             restSeconds = (p.busyUntil - now).coerceAtLeast(0).toInt(),
             canResurrect = canResurrect(p),
             exchange = exchangeView(p),

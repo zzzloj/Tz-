@@ -18,3 +18,25 @@ class JournalKindTest {
         assertEquals(JournalKind.SYS, JournalKind.of("Недостаточно маны"))
     }
 }
+
+class GameSceneTest {
+    private val me = CharacterView(1, "Анна", "f", "x", 20, 20, 0, 0, 1, 1, 1, 0)
+
+    @Test
+    fun combatListSections() {
+        val npcs = listOf(
+            NpcView("w1", "волк", 10, 26, fightingYou = true, attackable = true, attacking = "вас", nextBlow = 3, hostile = true),
+            NpcView("w2", "волк", 10, 26, fightingYou = true, attackable = true, attacking = "вас", nextBlow = 1, hostile = true),
+            NpcView("w3", "белый волк", 30, 30, attackable = true, attacking = "Велемир", hostile = true),
+            NpcView("w4", "тёмный волк", 30, 30, attackable = true, hostile = true),
+            NpcView("n1", "Привратник Уин", canTalk = true),
+        )
+        val g = GameScene.groups(GameView(me, LocationView("x", "Лес", 0, npcs = npcs)))
+        assertEquals(listOf("w2", "w1"), g.atYou.map { it.id })
+        assertEquals(listOf("w3"), g.atOthers.map { it.id })
+        assertEquals(listOf("w4"), g.unaware.map { it.id })
+        assertEquals(listOf("n1"), g.rest.map { it.id })
+        assertEquals(2, GameScene.left(5, 3))
+        assertEquals(0, GameScene.left(2, 3))
+    }
+}

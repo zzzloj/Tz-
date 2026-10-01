@@ -69,7 +69,16 @@ private struct ArtUrlKey: EnvironmentKey {
     static let defaultValue: ((String) -> String)? = nil
 }
 
+/// Seconds since the shown view came: countdowns run on from it.
+private struct ElapsedKey: EnvironmentKey {
+    static let defaultValue: Int64 = 0
+}
+
 extension EnvironmentValues {
+    var elapsed: Int64 {
+        get { self[ElapsedKey.self] }
+        set { self[ElapsedKey.self] = newValue }
+    }
     var artUrl: ((String) -> String)? {
         get { self[ArtUrlKey.self] }
         set { self[ArtUrlKey.self] = newValue }
@@ -174,7 +183,15 @@ struct GameScreen: View {
     let onSignOut: () -> Void
     @State private var tab = GameTab.place
     @State private var sub = 0
+    @State private var elapsed: Int64 = 0
     @Environment(\.tz) private var c
+
+    /** The longest countdown in the view: rest, an enemy's next blow, a cooldown under 10 minutes. */
+    private var longest: Int {
+        let blows = game.location.npcs.compactMap { $0.nextBlow?.intValue }.max() ?? 0
+        let ready = game.abilities.map { Int($0.readyIn) }.filter { $0 <= 600 }.max() ?? 0
+        return max(Int(game.restSeconds), blows, ready)
+    }
 
     private func select(_ i: Int) {
         sub = i
@@ -221,8 +238,18 @@ struct GameScreen: View {
             Exits(exits: game.location.exits, busy: busy, onGo: onGo, onGallop: more.gallop)
             TabBar(tab: tab, unread: Int(game.unread)) { t in tab = t; sub = 0 }
         }
+        .grayscale(game.character.ghost ? 0.85 : 0)
+        .environment(\.elapsed, elapsed)
         .background(c.background.ignoresSafeArea())
         .overlay { if busy { ProgressView() } }
+        .task(id: ObjectIdentifier(game)) {
+            elapsed = 0
+            for _ in 0..<longest {
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                if Task.isCancelled { return }
+                elapsed += 1
+            }
+        }
     }
 }
 
@@ -230,11 +257,14 @@ private struct Header: View {
     let game: GameView
     let onRefresh: () -> Void
     @Environment(\.tz) private var c
+    @Environment(\.elapsed) private var elapsed
 
     var body: some View {
         let ch = game.character
         let fighting = game.location.npcs.contains { $0.fightingYou } || game.people.contains { $0.attacking == "вас" }
-        let state = ch.ghost ? "призрак" : game.restSeconds > 0 ? "отдых \(game.restSeconds) с" : fighting ? "в бою" : game.location.guarded ? "в безопасности" : ""
+        let rest = Int(GameScene.shared.left(seconds: KotlinInt(int: game.restSeconds), elapsed: elapsed))
+        let low = GameScene.shared.lowHealth(game: game) && !ch.ghost
+        let state = ch.ghost ? "призрак" : rest > 0 ? "отдых \(rest) с" : fighting ? "в бою" : game.location.guarded ? "в безопасности" : ""
         VStack(spacing: CGFloat(Design.Space.shared.XS)) {
             HStack {
                 Button(action: onRefresh) {
@@ -247,7 +277,7 @@ private struct Header: View {
                     Text([ch.rank, ch.title].filter { !$0.isEmpty }.joined(separator: " · ")).font(TzType.small).foregroundStyle(c.textMuted)
                 }
                 Spacer()
-                if !state.isEmpty { Text(state).font(TzType.label).foregroundStyle(fighting || ch.ghost ? c.danger : c.textMuted) }
+                if !state.isEmpty { Text(state).font(TzType.label).foregroundStyle(fighting || ch.ghost || low ? c.danger : c.textMuted) }
             }
             HStack(spacing: CGFloat(Design.Space.shared.S)) {
                 TzIcon(key: "health", size: 14, color: c.danger)
@@ -414,6 +444,39 @@ private struct ListRow<Buttons: View, Extra: View>: View {
     }
 }
 
+/// A heading inside the place list: «бьют вас · 3», with a note on the right.
+private struct ListSection: View {
+    let title: String
+    var note: String? = nil
+    @Environment(\.tz) private var c
+
+    var body: some View {
+        HStack {
+            Text(title).font(TzType.label).foregroundStyle(c.accent)
+            Spacer()
+            if let n = note { Text(n).font(TzType.small).foregroundStyle(c.textMuted) }
+        }
+        .padding(.horizontal, 2)
+        .contentShape(Rectangle())
+    }
+}
+
+/// While resting the row buttons are pale; the belt works.
+private struct RestBanner: View {
+    let seconds: Int
+    @Environment(\.tz) private var c
+
+    var body: some View {
+        Text("Отдых \(seconds) с — удары и приёмы ждут. Зелье можно выпить сейчас.")
+            .font(TzType.small).foregroundStyle(c.onDanger)
+            .padding(CGFloat(Design.Space.shared.S))
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(c.dangerFill)
+            .clipShape(RoundedRectangle(cornerRadius: CGFloat(Design.Radius.shared.M)))
+            .overlay(RoundedRectangle(cornerRadius: CGFloat(Design.Radius.shared.M)).stroke(c.danger, lineWidth: 1))
+    }
+}
+
 private struct Chip: View {
     let text: String
     var danger = false
@@ -470,12 +533,17 @@ private struct PlaceTab: View {
     let social: SocialActions
     let layout: LayoutActions
     @Environment(\.tz) private var c
+    @Environment(\.elapsed) private var elapsed
+    @State private var unawareShown: Bool? = nil
+
+    private func left(_ v: KotlinInt?) -> Int { Int(GameScene.shared.left(seconds: v, elapsed: elapsed)) }
 
     private func status(_ npc: NpcView) -> String? {
-        if npc.fightingYou { return "бьёт вас" + (game.restSeconds > 0 ? " · удар через \(game.restSeconds) с" : "") }
+        if npc.fightingYou { return "бьёт вас" + (npc.nextBlow != nil ? " · удар через \(left(npc.nextBlow)) с" : "") }
         if let a = npc.attacking { return "бьёт \(a)" }
         if npc.mine { return "ваш" }
         if let o = npc.owner { return "хозяин: \(o)" }
+        if npc.hostile { return "бродит, не замечает вас" }
         if npc.canTalk { return "можно поговорить" }
         return nil
     }
@@ -485,10 +553,34 @@ private struct PlaceTab: View {
         return !ch.ghost && !npc.mine && npc.owner == nil && npc.id.hasPrefix("n.a.") && (ch.skills["animaltaming"]?.intValue ?? 0) > 0
     }
 
+    private func npcRow(_ npc: NpcView, resting: Bool, slots: [AbilityView?]) -> some View {
+        let ch = game.character
+        let fight = npc.attackable && !ch.ghost && (npc.fightingYou || npc.attacking != nil || !npc.canTalk)
+        let title = npc.name + (npc.attackable && npc.hpMax > 0 ? "  \(npc.hp)/\(npc.hpMax)" : "")
+        return ListRow(name: title, status: status(npc), art: npc.art.map { GameScene.shared.artPath(key: $0) },
+                hp: npc.attackable && npc.hpMax > 0 ? (Int(npc.hp), Int(npc.hpMax)) : nil, hurt: npc.fightingYou, undead: npc.undead) {
+            if fight {
+                ActionButton(label: "удар по \(npc.name)", enabled: !busy && !resting, action: { onAttack(npc) }, icon: "attack", danger: npc.fightingYou)
+                ForEach(0..<slots.count, id: \.self) { i in SlotButton(ability: slots[i], target: npc.id, blocked: busy || resting, layout: layout) }
+            } else {
+                if npc.canTalk { ActionButton(label: "говорить с \(npc.name)", enabled: !busy, action: { onTalk(npc) }, icon: "talk") }
+                ActionButton(label: "осмотреть \(npc.name)", enabled: !busy, action: { more.look(npc.id) }, icon: "look")
+            }
+        } extra: {
+            Button("осмотреть") { more.look(npc.id) }.disabled(busy)
+            if canTame(npc) { Button("приручить") { more.tame(npc) }.disabled(busy) }
+            if SceneData.thief(ch) && !ch.ghost { Button("подглядеть") { more.peek(npc.id) }.disabled(busy) }
+            if npc.attackable && !ch.ghost && npc.canTalk { Button("атаковать") { onAttack(npc) }.disabled(busy) }
+        }
+    }
+
     var body: some View {
         let ch = game.character
         let loc = game.location
-        let resting = game.restSeconds > 0
+        let resting = left(KotlinInt(int: game.restSeconds)) > 0
+        let groups = GameScene.shared.groups(game: game)
+        let fight = !groups.atYou.isEmpty || !groups.atOthers.isEmpty
+        let showUnaware = unawareShown ?? !fight
         let slots = SceneData.slots(game)
         let enemies = loc.npcs.filter { $0.fightingYou }.count
         ZStack(alignment: .bottomLeading) {
@@ -510,23 +602,22 @@ private struct PlaceTab: View {
         if let d = loc.description_ { Text(d).font(TzType.body) }
         if let cs = game.castle { CastleBlock(castle: cs, busy: busy, social: social) }
 
-        ForEach(GameScene.shared.npcs(game: game), id: \.id) { npc in
-            let fight = npc.attackable && !ch.ghost && (npc.fightingYou || npc.attacking != nil || !npc.canTalk)
-            ListRow(name: npc.name, status: status(npc), art: npc.art.map { GameScene.shared.artPath(key: $0) },
-                    hp: npc.attackable && npc.hpMax > 0 ? (Int(npc.hp), Int(npc.hpMax)) : nil, hurt: npc.fightingYou, undead: npc.undead) {
-                if fight {
-                    ActionButton(label: "удар по \(npc.name)", enabled: !busy && !resting, action: { onAttack(npc) }, icon: "attack", danger: npc.fightingYou)
-                    ForEach(0..<slots.count, id: \.self) { i in SlotButton(ability: slots[i], target: npc.id, blocked: busy || resting, layout: layout) }
-                } else {
-                    if npc.canTalk { ActionButton(label: "говорить с \(npc.name)", enabled: !busy, action: { onTalk(npc) }, icon: "talk") }
-                    ActionButton(label: "осмотреть \(npc.name)", enabled: !busy, action: { more.look(npc.id) }, icon: "look")
-                }
-            } extra: {
-                Button("осмотреть") { more.look(npc.id) }.disabled(busy)
-                if canTame(npc) { Button("приручить") { more.tame(npc) }.disabled(busy) }
-                if SceneData.thief(ch) && !ch.ghost { Button("подглядеть") { more.peek(npc.id) }.disabled(busy) }
-                if npc.attackable && !ch.ghost && npc.canTalk { Button("атаковать") { onAttack(npc) }.disabled(busy) }
+        Group {
+        if resting && !groups.atYou.isEmpty { RestBanner(seconds: left(KotlinInt(int: game.restSeconds))) }
+        if !groups.atYou.isEmpty { ListSection(title: "бьют вас · \(groups.atYou.count)", note: groups.atYou.count > 1 ? "ближайший удар — сверху" : nil) }
+        ForEach(groups.atYou, id: \.id) { npc in npcRow(npc, resting: resting, slots: slots) }
+        if !groups.atOthers.isEmpty { ListSection(title: "бьют других · \(groups.atOthers.count)") }
+        ForEach(groups.atOthers, id: \.id) { npc in npcRow(npc, resting: resting, slots: slots) }
+        if !groups.unaware.isEmpty {
+            if fight {
+                Button { unawareShown = !showUnaware } label: {
+                    ListSection(title: "не заметили вас · \(groups.unaware.count)", note: showUnaware ? "▾" : "▸")
+                }.buttonStyle(.plain)
             }
+            if showUnaware { ForEach(groups.unaware, id: \.id) { npc in npcRow(npc, resting: resting, slots: slots) } }
+        }
+        if fight && !groups.rest.isEmpty { ListSection(title: "рядом") }
+        ForEach(groups.rest, id: \.id) { npc in npcRow(npc, resting: resting, slots: slots) }
         }
         ForEach(game.people, id: \.name) { p in PersonRow(person: p, game: game, busy: busy, more: more, social: social) }
         ForEach(loc.items, id: \.id) { item in
@@ -539,7 +630,10 @@ private struct PlaceTab: View {
             }
         }
         ForEach(loc.corpses, id: \.id) { corpse in
-            ListRow(name: corpse.name, status: corpse.looting && !corpse.items.isEmpty ? "взять отсюда — мародёрство" : "\(corpse.items.count) вещ.", art: nil) {
+            let things = corpse.items.reduce(0) { $0 + Int($1.count) }
+            let note = corpse.mine ? "ваши вещи · \(things) шт., пропадут через \(corpse.minutesLeft) мин"
+                : corpse.looting && !corpse.items.isEmpty ? "взять отсюда — мародёрство" : "\(corpse.items.count) вещ."
+            ListRow(name: corpse.name, status: note, art: nil, hurt: corpse.mine) {
                 if corpse.canButcher && !ch.ghost { ActionButton(label: "разделать", enabled: !busy, action: { onButcher(corpse) }, icon: "use") }
             } extra: {
                 ForEach(corpse.items, id: \.id) { item in
@@ -557,11 +651,13 @@ private struct SlotButton: View {
     let target: String
     let blocked: Bool
     let layout: LayoutActions
+    @Environment(\.elapsed) private var elapsed
 
     var body: some View {
         if let a = ability {
-            ActionButton(label: a.name, enabled: !blocked && a.readyIn == 0 && !a.later, action: { layout.strike(a, target) },
-                         art: GameScene.shared.itemPath(id: a.id), badge: a.readyIn > 0 ? "\((a.readyIn + 59) / 60)м" : nil)
+            let left = max(0, a.readyIn - elapsed)
+            ActionButton(label: a.name, enabled: !blocked && left == 0 && !a.later, action: { layout.strike(a, target) },
+                         art: GameScene.shared.itemPath(id: a.id), badge: left == 0 ? nil : left < 60 ? "\(left)" : "\((left + 59) / 60)м")
         } else {
             ActionButton(label: "пустая ячейка приёма", enabled: false, action: {})
         }
@@ -612,8 +708,15 @@ private struct Notices: View {
     var body: some View {
         let ch = game.character
         if ch.ghost {
-            Text("Вы призрак. Воскреснуть можно у камня воскрешения или у лекаря Джозефа (двор к северу от Переулка).").font(TzType.small).foregroundStyle(c.danger)
-            if game.canResurrect { Button("Воскреснуть") { onResurrect() }.disabled(busy).buttonStyle(.borderedProminent) }
+            VStack(alignment: .leading, spacing: CGFloat(Design.Space.shared.XS)) {
+                Text("Вы призрак").font(TzType.heading).foregroundStyle(c.title)
+                Text("Найдите лекаря или камень воскрешения (лекарь Джозеф — двор к северу от Переулка). Призрак не может драться и брать вещи."
+                     + (game.corpseAt.map { " Ваши вещи ждут в трупе: \($0)." } ?? "")).font(TzType.small)
+                if game.canResurrect { Button("Воскреснуть") { onResurrect() }.disabled(busy).buttonStyle(.borderedProminent) }
+            }
+            .padding(CGFloat(Design.Space.shared.M))
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .tzPanel(c)
         }
         if let crime = ch.crime { Text("Вы \(crime) — стража ищет вас ещё \(ch.crimeMinutes) мин").font(TzType.small).foregroundStyle(c.danger) }
         if ch.poisoned { Text("Вы отравлены: здоровье убывает").font(TzType.small).foregroundStyle(c.danger) }

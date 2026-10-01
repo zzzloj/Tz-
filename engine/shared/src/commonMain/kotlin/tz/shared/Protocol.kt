@@ -40,6 +40,10 @@ data class NpcView(
     val art: String? = null,
     /** A risen corpse: the living one's portrait, drawn with the undead tint. */
     val undead: Boolean = false,
+    /** Fighting you: seconds until its next blow at you (it strikes its enemies in turn). */
+    val nextBlow: Int? = null,
+    /** A monster or an outlaw that attacks whoever it notices. */
+    val hostile: Boolean = false,
 )
 
 @Serializable
@@ -53,6 +57,10 @@ data class CorpseView(
     val looting: Boolean = false,
     /** A monster's or animal's: a necromancer can raise it (POST /api/game/skill "necro"). */
     val canRaise: Boolean = false,
+    /** Your own corpse (your things after death). */
+    val mine: Boolean = false,
+    /** Minutes until it rots away with what is left in it. */
+    val minutesLeft: Int = 0,
 )
 
 @Serializable
@@ -202,6 +210,8 @@ data class GameView(
     val inventory: List<InventoryItemView> = emptyList(),
     /** Recent events, newest last: blows, deaths, experience. */
     val journal: List<String> = emptyList(),
+    /** A ghost: where its corpse with its things lies (location name); null — no corpse or nothing left in it. */
+    val corpseAt: String? = null,
     /** The [JournalKind] of each journal line, same order and size: what colour to draw it. */
     val journalKinds: List<String> = emptyList(),
     /** The three combat buttons next to each enemy after the plain blow: ability ids, "" — empty (POST /api/game/prefs). */

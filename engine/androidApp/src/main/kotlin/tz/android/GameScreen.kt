@@ -36,6 +36,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -45,6 +47,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -54,6 +58,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import tz.shared.AbilityView
 import tz.shared.ClanView
@@ -99,8 +104,16 @@ class LayoutActions(
 
 // ---- pictures from the server -------------------------------------------------------------
 
-/** Turns a path from [Scene] into a full address; null — pictures are off (tests, previews). */
+/** Turns a path from [GameScene] into a full address; null — pictures are off (tests, previews). */
 val LocalArtUrl = compositionLocalOf<((String) -> String)?> { null }
+
+/** Seconds since the shown view came from the server: countdowns (rest, next blow, cooldowns) run on from it. */
+val LocalElapsed = compositionLocalOf { 0L }
+
+/** A ghost sees the world grey. */
+val LocalGhost = compositionLocalOf { false }
+
+private val grey = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
 
 private object ArtCache {
     val images = LruCache<String, ImageBitmap>(64)
@@ -124,7 +137,7 @@ fun ArtImage(path: String?, modifier: Modifier = Modifier, contentScale: Content
         image?.let { ArtCache.images.put(url, it) } ?: ArtCache.missing.add(url)
     }
     Box(modifier.background(c.surfaceSunken)) {
-        image?.let { Image(it, null, Modifier.fillMaxSize().alpha(if (dim) 0.45f else 1f), contentScale = contentScale) }
+        image?.let { Image(it, null, Modifier.fillMaxSize().alpha(if (dim) 0.45f else 1f), contentScale = contentScale, colorFilter = if (LocalGhost.current) grey else null) }
     }
 }
 
@@ -205,7 +218,13 @@ fun Playing(
     var tab by rememberSaveable { mutableStateOf(GameTab.PLACE) }
     var sub by rememberSaveable { mutableStateOf(0) }
     fun open(t: GameTab, s: Int = 0) { tab = t; sub = s }
+    // Countdowns run on between server updates, a second at a time, for as long as one is running.
+    var elapsed by remember(game) { mutableLongStateOf(0L) }
+    val longest = maxOf(game.restSeconds, game.location.npcs.maxOfOrNull { it.nextBlow ?: 0 } ?: 0,
+        game.abilities.filter { it.readyIn <= 600 }.maxOfOrNull { it.readyIn.toInt() } ?: 0)
+    LaunchedEffect(game) { repeat(longest) { delay(1000); elapsed++ } }
 
+    CompositionLocalProvider(LocalElapsed provides elapsed, LocalGhost provides game.character.ghost) {
     Column(Modifier.fillMaxSize().background(c.background)) {
         Header(game, onRefresh)
         Box(Modifier.weight(1f).fillMaxWidth()) {
@@ -238,6 +257,7 @@ fun Playing(
         Exits(game.location.exits, busy, onGo, more.gallop)
         TabBar(tab, game.unread) { open(it) }
     }
+    }
 }
 
 @Composable
@@ -245,9 +265,11 @@ private fun Header(game: GameView, onRefresh: () -> Unit) {
     val c = Tz.colors
     val ch = game.character
     val fighting = game.location.npcs.any { it.fightingYou } || game.people.any { it.attacking == "вас" }
+    val rest = GameScene.left(game.restSeconds, LocalElapsed.current)
+    val low = GameScene.lowHealth(game) && !ch.ghost
     val state = when {
         ch.ghost -> "призрак"
-        game.restSeconds > 0 -> "отдых ${game.restSeconds} с"
+        rest > 0 -> "отдых $rest с"
         fighting -> "в бою"
         game.location.zone == 1 -> "в безопасности"
         else -> ""
@@ -262,7 +284,7 @@ private fun Header(game: GameView, onRefresh: () -> Unit) {
                 Text(ch.name, style = Tz.type.name, color = c.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Text(listOf(ch.rank, ch.title).filter { it.isNotBlank() }.joinToString(" · "), style = Tz.type.small, color = c.textMuted)
             }
-            if (state.isNotEmpty()) Text(state, style = Tz.type.label, color = if (fighting || ch.ghost) c.danger else c.textMuted)
+            if (state.isNotEmpty()) Text(state, style = Tz.type.label, color = if (fighting || ch.ghost || low) c.danger else c.textMuted)
         }
         Spacer(Modifier.height(Design.Space.XS.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(Design.Space.S.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -379,17 +401,21 @@ private fun PlaceTab(
 
     val thief = (ch.skills["steal"] ?: 0) > 0 || (ch.skills["steallook"] ?: 0) > 0
     val slots = GameScene.slots(game)
-    val resting = game.restSeconds > 0
-    GameScene.npcs(game).forEach { npc ->
+    val resting = GameScene.left(game.restSeconds, LocalElapsed.current) > 0
+    val elapsed = LocalElapsed.current
+    val groups = GameScene.groups(game)
+    @Composable fun npcRow(npc: NpcView) {
         val status = when {
-            npc.fightingYou -> "бьёт вас" + if (resting) " · удар через ${game.restSeconds} с" else ""
+            npc.fightingYou -> "бьёт вас" + (npc.nextBlow?.let { " · удар через ${GameScene.left(it, elapsed)} с" } ?: "")
             npc.attacking != null -> "бьёт ${npc.attacking}"
             npc.mine -> "ваш"
             npc.owner != null -> "хозяин: ${npc.owner}"
+            npc.hostile -> "бродит, не замечает вас"
             npc.canTalk -> "можно поговорить"
             else -> null
         }
-        ListRow(npc.name, status, npc.art?.let(GameScene::artPath), hp = if (npc.attackable && npc.hpMax > 0) npc.hp to npc.hpMax else null, hurt = npc.fightingYou, undead = npc.undead,
+        val title = npc.name + if (npc.attackable && npc.hpMax > 0) "  ${npc.hp}/${npc.hpMax}" else ""
+        ListRow(title, status, npc.art?.let(GameScene::artPath), hp = if (npc.attackable && npc.hpMax > 0) npc.hp to npc.hpMax else null, hurt = npc.fightingYou, undead = npc.undead,
             extra = {
                 TextButton(onClick = { more.look(npc.id) }, enabled = !busy) { Text("осмотреть") }
                 if (!ch.ghost && !npc.mine && npc.owner == null && npc.id.startsWith("n.a.") && (ch.skills["animaltaming"] ?: 0) > 0)
@@ -407,6 +433,20 @@ private fun PlaceTab(
             }
         }
     }
+    val fight = groups.atYou.isNotEmpty() || groups.atOthers.isNotEmpty()
+    if (resting && groups.atYou.isNotEmpty()) RestBanner(GameScene.left(game.restSeconds, elapsed))
+    if (groups.atYou.isNotEmpty()) ListSection("бьют вас · ${groups.atYou.size}", if (groups.atYou.size > 1) "ближайший удар — сверху" else null)
+    groups.atYou.forEach { npcRow(it) }
+    if (groups.atOthers.isNotEmpty()) ListSection("бьют других · ${groups.atOthers.size}")
+    groups.atOthers.forEach { npcRow(it) }
+    if (groups.unaware.isNotEmpty()) {
+        // In a fight the monsters that have not noticed you fold away; in calm they are part of the list.
+        var shown by remember(fight) { mutableStateOf(!fight) }
+        if (fight) ListSection("не заметили вас · ${groups.unaware.size}", if (shown) "▾" else "▸") { shown = !shown }
+        if (shown) groups.unaware.forEach { npcRow(it) }
+    }
+    if (fight && groups.rest.isNotEmpty()) ListSection("рядом")
+    groups.rest.forEach { npcRow(it) }
     game.people.forEach { p -> PersonRow(p, game, busy, thief, more, social) }
     loc.items.forEach { item ->
         ListRow(item.name + if (item.count > 1) " ×${item.count}" else "", "лежит на земле", GameScene.itemPath(item.id),
@@ -417,7 +457,12 @@ private fun PlaceTab(
         }
     }
     loc.corpses.forEach { corpse ->
-        ListRow(corpse.name, if (corpse.looting && corpse.items.isNotEmpty()) "взять отсюда — мародёрство" else "${corpse.items.size} вещ.", null,
+        val status = when {
+            corpse.mine -> "ваши вещи · ${corpse.items.sumOf { it.count }} шт., пропадут через ${corpse.minutesLeft} мин"
+            corpse.looting && corpse.items.isNotEmpty() -> "взять отсюда — мародёрство"
+            else -> "${corpse.items.size} вещ."
+        }
+        ListRow(corpse.name, status, null, hurt = corpse.mine,
             extra = {
                 corpse.items.forEach { item -> TextButton(onClick = { onLoot(corpse, item) }, enabled = !busy && !ch.ghost) { Text("взять: ${item.name}" + if (item.count > 1) " ×${item.count}" else "") } }
                 if (corpse.canRaise && !ch.ghost && (ch.skills["necro"] ?: 0) > 0) TextButton(onClick = { more.raise(corpse) }, enabled = !busy) { Text("поднять") }
@@ -432,8 +477,9 @@ private fun PlaceTab(
 @Composable
 private fun SlotButton(a: AbilityView?, target: String, blocked: Boolean, layout: LayoutActions) {
     if (a == null) { ActionButton("пустая ячейка приёма", false, {}); return }
-    val wait = if (a.readyIn > 0) "${(a.readyIn + 59) / 60}м" else null
-    ActionButton(a.name, !blocked && a.readyIn == 0L && !a.later, { layout.strike(a, target) }, art = GameScene.itemPath(a.id), badge = wait)
+    val left = (a.readyIn - LocalElapsed.current).coerceAtLeast(0)
+    val wait = when { left == 0L -> null; left < 60 -> "$left"; else -> "${(left + 59) / 60}м" }
+    ActionButton(a.name, !blocked && left == 0L && !a.later, { layout.strike(a, target) }, art = GameScene.itemPath(a.id), badge = wait)
 }
 
 @Composable
@@ -486,6 +532,31 @@ private fun ListRow(
     }
 }
 
+/** A heading inside the place list: «бьют вас · 3», with a note on the right; tappable when it folds. */
+@Composable
+private fun ListSection(title: String, note: String? = null, onClick: (() -> Unit)? = null) {
+    val c = Tz.colors
+    Row(
+        Modifier.fillMaxWidth().then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier).padding(horizontal = 2.dp, vertical = 2.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(title, Modifier.weight(1f), style = Tz.type.label, color = c.accent)
+        note?.let { Text(it, style = Tz.type.small, color = c.textMuted) }
+    }
+}
+
+/** While resting the row buttons are pale; the belt works. */
+@Composable
+private fun RestBanner(seconds: Int) {
+    val c = Tz.colors
+    Text(
+        "Отдых $seconds с — удары и приёмы ждут. Зелье можно выпить сейчас.",
+        style = Tz.type.small, color = c.onDanger,
+        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(Design.Radius.M.dp)).background(c.dangerFill)
+            .border(Design.Size.BORDER.dp, c.danger, RoundedCornerShape(Design.Radius.M.dp)).padding(Design.Space.S.dp),
+    )
+}
+
 @Composable
 private fun Chip(text: String, danger: Boolean = false) {
     val c = Tz.colors
@@ -507,8 +578,13 @@ private fun Notices(game: GameView, busy: Boolean, onResurrect: () -> Unit, more
             action?.let { TextButton(onClick = onClick, enabled = !busy) { Text(it) } }
         }
     }
-    if (ch.ghost) {
-        line("Вы призрак. Воскреснуть можно у камня воскрешения или у лекаря Джозефа (двор к северу от Переулка).", true)
+    if (ch.ghost) Column(Modifier.fillMaxWidth().tzPanel(c).padding(Design.Space.M.dp), verticalArrangement = Arrangement.spacedBy(Design.Space.XS.dp)) {
+        Text("Вы призрак", style = Tz.type.heading, color = c.title)
+        Text(
+            "Найдите лекаря или камень воскрешения (лекарь Джозеф — двор к северу от Переулка). Призрак не может драться и брать вещи." +
+                (game.corpseAt?.let { " Ваши вещи ждут в трупе: $it." } ?: ""),
+            style = Tz.type.small, color = c.text,
+        )
         if (game.canResurrect) Button(onClick = onResurrect, enabled = !busy) { Text("Воскреснуть") }
     }
     ch.crime?.let { line("Вы $it — стража ищет вас ещё ${ch.crimeMinutes} мин", true) }
