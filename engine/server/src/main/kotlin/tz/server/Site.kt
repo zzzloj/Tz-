@@ -114,22 +114,40 @@ private suspend fun ApplicationCall.notFound() =
 private fun html(title: String, body: String, pages: List<Pair<String, String>>): String = """<!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,500;0,700;1,400&family=Alegreya+Sans+SC:wght@500;700&family=Cormorant+SC:wght@600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f6f1e7;--fg:#2a2118;--muted:#7a6a58;--accent:#8b2a1a;--line:#e0d5c3;--card:#fffaf1}
-@media (prefers-color-scheme:dark){:root{--bg:#1b1612;--fg:#eee3d2;--muted:#a8977f;--accent:#e0795f;--line:#3a3028;--card:#231d17}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 Georgia,'Times New Roman',serif}
-header,main,footer{max-width:760px;margin:0 auto;padding:0 16px}
-header{padding-top:20px;border-bottom:1px solid var(--line)}header h1{margin:0;font-size:28px;letter-spacing:.5px}
-header h1 a{color:var(--accent);text-decoration:none}nav{margin:8px 0 12px;display:flex;flex-wrap:wrap;gap:4px 14px;font-size:15px}
-a{color:var(--accent)}h2{margin-top:28px;font-size:21px}h3{margin:0 0 2px;font-size:18px}
-article{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:10px 14px;margin:12px 0}
-article p{margin:6px 0}.muted{color:var(--muted);font-size:14px}.lead{font-size:18px;margin-top:20px}
-.soon{background:var(--card);border-left:3px solid var(--accent);padding:8px 12px}
-table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid var(--line);padding:7px 6px;text-align:left;vertical-align:top}
-.num{text-align:right;white-space:nowrap;font-size:14px}.crime{color:var(--accent);font-size:14px}.pager{margin:16px 0}
-footer{color:var(--muted);font-size:13px;padding:24px 16px 32px}
+${SiteStyle.CSS}
 </style></head><body>
-<header><h1><a href="/">Территория Зла</a></h1><nav><a href="/">Главная</a><a href="/online">Кто в игре</a><a href="/forum">Форум</a>${pages.joinToString("") { (id, t) -> "<a href=\"/pages/$id\">${esc(t)}</a>" }}</nav></header>
+<header><div class="banner"></div><h1><a href="/">Территория Зла</a></h1><nav><a href="/">Главная</a><a href="/online">Кто в игре</a><a href="/forum">Форум</a>${pages.joinToString("") { (id, t) -> "<a href=\"/pages/$id\">${esc(t)}</a>" }}</nav></header>
 <main>$body</main>
 <footer>Территория Зла · 2006–2007, возрождена в ${java.time.Year.now().value}</footer>
 </body></html>"""
+
+/** The site in the game's style: colours from tz.shared.Design («Ночь» dark, «Пергамент» light), the game's fonts. */
+private object SiteStyle {
+    private fun hex(argb: Long) = "#" + (argb and 0xFFFFFF).toString(16).padStart(6, '0')
+    private fun vars(p: tz.shared.Design.Palette) =
+        "--bg:${hex(p.background)};--fg:${hex(p.text)};--muted:${hex(p.textMuted)};--accent:${hex(p.link)};--title:${hex(p.title)};" +
+            "--line:${hex(p.borderSoft)};--frame:${hex(p.border)};--card:${hex(p.surface)};--raised:${hex(p.surfaceRaised)};--danger:${hex(p.danger)}"
+
+    val CSS = """
+:root{${vars(tz.shared.Design.parchment)}}
+@media (prefers-color-scheme:dark){:root{${vars(tz.shared.Design.night)}}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.55 Alegreya,Georgia,serif}
+header,main,footer{max-width:760px;margin:0 auto;padding:0 16px}
+header{position:relative;padding-top:0;border-bottom:1px solid var(--frame)}
+.banner{height:180px;margin:0 -16px;background:linear-gradient(transparent 40%,var(--bg)),url(/art/brand/splash-landscape.webp) center 30%/cover}
+header h1{margin:-56px 0 0;position:relative;font:700 34px/1.1 'Cormorant SC',Georgia,serif;letter-spacing:.5px}
+header h1 a{color:var(--title);text-decoration:none;text-shadow:0 2px 6px rgba(0,0,0,.5)}
+nav{margin:10px 0 12px;display:flex;flex-wrap:wrap;gap:4px 16px;font:500 15px 'Alegreya Sans SC',sans-serif;letter-spacing:.04em}
+a{color:var(--accent)}h2,h3{font-family:'Cormorant SC',Georgia,serif;color:var(--title)}h2{margin-top:28px;font-size:25px}h3{margin:0 0 2px;font-size:20px}
+article{background:linear-gradient(var(--raised),var(--card));border:1px solid var(--frame);border-radius:4px;padding:10px 14px;margin:12px 0}
+article p{margin:6px 0}.muted{color:var(--muted);font-size:14px}.lead{font-size:19px;margin-top:20px}
+.soon{background:var(--card);border-left:3px solid var(--title);padding:8px 12px}
+table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid var(--line);padding:7px 6px;text-align:left;vertical-align:top}
+th{font:500 13px 'Alegreya Sans SC',sans-serif;letter-spacing:.05em;color:var(--muted)}
+.num{text-align:right;white-space:nowrap;font-size:14px}.crime{color:var(--danger);font-size:14px}.pager{margin:16px 0}
+footer{color:var(--muted);font-size:13px;padding:24px 16px 32px}
+"""
+}
