@@ -14,42 +14,6 @@
     ],
     "objects": {
         "i.s.elka": "новогодняя елка|1|0",
-        "n.tamozh": {
-            "char": {
-                "name": "Продавец счастья",
-                "hp": 100,
-                "hp_max": 100,
-                "mana": 100,
-                "mana_max": 100,
-                "regen_ts": "",
-                "busy_until": "",
-                "target": "",
-                "tame_difficulty": "",
-                "crime_title": "",
-                "wander": "",
-                "aux_ts": 1198673885,
-                "trail": ""
-            },
-            "war": {
-                "hit_chance": 80,
-                "dmg_min": 4,
-                "dmg_max": 11,
-                "attack_delay": 5,
-                "is_ranged": "",
-                "armor": 2,
-                "dodge": "",
-                "parry": 80,
-                "shield_armor": 6,
-                "magic_dodge": "",
-                "magic_parry": "",
-                "magic_resist": "",
-                "verb": "посохом",
-                "exp_value": "",
-                "ammo": "",
-                "respawn": "x1092x474:1:2"
-            },
-            "bank": "90:10:10=i.a.b.moroz:10|90:10:10=i.a.h.belka:10|90:10:10=i.a.h.medved:10|90:10:10=i.a.h.poros:10|90:10:10=i.a.h.volk:10|90:10:10=i.a.h.zajac:10|90:10:10=i.a.h.zhaba:10|90:10:10=i.a.p.vb:10|90:10:10=i.a.p.vk:0|90:10:10=i.a.p.vs:10|90:10:10=i.a.p.vz:10|90:10:10=i.a.r.belochka:10|90:10:10=i.a.r.feja:10|90:10:10=i.a.r.mishka:10|90:10:10=i.a.r.mysh:0|90:10:10=i.a.r.pauk:10|90:10:10=i.a.r.snegur:0|90:10:10=i.a.r.snezh:0|90:10:10=i.a.r.zaec:10|90:1000:1000=i.b.bomb:1000|90:10000:10000=i.b.hlop:10000|90:10000:10000=i.b.pit:10000|90:10:10=i.f.b.ir:10|90:10:10=i.f.b.pmol:10|90:10:10=i.f.b.shamp:0|90:10:10=:5000"
-        },
         "n.bankir": {
             "char": {
                 "name": "Лукас [банкир]",
