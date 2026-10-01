@@ -13,3 +13,6 @@ Game icons elsewhere in the apps: game-icons.net, CC BY 3.0.
   corpse («…-зомби») reuses the living NPC's portrait with an undead tint.
 - `mobs/<key>.webp` — monster and animal portraits (640×640), rules in `mobs.json`,
   checked after `npcs.json`.
+- `items/<item id>.webp` — item pictures (384×384), named by the item's id in
+  `content/items` (e.g. `i.w.k.begin.webp`). An item with no file shows its
+  category icon.
