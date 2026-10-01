@@ -23,6 +23,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -117,40 +118,10 @@ fun App(session: Session, live: Boolean = true) {
     val admin = session.admin
     val forum = session.forum
     val pages = session.pages
-    Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        when {
-            account != null -> AccountPanel(account, session.info, busy, site)
-            admin != null -> AdminPanel(admin, busy, site)
-            forum != null -> ForumPanel(forum, busy, site)
-            pages != null -> PagesPanel(pages, session.page, busy, site)
-            else -> Unit
-        }
-        if (account == null && admin == null && forum == null && pages == null) when (session.screen) {
-            Screen.LOADING -> if (session.error != null) Button(onClick = { run { session.refresh() } }) { Text("Повторить") }
-            Screen.SIGN_IN -> if (recovering) RecoverForm(
-                busy,
-                onRecover = { l, c, p -> run { session.recover(l, c, p); if (session.error == null) recovering = false } },
-                onCancel = { recovering = false },
-            ) else {
-                SignIn(busy, onSignIn = { l, p -> run { session.signIn(l, p) } }, onRegister = { l, p -> run { session.register(l, p) } })
-                Row {
-                    TextButton(onClick = { recovering = true }) { Text("Забыли пароль?") }
-                    TextButton(onClick = { run { session.openForum() } }, enabled = !busy) { Text("Форум") }
-                    TextButton(onClick = { run { session.openPages() } }, enabled = !busy) { Text("Об игре") }
-                }
-            }
-            Screen.CREATE_CHARACTER -> CreateCharacter(busy) { name, female -> run { session.createCharacter(name, female) } }
-            Screen.PLAYING -> if (game != null) {
-                Row {
-                    TextButton(onClick = { run { session.openForum() } }, enabled = !busy) { Text("Форум") }
-                    TextButton(onClick = { run { session.openPages() } }, enabled = !busy) { Text("Помощь") }
-                    TextButton(onClick = { run { session.openAccount() } }, enabled = !busy) { Text("Аккаунт") }
-                    if (session.moderator) TextButton(onClick = { run { session.openAdmin() } }, enabled = !busy) { Text("Модерация") }
-                }
-                Playing(
+    val playing = account == null && admin == null && forum == null && pages == null && session.screen == Screen.PLAYING && game != null
+    if (playing && game != null) {
+        CompositionLocalProvider(LocalArtUrl provides (if (live) session.api::artUrl else null)) {
+            Playing(
                 game,
                 busy,
                 tick,
@@ -220,14 +191,58 @@ fun App(session: Session, live: Boolean = true) {
                     writeAll = { t -> run { session.writeAll(t) } },
                     closeChoice = { session.closeChoice(); version++ },
                 ),
+                layout = LayoutActions(
+                    strike = { a, t -> run { session.strike(a, t) } },
+                    setSlot = { i, id -> run { session.setSlot(i, id) } },
+                    setBelt = { i, id -> run { session.setBelt(i, id) } },
+                    useBelt = { i -> run { session.useBelt(i) } },
+                    openForum = { run { session.openForum() } },
+                    openNews = { run { session.openNews() } },
+                    openPages = { run { session.openPages() } },
+                    openAccount = { run { session.openAccount() } },
+                    openAdmin = if (session.moderator) ({ run { session.openAdmin() } }) else null,
+                ),
                 mail = session.mail,
                 clanInfo = session.clanInfo,
                 worldInfo = session.world,
                 mapView = session.map.takeIf { session.mapOpen },
                 onRefresh = { run { session.refresh() } },
                 onSignOut = { run { session.signOut() } },
+                footer = {
+                    session.info?.let { Text(it, color = MaterialTheme.colorScheme.primary) }
+                    session.error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                },
             )
+        }
+        return
+    }
+    Column(
+        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        when {
+            account != null -> AccountPanel(account, session.info, busy, site)
+            admin != null -> AdminPanel(admin, busy, site)
+            forum != null -> ForumPanel(forum, busy, site)
+            pages != null -> PagesPanel(pages, session.page, busy, site)
+            else -> Unit
+        }
+        if (account == null && admin == null && forum == null && pages == null) when (session.screen) {
+            Screen.LOADING -> if (session.error != null) Button(onClick = { run { session.refresh() } }) { Text("Повторить") }
+            Screen.SIGN_IN -> if (recovering) RecoverForm(
+                busy,
+                onRecover = { l, c, p -> run { session.recover(l, c, p); if (session.error == null) recovering = false } },
+                onCancel = { recovering = false },
+            ) else {
+                SignIn(busy, onSignIn = { l, p -> run { session.signIn(l, p) } }, onRegister = { l, p -> run { session.register(l, p) } })
+                Row {
+                    TextButton(onClick = { recovering = true }) { Text("Забыли пароль?") }
+                    TextButton(onClick = { run { session.openForum() } }, enabled = !busy) { Text("Форум") }
+                    TextButton(onClick = { run { session.openPages() } }, enabled = !busy) { Text("Об игре") }
+                }
             }
+            Screen.CREATE_CHARACTER -> CreateCharacter(busy) { name, female -> run { session.createCharacter(name, female) } }
+            Screen.PLAYING -> Unit
         }
         if (account == null) session.info?.let { Text(it, color = MaterialTheme.colorScheme.primary) }
         session.error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
@@ -264,345 +279,6 @@ fun CreateCharacter(busy: Boolean, onCreate: (String, Boolean) -> Unit) {
         FilterChip(selected = female, onClick = { female = true }, label = { Text("Женский") })
     }
     Button(onClick = { onCreate(name, female) }, enabled = !busy) { Text("Создать") }
-}
-
-@Composable
-fun Playing(
-    game: GameView,
-    busy: Boolean,
-    @Suppress("UNUSED_PARAMETER") version: Int,
-    onGo: (ExitView) -> Unit,
-    onTake: (GroundItemView) -> Unit,
-    onDrop: (InventoryItemView) -> Unit,
-    onToggleEquip: (InventoryItemView) -> Unit,
-    onAttack: (NpcView) -> Unit,
-    onLoot: (CorpseView, GroundItemView) -> Unit,
-    onButcher: (CorpseView) -> Unit,
-    onResurrect: () -> Unit,
-    onTalk: (NpcView) -> Unit,
-    onAnswer: (DialogOption) -> Unit,
-    onCloseDialog: () -> Unit,
-    onRefresh: () -> Unit,
-    onSignOut: () -> Unit,
-    pending: InventoryItemView? = null,
-    pendingAbility: AbilityView? = null,
-    more: MoreActions = MoreActions(),
-    social: SocialActions = SocialActions(),
-    mail: MessagesView? = null,
-    clanInfo: ClanView? = null,
-    worldInfo: WorldView? = null,
-    mapView: MapView? = null,
-) {
-    val c = game.character
-    val loc = game.location
-    val small = MaterialTheme.typography.bodyMedium
-    Text("${c.name} · HP ${c.hp}/${c.hpMax} · мана ${c.mana}/${c.manaMax}", style = MaterialTheme.typography.labelLarge)
-    c.crime?.let { Text("Вы $it — стража ищет вас ещё ${c.crimeMinutes} мин", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.error) }
-    if (c.poisoned) Text("Вы отравлены: здоровье убывает", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.error)
-    if (c.flag) Row(verticalAlignment = Alignment.CenterVertically) {
-        Text("У вас флаг лидерства", Modifier.weight(1f), style = MaterialTheme.typography.labelMedium)
-        TextButton(onClick = more.dropFlag, enabled = !busy) { Text("бросить") }
-    }
-    game.stele?.let { place ->
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("${c.spouse ?: "Супруг"} ранен(а): $place", Modifier.weight(1f), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.error)
-            TextButton(onClick = more.stele, enabled = !busy && !c.ghost) { Text("на помощь") }
-        }
-    }
-    game.alarm?.let { castle ->
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("В $castle чужие!", Modifier.weight(1f), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.error)
-            TextButton(onClick = { social.castleOp("tele", null) }, enabled = !busy && !c.ghost) { Text("в замок") }
-        }
-    }
-    Row {
-        TextButton(onClick = more.openWorld, enabled = !busy) { Text("Мир") }
-        TextButton(onClick = more.openMap, enabled = !busy) { Text("Карта") }
-    }
-    worldInfo?.let { WorldPanel(it, more.closeWorld) }
-    mapView?.let { MapPanel(it, c.location, worldInfo?.flagLocationId, more.closeMap) }
-    if (c.mounted) Row(verticalAlignment = Alignment.CenterVertically) {
-        Text("Вы верхом", Modifier.weight(1f), style = MaterialTheme.typography.labelMedium)
-        TextButton(onClick = more.dismount, enabled = !busy) { Text("спешиться") }
-    }
-    game.choice?.let { ch ->
-        Panel(ch.title, social.closeChoice) {
-            ch.options.forEach { o -> TextButton(onClick = { social.choose(o) }, enabled = !busy) { Text(o.label) } }
-        }
-    }
-    Text(
-        "удар ${c.hit}% · урон ${c.dmgMin}–${c.dmgMax} · броня ${c.armor} · уклон ${c.dodge} · опыт ${c.exp}/${c.expNext}" +
-            (if (c.skillPoints > 0) " · очков ${c.skillPoints}" else "") +
-            (if (game.restSeconds > 0) " · отдых ${game.restSeconds} с" else ""),
-        style = MaterialTheme.typography.labelMedium,
-    )
-    if (c.ghost) {
-        Text(
-            "Вы призрак. Воскреснуть можно у камня воскрешения или у лекаря Джозефа (двор к северу от Переулка).",
-            color = MaterialTheme.colorScheme.error, style = small,
-        )
-        if (game.canResurrect) Button(onClick = onResurrect, enabled = !busy) { Text("Воскреснуть") }
-    }
-    game.dialog?.let { d ->
-        Surface(tonalElevation = 2.dp, shape = MaterialTheme.shapes.medium, modifier = Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(d.npcName, style = MaterialTheme.typography.titleMedium)
-                Text(d.text, style = small)
-                if (d.inputTopic != null) {
-                    var typed by remember(d.text) { mutableStateOf("") }
-                    OutlinedTextField(typed, { typed = it }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                    Button(onClick = { social.answerText(typed) }, enabled = !busy && typed.isNotBlank()) { Text("ответить") }
-                }
-                d.options.forEach { o ->
-                    TextButton(onClick = { onAnswer(o) }, enabled = !busy) { Text(o.label) }
-                }
-                TextButton(onClick = onCloseDialog) { Text(if (d.options.isEmpty()) "[Конец диалога]" else "закончить разговор") }
-            }
-        }
-    }
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        OutlinedButton(onClick = social.openMail, enabled = !busy) { Text(if (game.unread > 0) "Почта (${game.unread})" else "Почта") }
-        OutlinedButton(onClick = social.openClan, enabled = !busy) {
-            Text((game.clan?.let { "Клан $it" } ?: "Клан") + if (game.clanInvites.isNotEmpty()) " (приглашение)" else "")
-        }
-    }
-    mail?.let { m -> MailPanel(m, busy, social) }
-    clanInfo?.let { cl -> ClanPanel(cl, busy, social) }
-    game.exchange?.let { ex ->
-        Panel("Обмен с ${ex.partner}" + if (ex.waiting) " (ждём его)" else "", social.cancelExchange) {
-            Text("Вы отдаёте:" + if (ex.iAgree) " ✓ согласны" else "", style = small)
-            ex.mine.forEach { item ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("${item.name} ×${item.count}", Modifier.weight(1f), style = small)
-                    TextButton(onClick = { social.withdraw(item) }, enabled = !busy) { Text("убрать") }
-                }
-            }
-            Text("${ex.partner} отдаёт:" + if (ex.theyAgree) " ✓ согласен" else "", style = small)
-            ex.theirs.forEach { item -> Text("${item.name} ×${item.count}", style = small) }
-            Text("Добавить из рюкзака:", style = MaterialTheme.typography.labelMedium)
-            game.inventory.filter { !it.equipped && ex.mine.none { m -> m.id == it.id } }.forEach { item ->
-                TextButton(onClick = { social.offer(item, item.count) }, enabled = !busy) { Text("+ ${item.name} ×${item.count}") }
-            }
-            Button(onClick = social.agree, enabled = !busy && !ex.iAgree && !ex.waiting) { Text("Согласен") }
-        }
-    }
-    game.shop?.let { shop ->
-        Panel(shop.npcName + if (shop.mode == "sell") " покупает" else " продаёт", onCloseDialog) {
-            shop.message?.let { Text(it, style = small) }
-            shop.items.forEach { item ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("${item.name}${if (item.count > 1) " (${item.count})" else ""} — ${item.price} ${shop.currency}", Modifier.weight(1f), style = small)
-                    val verb = if (shop.mode == "sell") "продать" else "купить"
-                    TextButton(onClick = { more.trade(item, 1) }, enabled = !busy) { Text(verb) }
-                    if (item.count > 1) TextButton(onClick = { more.trade(item, item.count) }, enabled = !busy) { Text("все") }
-                }
-            }
-        }
-    }
-    game.bank?.let { bank ->
-        Panel("Банк · ${bank.npcName}" + if (bank.fee > 0) " (плата ${bank.fee})" else "", onCloseDialog) {
-            bank.message?.let { Text(it, style = small) }
-            if (bank.items.isEmpty()) Text("в ячейке пусто", style = small)
-            bank.items.forEach { item ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("${item.name}${if (item.count > 1) " ×${item.count}" else ""}", Modifier.weight(1f), style = small)
-                    TextButton(onClick = { more.bankTake(item, 1) }, enabled = !busy) { Text("забрать") }
-                    if (item.count > 1) TextButton(onClick = { more.bankTake(item, item.count) }, enabled = !busy) { Text("все") }
-                }
-            }
-            Text("Положить из рюкзака:", style = MaterialTheme.typography.labelMedium)
-            game.inventory.filter { !it.equipped }.forEach { item ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("${item.name}${if (item.count > 1) " ×${item.count}" else ""}", Modifier.weight(1f), style = small)
-                    TextButton(onClick = { more.bankPut(item, item.count) }, enabled = !busy) { Text("в банк") }
-                }
-            }
-        }
-    }
-    game.craft?.let { craft ->
-        Panel(craft.title, onCloseDialog) {
-            craft.options.forEach { o ->
-                TextButton(onClick = { more.craft(o) }, enabled = !busy) { Text("${o.name} — ${o.chance}% (${o.needs})") }
-            }
-        }
-    }
-    pending?.let { p ->
-        Panel("Применить «${p.name}» к…", more.cancelUse) {
-            val choices = Targets.choices(p.target, game, exceptItem = p.id)
-            if (choices.isEmpty()) Text("здесь не на кого", style = small)
-            choices.forEach { t -> TextButton(onClick = { more.useOn(t.value) }, enabled = !busy) { Text(t.label) } }
-        }
-    }
-    pendingAbility?.let { a ->
-        Panel("«${a.name}» — на кого?", more.cancelAbility) {
-            val choices = Targets.choices(a.target, game)
-            if (choices.isEmpty()) Text("здесь не на кого", style = small)
-            choices.forEach { t -> TextButton(onClick = { more.aimAbility(t.value) }, enabled = !busy) { Text(t.label) } }
-        }
-    }
-    game.stance?.let { Text("Стойка: $it", style = MaterialTheme.typography.labelMedium) }
-    if (game.abilities.isNotEmpty() && !c.ghost) {
-        var open by remember { mutableStateOf(false) }
-        TextButton(onClick = { open = !open }) { Text(if (open) "Магия и приёмы ▲" else "Магия и приёмы ▼") }
-        if (open) game.abilities.forEach { a ->
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    a.name + (if (a.manaCost > 0) " · мана ${a.manaCost}" else "") +
-                        (if (a.readyIn > 0) " · через ${(a.readyIn + 59) / 60} мин" else "") + (if (a.later) " · позже" else ""),
-                    Modifier.weight(1f), style = small,
-                )
-                val verb = when (a.kind) { "spell" -> "читать"; "stance" -> "встать"; else -> "ударить" }
-                TextButton(onClick = { more.useAbility(a) }, enabled = !busy && a.readyIn == 0L && !a.later) { Text(verb) }
-                TextButton(onClick = { more.look(a.id) }, enabled = !busy) { Text("?") }
-            }
-        }
-    }
-    game.look?.let { l ->
-        Panel(l.title, more.closeLook) {
-            Text(l.text, style = small)
-            l.page?.let { pg -> TextButton(onClick = { more.openSite(pg) }, enabled = !busy) { Text(if (pg == "news") "Все новости" else "Выбрать книгу") } }
-        }
-    }
-    game.peek?.let { pk ->
-        Panel("Рюкзак: ${pk.targetName}", more.closePeek) {
-            pk.items.forEach { pi ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(pi.name + (if (pi.count > 1) " ×${pi.count}" else "") + (if (pi.equipped) " (надето)" else ""), Modifier.weight(1f), style = small)
-                    TextButton(onClick = { more.steal(pi) }, enabled = !busy) { Text("украсть") }
-                }
-            }
-        }
-    }
-    run {
-        var open by remember { mutableStateOf(false) }
-        TextButton(onClick = { open = !open }) { Text(if (open) "Персонаж ▲" else "Персонаж ▼") }
-        if (open) {
-            Text("${c.rank} ${c.title}", style = small)
-            Text("парирование ${c.parry} · уклон от магии ${c.magicDodge} · защита от магии ${c.magicParry} · сопр. магии ${c.magicResist}", style = small)
-            c.skills.forEach { (k, v) ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("${Rules.skillTitle(k)} $v", Modifier.weight(1f), style = small)
-                    if (k == "meditation" && !c.ghost) TextButton(onClick = more.meditate, enabled = !busy) { Text("медитировать") }
-                    TextButton(onClick = { more.look("skill.$k") }, enabled = !busy) { Text("?") }
-                }
-            }
-        }
-    }
-    Text(loc.name, style = MaterialTheme.typography.headlineSmall)
-    game.castle?.let { cs ->
-        Text(
-            (cs.owner?.let { "Замок принадлежит клану $it" } ?: "Замок никому не принадлежит: первый член клана, вошедший в ворота, захватит его") +
-                (if (cs.lockedMinutes > 0) " · ворота заперты ещё ${cs.lockedMinutes} мин." else "") +
-                (if (cs.guest) " · вы гость" else ""),
-            style = small,
-        )
-        if (cs.sign.isNotBlank()) Text("Надпись на воротах: ${cs.sign}", style = small)
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            if (cs.canKnock) OutlinedButton(onClick = { social.castleOp("knock", null) }, enabled = !busy) { Text("Постучать") }
-            if (cs.canOpen) OutlinedButton(onClick = { social.castleOp("open", null) }, enabled = !busy) { Text("Открыть ворота") }
-        }
-        if (cs.member) {
-            var sign by remember(cs.id) { mutableStateOf(cs.sign) }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                OutlinedTextField(sign, { sign = it }, label = { Text("Вывеска") }, singleLine = true, modifier = Modifier.weight(1f))
-                TextButton(onClick = { social.castleOp("sign", sign) }, enabled = !busy) { Text("сохранить") }
-            }
-        }
-    }
-    loc.description?.let { Text(it, style = small) }
-    val thief = (c.skills["steal"] ?: 0) > 0 || (c.skills["steallook"] ?: 0) > 0
-    loc.npcs.forEach { npc ->
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                npc.name + (npc.owner?.let { if (npc.mine) " (ваш)" else " ($it)" } ?: "") + (if (npc.attackable) " · HP ${npc.hp}/${npc.hpMax}" else "") + (npc.attacking?.let { " · атакует $it" } ?: ""),
-                Modifier.weight(1f), style = small,
-                color = if (npc.fightingYou) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
-            )
-            if (npc.canTalk) TextButton(onClick = { onTalk(npc) }, enabled = !busy) { Text("говорить") }
-            TextButton(onClick = { more.look(npc.id) }, enabled = !busy) { Text("?") }
-            if (!c.ghost && !npc.mine && npc.owner == null && npc.id.startsWith("n.a.") && (c.skills["animaltaming"] ?: 0) > 0)
-                TextButton(onClick = { more.tame(npc) }, enabled = !busy) { Text("приручить") }
-            if (thief && !c.ghost) TextButton(onClick = { more.peek(npc.id) }, enabled = !busy) { Text("подглядеть") }
-            if (npc.attackable && !c.ghost) TextButton(onClick = { onAttack(npc) }, enabled = !busy) { Text("атаковать") }
-        }
-    }
-    game.people.forEach { person ->
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                person.name + (person.clan?.let { " *$it*" } ?: "") + (person.crime?.let { " [$it]" } ?: "") +
-                    (person.faction?.let { " $it" } ?: "") + (person.hpPercent?.let { " $it%" } ?: "") + (if (person.rider) " (всадник)" else "") +
-                    (if (person.flag) " с флагом!" else "") +
-                    (person.attacking?.let { " · атакует $it" } ?: "") + if (person.ghost) " (призрак)" else "",
-                Modifier.weight(1f), style = small,
-                color = if (person.crime != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
-            )
-            if (!c.ghost && !person.ghost) TextButton(onClick = { social.attackPlayer(person) }, enabled = !busy) { Text("атаковать") }
-            TextButton(onClick = { more.look(person.name) }, enabled = !busy) { Text("?") }
-            if (thief && !c.ghost && !person.ghost) TextButton(onClick = { more.peek(person.name) }, enabled = !busy) { Text("подглядеть") }
-            if (!c.ghost && !person.ghost) TextButton(onClick = { social.startExchange(person) }, enabled = !busy) { Text("обмен") }
-            TextButton(onClick = { social.addContact(person.name) }, enabled = !busy) { Text("в контакты") }
-            if (game.clan != null && person.clan == null) TextButton(onClick = { social.clanOp("invite", person.name, null, null) }, enabled = !busy) { Text("в клан") }
-        }
-    }
-    loc.items.forEach { item ->
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("${item.name}${if (item.count > 1) " ×${item.count}" else ""}", Modifier.weight(1f))
-            if (item.takeable) TextButton(onClick = { onTake(item) }, enabled = !busy) { Text(if (item.id.startsWith("i.s.")) "использовать" else "взять") }
-            if (item.takeable && item.count > 1) TextButton(onClick = { more.takeOne(item) }, enabled = !busy) { Text("1") }
-            TextButton(onClick = { more.look(item.id) }, enabled = !busy) { Text("?") }
-        }
-    }
-    loc.corpses.forEach { corpse ->
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(corpse.name, Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
-            if (corpse.canButcher && !c.ghost) TextButton(onClick = { onButcher(corpse) }, enabled = !busy) { Text("разделать") }
-            if (corpse.canRaise && !c.ghost && (c.skills["necro"] ?: 0) > 0) TextButton(onClick = { more.raise(corpse) }, enabled = !busy) { Text("поднять") }
-        }
-        if (corpse.looting && corpse.items.isNotEmpty()) Text("  взять отсюда — мародёрство", style = small, color = MaterialTheme.colorScheme.error)
-        corpse.items.forEach { item ->
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("  ${item.name}${if (item.count > 1) " ×${item.count}" else ""}", Modifier.weight(1f), style = small)
-                if (!c.ghost) TextButton(onClick = { onLoot(corpse, item) }, enabled = !busy) { Text("взять") }
-            }
-        }
-    }
-    loc.exits.forEach { exit ->
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            OutlinedButton(onClick = { onGo(exit) }, enabled = !busy, modifier = Modifier.weight(1f)) { Text(exit.label + if (exit.occupied) " !" else "") }
-            if (exit.gallop) TextButton(onClick = { more.gallop(exit) }, enabled = !busy) { Text("галопом") }
-        }
-    }
-    TextButton(onClick = onRefresh, enabled = !busy) { Text("осмотреться") }
-
-    if (game.journal.isNotEmpty()) {
-        Text("Журнал", style = MaterialTheme.typography.titleMedium)
-        game.journal.takeLast(10).forEach { Text(it, style = small) }
-    }
-    var speech by remember { mutableStateOf("") }
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        OutlinedTextField(speech, { speech = it }, label = { Text("Сказать") }, singleLine = true, modifier = Modifier.weight(1f))
-        TextButton(onClick = { social.say(speech, false); speech = "" }, enabled = !busy && speech.isNotBlank()) { Text("всем") }
-        if (game.clan != null) TextButton(onClick = { social.say(speech, true); speech = "" }, enabled = !busy && speech.isNotBlank()) { Text("клану") }
-    }
-
-    Text("Инвентарь", style = MaterialTheme.typography.titleMedium)
-    if (game.inventory.isEmpty()) Text("пусто", style = MaterialTheme.typography.bodyMedium)
-    game.inventory.forEach { item ->
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                "${item.name}${if (item.count > 1) " ×${item.count}" else ""}${if (item.equipped) " (надето)" else ""}",
-                Modifier.weight(1f),
-            )
-            if (item.equippable) TextButton(onClick = { onToggleEquip(item) }, enabled = !busy) {
-                Text(if (item.equipped) "снять" else "надеть")
-            }
-            if (item.usable && !c.ghost) TextButton(onClick = { more.use(item) }, enabled = !busy) { Text("исп.") }
-            TextButton(onClick = { more.look(item.id) }, enabled = !busy) { Text("?") }
-            if (item.count > 1) TextButton(onClick = { more.dropOne(item) }, enabled = !busy) { Text("−1") }
-            TextButton(onClick = { onDrop(item) }, enabled = !busy) { Text("бросить") }
-        }
-    }
-    TextButton(onClick = onSignOut) { Text("Выйти") }
 }
 
 class SocialActions(

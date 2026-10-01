@@ -36,6 +36,7 @@ class PlayingScreenTest {
 
     private fun view(loc: String, name: String, equipped: Boolean) = """{"character":$character,
         "location":{"id":"$loc","name":"$name","zone":0,"exits":[{"label":"на север","target":"north"}],"npcs":[]},
+        "journal":["Вы пришли в $name"],"journalKinds":["sys"],"belt":["","","",""],"slots":["","",""],
         "inventory":[{"id":"i.w.k.begin","name":"нож","count":1,"equipped":$equipped,"equippable":true}]}"""
 
     @Test
@@ -62,6 +63,9 @@ class PlayingScreenTest {
         compose.onNodeWithText("на север").performScrollTo().performClick()
         compose.waitUntil(5_000) { compose.onAllNodesWithTextExists("Двор лекаря") }
 
+        // Exits stay on every tab; the backpack is its own tab.
+        compose.onNodeWithText("Сумка").performClick()
+        compose.onNodeWithText("на север").assertExists()
         compose.onNodeWithText("надеть").performScrollTo().performClick()
         compose.waitUntil(5_000) { compose.onAllNodesWithTextExists("нож (надето)") }
         compose.onNodeWithText("снять").assertExists()

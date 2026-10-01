@@ -1,0 +1,54 @@
+package tz.shared
+
+/**
+ * What the game screen shows, in the order both apps draw it (docs/design.md,
+ * «Раскладка экрана»): the one list of the place, the journal lines with
+ * their colours, the belt and the exits. Plain functions of [GameView].
+ */
+object GameScene {
+    /** NPCs of the place: those fighting you first, then other fights, your own creatures, the rest. */
+    fun npcs(game: GameView): List<NpcView> = game.location.npcs.sortedBy {
+        when {
+            it.fightingYou -> 0
+            it.attacking != null -> 1
+            it.mine -> 2
+            it.canTalk -> 3
+            else -> 4
+        }
+    }
+
+    /** The last [n] journal lines with their kinds (old servers send no kinds: sorted by words). */
+    fun journal(game: GameView, n: Int): List<Pair<String, String>> {
+        val lines = game.journal.takeLast(n)
+        val kinds = game.journalKinds.takeLast(n).takeIf { it.size == lines.size } ?: lines.map(JournalKind::of)
+        return lines.zip(kinds)
+    }
+
+    /** Belt cells: the chosen item id and what of it is carried (null — none left or empty cell). */
+    fun belt(game: GameView): List<Pair<String, InventoryItemView?>> =
+        game.belt.map { id -> id to game.inventory.firstOrNull { it.id == id && id.isNotEmpty() } }
+
+    /** Combat buttons: the chosen spells and techniques that the character still knows (null — empty cell). */
+    fun slots(game: GameView): List<AbilityView?> =
+        game.slots.map { id -> game.abilities.firstOrNull { it.id == id && id.isNotEmpty() } }
+
+    /** Icon key (Design.ICONS) of an exit by its label. */
+    fun exitIcon(label: String): String = when {
+        "север" in label -> "north"
+        "восток" in label -> "east"
+        "юг" in label -> "south"
+        "запад" in label -> "west"
+        "вверх" in label || "наверх" in label || "подня" in label -> "up"
+        "вниз" in label || "спуст" in label -> "down"
+        else -> "enter"
+    }
+
+    /** Health is low: the belt lights its healing potion. */
+    fun lowHealth(game: GameView): Boolean = game.character.hp * 100 < game.character.hpMax * 35
+
+    /** Path of a picture on the server for an art key from a view ("npcs/npc-beginner"). */
+    fun artPath(key: String): String = "/art/$key.webp"
+
+    /** Path of an item's picture. */
+    fun itemPath(id: String): String = "/art/item/$id"
+}

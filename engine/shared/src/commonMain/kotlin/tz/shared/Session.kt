@@ -237,6 +237,27 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
         game = if (a.kind == "spell") api.cast(a.id, target) else api.technique(a.id, target)
     }
 
+    /** A combat button in a row: the spell or technique goes straight at that row's [target]. */
+    suspend fun strike(ability: AbilityView, target: String) = act(ability, target)
+
+    /** Puts a spell or technique into combat button [index] ("" clears it). */
+    suspend fun setSlot(index: Int, abilityId: String) = action {
+        val g = game ?: return@action
+        game = api.prefs(slots = List(3) { if (it == index) abilityId else g.slots.getOrNull(it).orEmpty() })
+    }
+
+    /** Puts an item into belt cell [index] ("" clears it). */
+    suspend fun setBelt(index: Int, itemId: String) = action {
+        val g = game ?: return@action
+        game = api.prefs(belt = List(4) { if (it == index) itemId else g.belt.getOrNull(it).orEmpty() })
+    }
+
+    /** Drinks or eats what is in belt cell [index]. */
+    suspend fun useBelt(index: Int) {
+        val item = game?.let { GameScene.belt(it).getOrNull(index)?.second } ?: return
+        use(item)
+    }
+
     /** Sends typed text to a dialog that waits for it (a clan name). */
     suspend fun answerText(text: String) = action {
         val d = game?.dialog ?: return@action

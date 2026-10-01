@@ -135,6 +135,13 @@ class GameApi(
     suspend fun technique(id: String, target: String? = null): GameView =
         postJson<GameView, TechniqueRequest>("/api/game/technique", TechniqueRequest(id, target))
 
+    /** Combat buttons and belt (null — keep, empty — back to the default). */
+    suspend fun prefs(slots: List<String>? = null, belt: List<String>? = null): GameView =
+        postJson<GameView, PrefsRequest>("/api/game/prefs", PrefsRequest(slots, belt))
+
+    /** Full address of a picture path from [GameScene.artPath] or [GameScene.itemPath]. */
+    fun artUrl(path: String): String = url(path)
+
     suspend fun say(text: String, channel: String): GameView =
         postJson<GameView, SayRequest>("/api/game/say", SayRequest(text, channel))
 
