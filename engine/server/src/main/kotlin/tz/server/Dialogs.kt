@@ -35,6 +35,8 @@ class Dialogs(private val content: Content, dir: File) {
     /** Dialog id → topic → rules. */
     val logic = HashMap<String, Map<String, List<Rule>>>()
     val timers = HashMap<String, Timer>()
+    /** Gift kits of content/logic/gifts.json: key → name. Edward (n.vost) hands out a kit to a character with flag «gift.<key>». */
+    val gifts = LinkedHashMap<String, String>()
     /** Joke files content/raw/speak/h.* (n.Garry and others tell a random line). */
     val jokes = HashMap<String, List<String>>()
     val problems = ArrayList<String>()
@@ -65,7 +67,14 @@ class Dialogs(private val content: Content, dir: File) {
                 timers[key] = Timer(scope, min, max, o.str("about") ?: "")
             }
         }
-        for (f in (logicDir.listFiles { f -> f.name.endsWith(".json") && f.name != "timers.json" } ?: emptyArray()).sortedBy { it.name }) {
+        logicDir.resolve("gifts.json").takeIf { it.isFile }?.let { f ->
+            for ((key, v) in Json.parseToJsonElement(f.readText()).jsonObject) {
+                val o = v as? JsonObject ?: run { problems += "gifts.json: $key is not an object"; null } ?: continue
+                if (!key.matches(Regex("[a-z0-9]+"))) problems += "gifts.json: $key: key must be a-z0-9"
+                gifts[key] = o.str("name") ?: key
+            }
+        }
+        for (f in (logicDir.listFiles { f -> f.name.endsWith(".json") && f.name != "timers.json" && f.name != "gifts.json" } ?: emptyArray()).sortedBy { it.name }) {
             val id = f.name.removeSuffix(".json")
             try {
                 val o = Json.parseToJsonElement(f.readText()).jsonObject
@@ -121,6 +130,8 @@ class Dialogs(private val content: Content, dir: File) {
     /** Checks that need all files loaded (topics defined in other rules). Called once after init. */
     fun finishValidation(): Dialogs {
         deferred.forEach { it() }
+        val giver = logic[GIFT_GIVER].orEmpty().values.flatten().flatMap { it.conditions }.mapNotNull { it.str("flag") }.toSet()
+        for (key in gifts.keys) if ("$GIFT_PREFIX$key" !in giver) problems += "gifts.json: $key: no rule of $GIFT_GIVER hands it out (flag $GIFT_PREFIX$key)"
         deferred.clear()
         return this
     }
@@ -207,6 +218,11 @@ class Dialogs(private val content: Content, dir: File) {
     fun hasDialog(id: String) = id in content.dialogs || id in logic
 
     companion object {
+        /** Edward on the Переулок hands out gift kits (once the 2007 wipe compensation). */
+        const val GIFT_GIVER = "n.vost"
+        const val GIFT_PREFIX = "gift."
+        /** World state: the kit every new character gets. */
+        const val GIFT_NEW = "gift.new"
         val CONDITIONS = setOf(
             "has", "lacks", "money", "equipped", "skill", "newbie", "ready", "waiting", "flag", "noflag",
             "known", "unknown", "here", "notHere", "npcAt", "noNpcAt", "arg", "chance", "sex", "ghost", "any", "not",

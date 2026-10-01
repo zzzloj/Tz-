@@ -17,6 +17,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import tz.shared.AccountView
 import tz.shared.AdminRequest
+import tz.shared.GameView
 import tz.shared.AuthResponse
 import tz.shared.ErrorResponse
 import tz.shared.Errors
@@ -154,6 +155,47 @@ class SiteTest {
     }
 
     private suspend fun Staff.fresh(i: Int): Account = assertNotNull(accounts.authenticate(tokens[i]))
+
+    @Test
+    fun edwardHandsOutGifts() = withStaff {
+        fun money(v: GameView) = v.inventory.firstOrNull { it.id == Rules.MONEY }?.count ?: 0
+        val kits = game.adminView(admin).gifts.map { it.value }
+        assertTrue(kits.containsAll(listOf("start", "prereg", "update", "comp")), kits.toString())
+        assertTrue(game.adminView(moder).gifts.isEmpty())
+        assertEquals(Errors.FORBIDDEN, assertFailsWith<ApiException> { game.admin(moder, AdminRequest("gift", names[2], item = "update")) }.code)
+        assertEquals(Errors.BAD_REQUEST, assertFailsWith<ApiException> { game.admin(admin, AdminRequest("gift", names[2], item = "nothing")) }.code)
+        // Nothing yet.
+        var v = game.talk(player, "n.vost", "begin", null)
+        v = game.talk(player, "n.vost", "tren", null)
+        assertTrue(v.dialog!!.text.startsWith("Для тебя пока ничего нет"), v.dialog!!.text)
+        // A gift to one player, then to everybody: two kits wait, Edward hands them out one by one.
+        game.admin(admin, AdminRequest("gift", names[2], item = "update"))
+        assertTrue(game.view(player).journal.any { it.contains("К обновлению") })
+        val all = game.admin(admin, AdminRequest("gift", "*", item = "prereg"))
+        assertTrue(all.message!!.startsWith("Подарок «За предрегистрацию» — всем"), all.message)
+        val before = money(game.view(player))
+        game.talk(player, "n.vost", "begin", null)
+        v = game.talk(player, "n.vost", "tren", null)
+        assertTrue(v.dialog!!.text.contains("Ты ждал открытия"), v.dialog!!.text)
+        assertEquals(before + 2000, money(v))
+        game.talk(player, "n.vost", "begin", null)
+        v = game.talk(player, "n.vost", "tren", null)
+        assertTrue(v.dialog!!.text.contains("Мир обновился"), v.dialog!!.text)
+        assertEquals(before + 3000, money(v))
+        game.talk(player, "n.vost", "begin", null)
+        assertTrue(game.talk(player, "n.vost", "tren", null).dialog!!.text.startsWith("Для тебя пока ничего нет"))
+        // A gift for every new character.
+        assertEquals("start", game.admin(admin, AdminRequest("giftNew", item = "start")).newGift)
+        val (a, t) = accounts.register(unique("s"), "secret-123")
+        accounts.createCharacter(a, name("Новичок"), "f")
+        val newbie = assertNotNull(accounts.authenticate(t))
+        game.place(newbie, "_begin")
+        game.talk(newbie, "n.vost", "begin", null)
+        v = game.talk(newbie, "n.vost", "tren", null)
+        assertTrue(v.dialog!!.text.startsWith("Добро пожаловать"), v.dialog!!.text)
+        assertEquals(300, money(v))
+        assertNull(game.admin(admin, AdminRequest("giftNew")).newGift)
+    }
 
     @Test
     fun moderation() = withStaff {

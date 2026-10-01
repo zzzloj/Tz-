@@ -309,6 +309,22 @@ struct AdminView_: View {
                 Button("сделать модератором") { act.adminOp("role", target, "moder", "", 1, 0) }.disabled(!named)
                 Button("снять модератора") { act.adminOp("role", target, "player", "", 1, 0) }.disabled(!named)
             }
+            if !admin.gifts.isEmpty {
+                Section("Подарки у Эдварда в Переулке (имя «*» — всем)") {
+                    Text("Новым персонажам: " + (admin.gifts.first { $0.value == admin.newGift }?.label ?? "нет")).font(.footnote)
+                    ForEach(admin.gifts, id: \.value) { g in
+                        HStack {
+                            Text(g.label)
+                            Spacer()
+                            Button("выдать") { act.adminOp("gift", target, "", g.value, 1, 0) }.disabled(!named)
+                            Button("новым") { act.adminOp("giftNew", "", "", g.value, 1, 0) }.disabled(busy || admin.newGift == g.value)
+                        }.buttonStyle(.borderless)
+                    }
+                    if admin.newGift != nil {
+                        Button("не дарить новым") { act.adminOp("giftNew", "", "", "", 1, 0) }.disabled(busy)
+                    }
+                }
+            }
         }
         Section("Журнал") {
             if admin.log.isEmpty { Text("пусто").font(.footnote) }

@@ -827,7 +827,7 @@ class Game(
         }
     }
 
-    private suspend fun setWorldState(key: String, value: String, until: Long?) = db.tx { c ->
+    internal suspend fun setWorldState(key: String, value: String, until: Long?) = db.tx { c ->
         c.prepareStatement(
             "INSERT INTO world_state (key, value, until) VALUES (?, ?, ?) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, until = EXCLUDED.until"
         ).use { st ->

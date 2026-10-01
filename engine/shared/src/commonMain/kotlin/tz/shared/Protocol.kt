@@ -776,6 +776,10 @@ data class AdminView(
     val log: List<String> = emptyList(),
     /** Places to teleport to quickly (the old f_admin.dat list): name → location id. */
     val places: List<ChoiceOption> = emptyList(),
+    /** Gift kits Edward hands out (content/logic/gifts.json): name → key. Only for an administrator. */
+    val gifts: List<ChoiceOption> = emptyList(),
+    /** Key of the kit every new character gets, or null. */
+    val newGift: String? = null,
 )
 
 @Serializable

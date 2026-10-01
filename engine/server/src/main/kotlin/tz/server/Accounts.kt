@@ -283,6 +283,18 @@ class Accounts(private val db: Db, private val content: Content) {
                     st.setLong(2, account.id)
                     st.executeUpdate()
                 }
+                // The gift for new characters, if the administrator set one (Edward hands it out).
+                c.prepareStatement(
+                    "INSERT INTO character_state (character_id, key, value, until) " +
+                        "SELECT ch.id, ? || w.value, '1', NULL FROM characters ch, world_state w " +
+                        "WHERE ch.account_id = ? AND ch.world_id = 1 AND w.key = ? AND (w.until IS NULL OR w.until > ?)"
+                ).use { st ->
+                    st.setString(1, Dialogs.GIFT_PREFIX)
+                    st.setLong(2, account.id)
+                    st.setString(3, Dialogs.GIFT_NEW)
+                    st.setLong(4, now())
+                    st.executeUpdate()
+                }
             } catch (e: SQLException) {
                 if (e.sqlState == UNIQUE_VIOLATION) throw ApiException(HttpStatusCode.Conflict, Errors.NAME_TAKEN)
                 throw e

@@ -5,7 +5,93 @@
       {
         "if": [
           {
-            "flag": "x"
+            "flag": "gift.start"
+          }
+        ],
+        "do": [
+          {
+            "clear": "gift.start"
+          },
+          {
+            "give": "i.f.b.health",
+            "count": 3
+          },
+          {
+            "give": "i.f.b.mana",
+            "count": 2
+          },
+          {
+            "give": "i.f.bread",
+            "count": 5
+          },
+          {
+            "give": "i.money",
+            "count": 300
+          }
+        ],
+        "text": "Добро пожаловать в наши земли, <imja>! Вот тебе немного в дорогу: зелья, хлеб и монеты."
+      },
+      {
+        "if": [
+          {
+            "flag": "gift.prereg"
+          }
+        ],
+        "do": [
+          {
+            "clear": "gift.prereg"
+          },
+          {
+            "give": "i.f.b.health.great",
+            "count": 5
+          },
+          {
+            "give": "i.f.b.mana.great",
+            "count": 5
+          },
+          {
+            "give": "i.f.wine",
+            "count": 10
+          },
+          {
+            "give": "i.money",
+            "count": 2000
+          },
+          {
+            "give": "i.q.pjpt"
+          }
+        ],
+        "text": "Ты ждал открытия вместе с нами, <imja>! Держи подарок, а перо жар-птицы — на память."
+      },
+      {
+        "if": [
+          {
+            "flag": "gift.update"
+          }
+        ],
+        "do": [
+          {
+            "clear": "gift.update"
+          },
+          {
+            "give": "i.f.b.health.great",
+            "count": 3
+          },
+          {
+            "give": "i.f.b.mana.great",
+            "count": 3
+          },
+          {
+            "give": "i.money",
+            "count": 1000
+          }
+        ],
+        "text": "Мир обновился, <imja>! Вот подарок по такому случаю."
+      },
+      {
+        "if": [
+          {
+            "flag": "gift.comp"
           },
           {
             "skill": "str",
@@ -15,7 +101,7 @@
         ],
         "do": [
           {
-            "clear": "x"
+            "clear": "gift.comp"
           },
           {
             "give": "i.a.h.massf_set_..kc"
@@ -93,12 +179,12 @@
             "give": "i.a.c.twar"
           }
         ],
-        "text": "Сожелею, вот держи немного вещей, думаю они тебе немного помогут"
+        "text": "Сожалею о твоей потере, <imja>. Вот, держи вещи — думаю, они тебе помогут."
       },
       {
         "if": [
           {
-            "flag": "x"
+            "flag": "gift.comp"
           },
           {
             "skill": "int",
@@ -108,7 +194,7 @@
         ],
         "do": [
           {
-            "clear": "x"
+            "clear": "gift.comp"
           },
           {
             "give": "i.arrow",
@@ -187,17 +273,17 @@
             "give": "i.a.c.sp1"
           }
         ],
-        "text": "Сожелею, вот держи немного вещей, думаю они тебе немного помогут"
+        "text": "Сожалею о твоей потере, <imja>. Вот, держи вещи — думаю, они тебе помогут."
       },
       {
         "if": [
           {
-            "flag": "x"
+            "flag": "gift.comp"
           }
         ],
         "do": [
           {
-            "clear": "x"
+            "clear": "gift.comp"
           },
           {
             "give": "i.w.s.p_admin_..ag..me..do"
@@ -275,10 +361,10 @@
             "give": "i.a.c.twar"
           }
         ],
-        "text": "Сожелею, вот держи немного вещей, думаю они тебе немного помогут"
+        "text": "Сожалею о твоей потере, <imja>. Вот, держи вещи — думаю, они тебе помогут."
       },
       {
-        "text": "Нет ты не был обнулен, или я тебе уже дал вещей!!!"
+        "text": "Для тебя пока ничего нет, <imja>. Заходи, когда объявят подарки!"
       }
     ]
   }

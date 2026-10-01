@@ -116,8 +116,34 @@ class DialogTest {
 
     private suspend fun give(account: Account, item: String, count: Int = 1) = db!!.tx { c ->
         c.prepareStatement(
-            "INSERT INTO character_items (character_id, item_id, count) SELECT id, ?, ? FROM characters WHERE account_id = ?"
+            "INSERT INTO character_items (character_id, item_id, count) SELECT id, ?, ? FROM characters WHERE account_id = ? " +
+                "ON CONFLICT (character_id, item_id) DO UPDATE SET count = character_items.count + EXCLUDED.count"
         ).use { it.setString(1, item); it.setInt(2, count); it.setLong(3, account.id); it.executeUpdate() }
+    }
+
+    @Test
+    fun archerTradesTenBrokenSticksForAnElvenBow() = withGame { game, account ->
+        val npc = "n.Archer"
+        game.place(account, "x1161x456")
+        var v = game.talk(account, npc, "begin", null)
+        assertTrue(v.dialog!!.options.none { it.topic == "sdat" }, "nothing to hand in before the quest")
+        v = game.choose(account, npc, v, "Квест")
+        assertTrue(v.dialog!!.text.startsWith("Убивая орков"), v.dialog!!.text)
+        // Not enough sticks: nothing happens.
+        give(account, "i.q.ambroken", 9)
+        v = game.talk(account, npc, "begin", null)
+        v = game.choose(account, npc, v, "Принёс сломанные палки")
+        assertTrue(v.dialog!!.text.startsWith("Мне нужно 10"), v.dialog!!.text)
+        give(account, "i.q.ambroken", 1)
+        v = game.talk(account, npc, "begin", null)
+        v = game.choose(account, npc, v, "Принёс сломанные палки")
+        assertTrue(v.dialog!!.text.startsWith("Все десять"), v.dialog!!.text)
+        val inv = v.inventory.associate { it.id to it.count }
+        assertEquals(null, inv["i.q.ambroken"])
+        assertEquals(1, inv["i.w.r.b.elven"])
+        // Once only: the order is closed and the quest is not offered again.
+        v = game.talk(account, npc, "begin", null)
+        assertTrue(v.dialog!!.options.none { it.topic == "qv" || it.topic == "sdat" }, v.dialog!!.options.toString())
     }
 
     @Test

@@ -300,6 +300,18 @@ fun AdminPanel(a: AdminView, busy: Boolean, act: SiteActions) {
                 TextButton(onClick = { act.adminOp("role", target, "moder", "", 1, 0) }, enabled = named) { Text("сделать модератором") }
                 TextButton(onClick = { act.adminOp("role", target, "player", "", 1, 0) }, enabled = named) { Text("снять") }
             }
+            if (a.gifts.isNotEmpty()) {
+                Text("Подарки у Эдварда в Переулке (имя «*» — всем):", style = MaterialTheme.typography.labelMedium)
+                Text("Новым персонажам: " + (a.gifts.firstOrNull { it.value == a.newGift }?.label ?: "нет"), style = small)
+                a.gifts.forEach { g ->
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(g.label, style = small, modifier = Modifier.weight(1f))
+                        TextButton(onClick = { act.adminOp("gift", target, "", g.value, 1, 0) }, enabled = named) { Text("выдать") }
+                        TextButton(onClick = { act.adminOp("giftNew", "", "", g.value, 1, 0) }, enabled = !busy && a.newGift != g.value) { Text("новым") }
+                    }
+                }
+                if (a.newGift != null) TextButton(onClick = { act.adminOp("giftNew", "", "", "", 1, 0) }, enabled = !busy) { Text("не дарить новым") }
+            }
         }
         Text("Журнал:", style = MaterialTheme.typography.labelMedium)
         if (a.log.isEmpty()) Text("пусто", style = small)
