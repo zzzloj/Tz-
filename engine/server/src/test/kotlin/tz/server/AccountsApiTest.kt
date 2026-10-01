@@ -151,6 +151,16 @@ class AccountsApiTest {
         assertEquals(listOf("Привратник Уин", "Эдвард"), g.location.npcs.map { it.name })
         assertEquals("npcs/npc-beginner", g.location.npcs.first().art)
         assertTrue(g.location.art?.startsWith("locations/") == true, g.location.art)
+        // Journal colours line up with the lines; three empty combat buttons, an empty belt by default.
+        assertEquals(g.journal.size, g.journalKinds.size)
+        assertEquals(listOf("", "", ""), g.slots)
+        assertEquals(4, g.belt.size)
+        g = game(client.postJson("/api/game/prefs", """{"belt":["i.f.bread","","i.f.b.heal"]}""", token))
+        assertEquals(listOf("i.f.bread", "", "i.f.b.heal", ""), g.belt)
+        assertEquals(listOf("i.f.bread", "", "i.f.b.heal", ""), game(client.getAuth("/api/game", token)).belt)
+        assertEquals(HttpStatusCode.BadRequest, client.postJson("/api/game/prefs", """{"slots":["m.w.arrow"]}""", token).status)
+        g = game(client.postJson("/api/game/prefs", """{"belt":[]}""", token))
+        assertEquals(listOf("", "", "", ""), g.belt)
 
         g = game(client.postJson("/api/game/equip", """{"item":"i.w.k.begin"}""", token))
         assertEquals(true, g.inventory.single().equipped)

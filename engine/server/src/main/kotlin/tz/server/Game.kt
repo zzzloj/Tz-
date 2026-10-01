@@ -16,6 +16,7 @@ import tz.shared.PersonView
 import tz.shared.Errors
 import tz.shared.GameView
 import tz.shared.InventoryItemView
+import tz.shared.JournalKind
 import tz.shared.NpcView
 import tz.shared.Protocol
 import tz.shared.Rules
@@ -65,6 +66,11 @@ class Game(
         var regenFrom = 0L
         var lastSeen = 0L
         val journal = ArrayDeque<String>()
+        val journalKinds = ArrayDeque<String>()
+
+        /** Combat buttons and belt chosen by the player (character_state "ui.slots", "ui.belt"); null — the default. */
+        var slots: List<String>? = null
+        var belt: List<String>? = null
 
         /** Skills other than the attributes, by key of [Rules.SKILLS]. */
         val other = HashMap<String, Int>()
@@ -131,9 +137,10 @@ class Game(
 
         fun clearBuffs() { armorBuff = 0; hpBuff = 0; manaBuff = 0 }
 
-        fun log(line: String) {
+        fun log(line: String, kind: String? = null) {
             journal.addLast(line)
-            while (journal.size > JOURNAL_SIZE) journal.removeFirst()
+            journalKinds.addLast(kind ?: JournalKind.of(line))
+            while (journal.size > JOURNAL_SIZE) { journal.removeFirst(); journalKinds.removeFirst() }
         }
     }
 
@@ -927,8 +934,8 @@ class Game(
         val h = castleBonus(p, r.hit)
         val text = describe(h, stats.verb) + r.note
         val t = blow?.title?.let { " ($it)" } ?: ""
-        p.log(if (answer) "Вы$t по ${npc.name} $text" else "  вы отвечаете: $text")
-        tellOthers(p.location, p.id, if (answer) "${p.name}$t по ${npc.name} $text" else "${p.name} отвечает: $text")
+        p.log(if (answer) "Вы$t по ${npc.name} $text" else "  вы отвечаете: $text", JournalKind.FIGHT)
+        tellOthers(p.location, p.id, if (answer) "${p.name}$t по ${npc.name} $text" else "${p.name} отвечает: $text", JournalKind.FIGHT)
         if (h.outcome == Formulas.Outcome.HIT) {
             npc.hp -= h.damage
             npc.regenFrom = now
@@ -949,8 +956,8 @@ class Game(
         val h = r.hit
         if (h.outcome == Formulas.Outcome.FIZZLED) return
         val text = describe(h, npc.stats.verb) + r.note
-        p.log(if (answer) "${npc.name} по вам $text" else "  ${npc.name} отвечает: $text")
-        tellOthers(p.location, p.id, "${npc.name} по ${p.name} $text")
+        p.log(if (answer) "${npc.name} по вам $text" else "  ${npc.name} отвечает: $text", JournalKind.HURT)
+        tellOthers(p.location, p.id, "${npc.name} по ${p.name} $text", JournalKind.FIGHT)
         notify(p.id)
         if (h.outcome == Formulas.Outcome.HIT) {
             p.hp -= h.damage
@@ -1130,7 +1137,7 @@ class Game(
             }
         }
         db.tx { c ->
-            c.prepareStatement("SELECT key, value, until FROM character_state WHERE character_id = ? AND key IN ('crime', 'faction', 'mount', 'spouse')").use { st ->
+            c.prepareStatement("SELECT key, value, until FROM character_state WHERE character_id = ? AND key IN ('crime', 'faction', 'mount', 'spouse', 'ui.slots', 'ui.belt')").use { st ->
                 st.setLong(1, p.id)
                 st.executeQuery().use { rs ->
                     while (rs.next()) when (rs.getString(1)) {
@@ -1138,6 +1145,8 @@ class Game(
                         "faction" -> p.faction = rs.getString(2).takeIf { it.isNotEmpty() }
                         "mount" -> rs.getString(2).split('|').let { m -> p.mount = Mount(m[0].toIntOrNull() ?: 1, m.getOrNull(1)?.takeIf { it.isNotEmpty() }) }
                         "spouse" -> rs.getString(2).split('|', limit = 2).let { m -> p.spouseId = m[0].toLongOrNull(); p.spouseName = m.getOrNull(1) }
+                        "ui.slots" -> p.slots = rs.getString(2).split(',')
+                        "ui.belt" -> p.belt = rs.getString(2).split(',')
                     }
                 }
             }
@@ -1193,10 +1202,10 @@ class Game(
         for (q in players.values) if (q.id != except && q.location == loc && now - q.lastSeen < ACTIVE_SECONDS) notify(q.id)
     }
 
-    internal fun tellOthers(loc: String, except: Long, line: String) {
+    internal fun tellOthers(loc: String, except: Long, line: String, kind: String? = null) {
         val now = clock()
         for (q in players.values) if (q.id != except && q.location == loc && now - q.lastSeen < ACTIVE_SECONDS) {
-            q.log(line)
+            q.log(line, kind)
             notify(q.id)
         }
     }
@@ -1246,6 +1255,7 @@ class Game(
             InventoryItemView(id, content.itemName(id), count, equipped, Rules.equipSlot(id) != null,
                 content.crafting.find(id) != null || Spells.usable(content, id), content.crafting.targetOf(id) ?: Spells.itemTarget(content, id))
         }
+        val abilityList = abilities(p, now)
         val s = p.stats
         val character = CharacterView(
             id = p.id, name = p.name, sex = p.sex, location = p.location,
@@ -1265,6 +1275,7 @@ class Game(
         return GameView(
             character, location, inventory,
             journal = p.journal.toList(),
+            journalKinds = p.journalKinds.toList(),
             restSeconds = (p.busyUntil - now).coerceAtLeast(0).toInt(),
             canResurrect = canResurrect(p),
             exchange = exchangeView(p),
@@ -1281,7 +1292,9 @@ class Game(
                         when (q.faction) { "t" -> "тамплиер"; "p" -> "пират"; else -> null } else null)
             },
             clan = p.clanName,
-            abilities = abilities(p, now),
+            abilities = abilityList,
+            slots = slotsOf(p, abilityList),
+            belt = beltOf(p, inventory),
             stance = p.stance?.takeIf { now < it.until }?.let { "${it.name} (${(it.until - now + 59) / 60} мин)" },
             peek = p.peekView.also { p.peekView = null },
             stele = p.steleTo?.takeIf { now < p.steleUntil }?.let { content.locations[it]?.name ?: it },

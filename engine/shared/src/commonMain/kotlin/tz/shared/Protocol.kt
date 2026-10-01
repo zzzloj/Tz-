@@ -199,6 +199,12 @@ data class GameView(
     val inventory: List<InventoryItemView> = emptyList(),
     /** Recent events, newest last: blows, deaths, experience. */
     val journal: List<String> = emptyList(),
+    /** The [JournalKind] of each journal line, same order and size: what colour to draw it. */
+    val journalKinds: List<String> = emptyList(),
+    /** The three combat buttons next to each enemy after the plain blow: ability ids, "" — empty (POST /api/game/prefs). */
+    val slots: List<String> = emptyList(),
+    /** The four belt cells above the exits: item ids (food, potions), "" — empty; count 0 — none left. */
+    val belt: List<String> = emptyList(),
     /** Seconds until the character may strike again. */
     val restSeconds: Int = 0,
     /** A ghost standing at a resurrection stone or healer. */
@@ -238,6 +244,33 @@ data class GameView(
     /** Strangers in your clan's castle: go and defend it (POST /api/game/castle op "tele"). */
     val alarm: String? = null,
 )
+
+/** What a journal line is about, for its colour on screen (docs/design.md, «Журнал»). */
+object JournalKind {
+    const val SYS = "sys"
+    const val FIGHT = "fight"
+    const val HURT = "hurt"
+    const val SAY = "say"
+    const val GAIN = "gain"
+
+    private val plus = Regex("""\+\d""")
+    private val speech = Regex("""^[А-ЯЁA-Z][^:]{0,40}: \S""")
+    private val gains = listOf("Вы получили", "Вы украли", "Вы поймали", "Вы приручили", "Вы собрали", "Вы разделали", "Вы распаковали", "Вы воскресли", "Обмен с ")
+
+    /** Lines logged without a kind are sorted by their words; blows are tagged where they are struck. */
+    fun of(line: String): String = when {
+        line.startsWith("[клан]") || " говорит: " in line -> SAY
+        plus.containsMatchIn(line) || gains.any { line.startsWith(it) } -> GAIN
+        line.startsWith("Вас ") || " по вам " in line || line.startsWith("У вас выбит") -> HURT
+        line.endsWith(" погибает.") || "оглушен" in line || " выбит " in line -> FIGHT
+        speech.containsMatchIn(line) -> SAY
+        else -> SYS
+    }
+}
+
+/** POST /api/game/prefs: the combat buttons and the belt (null — leave as is; [] — back to the default). */
+@Serializable
+data class PrefsRequest(val slots: List<String>? = null, val belt: List<String>? = null)
 
 /** GET /api/world: who is online, clans, castles, the leadership flag (the old site pages). */
 @Serializable

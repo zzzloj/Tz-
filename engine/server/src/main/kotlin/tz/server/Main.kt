@@ -42,6 +42,7 @@ import tz.shared.TalkRequest
 import tz.shared.ShopRequest
 import tz.shared.BankRequest
 import tz.shared.UseRequest
+import tz.shared.PrefsRequest
 import tz.shared.SayRequest
 import tz.shared.ExchangeRequest
 import tz.shared.MessageRequest
@@ -297,6 +298,10 @@ private fun Route.accountRoutes(accounts: Accounts, game: Game) {
         val account = requireAccount(call, accounts)
         val body = call.receive<TechniqueRequest>()
         call.respond(game.technique(account, body.id, body.target))
+    }
+    post("/api/game/prefs") {
+        val account = requireAccount(call, accounts)
+        call.respond(game.prefs(account, call.receive<PrefsRequest>()))
     }
     post("/api/game/say") {
         val account = requireAccount(call, accounts)
