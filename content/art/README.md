@@ -20,7 +20,7 @@ Game icons elsewhere in the apps: game-icons.net, CC BY 3.0.
   part of the spell's icon (`m.*`) laid on top; teleport runes `i.rr.*` share one
   picture; tavern and vault keys carry their number (vault keys also the castle's
   initial). Built from the bases by a script, not drawn one by one.
-- Without art: `i.s.sund` (an unnamed placeholder) and the staff-only spells
+- Without art: the staff-only spells
   `m.modes`, `m.qv`, `m.w.a.qv`.
 - `brand/` — splash screens (portrait 9:16 with the lower half dark for the
   sign-in form, landscape 16:9 with the left side dark), app icon master
