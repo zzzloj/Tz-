@@ -92,7 +92,7 @@ class PlayingScreenTest {
         compose.onNodeWithText("волк  14/26").assertExists()
         compose.onNodeWithText("не заметили вас · 1").assertExists()
         assert(!compose.onAllNodesWithTextExists("белый волк  34/34")) { "an unaware monster is folded away in a fight" }
-        compose.onNodeWithText("не заметили вас · 1").performClick()
+        compose.onNodeWithText("не заметили вас · 1").performScrollTo().performClick()
         compose.waitUntil(5_000) { compose.onAllNodesWithTextExists("белый волк  34/34") }
         compose.onNodeWithText("на север").assertExists()
     }
