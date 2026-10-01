@@ -36,6 +36,10 @@ data class NpcView(
     val mine: Boolean = false,
     /** Whose it is, if someone's. */
     val owner: String? = null,
+    /** Portrait under /art: "npcs/npc-beginner", "mobs/mob-wolf"; null — none drawn. */
+    val art: String? = null,
+    /** A risen corpse: the living one's portrait, drawn with the undead tint. */
+    val undead: Boolean = false,
 )
 
 @Serializable
@@ -65,6 +69,8 @@ data class LocationView(
     /** Other characters seen here in the last minutes. */
     val players: List<String> = emptyList(),
     val corpses: List<CorpseView> = emptyList(),
+    /** Picture under /art: "locations/loc-road" (16:9); null — none. Item pictures: /art/item/<id>. */
+    val art: String? = null,
 )
 
 @Serializable

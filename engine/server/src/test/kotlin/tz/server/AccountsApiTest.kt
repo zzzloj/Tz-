@@ -148,6 +148,8 @@ class AccountsApiTest {
         var g = game(client.getAuth("/api/game", token))
         assertEquals(listOf("i.w.k.begin" to false), g.inventory.map { it.id to it.equipped })
         assertEquals(listOf("Привратник Уин", "Эдвард"), g.location.npcs.map { it.name })
+        assertEquals("npcs/npc-beginner", g.location.npcs.first().art)
+        assertTrue(g.location.art?.startsWith("locations/") == true, g.location.art)
 
         g = game(client.postJson("/api/game/equip", """{"item":"i.w.k.begin"}""", token))
         assertEquals(true, g.inventory.single().equipped)

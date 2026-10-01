@@ -48,6 +48,9 @@ class Content(
     /** Crafting, gathering and item use (content/crafting.json). */
     val crafting: Crafting by lazy { Crafting.load(dir.resolve("crafting.json")) }
 
+    /** Painted pictures and their rules, content/art (stage 16). */
+    val art: Art by lazy { Art(dir) }
+
     /** Declarative dialog and quest logic, content/logic (built on first use). */
     val logic: Dialogs by lazy { Dialogs(this, dir).finishValidation() }
 

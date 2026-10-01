@@ -1220,11 +1220,13 @@ class Game(
             else -> npcsHere.firstOrNull { it.key == target }?.name
         }
         val npcs = npcsHere.map {
+            val pic = content.art.creature(it.name)
             NpcView(it.key, it.name, it.hp, it.proto.hpMax, p.id in it.enemies, true,
                 content.logic.hasDialog(if (it.key.startsWith("n.g.")) "n.g.guard" else it.key) || it.owner?.ownerId == p.id,
                 attacking = whom(it.enemies.firstOrNull()) ?: it.npcTarget?.let { k -> npcsHere.firstOrNull { n -> n.key == k }?.name },
                 mine = it.owner?.ownerId == p.id,
-                owner = it.owner?.let { o -> if (o.ownerId == p.id) "вы" else players[o.ownerId]?.name })
+                owner = it.owner?.let { o -> if (o.ownerId == p.id) "вы" else players[o.ownerId]?.name },
+                art = pic?.first, undead = pic?.second == true)
         }
         val occupied = loc.exits.map { it.target }.distinct().filter { t ->
             t != loc.id && (world.npcsIn(t).isNotEmpty() || players.values.any { it.location == t && now - it.lastSeen < ACTIVE_SECONDS })
@@ -1238,6 +1240,7 @@ class Game(
             items = world.itemsAt(loc.id, now),
             players = others,
             corpses = world.corpsesAt(loc.id, now, p.id, p.clanId),
+            art = content.art.location(loc.name),
         )
         val inventory = db.tx { c -> inventoryRows(c, p.id) }.map { (id, count, equipped) ->
             InventoryItemView(id, content.itemName(id), count, equipped, Rules.equipSlot(id) != null,

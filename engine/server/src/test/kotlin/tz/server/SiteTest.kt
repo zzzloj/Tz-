@@ -129,6 +129,14 @@ class SiteTest {
         val forum = json.decodeFromString(ForumView.serializer(), client.get("/api/forum").bodyAsText())
         assertTrue(forum.sections.size >= 6)
         assertTrue(!forum.canWrite)
+        // Pictures for the apps, cached by ETag.
+        val pic = client.get("/art/item/i.w.k.begin..3")
+        assertEquals(HttpStatusCode.OK, pic.status)
+        assertEquals("image/webp", pic.headers[HttpHeaders.ContentType]?.substringBefore(';'))
+        val tag = assertNotNull(pic.headers[HttpHeaders.ETag])
+        assertEquals(HttpStatusCode.NotModified, client.get("/art/item/i.w.k.begin..3") { header(HttpHeaders.IfNoneMatch, tag) }.status)
+        assertEquals(HttpStatusCode.OK, client.get("/art/npcs/npc-beginner.webp").status)
+        assertEquals(HttpStatusCode.NotFound, client.get("/art/logic/gifts.json").status)
     }
 
     // ---- the game and the forum directly ------------------------------------------------------

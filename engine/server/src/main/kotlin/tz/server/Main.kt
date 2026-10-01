@@ -140,6 +140,7 @@ fun Application.game(content: Content, accounts: Accounts? = null, game: Game? =
             if (loc == null) call.respond(HttpStatusCode.NotFound, ErrorResponse("not_found", "Нет такой локации"))
             else call.respond(loc.view())
         }
+        artRoutes(content.art)
         get("/api/pages") { call.respond(content.pages.map { PageSummary(it.id, it.title) }) }
         get("/api/pages/{id}") {
             call.respond(content.pages.firstOrNull { it.id == call.parameters["id"] } ?: throw ApiException(HttpStatusCode.NotFound, Errors.NOT_FOUND))
