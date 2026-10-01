@@ -53,8 +53,17 @@ struct AccountView_: View {
     @State private var password = ""
     @State private var deleting = false
     @State private var deletePassword = ""
+    @AppStorage("theme") private var theme = "system"
 
     var body: some View {
+        Section("Тема") {
+            Picker("Тема", selection: $theme) {
+                Text("Как в системе").tag("system")
+                Text("Ночь").tag("night")
+                Text("Пергамент").tag("parchment")
+            }
+            .pickerStyle(.segmented)
+        }
         Section("Аккаунт \(account.login)") {
             if let c = account.character { Text("Персонаж: \(c)").font(.footnote) }
             if account.role != "player" { Text(account.role == "admin" ? "Вы администратор" : "Вы модератор").font(.footnote) }

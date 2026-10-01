@@ -157,11 +157,15 @@ struct RootView: View {
                                     openNews: { model.run { try await $0.openNews() } },
                                     openPages: { model.run { try await $0.openPages() } },
                                     openAccount: { model.run { try await $0.openAccount() } },
-                                    openAdmin: admin),
+                                    openAdmin: admin,
+                                    openEvents: { model.run { try await $0.openEvents() } },
+                                    openTopic: { t in model.run { try await $0.openTopic(topic: t, page: 0) } }),
                                 mail: s.mail,
                                 clanInfo: s.clanInfo,
                                 worldInfo: s.world,
                                 mapView: s.mapOpen ? s.map : nil,
+                                chronicle: s.chronicle,
+                                news: s.news,
                                 info: s.info,
                                 error: s.error,
                                 onRefresh: { model.run { try await $0.refresh() } },
@@ -214,9 +218,27 @@ struct RootView: View {
                     Text(error).foregroundStyle(.red)
                 }
             }
-            .navigationTitle("Территория Зла")
+            .navigationTitle(s.screen == Screen.signIn || s.screen == Screen.createCharacter ? "" : "Территория Зла")
             .overlay { if s.busy { ProgressView() } }
         }
+        .environment(\.artUrl, { [api = s.api] path in api.artUrl(path: path) })
+    }
+}
+
+/// The splash picture over the sign-in forms.
+struct SplashHeader: View {
+    var height: CGFloat = 280
+    @Environment(\.tz) private var c
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            ArtImage(path: "/art/brand/splash-portrait.webp")
+            LinearGradient(colors: [.clear, c.background], startPoint: .top, endPoint: .bottom)
+            Text("Территория Зла").font(TzType.title).foregroundStyle(c.title).padding(.bottom, 8)
+        }
+        .frame(height: height)
+        .listRowInsets(EdgeInsets())
+        .listRowBackground(Color.clear)
     }
 }
 
@@ -224,19 +246,33 @@ struct SignInView: View {
     let busy: Bool
     let onSignIn: (String, String) -> Void
     let onRegister: (String, String) -> Void
+    @State private var registering = false
     @State private var login = ""
     @State private var password = ""
+    @State private var again = ""
+    @Environment(\.tz) private var c
 
     var body: some View {
-        Section {
+        Section { SplashHeader() }
+        Section(registering ? "Регистрация" : "Вход") {
             TextField("Логин", text: $login)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
             SecureField("Пароль", text: $password)
+            if registering {
+                SecureField("Пароль ещё раз", text: $again)
+                if !again.isEmpty && again != password { Text("Пароли не совпадают").font(TzType.small).foregroundStyle(c.danger) }
+            }
         }
         Section {
-            Button("Войти") { onSignIn(login, password) }.disabled(busy)
-            Button("Регистрация") { onRegister(login, password) }.disabled(busy)
+            if registering {
+                Text("После входа сохраните код восстановления (Персонаж → Аккаунт): по нему вернёте пароль, почту игра не спрашивает.").font(TzType.small).foregroundStyle(c.textMuted)
+                Button("Создать аккаунт") { onRegister(login, password) }.disabled(busy || login.isEmpty || password.isEmpty || again != password)
+                Button("Уже есть аккаунт? Войти") { registering = false }
+            } else {
+                Button("Войти") { onSignIn(login, password) }.disabled(busy)
+                Button("Регистрация") { registering = true }
+            }
         }
     }
 }
@@ -246,16 +282,20 @@ struct CreateCharacterView: View {
     let onCreate: (String, Bool) -> Void
     @State private var name = ""
     @State private var female = false
+    @Environment(\.tz) private var c
 
     var body: some View {
+        Section { SplashHeader(height: 200) }
         Section("Новый персонаж") {
             TextField("Имя", text: $name)
+            Text("Имя — русскими буквами, его увидят все. Сменить его потом нельзя.").font(TzType.small).foregroundStyle(c.textMuted)
             Picker("Пол", selection: $female) {
                 Text("Мужской").tag(false)
                 Text("Женский").tag(true)
             }
             .pickerStyle(.segmented)
-            Button("Создать") { onCreate(name, female) }.disabled(busy)
+            Text("Вы начнёте в Переулке у городских ворот. Привратник Уин расскажет, с чего начать, а Эдвард вручит подарок новичку.")
+            Button("Создать") { onCreate(name, female) }.disabled(busy || name.isEmpty)
         }
     }
 }

@@ -44,6 +44,8 @@ struct LayoutActions {
     let openPages: () -> Void
     let openAccount: () -> Void
     let openAdmin: (() -> Void)?
+    let openEvents: () -> Void
+    let openTopic: (ForumTopic) -> Void
 }
 
 /// Plain values the screen needs from the shared Kotlin code, computed on the Swift side.
@@ -177,6 +179,8 @@ struct GameScreen: View {
     let clanInfo: ClanView?
     let worldInfo: WorldView?
     let mapView: MapView?
+    let chronicle: ChronicleView?
+    let news: ForumView?
     let info: String?
     let error: String?
     let onRefresh: () -> Void
@@ -201,6 +205,7 @@ struct GameScreen: View {
         case (.social, 3) where worldInfo == nil: more.openWorld()
         case (.world, 0) where mapView == nil: more.openMap()
         case (.world, 1) where worldInfo == nil: more.openWorld()
+        case (.world, 2) where chronicle == nil: layout.openEvents()
         default: break
         }
     }
@@ -223,7 +228,7 @@ struct GameScreen: View {
                         case .social:
                             SocialTab(game: game, busy: busy, sub: sub, social: social, more: more, layout: layout, mail: mail, clanInfo: clanInfo, worldInfo: worldInfo)
                         case .world:
-                            WorldTab(game: game, busy: busy, sub: sub, social: social, more: more, layout: layout, worldInfo: worldInfo, mapView: mapView)
+                            WorldTab(game: game, busy: busy, sub: sub, social: social, more: more, layout: layout, worldInfo: worldInfo, mapView: mapView, chronicle: chronicle, news: news)
                         }
                         if let i = info { Text(i).foregroundStyle(c.accent) }
                         if let e = error { Text(e).foregroundStyle(c.danger) }
@@ -821,12 +826,18 @@ private struct HeroTab: View {
             if let admin = layout.openAdmin { Button("Модерация") { admin() }.disabled(busy) }
             Button("Выйти", role: .destructive) { onSignOut() }
         case 1:
-            ForEach(ch.skills.keys.sorted(), id: \.self) { k in
-                HStack {
-                    Text("\(Rules.shared.skillTitle(key: k)) \(ch.skills[k]?.intValue ?? 0)")
-                    Spacer()
-                    if k == "meditation" && !ch.ghost { Button("медитировать") { more.meditate() }.disabled(busy) }
-                    Button("?") { more.look("skill." + k) }.disabled(busy)
+            if ch.skillPoints > 0 { Text("Свободных очков: \(ch.skillPoints). Тратятся у учителей.").font(TzType.small).foregroundStyle(c.accent) }
+            ForEach(Array(GameScene.shared.SKILL_GROUPS.enumerated()), id: \.offset) { _, group in
+                SectionTitle(text: (group.first as String?) ?? "")
+                ForEach((group.second as? [String]) ?? [], id: \.self) { k in
+                    let v = Int(GameScene.shared.skillLevel(c: ch, key: k))
+                    HStack {
+                        Button { more.look("skill." + k) } label: {
+                            Text(Rules.shared.skillTitle(key: k)).foregroundStyle(v > 0 ? c.text : c.textFaint).frame(maxWidth: .infinity, alignment: .leading)
+                        }.buttonStyle(.plain).disabled(busy)
+                        if k == "meditation" && v > 0 && !ch.ghost { Button("медитировать") { more.meditate() }.disabled(busy) }
+                        Pips(value: v, max: Int(Rules.shared.SKILL_MAX))
+                    }
                 }
             }
         default:
@@ -881,6 +892,24 @@ private struct BagTab: View {
         let worn = things.filter { $0.equipped }
         let carried = things.filter { !$0.equipped }
         HStack { TzIcon(key: "gold", size: 16, color: c.accent); Text("\(money)").font(TzType.number) }
+        SectionTitle(text: "Экипировка")
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 72), spacing: 4)], spacing: 4) {
+            ForEach(Array(GameScene.shared.equipment(game: game).enumerated()), id: \.offset) { _, cell in
+                let slot = (cell.first as String?) ?? ""
+                let item = cell.second
+                Button { if let i = item { more.look(i.id) } } label: {
+                    VStack(spacing: 2) {
+                        ZStack {
+                            if let i = item { ArtImage(path: GameScene.shared.itemPath(id: i.id)) } else { c.surfaceSunken }
+                        }
+                        .frame(width: CGFloat(Design.Size.shared.ITEM_ICON) + 8, height: CGFloat(Design.Size.shared.ITEM_ICON) + 8)
+                        .clipShape(RoundedRectangle(cornerRadius: CGFloat(Design.Radius.shared.M)))
+                        .overlay(RoundedRectangle(cornerRadius: CGFloat(Design.Radius.shared.M)).stroke(item != nil ? c.border : c.borderSoft, lineWidth: 1))
+                        Text(item?.name ?? slot).font(TzType.small).foregroundStyle(item != nil ? c.text : c.textFaint).lineLimit(1)
+                    }
+                }.buttonStyle(.plain).disabled(item == nil || busy)
+            }
+        }
         if game.inventory.isEmpty { Text("пусто").foregroundStyle(c.textMuted) }
         if !worn.isEmpty { SectionTitle(text: "Надето") }
         ForEach(worn, id: \.id) { item in BagRow(item: item, game: game, busy: busy, ghost: ch.ghost, onDrop: onDrop, onToggleEquip: onToggleEquip, more: more, layout: layout) }
@@ -1059,14 +1088,15 @@ private struct WorldTab: View {
     let layout: LayoutActions
     let worldInfo: WorldView?
     let mapView: MapView?
+    let chronicle: ChronicleView?
+    let news: ForumView?
     @Environment(\.tz) private var c
 
     var body: some View {
         switch sub {
         case 0:
             if let m = mapView {
-                MapCanvas(points: m.points, here: game.character.location, flagAt: worldInfo?.flagLocationId).frame(height: 260)
-                Text("красное — вы, жёлтое — флаг лидерства, бордовое — замки").font(TzType.small).foregroundStyle(c.textMuted)
+                ZoomMap(points: m.points, here: game.character.location, flagAt: worldInfo?.flagLocationId)
             } else {
                 Button("Показать карту") { more.openMap() }.disabled(busy)
             }
@@ -1090,10 +1120,116 @@ private struct WorldTab: View {
             }
         default:
             SectionTitle(text: "Новости")
-            Button("Новости администрации") { layout.openNews() }.disabled(busy).buttonStyle(.borderedProminent)
-            SectionTitle(text: "Летопись мира")
-            Text("Здесь будет летопись последних дней: захваты замков, флаг, громкие убийства.").font(TzType.small).foregroundStyle(c.textMuted)
+            let topics = Array((news?.topics ?? []).prefix(5))
+            if news == nil { Text("…").font(TzType.small).foregroundStyle(c.textMuted) }
+            else if topics.isEmpty { Text("Новостей пока нет.").font(TzType.small).foregroundStyle(c.textMuted) }
+            ForEach(topics, id: \.id) { t in
+                Button { layout.openTopic(t) } label: {
+                    VStack(alignment: .leading) {
+                        Text(t.title).font(TzType.name).foregroundStyle(c.title)
+                        Text("\(SiteFormat.date(t.updated)) · \(t.author)").font(TzType.small).foregroundStyle(c.textMuted)
+                    }
+                    .padding(CGFloat(Design.Space.shared.S)).frame(maxWidth: .infinity, alignment: .leading).tzPanel(c)
+                }.buttonStyle(.plain).disabled(busy)
+            }
+            Button("Все новости") { layout.openNews() }.disabled(busy)
+            SectionTitle(text: "Летопись мира · 7 дней")
+            ChronicleList(entries: chronicle?.entries ?? [], loaded: chronicle != nil)
+            Button("обновить") { layout.openEvents() }.disabled(busy)
             Button("Об игре и правила") { layout.openPages() }.disabled(busy)
+        }
+    }
+}
+
+private struct ChronicleList: View {
+    let entries: [ChronicleEntry]
+    let loaded: Bool
+    @Environment(\.tz) private var c
+
+    var body: some View {
+        if loaded && entries.isEmpty { Text("Пока тихо: ни захватов, ни свадеб.").font(TzType.small).foregroundStyle(c.textMuted) }
+        ForEach(Array(entries.enumerated()), id: \.offset) { i, e in
+            let full = SiteFormat.date(e.at)
+            let day = String(full.split(separator: " ").first ?? "")
+            let prev = i > 0 ? String(SiteFormat.date(entries[i - 1].at).split(separator: " ").first ?? "") : ""
+            VStack(alignment: .leading, spacing: 2) {
+                if day != prev { Text(day).font(TzType.label).foregroundStyle(c.textMuted).padding(.top, 4) }
+                HStack(alignment: .firstTextBaseline) {
+                    Text(String(full.split(separator: " ").last ?? "")).font(TzType.number).foregroundStyle(c.textFaint).frame(width: 48, alignment: .leading)
+                    Text(e.text).font(TzType.log).foregroundStyle(e.clan ? c.accent : c.text)
+                }
+            }
+        }
+    }
+}
+
+/// The map of this part of the world: pinch to zoom, drag to move; starts on you.
+private struct ZoomMap: View {
+    let points: [MapPoint]
+    let here: String
+    let flagAt: String?
+    @State private var scale: CGFloat = 3
+    @State private var lastScale: CGFloat = 3
+    @State private var pan: CGSize = .zero
+    @State private var lastPan: CGSize = .zero
+    @Environment(\.tz) private var c
+
+    var body: some View {
+        let me = MapCanvas.point(here)
+        let region = me?.2 ?? 0
+        var dots: [(CGFloat, CGFloat, Bool)] = []
+        for p in points {
+            let px = CGFloat(Double(p.mapX)), py = CGFloat(Double(p.mapY))
+            let r = py > 1101 ? 2 : (px > 1650 ? 1 : 0)
+            if r == region { dots.append((px, py, p.guarded)) }
+        }
+        let castles = ["c.1.gate", "c.2.gate", "c.3.gate", "c.4.gate"].compactMap { MapCanvas.point($0) }.filter { $0.2 == region }
+        let flag = flagAt.flatMap { MapCanvas.point($0) }.flatMap { $0.2 == region ? $0 : nil }
+        let colors = c
+        let s = scale, off = pan
+        return VStack(alignment: .leading, spacing: 4) {
+            Text(region == 1 ? "Ансалон" : region == 2 ? "Волчий остров" : "Основная территория").font(TzType.heading).foregroundStyle(c.title)
+            Canvas { ctx, size in
+                guard let minX = dots.map({ $0.0 }).min(), let maxX = dots.map({ $0.0 }).max(),
+                      let minY = dots.map({ $0.1 }).min(), let maxY = dots.map({ $0.1 }).max() else { return }
+                let k = min(size.width / max(maxX - minX + 1, 1), size.height / max(maxY - minY + 1, 1)) * s
+                let cx = ((me?.0 ?? (minX + maxX) / 2) - minX) * k, cy = ((me?.1 ?? (minY + maxY) / 2) - minY) * k
+                let ox = size.width / 2 - cx + off.width, oy = size.height / 2 - cy + off.height
+                let d = min(max(k * 0.8, 2), 14)
+                func dot(_ x: CGFloat, _ y: CGFloat, _ r: CGFloat, _ col: Color) {
+                    let px = (x - minX) * k + ox, py = (y - minY) * k + oy
+                    ctx.fill(Path(ellipseIn: CGRect(x: px - r, y: py - r, width: r * 2, height: r * 2)), with: .color(col))
+                }
+                for p in dots { dot(p.0, p.1, d / 2, p.2 ? colors.link : colors.textFaint) }
+                for cs in castles { dot(cs.0, cs.1, d * 1.4, colors.danger) }
+                if let f = flag { dot(f.0, f.1, d * 1.4, colors.title) }
+                if let m = me { dot(m.0, m.1, d * 1.8, colors.accent); dot(m.0, m.1, d * 0.8, colors.background) }
+            }
+            .frame(height: 360)
+            .background(c.surfaceSunken)
+            .clipShape(RoundedRectangle(cornerRadius: CGFloat(Design.Radius.shared.L)))
+            .overlay(RoundedRectangle(cornerRadius: CGFloat(Design.Radius.shared.L)).stroke(c.border, lineWidth: 1))
+            .gesture(SimultaneousGesture(
+                MagnificationGesture().onChanged { v in scale = min(12, max(1, lastScale * v)) }.onEnded { _ in lastScale = scale },
+                DragGesture().onChanged { v in pan = CGSize(width: lastPan.width + v.translation.width, height: lastPan.height + v.translation.height) }
+                    .onEnded { _ in lastPan = pan }))
+            Text("золото — вы, красное — замки, светлое — флаг лидерства, голубые точки — охраняемые улицы. Два пальца — масштаб.").font(TzType.small).foregroundStyle(c.textMuted)
+        }
+    }
+}
+
+/// A skill level as five marks.
+struct Pips: View {
+    let value: Int
+    let max: Int
+    @Environment(\.tz) private var c
+
+    var body: some View {
+        HStack(spacing: 3) {
+            ForEach(0..<max, id: \.self) { i in
+                RoundedRectangle(cornerRadius: 2).fill(i < value ? c.accent : c.barTrack).frame(width: 10, height: 10)
+                    .overlay(RoundedRectangle(cornerRadius: 2).stroke(c.borderSoft, lineWidth: 1))
+            }
         }
     }
 }
