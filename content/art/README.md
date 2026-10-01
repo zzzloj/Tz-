@@ -22,3 +22,6 @@ Game icons elsewhere in the apps: game-icons.net, CC BY 3.0.
   initial). Built from the bases by a script, not drawn one by one.
 - Without art: `i.s.sund` (an unnamed placeholder) and the staff-only spells
   `m.modes`, `m.qv`, `m.w.a.qv`.
+- `brand/` — splash screens (portrait 9:16 with the lower half dark for the
+  sign-in form, landscape 16:9 with the left side dark), app icon master
+  `icon-1024.png` (stores) and `icon-512.webp`.
