@@ -16,3 +16,9 @@ Game icons elsewhere in the apps: game-icons.net, CC BY 3.0.
 - `items/<item id>.webp` — item pictures (384×384; spell icons `m.*` 256×256, round medallions), named by the item's id in
   `content/items` (e.g. `i.w.k.begin.webp`). For an id with `..` (a variant such as `i.w.s.dr..me`) the part before `..` is tried too. An item with no file shows its
   category icon.
+- Scrolls `i.m.*` and runes `i.r.*` are the blank scroll / rune with the glowing
+  part of the spell's icon (`m.*`) laid on top; teleport runes `i.rr.*` share one
+  picture; tavern and vault keys carry their number (vault keys also the castle's
+  initial). Built from the bases by a script, not drawn one by one.
+- Without art: `i.s.sund` (an unnamed placeholder) and the staff-only spells
+  `m.modes`, `m.qv`, `m.w.a.qv`.
