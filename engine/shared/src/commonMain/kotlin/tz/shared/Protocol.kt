@@ -71,7 +71,10 @@ data class LocationView(
     val corpses: List<CorpseView> = emptyList(),
     /** Picture under /art: "locations/loc-road" (16:9); null — none. Item pictures: /art/item/<id>. */
     val art: String? = null,
-)
+) {
+    /** A guarded street (Swift sees `zone` as NSObject's zone(), so the iOS app uses this). */
+    val guarded: Boolean get() = zone == 1
+}
 
 @Serializable
 data class GroundItemView(

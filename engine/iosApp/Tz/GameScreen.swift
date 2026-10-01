@@ -234,7 +234,7 @@ private struct Header: View {
     var body: some View {
         let ch = game.character
         let fighting = game.location.npcs.contains { $0.fightingYou } || game.people.contains { $0.attacking == "вас" }
-        let state = ch.ghost ? "призрак" : game.restSeconds > 0 ? "отдых \(game.restSeconds) с" : fighting ? "в бою" : game.location.zone == 1 ? "в безопасности" : ""
+        let state = ch.ghost ? "призрак" : game.restSeconds > 0 ? "отдых \(game.restSeconds) с" : fighting ? "в бою" : game.location.guarded ? "в безопасности" : ""
         VStack(spacing: CGFloat(Design.Space.shared.XS)) {
             HStack {
                 Button(action: onRefresh) {
@@ -496,7 +496,7 @@ private struct PlaceTab: View {
             HStack {
                 Text(loc.name).font(TzType.heading).foregroundStyle(c.title)
                 Spacer()
-                if loc.zone == 1 { Chip(text: "охраняется") }
+                if loc.guarded { Chip(text: "охраняется") }
                 if enemies > 0 { Chip(text: "бой · \(enemies)", danger: true) }
             }
             .padding(CGFloat(Design.Space.shared.S))
@@ -694,7 +694,7 @@ private struct HeroTab: View {
                 Spacer()
                 ActionButton(label: "Аккаунт", enabled: !busy, action: layout.openAccount, icon: "settings")
             }
-            Text("сила \(ch.str) · ловкость \(ch.dex) · интеллект \(ch.int)" + (ch.skillPoints > 0 ? " · свободных очков \(ch.skillPoints)" : ""))
+            Text("сила \(ch.str) · ловкость \(ch.dex) · интеллект \(ch.int_)" + (ch.skillPoints > 0 ? " · свободных очков \(ch.skillPoints)" : ""))
             Text("опыт \(ch.exp)/\(ch.expNext)").font(TzType.small).foregroundStyle(c.textMuted)
             TzBar(value: Int(ch.exp), max: Int(ch.expNext), fill: c.exp)
             Text("удар \(ch.hit)% · урон \(ch.dmgMin)–\(ch.dmgMax) · броня \(ch.armor) · уклон \(ch.dodge)").font(TzType.small)
