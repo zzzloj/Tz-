@@ -64,6 +64,11 @@ jobs:
               body = ("content problems: " + m.group(1) + "\n" + m.group(2)).replace("%", "%25").replace("\n", "%0A")
               print("::notice title=Content::" + body)
           PY
+      - name: Screens
+        if: success()
+        run: |
+          pip install -q pillow
+          python3 ci/screens.py androidApp/build/screens
       - uses: actions/upload-artifact@v4
         if: success()
         with:
