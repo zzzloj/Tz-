@@ -246,7 +246,7 @@ struct GameScreen: View {
                 Sheets(game: game, busy: busy, onAnswer: onAnswer, onCloseDialog: onCloseDialog, pending: pending,
                        pendingAbility: pendingAbility, more: more, social: social)
             }
-            if tab == .place || tab == .bag { Belt(game: game, busy: busy, layout: layout) { tab = .bag; sub = 0 } }
+            if (tab == .place || tab == .bag) && SceneData.belt(game).contains(where: { $0.1 != nil }) { Belt(game: game, busy: busy, layout: layout) { tab = .bag; sub = 0 } }
             Exits(exits: game.location.exits, busy: busy, onGo: onGo, onGallop: more.gallop)
             TabBar(tab: tab, unread: Int(game.unread + game.forumReplies)) { t in
                 if page != nil { onClosePage() }
@@ -370,14 +370,19 @@ private struct Exits: View {
 
     var body: some View {
         let sorted = exits.sorted { (Exits.order.firstIndex(of: GameScene.shared.exitIcon(label: $0.label)) ?? 9) < (Exits.order.firstIndex(of: GameScene.shared.exitIcon(label: $1.label)) ?? 9) }
-        let side = CGFloat(Design.Size.shared.TOUCH) + 8
+        let side: CGFloat = 76
         VStack(spacing: 2) {
             if let h = hint { Text(h).font(TzType.small).foregroundStyle(c.textMuted) }
             LazyVGrid(columns: [GridItem(.adaptive(minimum: side, maximum: side), spacing: 8)], spacing: 4) {
                 ForEach(sorted, id: \.target) { e in
                     ZStack(alignment: .topTrailing) {
-                        TzIcon(key: GameScene.shared.exitIcon(label: e.label), size: 26, color: c.accent)
-                            .frame(width: side, height: side)
+                        VStack(spacing: 2) {
+                            TzIcon(key: GameScene.shared.exitIcon(label: e.label), size: 24, color: c.accent)
+                            Text(GameScene.shared.exitCaption(label: e.label)).font(.system(size: 11)).foregroundStyle(c.text)
+                                .lineLimit(2).multilineTextAlignment(.center).minimumScaleFactor(0.8)
+                        }
+                            .padding(.vertical, 4).padding(.horizontal, 2)
+                            .frame(width: side, height: side + 12)
                             .background(RoundedRectangle(cornerRadius: CGFloat(Design.Radius.shared.M)).fill(c.panel))
                             .overlay(RoundedRectangle(cornerRadius: CGFloat(Design.Radius.shared.M)).stroke(c.border, lineWidth: 1))
                         if e.occupied { Circle().fill(c.danger).frame(width: 7, height: 7).padding(4) }

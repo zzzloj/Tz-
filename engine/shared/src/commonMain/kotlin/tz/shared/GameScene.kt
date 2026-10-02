@@ -91,6 +91,18 @@ object GameScene {
         else -> "enter"
     }
 
+    /**
+     * A short caption under an exit's arrow: the side for plain directions
+     * («на юг по дороге» → «юг»), otherwise the label without its verb
+     * («выйти на улицу» → «на улицу», «дом на севере» stays).
+     */
+    fun exitCaption(label: String): String {
+        val l = label.trim()
+        Regex("^на (север|юг|восток|запад)\\b").find(l)?.let { return it.groupValues[1] }
+        val rest = l.replaceFirst(Regex("^(выйти|войти|подойти|спуститься|подняться|идти|пройти|зайти)\\s+"), "")
+        return rest.ifEmpty { l }
+    }
+
     /** Health is low: the belt lights its healing potion. */
     fun lowHealth(game: GameView): Boolean = game.character.hp * 100 < game.character.hpMax * 35
 

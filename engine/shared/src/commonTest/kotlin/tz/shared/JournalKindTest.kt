@@ -39,4 +39,14 @@ class GameSceneTest {
         assertEquals(2, GameScene.left(5, 3))
         assertEquals(0, GameScene.left(2, 3))
     }
+
+    @Test
+    fun exitCaptions() {
+        assertEquals("юг", GameScene.exitCaption("на юг по дороге"))
+        assertEquals("север", GameScene.exitCaption("на север "))
+        assertEquals("на улицу", GameScene.exitCaption("выйти на улицу"))
+        assertEquals("дом на севере", GameScene.exitCaption("дом на севере"))
+        assertEquals("на второй этаж", GameScene.exitCaption("на второй этаж"))
+        assertEquals("в магазин", GameScene.exitCaption("войти в магазин"))
+    }
 }

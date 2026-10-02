@@ -60,6 +60,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -270,7 +271,8 @@ fun Playing(
             }
             Sheets(game, busy, onAnswer, onCloseDialog, pending, pendingAbility, more, social, Modifier.align(Alignment.BottomCenter))
         }
-        if (tab == GameTab.PLACE || tab == GameTab.BAG) Belt(game, busy, layout) { open(GameTab.BAG) }
+        // The belt shows once something is put on it (Сумка → «на пояс»); empty cells only puzzled.
+        if ((tab == GameTab.PLACE || tab == GameTab.BAG) && GameScene.belt(game).any { it.second != null }) Belt(game, busy, layout) { open(GameTab.BAG) }
         Exits(game.location.exits, busy, onGo, more.gallop)
         TabBar(tab, game.unread + game.forumReplies) { open(it) }
     }
@@ -367,13 +369,18 @@ private fun Exits(exits: List<ExitView>, busy: Boolean, onGo: (ExitView) -> Unit
             sorted.forEach { e ->
                 val shape = RoundedCornerShape(Design.Radius.M.dp)
                 Box(
-                    Modifier.size(Design.Size.TOUCH.dp + 8.dp).clip(shape).background(c.panel).border(Design.Size.BORDER.dp, c.border, shape)
+                    Modifier.width(76.dp).heightIn(min = Design.Size.TOUCH.dp + 12.dp).clip(shape).background(c.panel).border(Design.Size.BORDER.dp, c.border, shape)
                         .alpha(if (busy) 0.5f else 1f)
                         .combinedClickable(enabled = !busy, onClick = { onGo(e) }, onLongClick = { hint = e.label + if (e.occupied) " — там кто-то есть" else "" })
                         .semantics { contentDescription = e.label },
                     contentAlignment = Alignment.Center,
                 ) {
-                    TzIcon(GameScene.exitIcon(e.label), Modifier.size(26.dp), c.accent)
+                    Column(Modifier.padding(vertical = Design.Space.XS.dp, horizontal = 2.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                        TzIcon(GameScene.exitIcon(e.label), Modifier.size(24.dp), c.accent)
+                        Text(GameScene.exitCaption(e.label), style = Tz.type.small, color = c.text, maxLines = 2,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center, overflow = TextOverflow.Ellipsis, lineHeight = 12.sp,
+                            fontSize = 11.sp)
+                    }
                     if (e.occupied) Box(Modifier.align(Alignment.TopEnd).padding(4.dp).size(7.dp).clip(RoundedCornerShape(50)).background(c.danger))
                 }
                 if (e.gallop) ActionButton("галопом ${e.label}", !busy, { onGallop(e) }, icon = "gallop")
