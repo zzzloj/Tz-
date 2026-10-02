@@ -1,10 +1,7 @@
 package tz.android
 
 import android.graphics.Bitmap
-import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.test.captureToImage
-import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -31,7 +28,7 @@ import java.io.File
 @Config(sdk = [35], qualifiers = "w360dp-h780dp-mdpi")
 class ScreenshotTest {
     @get:Rule
-    val compose = createComposeRule()
+    val compose = createAndroidComposeRule<androidx.activity.ComponentActivity>()
 
     private val character = """{"id":1,"name":"Scuko","sex":"m","location":"x","hp":17,"hpMax":20,
         "mana":20,"manaMax":20,"str":1,"dex":1,"int":1,"skillPoints":0,"rank":"Новичок","title":"боец"}"""
@@ -49,7 +46,11 @@ class ScreenshotTest {
         compose.setContent { TzTheme(dark = true) { androidx.compose.material3.Surface(color = Tz.colors.background) { App(session, live = false) } } }
         compose.waitUntil(5_000) { compose.onAllNodes(androidx.compose.ui.test.hasText("Scuko")).fetchSemanticsNodes().isNotEmpty() }
         compose.waitForIdle()
-        val bitmap = compose.onRoot().captureToImage().asAndroidBitmap()
+        // Draw the window ourselves: captureToImage waits for a frame Robolectric never reports.
+        val bitmap = compose.runOnIdle {
+            val view = compose.activity.window.decorView
+            Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888).also { view.draw(android.graphics.Canvas(it)) }
+        }
         val dir = File("build/screens").apply { mkdirs() }
         File(dir, "$name.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
     }
