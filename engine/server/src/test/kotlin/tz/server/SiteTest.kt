@@ -272,8 +272,21 @@ class SiteTest {
         clock[0] += 30
         assertEquals(Errors.SAID_ALREADY, assertFailsWith<ApiException> { forum.act(player, ForumRequest("post", topic = topic.id, text = "Ау?")) }.code)
         // Moderators answer quickly, close, pin and rename.
-        v = forum.act(moder, ForumRequest("post", topic = topic.id, text = "У Милты"))
+        // The author follows the topic: a moderator's answer is a reply he has not seen.
+        assertEquals(0, forum.replies(player.id))
+        v = forum.act(moder, ForumRequest("post", topic = topic.id, text = "> ${names[2]}: Ау?\n\nУ Милты"))
+        assertEquals(1, forum.replies(player.id))
+        assertTrue(forum.sections(player).replies.any { it.id == topic.id && it.unread }, "forum check: replies")
+        assertTrue(forum.section(player, talk.id, 0).topics.first { it.id == topic.id }.unread, "forum check: unread topic")
+        val unseen = forum.topic(player, topic.id, -2)
+        assertTrue(unseen.posts.last().unread && !unseen.posts.first().unread, "forum check: unread posts")
+        assertEquals(0, forum.replies(player.id))
         assertTrue(v.posts.last().mine && !forum.topic(player, topic.id, -1).posts.last().mine, "forum check 3")
+        // Unfollow; search finds the post by a word and not inside a quote's author line only.
+        assertTrue(!forum.act(player, ForumRequest("unfollow", topic = topic.id)).topic!!.followed)
+        val found = forum.search(player, "милты")
+        assertTrue(found.hits.any { it.topic.id == topic.id && it.snippet.contains("Милты") }, found.toString())
+        assertTrue(forum.search(player, "ау").hits.isEmpty(), "too short a query")
         forum.act(moder, ForumRequest("close", topic = topic.id))
         clock[0] += 30
         assertEquals(Errors.TOPIC_LOCKED, assertFailsWith<ApiException> { forum.act(player, ForumRequest("post", topic = topic.id, text = "Спасибо")) }.code)

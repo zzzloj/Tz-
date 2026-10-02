@@ -1279,6 +1279,7 @@ class Game(
             character, location, inventory,
             journal = p.journal.toList(),
             journalKinds = p.journalKinds.toList(),
+            forumReplies = forum.replies(p.accountId),
             corpseAt = if (p.ghost) world.corpseOf(p.id, now)?.let { content.locations[it]?.name ?: it } else null,
             restSeconds = (p.busyUntil - now).coerceAtLeast(0).toInt(),
             canResurrect = canResurrect(p),

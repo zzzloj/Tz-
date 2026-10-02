@@ -431,6 +431,22 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
 
     fun closeForum() { forum = null }
 
+    /** Titles and posts with [query]; the answer is shown like a section (forum.hits). */
+    suspend fun searchForum(query: String) = action { forum = api.forumSearch(query) }
+
+    /** Opens a found post's page. */
+    suspend fun openHit(hit: ForumHit) = action { forum = api.forumTopic(hit.topic.id, hit.page) }
+
+    /** Opens a topic where the reader stopped (the first post not seen). */
+    suspend fun openUnread(topic: ForumTopic) = action { forum = api.forumTopic(topic.id, -2) }
+
+    /** Follows the open topic (replies are counted on the «Общение» tab) or stops following it. */
+    suspend fun followTopic(on: Boolean) = action {
+        val f = forum ?: return@action
+        val t = f.topic ?: return@action
+        forum = api.forum(ForumRequest(if (on) "follow" else "unfollow", topic = t.id, page = f.page))
+    }
+
     suspend fun startTopic(title: String, text: String) = action {
         val s = forum?.section ?: return@action
         forum = api.forum(ForumRequest("topic", section = s.id, title = title.trim(), text = text.trim()))

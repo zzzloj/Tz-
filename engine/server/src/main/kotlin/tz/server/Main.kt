@@ -203,6 +203,9 @@ private fun Route.accountRoutes(accounts: Accounts, game: Game) {
         val id = call.parameters["id"]?.toLongOrNull() ?: throw ApiException(HttpStatusCode.BadRequest, Errors.BAD_REQUEST)
         call.respond(game.forum.topic(optionalAccount(call, accounts), id, call.request.queryParameters["page"]?.toIntOrNull() ?: 0))
     }
+    get("/api/forum/search") {
+        call.respond(game.forum.search(optionalAccount(call, accounts), call.request.queryParameters["q"].orEmpty()))
+    }
     post("/api/forum") {
         val account = requireAccount(call, accounts)
         call.respond(game.forum.act(account, call.receive<ForumRequest>()))

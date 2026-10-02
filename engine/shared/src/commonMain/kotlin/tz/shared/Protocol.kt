@@ -232,6 +232,8 @@ data class GameView(
     val craft: CraftView? = null,
     /** Exchange with another player, while one is open. */
     val exchange: ExchangeView? = null,
+    /** Followed forum topics with new posts. */
+    val forumReplies: Int = 0,
     /** Unread private and clan messages (GET /api/messages). */
     val unread: Int = 0,
     /** Clans that invited this character (answer in GET/POST /api/clan). */
@@ -851,6 +853,8 @@ data class ForumSection(
     val posts: Int = 0,
     /** Only moderators start topics here (news). */
     val staffOnly: Boolean = false,
+    /** Topics here with posts the reader has not seen (signed in only). */
+    val unread: Int = 0,
 )
 
 @Serializable
@@ -865,6 +869,10 @@ data class ForumTopic(
     val pinned: Boolean = false,
     val closed: Boolean = false,
     val lastAuthor: String? = null,
+    /** New posts since the reader last opened it (or never opened). */
+    val unread: Boolean = false,
+    /** The reader follows it: replies are counted in GameView.forumReplies. */
+    val followed: Boolean = false,
 )
 
 @Serializable
@@ -876,7 +884,13 @@ data class ForumPost(
     val editedBy: String? = null,
     /** Written by the one asking: he may edit it. */
     val mine: Boolean = false,
+    /** Not yet seen by the reader when the page was opened. */
+    val unread: Boolean = false,
 )
+
+/** A search result: a post (or a topic title) and where it is. */
+@Serializable
+data class ForumHit(val topic: ForumTopic, val postId: Long, val author: String, val snippet: String, val page: Int)
 
 /**
  * GET /api/forum (sections), /api/forum/section/{id}?page= (topics),
@@ -895,6 +909,11 @@ data class ForumView(
     val moderator: Boolean = false,
     /** The one asking may write (signed in, not muted). */
     val canWrite: Boolean = false,
+    /** GET /api/forum/search?q=: what was asked and what was found. */
+    val query: String? = null,
+    val hits: List<ForumHit> = emptyList(),
+    /** Followed topics with new replies (signed in only), for the sections page. */
+    val replies: List<ForumTopic> = emptyList(),
 )
 
 /**
@@ -911,6 +930,8 @@ data class ForumRequest(
     val post: Long? = null,
     val title: String = "",
     val text: String = "",
+    /** follow/unfollow: the page of the topic to answer with. */
+    val page: Int? = null,
 )
 
 /** GET /api/pages: rules, help, stories (content/pages, one Markdown file each). */

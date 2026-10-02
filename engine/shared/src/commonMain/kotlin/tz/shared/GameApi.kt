@@ -195,6 +195,9 @@ class GameApi(
 
     suspend fun forum(request: ForumRequest): ForumView = postJson<ForumView, ForumRequest>("/api/forum", request)
 
+    suspend fun forumSearch(query: String): ForumView =
+        check(http.get(url("/api/forum/search")) { auth(); url { parameters.append("q", query) } })
+
     suspend fun pages(): List<PageSummary> = check(http.get(url("/api/pages")))
 
     suspend fun page(id: String): PageView = check(http.get(url("/api/pages/$id")))
