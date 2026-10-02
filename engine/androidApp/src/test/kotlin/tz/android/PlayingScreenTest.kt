@@ -36,6 +36,7 @@ class PlayingScreenTest {
 
     private fun view(loc: String, name: String, equipped: Boolean) = """{"character":$character,
         "location":{"id":"$loc","name":"$name","zone":0,"exits":[{"label":"на север","target":"north"}],"npcs":[]},
+        "journal":["Вы пришли в $name"],"journalKinds":["sys"],"belt":["","","",""],"slots":["","",""],
         "inventory":[{"id":"i.w.k.begin","name":"нож","count":1,"equipped":$equipped,"equippable":true}]}"""
 
     @Test
@@ -56,15 +57,44 @@ class PlayingScreenTest {
             override fun save(token: String?) {}
         }
         val session = Session(GameApi("http://test", HttpClient(engine)), tokens)
-        compose.setContent { MaterialTheme { App(session, live = false) } }
+        compose.setContent { TzTheme { App(session, live = false) } }
 
         compose.waitUntil(5_000) { compose.onAllNodesWithTextExists("Переулок") }
         compose.onNodeWithText("на север").performScrollTo().performClick()
         compose.waitUntil(5_000) { compose.onAllNodesWithTextExists("Двор лекаря") }
 
+        // Exits stay on every tab; the backpack is its own tab.
+        compose.onNodeWithText("Сумка").performClick()
+        compose.onNodeWithText("на север").assertExists()
         compose.onNodeWithText("надеть").performScrollTo().performClick()
         compose.waitUntil(5_000) { compose.onAllNodesWithTextExists("нож (надето)") }
         compose.onNodeWithText("снять").assertExists()
+    }
+
+    @Test
+    fun enemiesStrikingYouComeFirstAndUnawareOnesFold() {
+        val fight = """{"character":$character,"location":{"id":"f","name":"Восточный лес","zone":0,"exits":[{"label":"на север","target":"n"}],
+            "npcs":[{"id":"w1","name":"волк","hp":14,"hpMax":26,"fightingYou":true,"attackable":true,"attacking":"вас","nextBlow":0,"hostile":true},
+                    {"id":"w2","name":"тёмный волк","hp":30,"hpMax":30,"fightingYou":true,"attackable":true,"attacking":"вас","nextBlow":0,"hostile":true},
+                    {"id":"w3","name":"белый волк","hp":34,"hpMax":34,"attackable":true,"hostile":true}]},
+            "slots":["","",""],"belt":["","","",""]}"""
+        val engine = MockEngine { request ->
+            val body = if (request.url.encodedPath == "/api/me") """{"login":"anna","character":$character}""" else fight
+            respond(body, HttpStatusCode.OK, headersOf(HttpHeaders.ContentType, "application/json"))
+        }
+        val tokens = object : TokenStore {
+            override fun load() = "t1"
+            override fun save(token: String?) {}
+        }
+        val session = Session(GameApi("http://test", HttpClient(engine)), tokens)
+        compose.setContent { TzTheme { App(session, live = false) } }
+        compose.waitUntil(5_000) { compose.onAllNodesWithTextExists("бьют вас · 2") }
+        compose.onNodeWithText("волк  14/26").assertExists()
+        compose.onNodeWithText("не заметили вас · 1").assertExists()
+        assert(!compose.onAllNodesWithTextExists("белый волк  34/34")) { "an unaware monster is folded away in a fight" }
+        compose.onNodeWithText("не заметили вас · 1").performScrollTo().performClick()
+        compose.waitUntil(5_000) { compose.onAllNodesWithTextExists("белый волк  34/34") }
+        compose.onNodeWithText("на север").assertExists()
     }
 }
 

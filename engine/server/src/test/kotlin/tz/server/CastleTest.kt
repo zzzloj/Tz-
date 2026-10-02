@@ -55,6 +55,11 @@ class CastleTest {
             assertEquals("c.1.gate", w.character.location)
             assertEquals(clan, w.castle!!.owner)
             assertTrue(game.view(a).journal.any { it.startsWith("На ваш замок") })
+            // The chronicle: the capture is public, the attack only for the owners' clan.
+            val mine = game.chronicleView(a).entries
+            assertTrue(mine.any { it.text.startsWith("Клан $clan захватил") && !it.clan }, mine.toString())
+            assertTrue(mine.any { it.text.startsWith("На замок") && it.clan && it.text.contains(bName) }, mine.toString())
+            assertTrue(game.chronicleView(b).entries.none { it.text.startsWith("На замок") && it.text.contains(bName) })
             game.place(b, "c.1.in")
 
             // A guard for the castle; with the owner away it attacks the stranger who walks in.

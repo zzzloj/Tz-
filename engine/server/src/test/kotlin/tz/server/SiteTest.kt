@@ -17,6 +17,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import tz.shared.AccountView
 import tz.shared.AdminRequest
+import tz.shared.GameView
 import tz.shared.AuthResponse
 import tz.shared.ErrorResponse
 import tz.shared.Errors
@@ -128,6 +129,14 @@ class SiteTest {
         val forum = json.decodeFromString(ForumView.serializer(), client.get("/api/forum").bodyAsText())
         assertTrue(forum.sections.size >= 6)
         assertTrue(!forum.canWrite)
+        // Pictures for the apps, cached by ETag.
+        val pic = client.get("/art/item/i.w.k.begin..3")
+        assertEquals(HttpStatusCode.OK, pic.status)
+        assertEquals("image/webp", pic.headers[HttpHeaders.ContentType]?.substringBefore(';'))
+        val tag = assertNotNull(pic.headers[HttpHeaders.ETag])
+        assertEquals(HttpStatusCode.NotModified, client.get("/art/item/i.w.k.begin..3") { header(HttpHeaders.IfNoneMatch, tag) }.status)
+        assertEquals(HttpStatusCode.OK, client.get("/art/npcs/npc-beginner.webp").status)
+        assertEquals(HttpStatusCode.NotFound, client.get("/art/logic/gifts.json").status)
     }
 
     // ---- the game and the forum directly ------------------------------------------------------
@@ -154,6 +163,47 @@ class SiteTest {
     }
 
     private suspend fun Staff.fresh(i: Int): Account = assertNotNull(accounts.authenticate(tokens[i]))
+
+    @Test
+    fun edwardHandsOutGifts() = withStaff {
+        fun money(v: GameView) = v.inventory.firstOrNull { it.id == Rules.MONEY }?.count ?: 0
+        val kits = game.adminView(admin).gifts.map { it.value }
+        assertTrue(kits.containsAll(listOf("start", "prereg", "update", "comp")), kits.toString())
+        assertTrue(game.adminView(moder).gifts.isEmpty())
+        assertEquals(Errors.FORBIDDEN, assertFailsWith<ApiException> { game.admin(moder, AdminRequest("gift", names[2], item = "update")) }.code)
+        assertEquals(Errors.BAD_REQUEST, assertFailsWith<ApiException> { game.admin(admin, AdminRequest("gift", names[2], item = "nothing")) }.code)
+        // Nothing yet.
+        var v = game.talk(player, "n.vost", "begin", null)
+        v = game.talk(player, "n.vost", "tren", null)
+        assertTrue(v.dialog!!.text.startsWith("Для тебя пока ничего нет"), v.dialog!!.text)
+        // A gift to one player, then to everybody: two kits wait, Edward hands them out one by one.
+        game.admin(admin, AdminRequest("gift", names[2], item = "update"))
+        assertTrue(game.view(player).journal.any { it.contains("К обновлению") })
+        val all = game.admin(admin, AdminRequest("gift", "*", item = "prereg"))
+        assertTrue(all.message!!.startsWith("Подарок «За предрегистрацию» — всем"), all.message)
+        val before = money(game.view(player))
+        game.talk(player, "n.vost", "begin", null)
+        v = game.talk(player, "n.vost", "tren", null)
+        assertTrue(v.dialog!!.text.contains("Ты ждал открытия"), v.dialog!!.text)
+        assertEquals(before + 2000, money(v))
+        game.talk(player, "n.vost", "begin", null)
+        v = game.talk(player, "n.vost", "tren", null)
+        assertTrue(v.dialog!!.text.contains("Мир обновился"), v.dialog!!.text)
+        assertEquals(before + 3000, money(v))
+        game.talk(player, "n.vost", "begin", null)
+        assertTrue(game.talk(player, "n.vost", "tren", null).dialog!!.text.startsWith("Для тебя пока ничего нет"))
+        // A gift for every new character.
+        assertEquals("start", game.admin(admin, AdminRequest("giftNew", item = "start")).newGift)
+        val (a, t) = accounts.register(unique("s"), "secret-123")
+        accounts.createCharacter(a, name("Новичок"), "f")
+        val newbie = assertNotNull(accounts.authenticate(t))
+        game.place(newbie, "_begin")
+        game.talk(newbie, "n.vost", "begin", null)
+        v = game.talk(newbie, "n.vost", "tren", null)
+        assertTrue(v.dialog!!.text.startsWith("Добро пожаловать"), v.dialog!!.text)
+        assertEquals(300, money(v))
+        assertNull(game.admin(admin, AdminRequest("giftNew")).newGift)
+    }
 
     @Test
     fun moderation() = withStaff {
@@ -222,8 +272,21 @@ class SiteTest {
         clock[0] += 30
         assertEquals(Errors.SAID_ALREADY, assertFailsWith<ApiException> { forum.act(player, ForumRequest("post", topic = topic.id, text = "Ау?")) }.code)
         // Moderators answer quickly, close, pin and rename.
-        v = forum.act(moder, ForumRequest("post", topic = topic.id, text = "У Милты"))
+        // The author follows the topic: a moderator's answer is a reply he has not seen.
+        assertEquals(0, forum.replies(player.id))
+        v = forum.act(moder, ForumRequest("post", topic = topic.id, text = "> ${names[2]}: Ау?\n\nУ Милты"))
+        assertEquals(1, forum.replies(player.id))
+        assertTrue(forum.sections(player).replies.any { it.id == topic.id && it.unread }, "forum check: replies")
+        assertTrue(forum.section(player, talk.id, 0).topics.first { it.id == topic.id }.unread, "forum check: unread topic")
+        val unseen = forum.topic(player, topic.id, -2)
+        assertTrue(unseen.posts.last().unread && !unseen.posts.first().unread, "forum check: unread posts")
+        assertEquals(0, forum.replies(player.id))
         assertTrue(v.posts.last().mine && !forum.topic(player, topic.id, -1).posts.last().mine, "forum check 3")
+        // Unfollow; search finds the post by a word and not inside a quote's author line only.
+        assertTrue(!forum.act(player, ForumRequest("unfollow", topic = topic.id)).topic!!.followed)
+        val found = forum.search(player, "милты")
+        assertTrue(found.hits.any { it.topic.id == topic.id && it.snippet.contains("Милты") }, found.toString())
+        assertTrue(forum.search(player, "ау").hits.isEmpty(), "too short a query")
         forum.act(moder, ForumRequest("close", topic = topic.id))
         clock[0] += 30
         assertEquals(Errors.TOPIC_LOCKED, assertFailsWith<ApiException> { forum.act(player, ForumRequest("post", topic = topic.id, text = "Спасибо")) }.code)

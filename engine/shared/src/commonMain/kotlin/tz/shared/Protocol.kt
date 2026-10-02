@@ -36,6 +36,14 @@ data class NpcView(
     val mine: Boolean = false,
     /** Whose it is, if someone's. */
     val owner: String? = null,
+    /** Portrait under /art: "npcs/npc-beginner", "mobs/mob-wolf"; null — none drawn. */
+    val art: String? = null,
+    /** A risen corpse: the living one's portrait, drawn with the undead tint. */
+    val undead: Boolean = false,
+    /** Fighting you: seconds until its next blow at you (it strikes its enemies in turn). */
+    val nextBlow: Int? = null,
+    /** A monster or an outlaw that attacks whoever it notices. */
+    val hostile: Boolean = false,
 )
 
 @Serializable
@@ -49,6 +57,10 @@ data class CorpseView(
     val looting: Boolean = false,
     /** A monster's or animal's: a necromancer can raise it (POST /api/game/skill "necro"). */
     val canRaise: Boolean = false,
+    /** Your own corpse (your things after death). */
+    val mine: Boolean = false,
+    /** Minutes until it rots away with what is left in it. */
+    val minutesLeft: Int = 0,
 )
 
 @Serializable
@@ -65,7 +77,12 @@ data class LocationView(
     /** Other characters seen here in the last minutes. */
     val players: List<String> = emptyList(),
     val corpses: List<CorpseView> = emptyList(),
-)
+    /** Picture under /art: "locations/loc-road" (16:9); null — none. Item pictures: /art/item/<id>. */
+    val art: String? = null,
+) {
+    /** A guarded street (Swift sees `zone` as NSObject's zone(), so the iOS app uses this). */
+    val guarded: Boolean get() = zone == 1
+}
 
 @Serializable
 data class GroundItemView(
@@ -193,6 +210,14 @@ data class GameView(
     val inventory: List<InventoryItemView> = emptyList(),
     /** Recent events, newest last: blows, deaths, experience. */
     val journal: List<String> = emptyList(),
+    /** A ghost: where its corpse with its things lies (location name); null — no corpse or nothing left in it. */
+    val corpseAt: String? = null,
+    /** The [JournalKind] of each journal line, same order and size: what colour to draw it. */
+    val journalKinds: List<String> = emptyList(),
+    /** The three combat buttons next to each enemy after the plain blow: ability ids, "" — empty (POST /api/game/prefs). */
+    val slots: List<String> = emptyList(),
+    /** The four belt cells above the exits: item ids (food, potions), "" — empty; count 0 — none left. */
+    val belt: List<String> = emptyList(),
     /** Seconds until the character may strike again. */
     val restSeconds: Int = 0,
     /** A ghost standing at a resurrection stone or healer. */
@@ -207,6 +232,8 @@ data class GameView(
     val craft: CraftView? = null,
     /** Exchange with another player, while one is open. */
     val exchange: ExchangeView? = null,
+    /** Followed forum topics with new posts. */
+    val forumReplies: Int = 0,
     /** Unread private and clan messages (GET /api/messages). */
     val unread: Int = 0,
     /** Clans that invited this character (answer in GET/POST /api/clan). */
@@ -232,6 +259,41 @@ data class GameView(
     /** Strangers in your clan's castle: go and defend it (POST /api/game/castle op "tele"). */
     val alarm: String? = null,
 )
+
+/** What a journal line is about, for its colour on screen (docs/design.md, «Журнал»). */
+object JournalKind {
+    const val SYS = "sys"
+    const val FIGHT = "fight"
+    const val HURT = "hurt"
+    const val SAY = "say"
+    const val GAIN = "gain"
+
+    private val plus = Regex("""\+\d""")
+    private val speech = Regex("""^[А-ЯЁA-Z][^:]{0,40}: \S""")
+    private val gains = listOf("Вы получили", "Вы украли", "Вы поймали", "Вы приручили", "Вы собрали", "Вы разделали", "Вы распаковали", "Вы воскресли", "Обмен с ")
+
+    /** Lines logged without a kind are sorted by their words; blows are tagged where they are struck. */
+    fun of(line: String): String = when {
+        line.startsWith("[клан]") || " говорит: " in line -> SAY
+        plus.containsMatchIn(line) || gains.any { line.startsWith(it) } -> GAIN
+        line.startsWith("Вас ") || " по вам " in line || line.startsWith("У вас выбит") -> HURT
+        line.endsWith(" погибает.") || "оглушен" in line || " выбит " in line -> FIGHT
+        speech.containsMatchIn(line) -> SAY
+        else -> SYS
+    }
+}
+
+/** POST /api/game/prefs: the combat buttons and the belt (null — leave as is; [] — back to the default). */
+@Serializable
+data class PrefsRequest(val slots: List<String>? = null, val belt: List<String>? = null)
+
+/** GET /api/chronicle: the world chronicle of the last 7 days, newest first. */
+@Serializable
+data class ChronicleView(val entries: List<ChronicleEntry> = emptyList())
+
+/** [at] unix seconds; [clan] — an event of the reader's own clan (seen only by it). */
+@Serializable
+data class ChronicleEntry(val at: Long, val text: String, val clan: Boolean = false)
 
 /** GET /api/world: who is online, clans, castles, the leadership flag (the old site pages). */
 @Serializable
@@ -776,6 +838,10 @@ data class AdminView(
     val log: List<String> = emptyList(),
     /** Places to teleport to quickly (the old f_admin.dat list): name → location id. */
     val places: List<ChoiceOption> = emptyList(),
+    /** Gift kits Edward hands out (content/logic/gifts.json): name → key. Only for an administrator. */
+    val gifts: List<ChoiceOption> = emptyList(),
+    /** Key of the kit every new character gets, or null. */
+    val newGift: String? = null,
 )
 
 @Serializable
@@ -787,6 +853,8 @@ data class ForumSection(
     val posts: Int = 0,
     /** Only moderators start topics here (news). */
     val staffOnly: Boolean = false,
+    /** Topics here with posts the reader has not seen (signed in only). */
+    val unread: Int = 0,
 )
 
 @Serializable
@@ -801,6 +869,10 @@ data class ForumTopic(
     val pinned: Boolean = false,
     val closed: Boolean = false,
     val lastAuthor: String? = null,
+    /** New posts since the reader last opened it (or never opened). */
+    val unread: Boolean = false,
+    /** The reader follows it: replies are counted in GameView.forumReplies. */
+    val followed: Boolean = false,
 )
 
 @Serializable
@@ -812,7 +884,13 @@ data class ForumPost(
     val editedBy: String? = null,
     /** Written by the one asking: he may edit it. */
     val mine: Boolean = false,
+    /** Not yet seen by the reader when the page was opened. */
+    val unread: Boolean = false,
 )
+
+/** A search result: a post (or a topic title) and where it is. */
+@Serializable
+data class ForumHit(val topic: ForumTopic, val postId: Long, val author: String, val snippet: String, val page: Int)
 
 /**
  * GET /api/forum (sections), /api/forum/section/{id}?page= (topics),
@@ -831,6 +909,11 @@ data class ForumView(
     val moderator: Boolean = false,
     /** The one asking may write (signed in, not muted). */
     val canWrite: Boolean = false,
+    /** GET /api/forum/search?q=: what was asked and what was found. */
+    val query: String? = null,
+    val hits: List<ForumHit> = emptyList(),
+    /** Followed topics with new replies (signed in only), for the sections page. */
+    val replies: List<ForumTopic> = emptyList(),
 )
 
 /**
@@ -847,6 +930,8 @@ data class ForumRequest(
     val post: Long? = null,
     val title: String = "",
     val text: String = "",
+    /** follow/unfollow: the page of the topic to answer with. */
+    val page: Int? = null,
 )
 
 /** GET /api/pages: rules, help, stories (content/pages, one Markdown file each). */

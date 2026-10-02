@@ -41,6 +41,8 @@ suspend fun Game.adminView(account: Account, message: String? = null): AdminView
     return AdminView(
         account.role, message, accounts.modLog(),
         Moderation.PLACES.filter { it.second in content.locations }.map { ChoiceOption(it.first, it.second) },
+        if (account.admin) content.logic.gifts.map { (key, name) -> ChoiceOption(name, key) } else emptyList(),
+        if (account.admin) worldState(Dialogs.GIFT_NEW) else null,
     )
 }
 
@@ -135,6 +137,51 @@ suspend fun Game.admin(account: Account, r: AdminRequest): AdminView {
             accounts.log(account, "give", name, "$item ×$count")
             "$name получил ${content.itemName(item)} ×$count"
         }
+        "gift" -> {
+            // A kit for Edward to hand out: to one character, or to everybody with target «*».
+            adminOnly()
+            val kit = r.item.trim()
+            val kitName = content.logic.gifts[kit] ?: throw ApiException(HttpStatusCode.BadRequest, Errors.BAD_REQUEST)
+            val key = Dialogs.GIFT_PREFIX + kit
+            val line = "Вас ждёт подарок: «$kitName». Заберите его у Эдварда в Переулке."
+            if (name == "*") {
+                val n = db.tx { c ->
+                    c.prepareStatement(
+                        "INSERT INTO character_state (character_id, key, value, until) SELECT id, ?, '1', NULL FROM characters WHERE world_id = 1 " +
+                            "ON CONFLICT (character_id, key) DO UPDATE SET value = EXCLUDED.value, until = EXCLUDED.until"
+                    ).use { it.setString(1, key); it.executeUpdate() }
+                }
+                lock.withLock { for (q in players.values) { q.log(line); notify(q.id) } }
+                accounts.log(account, "gift", "*", "$kit ($n)")
+                "Подарок «$kitName» — всем ($n)"
+            } else {
+                val t = target()
+                val charId = db.tx { c ->
+                    c.prepareStatement("SELECT id FROM characters WHERE account_id = ? AND world_id = 1").use { st ->
+                        st.setLong(1, t.id); st.executeQuery().use { rs -> if (rs.next()) rs.getLong(1) else null }
+                    }
+                } ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NO_SUCH_PLAYER)
+                setState(charId, key, "1", null)
+                tellAccount(t.id, line)
+                accounts.log(account, "gift", name, kit)
+                "$name: подарок «$kitName»"
+            }
+        }
+        "giftNew" -> {
+            // The kit every new character gets from now on; an empty kit stops it.
+            adminOnly()
+            val kit = r.item.trim()
+            if (kit.isEmpty()) {
+                db.tx { c -> c.prepareStatement("DELETE FROM world_state WHERE key = ?").use { it.setString(1, Dialogs.GIFT_NEW); it.executeUpdate() } }
+                accounts.log(account, "giftNew", "", "—")
+                "Новым персонажам подарок не выдаётся"
+            } else {
+                val kitName = content.logic.gifts[kit] ?: throw ApiException(HttpStatusCode.BadRequest, Errors.BAD_REQUEST)
+                setWorldState(Dialogs.GIFT_NEW, kit, null)
+                accounts.log(account, "giftNew", "", kit)
+                "Новые персонажи получат подарок «$kitName»"
+            }
+        }
         "role" -> {
             adminOnly()
             val t = accounts.byCharacter(name) ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NO_SUCH_PLAYER)
@@ -149,6 +196,12 @@ suspend fun Game.admin(account: Account, r: AdminRequest): AdminView {
         else -> throw ApiException(HttpStatusCode.BadRequest, Errors.BAD_REQUEST)
     }
     return adminView(account, message)
+}
+
+private suspend fun Game.worldState(key: String): String? = db.tx { c ->
+    c.prepareStatement("SELECT value FROM world_state WHERE key = ? AND (until IS NULL OR until > ?)").use { st ->
+        st.setString(1, key); st.setLong(2, Accounts.now()); st.executeQuery().use { rs -> if (rs.next()) rs.getString(1) else null }
+    }
 }
 
 /** A line in the journal of whoever plays [accountId] now. */

@@ -95,6 +95,8 @@ class GameApi(
 
     suspend fun world(): WorldView = check(http.get(url("/api/world")) { auth() })
 
+    suspend fun chronicle(): ChronicleView = check(http.get(url("/api/chronicle")) { auth() })
+
     suspend fun map(): MapView = check(http.get(url("/api/map")) { auth() })
 
     /** Describes a character, an NPC, an item, a spell or a skill (GameView.look). */
@@ -134,6 +136,13 @@ class GameApi(
     /** Uses a technique at [target], or takes a stance (no target). */
     suspend fun technique(id: String, target: String? = null): GameView =
         postJson<GameView, TechniqueRequest>("/api/game/technique", TechniqueRequest(id, target))
+
+    /** Combat buttons and belt (null — keep, empty — back to the default). */
+    suspend fun prefs(slots: List<String>? = null, belt: List<String>? = null): GameView =
+        postJson<GameView, PrefsRequest>("/api/game/prefs", PrefsRequest(slots, belt))
+
+    /** Full address of a picture path from [GameScene.artPath] or [GameScene.itemPath]. */
+    fun artUrl(path: String): String = url(path)
 
     suspend fun say(text: String, channel: String): GameView =
         postJson<GameView, SayRequest>("/api/game/say", SayRequest(text, channel))
@@ -185,6 +194,9 @@ class GameApi(
     suspend fun forumTopic(id: Long, page: Int = 0): ForumView = check(http.get(url("/api/forum/topic/$id?page=$page")) { auth() })
 
     suspend fun forum(request: ForumRequest): ForumView = postJson<ForumView, ForumRequest>("/api/forum", request)
+
+    suspend fun forumSearch(query: String): ForumView =
+        check(http.get(url("/api/forum/search")) { auth(); url { parameters.append("q", query) } })
 
     suspend fun pages(): List<PageSummary> = check(http.get(url("/api/pages")))
 

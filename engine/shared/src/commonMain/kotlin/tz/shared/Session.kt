@@ -112,6 +112,18 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
 
     fun closeWorld() { world = null }
 
+    /** The world chronicle and the latest news, for «Мир · События». */
+    var chronicle: ChronicleView? = null
+        private set
+    var news: ForumView? = null
+        private set
+
+    suspend fun openEvents() = action {
+        chronicle = api.chronicle()
+        val all = api.forum()
+        news = all.sections.firstOrNull { it.staffOnly }?.let { api.forumSection(it.id) }
+    }
+
     /** All locations with coordinates, loaded once for the map. */
     var map: MapView? = null
         private set
@@ -235,6 +247,27 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
 
     private suspend fun act(a: AbilityView, target: String?) = action {
         game = if (a.kind == "spell") api.cast(a.id, target) else api.technique(a.id, target)
+    }
+
+    /** A combat button in a row: the spell or technique goes straight at that row's [target]. */
+    suspend fun strike(ability: AbilityView, target: String) = act(ability, target)
+
+    /** Puts a spell or technique into combat button [index] ("" clears it). */
+    suspend fun setSlot(index: Int, abilityId: String) = action {
+        val g = game ?: return@action
+        game = api.prefs(slots = List(3) { if (it == index) abilityId else g.slots.getOrNull(it).orEmpty() })
+    }
+
+    /** Puts an item into belt cell [index] ("" clears it). */
+    suspend fun setBelt(index: Int, itemId: String) = action {
+        val g = game ?: return@action
+        game = api.prefs(belt = List(4) { if (it == index) itemId else g.belt.getOrNull(it).orEmpty() })
+    }
+
+    /** Drinks or eats what is in belt cell [index]. */
+    suspend fun useBelt(index: Int) {
+        val item = game?.let { GameScene.belt(it).getOrNull(index)?.second } ?: return
+        use(item)
     }
 
     /** Sends typed text to a dialog that waits for it (a clan name). */
@@ -397,6 +430,22 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
     }
 
     fun closeForum() { forum = null }
+
+    /** Titles and posts with [query]; the answer is shown like a section (forum.hits). */
+    suspend fun searchForum(query: String) = action { forum = api.forumSearch(query) }
+
+    /** Opens a found post's page. */
+    suspend fun openHit(hit: ForumHit) = action { forum = api.forumTopic(hit.topic.id, hit.page) }
+
+    /** Opens a topic where the reader stopped (the first post not seen). */
+    suspend fun openUnread(topic: ForumTopic) = action { forum = api.forumTopic(topic.id, -2) }
+
+    /** Follows the open topic (replies are counted on the «Общение» tab) or stops following it. */
+    suspend fun followTopic(on: Boolean) = action {
+        val f = forum ?: return@action
+        val t = f.topic ?: return@action
+        forum = api.forum(ForumRequest(if (on) "follow" else "unfollow", topic = t.id, page = f.page))
+    }
 
     suspend fun startTopic(title: String, text: String) = action {
         val s = forum?.section ?: return@action

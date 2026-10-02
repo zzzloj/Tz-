@@ -97,6 +97,15 @@ private suspend fun Game.saveCastle(c: CastleState) = db.tx { conn ->
     }
 }
 
+/** A dissolved clan leaves its castles empty. */
+internal suspend fun Game.clanGone(clanId: Long, name: String?) {
+    for (c in castles().values.filter { it.clanId == clanId }) {
+        c.clanId = null; c.clanName = null; c.lockedUntil = 0; c.sign = ""; c.guests.clear()
+        saveCastle(c)
+        chronicle("${castleName(c.id)} опустел: клан ${name ?: ""} распущен")
+    }
+}
+
 /** Tells the online members of a clan (the old game wrote to their journals). */
 private fun Game.tellClan(clanId: Long?, line: String) {
     if (clanId == null) return
@@ -136,10 +145,12 @@ internal suspend fun Game.castleEntry(p: Game.Player, from: String, to: String):
     if (c.clanId != null && defended(c, p.id)) {
         // An attack: the guards and the owners inside fight (f_castle.dat:46-72).
         tellClan(c.clanId, "На ваш замок ${castleName(n)} напали! ${p.name} у ворот.")
+        chronicle("На замок ${castleName(n)} напал ${p.name}" + (p.clanName?.let { " (клан $it)" } ?: ""), c.clanId)
         return null
     }
     if (p.clanId != null && to.endsWith(".gate")) {
         val old = c.clanId
+        val oldName = c.clanName
         c.clanId = p.clanId; c.clanName = p.clanName
         c.lockedUntil = 0; c.openUntil = now + CastleRules.CAPTURE_OPEN_SECONDS; c.sign = ""
         c.guests.clear()
@@ -149,6 +160,7 @@ internal suspend fun Game.castleEntry(p: Game.Player, from: String, to: String):
         CastleRules.KEEPERS[n]?.let { k -> db.tx { conn -> conn.prepareStatement("DELETE FROM world_state WHERE key = ?").use { it.setString(1, "$k.contract"); it.executeUpdate() } } }
         tellClan(old, "Ваш замок ${castleName(n)} захватил клан ${p.clanName}!")
         p.log("Вы захватили замок ${castleName(n)}!")
+        chronicle("Клан ${p.clanName} захватил ${castleName(n)}" + (oldName?.let { ", отбив его у клана $it" } ?: ""))
     }
     return null
 }

@@ -42,6 +42,7 @@ import tz.shared.TalkRequest
 import tz.shared.ShopRequest
 import tz.shared.BankRequest
 import tz.shared.UseRequest
+import tz.shared.PrefsRequest
 import tz.shared.SayRequest
 import tz.shared.ExchangeRequest
 import tz.shared.MessageRequest
@@ -140,6 +141,7 @@ fun Application.game(content: Content, accounts: Accounts? = null, game: Game? =
             if (loc == null) call.respond(HttpStatusCode.NotFound, ErrorResponse("not_found", "Нет такой локации"))
             else call.respond(loc.view())
         }
+        artRoutes(content.art)
         get("/api/pages") { call.respond(content.pages.map { PageSummary(it.id, it.title) }) }
         get("/api/pages/{id}") {
             call.respond(content.pages.firstOrNull { it.id == call.parameters["id"] } ?: throw ApiException(HttpStatusCode.NotFound, Errors.NOT_FOUND))
@@ -200,6 +202,9 @@ private fun Route.accountRoutes(accounts: Accounts, game: Game) {
     get("/api/forum/topic/{id}") {
         val id = call.parameters["id"]?.toLongOrNull() ?: throw ApiException(HttpStatusCode.BadRequest, Errors.BAD_REQUEST)
         call.respond(game.forum.topic(optionalAccount(call, accounts), id, call.request.queryParameters["page"]?.toIntOrNull() ?: 0))
+    }
+    get("/api/forum/search") {
+        call.respond(game.forum.search(optionalAccount(call, accounts), call.request.queryParameters["q"].orEmpty()))
     }
     post("/api/forum") {
         val account = requireAccount(call, accounts)
@@ -274,6 +279,10 @@ private fun Route.accountRoutes(accounts: Accounts, game: Game) {
         requireAccount(call, accounts)
         call.respond(game.worldView())
     }
+    get("/api/chronicle") {
+        val account = requireAccount(call, accounts)
+        call.respond(game.chronicleView(account))
+    }
     get("/api/map") {
         requireAccount(call, accounts)
         call.respond(game.mapView())
@@ -296,6 +305,10 @@ private fun Route.accountRoutes(accounts: Accounts, game: Game) {
         val account = requireAccount(call, accounts)
         val body = call.receive<TechniqueRequest>()
         call.respond(game.technique(account, body.id, body.target))
+    }
+    post("/api/game/prefs") {
+        val account = requireAccount(call, accounts)
+        call.respond(game.prefs(account, call.receive<PrefsRequest>()))
     }
     post("/api/game/say") {
         val account = requireAccount(call, accounts)

@@ -23,6 +23,19 @@ targets:
       properties:
         CFBundleDisplayName: Территория Зла
         UILaunchScreen: {}
+        # Fonts of the design system (tz.shared.Design.Fonts, SIL OFL: engine/licenses).
+        UIAppFonts:
+          - alegreya_regular.ttf
+          - alegreya_medium.ttf
+          - alegreya_bold.ttf
+          - alegreya_italic.ttf
+          - alegreya_sans_regular.ttf
+          - alegreya_sans_medium.ttf
+          - alegreya_sans_bold.ttf
+          - alegreya_sans_sc_medium.ttf
+          - alegreya_sans_sc_bold.ttf
+          - cormorant_sc_semibold.ttf
+          - cormorant_sc_bold.ttf
         ServerURL: $(SERVER_URL)
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true

@@ -5,6 +5,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.JsonObject
 import tz.shared.Errors
 import tz.shared.GameView
+import tz.shared.JournalKind
 import tz.shared.Rules
 
 /*
@@ -97,10 +98,10 @@ internal suspend fun Game.playerHitsPlayer(a: Game.Player, b: Game.Player, now: 
     val t = blow?.title?.let { " ($it)" } ?: ""
     // Only the one who strikes first is «fighting»; answering blows are self-defence and keep the victim innocent.
     if (answer) { a.fightingPlayer = b.id; a.attackTarget = "u:${b.id}" }
-    a.log(if (answer) "Вы$t по ${b.name} $text" else "  вы отвечаете: $text")
-    b.log(if (answer) "${a.name}$t по вам $text" else "  ${a.name} отвечает: $text")
+    a.log(if (answer) "Вы$t по ${b.name} $text" else "  вы отвечаете: $text", JournalKind.FIGHT)
+    b.log(if (answer) "${a.name}$t по вам $text" else "  ${a.name} отвечает: $text", JournalKind.HURT)
     for (q in players.values) if (q.id != a.id && q.id != b.id && q.location == a.location && now - q.lastSeen < Game.ACTIVE_SECONDS) {
-        q.log("${a.name}$t по ${b.name} $text"); notify(q.id)
+        q.log("${a.name}$t по ${b.name} $text", JournalKind.FIGHT); notify(q.id)
     }
     notify(b.id)
     if (h.outcome == Formulas.Outcome.HIT) {
@@ -248,6 +249,7 @@ internal suspend fun Game.pvpHandler(p: Game.Player, a: JsonObject, arg: String?
                 ).use { st -> st.setLong(1, id); st.setInt(2, amount); st.executeUpdate() }
             }
             clearState(p.id, "bounty.killer")
+            chronicle("Назначена награда за голову $killer")
             return "Награда за голову $killer увеличена на $amount монет."
         }
         "bounty-claim" -> {
@@ -260,6 +262,7 @@ internal suspend fun Game.pvpHandler(p: Game.Player, a: JsonObject, arg: String?
             }
             if (amount <= 0) throw Game.HandlerFailed("За голову $victim награды не назначено, но спасибо за службу.")
             changeItem(p, Rules.MONEY, amount)
+            chronicle("${p.name} получил награду за голову $victim")
             return "Вот твоя награда за $victim: $amount монет."
         }
     }

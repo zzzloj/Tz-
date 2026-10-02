@@ -26,6 +26,7 @@ android {
     }
     testOptions {
         unitTests.isIncludeAndroidResources = true
+        unitTests.all { it.testLogging { events("failed"); exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL } }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21

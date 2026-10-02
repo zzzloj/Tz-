@@ -414,6 +414,7 @@ private suspend fun Game.leaveClan(p: Game.Player): String? {
             }
         }
     }
+    if (result.startsWith("Клан ")) clanGone(clan, name)
     loadClan(p)
     return result
 }

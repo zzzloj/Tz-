@@ -71,6 +71,7 @@ internal suspend fun Game.takeFlag(p: Game.Player, now: Long) {
     saveFlag()
     p.log("Вы подняли флаг лидерства! Пока он у вас: +10 к здоровью, +20 к заклинаниям, +10 к приёмам, но напасть на вас может любой без преступления.")
     tellOthers(p.location, p.id, "${p.name} поднял флаг лидерства!")
+    chronicle("${p.name} поднял флаг лидерства")
 }
 
 /** The holder drops the flag (a drop, death, leaving the game): out of tavern rooms it goes to the hall. */
@@ -83,6 +84,7 @@ internal suspend fun Game.dropFlag(p: Game.Player, line: String) {
     world.placePermanent(loc, Society.FLAG, 1)
     refreshStats(p)
     saveFlag()
+    chronicle("${p.name} лишился флага лидерства: он лежит в месте «${content.locations[loc]?.name ?: loc}»")
     tellOthers(p.location, p.id, line)
 }
 
@@ -151,6 +153,7 @@ internal suspend fun Game.weddingHandler(p: Game.Player, a: JsonObject, arg: Str
             changeItem(q, Society.WEDDING_BOUQUET, 1)
             vars["partner"] = q.name
             val line = "Лайма говорит: молодожёны, обменяйтесь кольцами. ${q.name} и ${p.name}, объявляю вас мужем и женой!"
+            chronicle("${q.name} и ${p.name} поженились")
             tellOthers(p.location, p.id, line)
             notify(q.id)
         }
@@ -287,6 +290,7 @@ internal suspend fun Game.demonVial(p: Game.Player, now: Long): Boolean {
     changeItem(p, "i.q.dv", -1)
     world.spawn(Society.DEMON, Society.DEMON, Society.DEMON_PLACES[dice.roll(0, Society.DEMON_PLACES.size - 1)], now)
     p.log("Вы разбудили Демона!")
+    chronicle("${p.name} разбудил Демона")
     return true
 }
 

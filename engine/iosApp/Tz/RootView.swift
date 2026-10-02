@@ -37,6 +37,7 @@ struct RootView: View {
 
     private func siteActions() -> SiteActions {
         let model = self.model
+        let admin: (() -> Void)? = model.session.moderator ? { model.run { s in s.closeAccount(); try await s.openAdmin() } } : nil
         return SiteActions(
             closeAccount: { model.run { $0.closeAccount() } },
             changePassword: { o, n in model.run { try await $0.changePassword(old: o, newPassword: n) } },
@@ -60,59 +61,53 @@ struct RootView: View {
             adminOp: { op, target, text, item, count, minutes in
                 model.run { try await $0.adminOp(op: op, target: target, text: text, item: item, count: Int32(count), minutes: Int32(minutes)) }
             },
-            closeAdmin: { model.run { $0.closeAdmin() } })
+            closeAdmin: { model.run { $0.closeAdmin() } },
+            search: { q in model.run { try await $0.searchForum(query: q) } },
+            openHit: { h in model.run { try await $0.openHit(hit: h) } },
+            openUnread: { t in model.run { try await $0.openUnread(topic: t) } },
+            follow: { on in model.run { try await $0.followTopic(on: on) } },
+            openAdmin: admin,
+            signOut: { model.run { s in s.closeAccount(); try await s.signOut() } })
+    }
+
+    /// Account, moderation, forum and pages, drawn in the game's style.
+    private func sitePage(_ s: Session) -> AnyView? {
+        if let a = s.account { return AnyView(AccountView_(account: a, info: s.info, busy: s.busy, act: siteActions())) }
+        if let ad = s.admin { return AnyView(AdminView_(admin: ad, busy: s.busy, act: siteActions())) }
+        if let f = s.forum { return AnyView(ForumView_(forum: f, busy: s.busy, act: siteActions())) }
+        if let pg = s.pages { return AnyView(PagesView_(pages: pg, page: s.page, busy: s.busy, act: siteActions())) }
+        return nil
     }
 
     var body: some View {
         let _ = model.version   // redraw after every session call
         let s = model.session
-        NavigationStack {
-            Form {
-                if let a = s.account {
-                    AccountView_(account: a, info: s.info, busy: s.busy, act: siteActions())
-                } else if let ad = s.admin {
-                    AdminView_(admin: ad, busy: s.busy, act: siteActions())
-                } else if let f = s.forum {
-                    ForumView_(forum: f, busy: s.busy, act: siteActions())
-                } else if let pg = s.pages {
-                    PagesView_(pages: pg, page: s.page, busy: s.busy, act: siteActions())
-                } else if s.screen == Screen.signIn && recovering {
-                    RecoverView(busy: s.busy,
-                                onRecover: { l, c, p in
-                                    model.run { session in
-                                        try await session.recover(login: l, code: c, newPassword: p)
-                                        if session.error == nil { await MainActor.run { recovering = false } }
-                                    }
-                                },
-                                onCancel: { recovering = false })
-                } else if s.screen == Screen.signIn {
-                    SignInView(busy: s.busy,
-                               onSignIn: { l, p in model.run { try await $0.signIn(login: l, password: p) } },
-                               onRegister: { l, p in model.run { try await $0.register(login: l, password: p) } })
-                    Section {
-                        Button("Забыли пароль?") { recovering = true }
-                        Button("Форум") { model.run { try await $0.openForum() } }.disabled(s.busy)
-                        Button("Об игре") { model.run { try await $0.openPages() } }.disabled(s.busy)
-                    }
-                } else if s.screen == Screen.createCharacter {
-                    CreateCharacterView(busy: s.busy) { name, female in
-                        model.run { try await $0.createCharacter(name: name, female: female) }
-                    }
-                } else if s.screen == Screen.playing, let game = s.game {
-                    Section {
-                        HStack {
-                            Button("Форум") { model.run { try await $0.openForum() } }
-                            Spacer()
-                            Button("Помощь") { model.run { try await $0.openPages() } }
-                            Spacer()
-                            Button("Аккаунт") { model.run { try await $0.openAccount() } }
-                            if s.moderator {
-                                Spacer()
-                                Button("Модерация") { model.run { try await $0.openAdmin() } }
-                            }
-                        }.buttonStyle(.borderless).disabled(s.busy)
-                    }
-                    PlayingView(game: game, busy: s.busy,
+        Group {
+            if s.screen == Screen.playing, let game = s.game {
+                playing(s, game)
+            } else if let page = sitePage(s) {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 8) {
+                        page
+                        if let e = s.error { Text(e).foregroundStyle(.red) }
+                    }.padding()
+                }
+                .overlay { if s.busy { ProgressView() } }
+            } else {
+                forms(s)
+            }
+        }
+        .task {
+            model.run { try await $0.resume() }
+            model.listen()
+        }
+    }
+
+    private func playing(_ s: Session, _ game: GameView) -> some View {
+        let model = self.model
+        let api = s.api
+        let admin: (() -> Void)? = s.moderator ? { model.run { try await $0.openAdmin() } } : nil
+        return GameScreen(game: game, busy: s.busy,
                                 onGo: { exit in model.run { try await $0.go(exit: exit) } },
                                 onTake: { item in model.run { try await $0.take(item: item, count: nil) } },
                                 onDrop: { item in model.run { try await $0.drop(item: item, count: nil) } },
@@ -177,12 +172,60 @@ struct RootView: View {
                                     choose: { o in model.run { try await $0.choose(option: o) } },
                                     closeChoice: { model.run { $0.closeChoice() } },
                                     writeAll: { t in model.run { try await $0.writeAll(text: t) } }),
+                                layout: LayoutActions(
+                                    strike: { a, t in model.run { try await $0.strike(ability: a, target: t) } },
+                                    setSlot: { i, id in model.run { try await $0.setSlot(index: Int32(i), abilityId: id) } },
+                                    setBelt: { i, id in model.run { try await $0.setBelt(index: Int32(i), itemId: id) } },
+                                    useBelt: { i in model.run { try await $0.useBelt(index: Int32(i)) } },
+                                    openForum: { model.run { try await $0.openForum() } },
+                                    openNews: { model.run { try await $0.openNews() } },
+                                    openPages: { model.run { try await $0.openPages() } },
+                                    openAccount: { model.run { try await $0.openAccount() } },
+                                    openAdmin: admin,
+                                    openEvents: { model.run { try await $0.openEvents() } },
+                                    openTopic: { t in model.run { try await $0.openTopic(topic: t, page: 0) } }),
                                 mail: s.mail,
                                 clanInfo: s.clanInfo,
                                 worldInfo: s.world,
                                 mapView: s.mapOpen ? s.map : nil,
+                                page: sitePage(s),
+                                onClosePage: { model.run { s in s.closeAccount(); s.closeAdmin(); s.closeForum(); s.closePages() } },
+                                chronicle: s.chronicle,
+                                news: s.news,
+                                info: s.info,
+                                error: s.error,
                                 onRefresh: { model.run { try await $0.refresh() } },
                                 onSignOut: { model.run { try await $0.signOut() } })
+            .environment(\.artUrl, { path in api.artUrl(path: path) })
+    }
+
+    private func forms(_ s: Session) -> some View {
+        NavigationStack {
+            Form {
+                if s.screen == Screen.signIn && recovering {
+                    RecoverView(busy: s.busy,
+                                onRecover: { l, c, p in
+                                    model.run { session in
+                                        try await session.recover(login: l, code: c, newPassword: p)
+                                        if session.error == nil { await MainActor.run { recovering = false } }
+                                    }
+                                },
+                                onCancel: { recovering = false })
+                } else if s.screen == Screen.signIn {
+                    SignInView(busy: s.busy,
+                               onSignIn: { l, p in model.run { try await $0.signIn(login: l, password: p) } },
+                               onRegister: { l, p in model.run { try await $0.register(login: l, password: p) } })
+                    Section {
+                        Button("Забыли пароль?") { recovering = true }
+                        Button("Форум") { model.run { try await $0.openForum() } }.disabled(s.busy)
+                        Button("Об игре") { model.run { try await $0.openPages() } }.disabled(s.busy)
+                    }
+                } else if s.screen == Screen.createCharacter {
+                    CreateCharacterView(busy: s.busy) { name, female in
+                        model.run { try await $0.createCharacter(name: name, female: female) }
+                    }
+                } else if s.screen == Screen.playing {
+                    ProgressView()
                 } else if s.error != nil {
                     Button("Повторить") { model.run { try await $0.refresh() } }
                 }
@@ -193,13 +236,27 @@ struct RootView: View {
                     Text(error).foregroundStyle(.red)
                 }
             }
-            .navigationTitle(s.game?.location.name ?? "Территория Зла")
+            .navigationTitle(s.screen == Screen.signIn || s.screen == Screen.createCharacter ? "" : "Территория Зла")
             .overlay { if s.busy { ProgressView() } }
         }
-        .task {
-            model.run { try await $0.resume() }
-            model.listen()
+        .environment(\.artUrl, { [api = s.api] path in api.artUrl(path: path) })
+    }
+}
+
+/// The splash picture over the sign-in forms.
+struct SplashHeader: View {
+    var height: CGFloat = 280
+    @Environment(\.tz) private var c
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            ArtImage(path: "/art/brand/splash-portrait.webp")
+            LinearGradient(colors: [.clear, c.background], startPoint: .top, endPoint: .bottom)
+            Text("Территория Зла").font(TzType.title).foregroundStyle(c.title).padding(.bottom, 8)
         }
+        .frame(height: height)
+        .listRowInsets(EdgeInsets())
+        .listRowBackground(Color.clear)
     }
 }
 
@@ -207,19 +264,33 @@ struct SignInView: View {
     let busy: Bool
     let onSignIn: (String, String) -> Void
     let onRegister: (String, String) -> Void
+    @State private var registering = false
     @State private var login = ""
     @State private var password = ""
+    @State private var again = ""
+    @Environment(\.tz) private var c
 
     var body: some View {
-        Section {
+        Section { SplashHeader() }
+        Section(registering ? "Регистрация" : "Вход") {
             TextField("Логин", text: $login)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
             SecureField("Пароль", text: $password)
+            if registering {
+                SecureField("Пароль ещё раз", text: $again)
+                if !again.isEmpty && again != password { Text("Пароли не совпадают").font(TzType.small).foregroundStyle(c.danger) }
+            }
         }
         Section {
-            Button("Войти") { onSignIn(login, password) }.disabled(busy)
-            Button("Регистрация") { onRegister(login, password) }.disabled(busy)
+            if registering {
+                Text("После входа сохраните код восстановления (Персонаж → Аккаунт): по нему вернёте пароль, почту игра не спрашивает.").font(TzType.small).foregroundStyle(c.textMuted)
+                Button("Создать аккаунт") { onRegister(login, password) }.disabled(busy || login.isEmpty || password.isEmpty || again != password)
+                Button("Уже есть аккаунт? Войти") { registering = false }
+            } else {
+                Button("Войти") { onSignIn(login, password) }.disabled(busy)
+                Button("Регистрация") { registering = true }
+            }
         }
     }
 }
@@ -229,413 +300,25 @@ struct CreateCharacterView: View {
     let onCreate: (String, Bool) -> Void
     @State private var name = ""
     @State private var female = false
+    @Environment(\.tz) private var c
 
     var body: some View {
+        Section { SplashHeader(height: 200) }
         Section("Новый персонаж") {
             TextField("Имя", text: $name)
+            Text("Имя — русскими буквами, его увидят все. Сменить его потом нельзя.").font(TzType.small).foregroundStyle(c.textMuted)
             Picker("Пол", selection: $female) {
                 Text("Мужской").tag(false)
                 Text("Женский").tag(true)
             }
             .pickerStyle(.segmented)
-            Button("Создать") { onCreate(name, female) }.disabled(busy)
+            Text("Вы начнёте в Переулке у городских ворот. Привратник Уин расскажет, с чего начать, а Эдвард вручит подарок новичку.")
+            Button("Создать") { onCreate(name, female) }.disabled(busy || name.isEmpty)
         }
     }
 }
 
-struct PlayingView: View {
-    let game: GameView
-    let busy: Bool
-    let onGo: (ExitView) -> Void
-    let onTake: (GroundItemView) -> Void
-    let onDrop: (InventoryItemView) -> Void
-    let onToggleEquip: (InventoryItemView) -> Void
-    let onAttack: (NpcView) -> Void
-    let onLoot: (CorpseView, GroundItemView) -> Void
-    let onButcher: (CorpseView) -> Void
-    let onResurrect: () -> Void
-    let onTalk: (NpcView) -> Void
-    let onAnswer: (DialogOption) -> Void
-    let onCloseDialog: () -> Void
-    let pending: InventoryItemView?
-    let more: MoreActions
-    let pendingAbility: AbilityView?
-    let social: SocialActions
-    let mail: MessagesView?
-    let clanInfo: ClanView?
-    let worldInfo: WorldView?
-    let mapView: MapView?
-    @State private var typed = ""
-    @State private var speech = ""
-    @State private var mailTo: String?
-    @State private var mailText = ""
-    let onRefresh: () -> Void
-    let onSignOut: () -> Void
-
-    private func stats(_ c: CharacterView) -> String {
-        var s = "удар \(c.hit)% · урон \(c.dmgMin)–\(c.dmgMax) · броня \(c.armor) · уклон \(c.dodge) · опыт \(c.exp)/\(c.expNext)"
-        if c.skillPoints > 0 { s += " · очков \(c.skillPoints)" }
-        if game.restSeconds > 0 { s += " · отдых \(game.restSeconds) с" }
-        return s
-    }
-
-    private func personLine(_ p: PersonView) -> String {
-        var s = p.name
-        if let clan = p.clan { s += " *\(clan)*" }
-        if let crime = p.crime { s += " [\(crime)]" }
-        if let f = p.faction { s += " \(f)" }
-        if let hp = p.hpPercent { s += " \(hp.intValue)%" }
-        if let a = p.attacking { s += " · атакует \(a)" }
-        if p.rider { s += " (всадник)" }
-        if p.flag { s += " с флагом!" }
-        if p.ghost { s += " (призрак)" }
-        return s
-    }
-
-    private func crimeLine(_ c: CharacterView) -> String? {
-        guard let crime = c.crime else { return nil }
-        return "Вы \(crime) — стража ищет вас ещё \(c.crimeMinutes) мин"
-    }
-
-    private func canTame(_ npc: NpcView) -> Bool {
-        let c = game.character
-        return !c.ghost && !npc.mine && npc.owner == nil && npc.id.hasPrefix("n.a.") && (c.skills["animaltaming"]?.intValue ?? 0) > 0
-    }
-
-    private func npcLine(_ npc: NpcView) -> String {
-        var s = npc.name
-        if let o = npc.owner { s += npc.mine ? " (ваш)" : " (\(o))" }
-        if npc.attackable { s += " · HP \(npc.hp)/\(npc.hpMax)" }
-        if let a = npc.attacking { s += " · атакует \(a)" }
-        return s
-    }
-
-    private func isThief(_ c: CharacterView) -> Bool {
-        !c.ghost && ((c.skills["steal"]?.intValue ?? 0) > 0 || (c.skills["steallook"]?.intValue ?? 0) > 0)
-    }
-
-    private func label(_ name: String, _ count: Int32) -> String {
-        count > 1 ? "\(name) ×\(count)" : name
-    }
-
-    var body: some View {
-        let c = game.character
-        let loc = game.location
-        if let d = game.dialog {
-            Section(d.npcName) {
-                Text(d.text)
-                if d.inputTopic != nil {
-                    TextField("Ответ", text: $typed)
-                    Button("ответить") { social.answerText(typed); typed = "" }.disabled(busy || typed.isEmpty)
-                }
-                ForEach(Array(d.options.enumerated()), id: \.offset) { _, o in
-                    Button(o.label) { onAnswer(o) }.disabled(busy)
-                }
-                Button(d.options.isEmpty ? "[Конец диалога]" : "закончить разговор") { onCloseDialog() }
-            }
-        }
-        Section {
-            Text("\(c.name) · HP \(c.hp)/\(c.hpMax) · мана \(c.mana)/\(c.manaMax)").font(.footnote)
-            Text(stats(c)).font(.caption).foregroundStyle(.secondary)
-            if let line = crimeLine(c) {
-                Text(line).font(.caption).foregroundStyle(.red)
-            }
-            if c.poisoned { Text("Вы отравлены: здоровье убывает").font(.caption).foregroundStyle(.red) }
-            if c.mounted { Button("Вы верхом — спешиться") { more.dismount() }.disabled(busy) }
-            if !c.skills.isEmpty {
-                Text("навыки: " + c.skills.keys.sorted().map { "\(Rules.shared.skillTitle(key: $0)) \(c.skills[$0]?.intValue ?? 0)" }.joined(separator: ", "))
-                    .font(.caption).foregroundStyle(.secondary)
-            }
-            if c.ghost {
-                Text("Вы призрак. Воскреснуть можно у камня воскрешения или у лекаря Джозефа (двор к северу от Переулка).")
-                    .foregroundStyle(.red)
-                if game.canResurrect {
-                    Button("Воскреснуть") { onResurrect() }.disabled(busy)
-                }
-            }
-            if let d = loc.description_ { Text(d) }
-            if let cs = game.castle {
-                Text((cs.owner.map { "Замок принадлежит клану \($0)" } ?? "Замок никому не принадлежит: первый член клана, вошедший в ворота, захватит его")
-                     + (cs.lockedMinutes > 0 ? " · ворота заперты ещё \(cs.lockedMinutes) мин." : "")
-                     + (cs.guest ? " · вы гость" : "")).font(.footnote)
-                if !cs.sign.isEmpty { Text("Надпись на воротах: \(cs.sign)").font(.footnote) }
-                if cs.canKnock { Button("Постучать") { social.castleOp("knock", nil) }.disabled(busy) }
-                if cs.canOpen { Button("Открыть ворота") { social.castleOp("open", nil) }.disabled(busy) }
-                if cs.member {
-                    TextField("Вывеска", text: $speech)
-                    Button("Сохранить вывеску") { social.castleOp("sign", speech); speech = "" }.disabled(busy || speech.isEmpty)
-                }
-            }
-            ForEach(loc.npcs, id: \.id) { npc in
-                HStack {
-                    Text(npcLine(npc))
-                        .foregroundStyle(npc.fightingYou ? .red : .primary)
-                    Spacer()
-                    if npc.canTalk {
-                        Button("говорить") { onTalk(npc) }.disabled(busy).buttonStyle(.borderless)
-                    }
-                    Button("?") { more.look(npc.id) }.disabled(busy).buttonStyle(.borderless)
-                    if canTame(npc) { Button("приручить") { more.tame(npc) }.disabled(busy).buttonStyle(.borderless) }
-                    if isThief(c) {
-                        Button("подглядеть") { more.peek(npc.id) }.disabled(busy).buttonStyle(.borderless)
-                    }
-                    if npc.attackable && !c.ghost {
-                        Button("атаковать") { onAttack(npc) }.disabled(busy).buttonStyle(.borderless)
-                    }
-                }
-            }
-            ForEach(game.people, id: \.name) { person in
-                HStack {
-                    Text(personLine(person))
-                        .foregroundStyle(person.crime != nil ? Color.red : Color.primary)
-                    Spacer()
-                    if !c.ghost && !person.ghost {
-                        Button("атаковать") { social.attackPlayer(person) }.disabled(busy).buttonStyle(.borderless)
-                        if isThief(c) { Button("подглядеть") { more.peek(person.name) }.disabled(busy).buttonStyle(.borderless) }
-                        Button("обмен") { social.startExchange(person) }.disabled(busy).buttonStyle(.borderless)
-                    }
-                    Button("в контакты") { social.addContact(person.name) }.disabled(busy).buttonStyle(.borderless)
-                    if game.clan != nil && person.clan == nil {
-                        Button("в клан") { social.clanOp("invite", person.name, nil, nil) }.disabled(busy).buttonStyle(.borderless)
-                    }
-                }
-            }
-            ForEach(loc.items, id: \.id) { item in
-                HStack {
-                    Text(label(item.name, item.count))
-                    Spacer()
-                    if item.takeable {
-                        Button(item.id.hasPrefix("i.s.") ? "использовать" : "взять") { onTake(item) }.disabled(busy).buttonStyle(.borderless)
-                        if item.count > 1 { Button("1") { more.takeOne(item) }.disabled(busy).buttonStyle(.borderless) }
-                    }
-                }
-            }
-        }
-        ForEach(loc.corpses, id: \.id) { corpse in
-            Section(corpse.name) {
-                if corpse.looting && !corpse.items.isEmpty {
-                    Text("взять отсюда — мародёрство").font(.caption).foregroundStyle(.red)
-                }
-                ForEach(corpse.items, id: \.id) { item in
-                    HStack {
-                        Text(label(item.name, item.count))
-                        Spacer()
-                        if !c.ghost {
-                            Button("взять") { onLoot(corpse, item) }.disabled(busy).buttonStyle(.borderless)
-                        }
-                    }
-                }
-                if corpse.canRaise && !c.ghost && (c.skills["necro"]?.intValue ?? 0) > 0 {
-                    Button("поднять") { more.raise(corpse) }.disabled(busy)
-                }
-                if corpse.canButcher && !c.ghost {
-                    Button("разделать") { onButcher(corpse) }.disabled(busy)
-                }
-            }
-        }
-        Section("Выходы") {
-            ForEach(loc.exits, id: \.target) { exit in
-                HStack {
-                    Button(exit.label + (exit.occupied ? " !" : "")) { onGo(exit) }.disabled(busy).buttonStyle(.borderless)
-                    if exit.gallop { Spacer(); Button("галопом") { more.gallop(exit) }.disabled(busy).buttonStyle(.borderless) }
-                }
-            }
-            Button("осмотреться") { onRefresh() }.disabled(busy)
-        }
-        if !game.journal.isEmpty {
-            Section("Журнал") {
-                ForEach(Array(game.journal.suffix(10).enumerated()), id: \.offset) { _, line in
-                    Text(line).font(.footnote)
-                }
-            }
-        }
-        Section {
-            HStack {
-                Button(game.unread > 0 ? "Почта (\(game.unread))" : "Почта") { social.openMail() }.disabled(busy).buttonStyle(.borderless)
-                Spacer()
-                Button((game.clan.map { "Клан \($0)" } ?? "Клан") + (game.clanInvites.isEmpty ? "" : " (приглашение)")) { social.openClan() }
-                    .disabled(busy).buttonStyle(.borderless)
-            }
-        }
-        if let m = mail {
-            Section("Почта") {
-                ForEach(m.contacts, id: \.name) { ct in
-                    HStack {
-                        Text(ct.name + (ct.online ? " • в игре" : "") + (ct.mutual ? "" : " (вы не у него в контактах)"))
-                        Spacer()
-                        Button("написать") { mailTo = ct.name }.buttonStyle(.borderless)
-                        Button("убрать") { social.removeContact(ct.name) }.disabled(busy).buttonStyle(.borderless)
-                    }
-                }
-                if m.contacts.contains(where: { $0.mutual }) {
-                    Button("написать всем") { mailTo = "*" }.buttonStyle(.borderless)
-                }
-                if let to = mailTo {
-                    TextField(to == "*" ? "Сообщение всем контактам" : "Сообщение для \(to)", text: $mailText)
-                    Button("Отправить") {
-                        if to == "*" { social.writeAll(mailText) } else { social.write(to, mailText) }
-                        mailText = ""; mailTo = nil
-                    }.disabled(busy || mailText.isEmpty)
-                }
-                ForEach(Array(m.messages.enumerated()), id: \.offset) { _, msg in
-                    Text((msg.clan ? "[клан] " : "") + "\(msg.from): \(msg.text)").font(.footnote)
-                        .foregroundStyle(msg.read ? .primary : Color.accentColor)
-                }
-                Button("закрыть") { social.closeMail() }
-            }
-        }
-        if let cl = clanInfo {
-            Section(cl.name.map { "Клан \($0)" } ?? "Клан") {
-                if let msg = cl.message { Text(msg).font(.footnote) }
-                if cl.name == nil {
-                    Text("Вы не в клане. Создать клан можно у Мирандера на центральной площади.").font(.footnote)
-                } else {
-                    Text("Ваш ранг: \(Rules.shared.CLAN_RANKS[cl.rank ?? ""] ?? cl.rank ?? "")").font(.footnote)
-                    if !cl.info.isEmpty { Text(cl.info).font(.footnote) }
-                    ForEach(cl.members, id: \.name) { mem in
-                        HStack {
-                            Text("\(mem.name) — \(Rules.shared.CLAN_RANKS[mem.rank] ?? mem.rank)" + (mem.online ? " • в игре" : "")).font(.footnote)
-                            Spacer()
-                            if cl.canManage && cl.rank == "head" && mem.rank != "head" {
-                                let next = mem.rank == "neophyte" ? "vassal" : (mem.rank == "vassal" ? "seneschal" : "neophyte")
-                                Button("→ \(Rules.shared.CLAN_RANKS[next] ?? next)") { social.clanOp("rank", mem.name, next, nil) }.disabled(busy).buttonStyle(.borderless)
-                                Button("выгнать") { social.clanOp("kick", mem.name, nil, nil) }.disabled(busy).buttonStyle(.borderless)
-                            }
-                        }
-                    }
-                    Button(cl.rank == "head" ? "Распустить клан" : "Выйти из клана") { social.clanOp("leave", nil, nil, nil) }.disabled(busy)
-                }
-                ForEach(cl.invites, id: \.self) { inv in
-                    HStack {
-                        Text("Приглашение в клан \(inv)").font(.footnote)
-                        Spacer()
-                        Button("вступить") { social.clanOp("accept", nil, nil, inv) }.disabled(busy).buttonStyle(.borderless)
-                        Button("отказать") { social.clanOp("decline", nil, nil, inv) }.disabled(busy).buttonStyle(.borderless)
-                    }
-                }
-                Button("закрыть") { social.closeClan() }
-            }
-        }
-        if let ex = game.exchange {
-            Section("Обмен с \(ex.partner)" + (ex.waiting ? " (ждём его)" : "")) {
-                Text("Вы отдаёте:" + (ex.iAgree ? " ✓ согласны" : "")).font(.footnote)
-                ForEach(ex.mine, id: \.id) { item in
-                    HStack {
-                        Text("\(item.name) ×\(item.count)")
-                        Spacer()
-                        Button("убрать") { social.withdraw(item) }.disabled(busy).buttonStyle(.borderless)
-                    }
-                }
-                Text("\(ex.partner) отдаёт:" + (ex.theyAgree ? " ✓ согласен" : "")).font(.footnote)
-                ForEach(ex.theirs, id: \.id) { item in Text("\(item.name) ×\(item.count)") }
-                ForEach(game.inventory.filter { inv in !inv.equipped && !ex.mine.contains { $0.id == inv.id } }, id: \.id) { item in
-                    Button("+ \(item.name) ×\(item.count)") { social.offer(item, Int(item.count)) }.disabled(busy)
-                }
-                Button("Согласен") { social.agree() }.disabled(busy || ex.iAgree || ex.waiting)
-                Button("Отменить обмен", role: .destructive) { social.cancelExchange() }
-            }
-        }
-        if let shop = game.shop {
-            Section(shop.npcName + (shop.mode == "sell" ? " покупает" : " продаёт")) {
-                if let m = shop.message { Text(m) }
-                ForEach(shop.items, id: \.id) { item in
-                    HStack {
-                        Text("\(item.name)\(item.count > 1 ? " (\(item.count))" : "") — \(item.price) \(shop.currency)")
-                        Spacer()
-                        Button(shop.mode == "sell" ? "продать" : "купить") { more.trade(item, 1) }.disabled(busy).buttonStyle(.borderless)
-                        if item.count > 1 {
-                            Button("все") { more.trade(item, Int(item.count)) }.disabled(busy).buttonStyle(.borderless)
-                        }
-                    }
-                }
-                Button("закрыть") { onCloseDialog() }
-            }
-        }
-        if let bank = game.bank {
-            Section("Банк · \(bank.npcName)" + (bank.fee > 0 ? " (плата \(bank.fee))" : "")) {
-                if let m = bank.message { Text(m) }
-                if bank.items.isEmpty { Text("в ячейке пусто").foregroundStyle(.secondary) }
-                ForEach(bank.items, id: \.id) { item in
-                    HStack {
-                        Text(label(item.name, item.count))
-                        Spacer()
-                        Button("забрать") { more.bankTake(item, 1) }.disabled(busy).buttonStyle(.borderless)
-                        if item.count > 1 {
-                            Button("все") { more.bankTake(item, Int(item.count)) }.disabled(busy).buttonStyle(.borderless)
-                        }
-                    }
-                }
-                ForEach(game.inventory.filter { !$0.equipped }, id: \.id) { item in
-                    HStack {
-                        Text(label(item.name, item.count)).foregroundStyle(.secondary)
-                        Spacer()
-                        Button("в банк") { more.bankPut(item, Int(item.count)) }.disabled(busy).buttonStyle(.borderless)
-                    }
-                }
-                Button("закрыть") { onCloseDialog() }
-            }
-        }
-        if let craft = game.craft {
-            Section(craft.title) {
-                ForEach(Array(craft.options.enumerated()), id: \.offset) { _, o in
-                    Button("\(o.name) — \(o.chance)% (\(o.needs))") { more.craft(o) }.disabled(busy)
-                }
-                Button("закрыть") { onCloseDialog() }
-            }
-        }
-        if let p = pending {
-            Section("Применить «\(p.name)» к…") {
-                ForEach(Targets.shared.choices(kind: p.target, game: game, exceptItem: p.id), id: \.value) { t in
-                    Button(t.label) { more.useOn(t.value) }.disabled(busy)
-                }
-                Button("отмена") { more.cancelUse() }
-            }
-        }
-        MagicSection(game: game, busy: busy, pending: pendingAbility, more: more)
-        CharacterSection(game: game, busy: busy, more: more)
-        WorldSection(game: game, busy: busy, more: more, social: social, worldInfo: worldInfo, mapView: mapView)
-        if let ch = game.choice {
-            Section(ch.title) {
-                ForEach(ch.options, id: \.value) { o in Button(o.label) { social.choose(o) }.disabled(busy) }
-                Button("отмена") { social.closeChoice() }
-            }
-        }
-        Section("Сказать") {
-            TextField("Текст", text: $speech)
-            HStack {
-                Button("всем") { social.say(speech, false); speech = "" }.disabled(busy || speech.isEmpty).buttonStyle(.borderless)
-                if game.clan != nil {
-                    Spacer()
-                    Button("клану") { social.say(speech, true); speech = "" }.disabled(busy || speech.isEmpty).buttonStyle(.borderless)
-                }
-            }
-        }
-        Section("Инвентарь") {
-            if game.inventory.isEmpty { Text("пусто").foregroundStyle(.secondary) }
-            ForEach(game.inventory, id: \.id) { item in
-                HStack {
-                    Text(label(item.name, item.count) + (item.equipped ? " (надето)" : ""))
-                    Spacer()
-                    if item.equippable {
-                        Button(item.equipped ? "снять" : "надеть") { onToggleEquip(item) }
-                            .disabled(busy).buttonStyle(.borderless)
-                    }
-                    if item.usable && !game.character.ghost {
-                        Button("исп.") { more.use(item) }.disabled(busy).buttonStyle(.borderless)
-                    }
-                    Button("?") { more.look(item.id) }.disabled(busy).buttonStyle(.borderless)
-                    if item.count > 1 { Button("−1") { more.dropOne(item) }.disabled(busy).buttonStyle(.borderless) }
-                    Button("бросить") { onDrop(item) }.disabled(busy).buttonStyle(.borderless)
-                }
-            }
-        }
-        Section {
-            Button("Выйти", role: .destructive) { onSignOut() }
-        }
-    }
-}
-
-/// Trade, bank, crafting and item use, grouped to keep PlayingView readable.
+/// Trade, bank, crafting and item use, grouped to keep GameScreen readable.
 struct MoreActions {
     let trade: (ShopItemView, Int) -> Void
     let bankPut: (InventoryItemView, Int) -> Void
@@ -669,55 +352,6 @@ struct MoreActions {
     let openSite: (String) -> Void
 }
 
-/// Spells, techniques and stances learnt, and the «на кого?» list for one that needs a target.
-struct MagicSection: View {
-    let game: GameView
-    let busy: Bool
-    let pending: AbilityView?
-    let more: MoreActions
-
-    private func line(_ a: AbilityView) -> String {
-        var s = a.name
-        if a.manaCost > 0 { s += " · мана \(a.manaCost)" }
-        if a.readyIn > 0 { s += " · через \((a.readyIn + 59) / 60) мин" }
-        if a.later { s += " · позже" }
-        return s
-    }
-
-    private func verb(_ a: AbilityView) -> String {
-        switch a.kind {
-        case "spell": return "читать"
-        case "stance": return "встать"
-        default: return "ударить"
-        }
-    }
-
-    var body: some View {
-        if let a = pending {
-            Section("«\(a.name)» — на кого?") {
-                ForEach(Targets.shared.choices(kind: a.target, game: game, exceptItem: nil), id: \.value) { t in
-                    Button(t.label) { more.aimAbility(t.value) }.disabled(busy)
-                }
-                Button("отмена") { more.cancelAbility() }
-            }
-        }
-        if !game.abilities.isEmpty && !game.character.ghost {
-            Section("Магия и приёмы") {
-                if let stance = game.stance { Text("Стойка: \(stance)").font(.caption) }
-                ForEach(game.abilities, id: \.id) { a in
-                    HStack {
-                        Text(line(a)).font(.footnote)
-                        Spacer()
-                        Button("?") { more.look(a.id) }.disabled(busy).buttonStyle(.borderless)
-                        Button(verb(a)) { more.useAbility(a) }
-                            .disabled(busy || a.readyIn > 0 || a.later).buttonStyle(.borderless)
-                    }
-                }
-            }
-        }
-    }
-}
-
 struct SocialActions {
     let answerText: (String) -> Void
     let say: (String, Bool) -> Void
@@ -739,109 +373,6 @@ struct SocialActions {
     let choose: (ChoiceOption) -> Void
     let closeChoice: () -> Void
     let writeAll: (String) -> Void
-}
-
-/// What was looked at or peeked into, and the character's own page: rank, full parameters, skills with help.
-struct CharacterSection: View {
-    let game: GameView
-    let busy: Bool
-    let more: MoreActions
-    @State private var open = false
-
-    var body: some View {
-        if let l = game.look {
-            Section(l.title) {
-                Text(l.text).font(.footnote)
-                if let pg = l.page {
-                    Button(pg == "news" ? "Все новости" : "Выбрать книгу") { more.openSite(pg) }.disabled(busy)
-                }
-                Button("закрыть") { more.closeLook() }
-            }
-        }
-        if let pk = game.peek {
-            Section("Рюкзак: \(pk.targetName)") {
-                ForEach(pk.items, id: \.id) { it in
-                    HStack {
-                        Text(it.name + (it.count > 1 ? " ×\(it.count)" : "") + (it.equipped ? " (надето)" : "")).font(.footnote)
-                        Spacer()
-                        Button("украсть") { more.steal(it) }.disabled(busy).buttonStyle(.borderless)
-                    }
-                }
-                Button("закрыть") { more.closePeek() }
-            }
-        }
-        Section {
-            Button(open ? "Персонаж ▲" : "Персонаж ▼") { open.toggle() }
-            if open {
-                let c = game.character
-                Text("\(c.rank) \(c.title)").font(.footnote)
-                Text("парирование \(c.parry) · уклон от магии \(c.magicDodge) · защита от магии \(c.magicParry) · сопр. магии \(c.magicResist)").font(.caption)
-                ForEach(c.skills.keys.sorted(), id: \.self) { k in
-                    HStack {
-                        Text("\(Rules.shared.skillTitle(key: k)) \(c.skills[k]?.intValue ?? 0)").font(.footnote)
-                        Spacer()
-                        if k == "meditation" && !c.ghost { Button("медитировать") { more.meditate() }.disabled(busy).buttonStyle(.borderless) }
-                        Button("?") { more.look("skill." + k) }.disabled(busy).buttonStyle(.borderless)
-                    }
-                }
-            }
-        }
-    }
-}
-
-/// The flag, the spouse's call, the castle alarm, the world page and the map.
-struct WorldSection: View {
-    let game: GameView
-    let busy: Bool
-    let more: MoreActions
-    let social: SocialActions
-    let worldInfo: WorldView?
-    let mapView: MapView?
-
-    var body: some View {
-        Section {
-            if game.character.flag {
-                HStack { Text("У вас флаг лидерства").font(.footnote); Spacer(); Button("бросить") { more.dropFlag() }.disabled(busy).buttonStyle(.borderless) }
-            }
-            if let place = game.stele {
-                Button("\(game.character.spouse ?? "Супруг") ранен(а): \(place) — на помощь") { more.stele() }.disabled(busy)
-            }
-            if let castle = game.alarm {
-                Button("В \(castle) чужие! — в замок") { social.castleOp("tele", nil) }.disabled(busy)
-            }
-            HStack {
-                Button("Мир") { more.openWorld() }.disabled(busy).buttonStyle(.borderless)
-                Spacer()
-                Button("Карта") { more.openMap() }.disabled(busy).buttonStyle(.borderless)
-            }
-        }
-        if let w = worldInfo {
-            Section("Мир") {
-                Text("Флаг лидерства: " + (w.flagHolder.map { "у \($0) (\(w.flagLocation ?? "?"))" } ?? "лежит: \(w.flagLocation ?? "неизвестно где")")).font(.footnote)
-                ForEach(w.castles, id: \.id) { c in Text("\(c.name): \(c.owner ?? "ничей")").font(.caption) }
-                ForEach(w.clans, id: \.name) { c in Text("Клан \(c.name) — \(c.members)").font(.caption) }
-                Text("Сейчас в игре \(w.online.count)").font(.footnote)
-                ForEach(w.online, id: \.name) { o in Text("\(o.name) [\(o.level)]" + (o.clan.map { " *\($0)*" } ?? "") + (o.crime.map { " \($0)" } ?? "")).font(.caption) }
-                Button("закрыть") { more.closeWorld() }
-            }
-        }
-        if let m = mapView {
-            Section(mapTitle()) {
-                MapCanvas(points: m.points, here: game.character.location, flagAt: worldInfo?.flagLocationId)
-                    .frame(height: 260)
-                Text("красное — вы, жёлтое — флаг лидерства, бордовое — замки").font(.caption)
-                Button("закрыть") { more.closeMap() }
-            }
-        }
-    }
-
-    private func mapTitle() -> String {
-        switch MapCanvas.point(game.character.location)?.2 ?? 0 {
-        case 1: return "Карта: Ансалон"
-        case 2: return "Карта: Волчий остров"
-        default: return "Карта: основная территория"
-        }
-    }
 }
 
 struct MapCanvas: View {
