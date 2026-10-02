@@ -119,13 +119,28 @@ fun App(session: Session, live: Boolean = true) {
         closePages = { session.closePages(); version++ },
         adminOp = { op, target, text, item, count, minutes -> run { session.adminOp(op, target, text, item, count, minutes) } },
         closeAdmin = { session.closeAdmin(); version++ },
+        search = { q -> run { session.searchForum(q) } },
+        openHit = { h -> run { session.openHit(h) } },
+        openUnread = { t -> run { session.openUnread(t) } },
+        follow = { on -> run { session.followTopic(on) } },
+        openAdmin = if (session.moderator) ({ session.closeAccount(); run { session.openAdmin() } }) else null,
+        signOut = { session.closeAccount(); run { session.signOut() } },
     )
     var recovering by remember { mutableStateOf(false) }
     val account = session.account
     val admin = session.admin
     val forum = session.forum
     val pages = session.pages
-    val playing = account == null && admin == null && forum == null && pages == null && session.screen == Screen.PLAYING && game != null
+    val playing = session.screen == Screen.PLAYING && game != null
+    // Account, moderation, forum and pages open inside the game screen; header, exits and tabs stay.
+    val sitePage: (@Composable () -> Unit)? = when {
+        account != null -> @Composable { AccountPanel(account, session.info, busy, site) }
+        admin != null -> @Composable { AdminPanel(admin, busy, site) }
+        forum != null -> @Composable { ForumPanel(forum, busy, site) }
+        pages != null -> @Composable { PagesPanel(pages, session.page, busy, site) }
+        else -> null
+    }
+    fun closePages() { session.closeAccount(); session.closeAdmin(); session.closeForum(); session.closePages(); version++ }
     CompositionLocalProvider(LocalArtUrl provides (if (live) session.api::artUrl else null)) {
     if (playing && game != null) {
         kotlin.run {
@@ -216,6 +231,8 @@ fun App(session: Session, live: Boolean = true) {
                 clanInfo = session.clanInfo,
                 worldInfo = session.world,
                 mapView = session.map.takeIf { session.mapOpen },
+                page = sitePage,
+                onClosePage = ::closePages,
                 chronicle = session.chronicle,
                 news = session.news,
                 onRefresh = { run { session.refresh() } },

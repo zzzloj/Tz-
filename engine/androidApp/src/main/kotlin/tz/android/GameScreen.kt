@@ -218,12 +218,14 @@ fun Playing(
     mapView: MapView? = null,
     chronicle: tz.shared.ChronicleView? = null,
     news: tz.shared.ForumView? = null,
+    page: (@Composable () -> Unit)? = null,
+    onClosePage: () -> Unit = {},
     footer: @Composable () -> Unit = {},
 ) {
     val c = Tz.colors
     var tab by rememberSaveable { mutableStateOf(GameTab.PLACE) }
     var sub by rememberSaveable { mutableStateOf(0) }
-    fun open(t: GameTab, s: Int = 0) { tab = t; sub = s }
+    fun open(t: GameTab, s: Int = 0) { if (page != null) onClosePage(); tab = t; sub = s }
     // Countdowns run on between server updates, a second at a time, for as long as one is running.
     var elapsed by remember(game) { mutableLongStateOf(0L) }
     val longest = maxOf(game.restSeconds, game.location.npcs.maxOfOrNull { it.nextBlow ?: 0 } ?: 0,
@@ -238,7 +240,8 @@ fun Playing(
                 Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = Design.Space.SCREEN.dp, vertical = Design.Space.S.dp),
                 verticalArrangement = Arrangement.spacedBy(Design.Space.S.dp),
             ) {
-                if (tab.subs.isNotEmpty()) SubTabs(tab.subs, sub) { i ->
+                if (page != null) page()
+                else if (tab.subs.isNotEmpty()) SubTabs(tab.subs, sub) { i ->
                     sub = i
                     when {
                         tab == GameTab.SOCIAL && i == 1 && mail == null -> social.openMail()
@@ -247,9 +250,10 @@ fun Playing(
                         tab == GameTab.WORLD && i == 0 && mapView == null -> more.openMap()
                         tab == GameTab.WORLD && i == 1 && worldInfo == null -> more.openWorld()
                         tab == GameTab.WORLD && i == 2 && chronicle == null -> layout.openEvents()
+                        tab == GameTab.SOCIAL && i == 4 -> layout.openForum()
                     }
                 }
-                when (tab) {
+                if (page == null) when (tab) {
                     GameTab.PLACE -> PlaceTab(game, busy, onTake, onAttack, onLoot, onButcher, onResurrect, onTalk, more, social, layout)
                     GameTab.HERO -> HeroTab(game, busy, sub, more, layout, onSignOut)
                     GameTab.BAG -> BagTab(game, busy, onDrop, onToggleEquip, more, layout)
@@ -262,7 +266,7 @@ fun Playing(
         }
         if (tab == GameTab.PLACE || tab == GameTab.BAG) Belt(game, busy, layout) { open(GameTab.BAG) }
         Exits(game.location.exits, busy, onGo, more.gallop)
-        TabBar(tab, game.unread) { open(it) }
+        TabBar(tab, game.unread + game.forumReplies) { open(it) }
     }
     }
 }
