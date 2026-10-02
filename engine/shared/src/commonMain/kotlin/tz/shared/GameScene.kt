@@ -98,7 +98,7 @@ object GameScene {
      */
     fun exitCaption(label: String): String {
         val l = label.trim()
-        Regex("^на (север|юг|восток|запад)\\b").find(l)?.let { return it.groupValues[1] }
+        Regex("^на (север|юг|восток|запад)(?=\\s|$)").find(l)?.let { return it.groupValues[1] }
         val rest = l.replaceFirst(Regex("^(выйти|войти|подойти|спуститься|подняться|идти|пройти|зайти)\\s+"), "")
         return rest.ifEmpty { l }
     }
