@@ -179,6 +179,8 @@ struct GameScreen: View {
     let clanInfo: ClanView?
     let worldInfo: WorldView?
     let mapView: MapView?
+    let page: AnyView?
+    let onClosePage: () -> Void
     let chronicle: ChronicleView?
     let news: ForumView?
     let info: String?
@@ -206,6 +208,7 @@ struct GameScreen: View {
         case (.world, 0) where mapView == nil: more.openMap()
         case (.world, 1) where worldInfo == nil: more.openWorld()
         case (.world, 2) where chronicle == nil: layout.openEvents()
+        case (.social, 4): layout.openForum()
         default: break
         }
     }
@@ -216,7 +219,9 @@ struct GameScreen: View {
             ZStack(alignment: .bottom) {
                 ScrollView {
                     VStack(alignment: .leading, spacing: CGFloat(Design.Space.shared.S)) {
-                        if !tab.subs.isEmpty { SubTabs(titles: tab.subs, selected: sub, onSelect: select) }
+                        if let p = page { p }
+                        else if !tab.subs.isEmpty { SubTabs(titles: tab.subs, selected: sub, onSelect: select) }
+                        if page == nil {
                         switch tab {
                         case .place:
                             PlaceTab(game: game, busy: busy, onTake: onTake, onAttack: onAttack, onLoot: onLoot, onButcher: onButcher,
@@ -230,6 +235,7 @@ struct GameScreen: View {
                         case .world:
                             WorldTab(game: game, busy: busy, sub: sub, social: social, more: more, layout: layout, worldInfo: worldInfo, mapView: mapView, chronicle: chronicle, news: news)
                         }
+                        }
                         if let i = info { Text(i).foregroundStyle(c.accent) }
                         if let e = error { Text(e).foregroundStyle(c.danger) }
                     }
@@ -241,7 +247,7 @@ struct GameScreen: View {
             }
             if tab == .place || tab == .bag { Belt(game: game, busy: busy, layout: layout) { tab = .bag; sub = 0 } }
             Exits(exits: game.location.exits, busy: busy, onGo: onGo, onGallop: more.gallop)
-            TabBar(tab: tab, unread: Int(game.unread)) { t in tab = t; sub = 0 }
+            TabBar(tab: tab, unread: Int(game.unread + game.forumReplies)) { t in if page != nil { onClosePage() }; tab = t; sub = 0 }
         }
         .grayscale(game.character.ghost ? 0.85 : 0)
         .environment(\.elapsed, elapsed)

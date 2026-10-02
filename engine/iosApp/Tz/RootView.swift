@@ -37,6 +37,7 @@ struct RootView: View {
 
     private func siteActions() -> SiteActions {
         let model = self.model
+        let admin: (() -> Void)? = model.session.moderator ? { model.run { s in s.closeAccount(); try await s.openAdmin() } } : nil
         return SiteActions(
             closeAccount: { model.run { $0.closeAccount() } },
             changePassword: { o, n in model.run { try await $0.changePassword(old: o, newPassword: n) } },
@@ -60,15 +61,38 @@ struct RootView: View {
             adminOp: { op, target, text, item, count, minutes in
                 model.run { try await $0.adminOp(op: op, target: target, text: text, item: item, count: Int32(count), minutes: Int32(minutes)) }
             },
-            closeAdmin: { model.run { $0.closeAdmin() } })
+            closeAdmin: { model.run { $0.closeAdmin() } },
+            search: { q in model.run { try await $0.searchForum(query: q) } },
+            openHit: { h in model.run { try await $0.openHit(hit: h) } },
+            openUnread: { t in model.run { try await $0.openUnread(topic: t) } },
+            follow: { on in model.run { try await $0.followTopic(on: on) } },
+            openAdmin: admin,
+            signOut: { model.run { s in s.closeAccount(); try await s.signOut() } })
+    }
+
+    /// Account, moderation, forum and pages, drawn in the game's style.
+    private func sitePage(_ s: Session) -> AnyView? {
+        if let a = s.account { return AnyView(AccountView_(account: a, info: s.info, busy: s.busy, act: siteActions())) }
+        if let ad = s.admin { return AnyView(AdminView_(admin: ad, busy: s.busy, act: siteActions())) }
+        if let f = s.forum { return AnyView(ForumView_(forum: f, busy: s.busy, act: siteActions())) }
+        if let pg = s.pages { return AnyView(PagesView_(pages: pg, page: s.page, busy: s.busy, act: siteActions())) }
+        return nil
     }
 
     var body: some View {
         let _ = model.version   // redraw after every session call
         let s = model.session
         Group {
-            if s.account == nil && s.admin == nil && s.forum == nil && s.pages == nil && s.screen == Screen.playing, let game = s.game {
+            if s.screen == Screen.playing, let game = s.game {
                 playing(s, game)
+            } else if let page = sitePage(s) {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 8) {
+                        page
+                        if let e = s.error { Text(e).foregroundStyle(.red) }
+                    }.padding()
+                }
+                .overlay { if s.busy { ProgressView() } }
             } else {
                 forms(s)
             }
@@ -164,6 +188,8 @@ struct RootView: View {
                                 clanInfo: s.clanInfo,
                                 worldInfo: s.world,
                                 mapView: s.mapOpen ? s.map : nil,
+                                page: sitePage(s),
+                                onClosePage: { model.run { s in s.closeAccount(); s.closeAdmin(); s.closeForum(); s.closePages() } },
                                 chronicle: s.chronicle,
                                 news: s.news,
                                 info: s.info,
@@ -176,15 +202,7 @@ struct RootView: View {
     private func forms(_ s: Session) -> some View {
         NavigationStack {
             Form {
-                if let a = s.account {
-                    AccountView_(account: a, info: s.info, busy: s.busy, act: siteActions())
-                } else if let ad = s.admin {
-                    AdminView_(admin: ad, busy: s.busy, act: siteActions())
-                } else if let f = s.forum {
-                    ForumView_(forum: f, busy: s.busy, act: siteActions())
-                } else if let pg = s.pages {
-                    PagesView_(pages: pg, page: s.page, busy: s.busy, act: siteActions())
-                } else if s.screen == Screen.signIn && recovering {
+                if s.screen == Screen.signIn && recovering {
                     RecoverView(busy: s.busy,
                                 onRecover: { l, c, p in
                                     model.run { session in
