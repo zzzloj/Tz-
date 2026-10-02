@@ -33,6 +33,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -72,7 +73,10 @@ class MainActivity : ComponentActivity() {
             val choice = ThemeChoice(mode) { m -> mode = m; prefs.edit().putString("theme", m).apply() }
             CompositionLocalProvider(LocalThemeChoice provides choice) {
                 TzTheme(dark = isDark(mode)) {
-                    Surface(Modifier.fillMaxSize(), color = Tz.colors.background) { App(session) }
+                    // Android 15+ draws edge to edge: keep the game out from under the status bar, the gesture bar and the keyboard.
+                    Surface(Modifier.fillMaxSize(), color = Tz.colors.background) {
+                        Box(Modifier.fillMaxSize().safeDrawingPadding()) { App(session) }
+                    }
                 }
             }
         }

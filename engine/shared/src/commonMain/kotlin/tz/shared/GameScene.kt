@@ -35,9 +35,10 @@ object GameScene {
     fun left(seconds: Int?, elapsed: Long): Int = ((seconds ?: 0) - elapsed).coerceAtLeast(0).toInt()
 
     /** The last [n] journal lines with their kinds (old servers send no kinds: sorted by words). */
-    fun journal(game: GameView, n: Int): List<Pair<String, String>> {
-        val lines = game.journal.takeLast(n)
-        val kinds = game.journalKinds.takeLast(n).takeIf { it.size == lines.size } ?: lines.map(JournalKind::of)
+    fun journal(game: GameView, n: Int, hereOnly: Boolean = false): List<Pair<String, String>> {
+        val count = if (hereOnly && game.journalHere >= 0) minOf(n, game.journalHere) else n
+        val lines = game.journal.takeLast(count)
+        val kinds = game.journalKinds.takeLast(count).takeIf { it.size == lines.size } ?: lines.map(JournalKind::of)
         return lines.zip(kinds)
     }
 

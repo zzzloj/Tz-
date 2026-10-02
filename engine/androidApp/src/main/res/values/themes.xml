@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark window while the app starts (no white flash before the game screen). -->
+    <style name="Theme.Tz" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/tz_night</item>
+    </style>
+    <color name="tz_night">#FF0B0907</color>
+</resources>

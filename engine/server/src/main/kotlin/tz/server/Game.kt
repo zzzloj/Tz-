@@ -50,7 +50,7 @@ class Game(
         val accountId: Long,
         val name: String,
         val sex: String,
-        var location: String,
+        location: String,
         var hp: Int,
         var mana: Int,
         var ghost: Boolean,
@@ -65,6 +65,11 @@ class Game(
         var busyUntil = 0L
         var regenFrom = 0L
         var lastSeen = 0L
+        /** Lines logged in all, and how many were logged before arriving here: the place shows only its own. */
+        var logged = 0L
+        var hereFrom = 0L
+        var location: String = location
+            set(v) { if (v != field) hereFrom = logged; field = v }
         val journal = ArrayDeque<String>()
         val journalKinds = ArrayDeque<String>()
 
@@ -139,6 +144,7 @@ class Game(
 
         fun log(line: String, kind: String? = null) {
             journal.addLast(line)
+            logged++
             journalKinds.addLast(kind ?: JournalKind.of(line))
             while (journal.size > JOURNAL_SIZE) { journal.removeFirst(); journalKinds.removeFirst() }
         }
@@ -1279,6 +1285,7 @@ class Game(
             character, location, inventory,
             journal = p.journal.toList(),
             journalKinds = p.journalKinds.toList(),
+            journalHere = (p.logged - p.hereFrom).coerceAtMost(p.journal.size.toLong()).toInt(),
             forumReplies = forum.replies(p.accountId),
             corpseAt = if (p.ghost) world.corpseOf(p.id, now)?.let { content.locations[it]?.name ?: it } else null,
             restSeconds = (p.busyUntil - now).coerceAtLeast(0).toInt(),

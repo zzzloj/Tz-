@@ -225,7 +225,12 @@ fun Playing(
     val c = Tz.colors
     var tab by rememberSaveable { mutableStateOf(GameTab.PLACE) }
     var sub by rememberSaveable { mutableStateOf(0) }
-    fun open(t: GameTab, s: Int = 0) { if (page != null) onClosePage(); tab = t; sub = s }
+    fun open(t: GameTab, s: Int = 0) {
+        if (page != null) onClosePage()
+        tab = t; sub = s
+        // The map is the first thing on «Мир»: load it right away.
+        if (t == GameTab.WORLD && s == 0 && mapView == null) more.openMap()
+    }
     // Countdowns run on between server updates, a second at a time, for as long as one is running.
     var elapsed by remember(game) { mutableLongStateOf(0L) }
     val longest = maxOf(game.restSeconds, game.location.npcs.maxOfOrNull { it.nextBlow ?: 0 } ?: 0,
@@ -634,7 +639,7 @@ private fun CastleBlock(cs: tz.shared.CastleView, busy: Boolean, social: SocialA
 @Composable
 fun Journal(game: GameView, lines: Int) {
     val c = Tz.colors
-    val rows = GameScene.journal(game, lines)
+    val rows = GameScene.journal(game, lines, hereOnly = true)
     if (rows.isEmpty()) return
     Column(Modifier.fillMaxWidth().background(c.surfaceSunken).padding(Design.Space.S.dp)) {
         rows.forEach { (text, kind) ->

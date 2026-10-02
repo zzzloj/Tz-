@@ -212,6 +212,8 @@ data class GameView(
     val journal: List<String> = emptyList(),
     /** A ghost: where its corpse with its things lies (location name); null — no corpse or nothing left in it. */
     val corpseAt: String? = null,
+    /** How many of the last journal lines were written here, since the character came (the place shows only these); -1 — unknown. */
+    val journalHere: Int = -1,
     /** The [JournalKind] of each journal line, same order and size: what colour to draw it. */
     val journalKinds: List<String> = emptyList(),
     /** The three combat buttons next to each enemy after the plain blow: ability ids, "" — empty (POST /api/game/prefs). */

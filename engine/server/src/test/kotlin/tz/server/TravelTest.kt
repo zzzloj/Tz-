@@ -52,6 +52,8 @@ class TravelTest {
         var v = game.move(a, "x776x141")
         assertEquals("x776x141", v.character.location)
         assertTrue(v.journal.last() == "Вы на охраняемой территории", v.journal.toString())
+        // The place shows only what happened since arriving.
+        assertTrue(v.journalHere in 1..v.journal.size, "journalHere ${v.journalHere} of ${v.journal.size}")
         assertTrue(game.view(b).journal.any { it == "$aName ушёл к аванпосту" }, game.view(b).journal.toString())
         // Somebody (b) is behind the exit back: «звуки».
         assertTrue(v.location.exits.first { it.target == "x772x113" }.occupied)

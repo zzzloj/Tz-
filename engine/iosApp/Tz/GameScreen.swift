@@ -56,9 +56,10 @@ enum SceneData {
     static func belt(_ g: GameView) -> [(String, InventoryItemView?)] {
         g.belt.map { id in (id, id.isEmpty ? nil : g.inventory.first { $0.id == id }) }
     }
-    static func journal(_ g: GameView, _ n: Int) -> [(String, String)] {
-        let lines = Array(g.journal.suffix(n))
-        let kinds = Array(g.journalKinds.suffix(n))
+    static func journal(_ g: GameView, _ n: Int, hereOnly: Bool = false) -> [(String, String)] {
+        let count = hereOnly && g.journalHere >= 0 ? min(n, Int(g.journalHere)) : n
+        let lines = Array(g.journal.suffix(count))
+        let kinds = Array(g.journalKinds.suffix(count))
         return lines.enumerated().map { i, l in (l, kinds.count == lines.count ? kinds[i] : JournalKind.shared.of(line: l)) }
     }
     static func thief(_ c: CharacterView) -> Bool {
@@ -247,7 +248,11 @@ struct GameScreen: View {
             }
             if tab == .place || tab == .bag { Belt(game: game, busy: busy, layout: layout) { tab = .bag; sub = 0 } }
             Exits(exits: game.location.exits, busy: busy, onGo: onGo, onGallop: more.gallop)
-            TabBar(tab: tab, unread: Int(game.unread + game.forumReplies)) { t in if page != nil { onClosePage() }; tab = t; sub = 0 }
+            TabBar(tab: tab, unread: Int(game.unread + game.forumReplies)) { t in
+                if page != nil { onClosePage() }
+                tab = t; sub = 0
+                if t == .world && mapView == nil { more.openMap() }
+            }
         }
         .grayscale(game.character.ghost ? 0.85 : 0)
         .environment(\.elapsed, elapsed)
@@ -517,7 +522,7 @@ struct JournalLines: View {
     }
 
     var body: some View {
-        let rows = SceneData.journal(game, count)
+        let rows = SceneData.journal(game, count, hereOnly: true)
         if !rows.isEmpty {
             VStack(alignment: .leading, spacing: 2) {
                 ForEach(Array(rows.enumerated()), id: \.offset) { _, r in
