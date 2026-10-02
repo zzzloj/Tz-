@@ -47,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
@@ -122,25 +123,27 @@ val LocalGhost = compositionLocalOf { false }
 private val grey = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
 
 private object ArtCache {
-    val images = LruCache<String, ImageBitmap>(64)
+    val images = LruCache<String, ImageBitmap>(96)
     val missing = HashSet<String>()
+    /** Names of the bundled item pictures (assets/art/items). */
+    @Volatile var items: Set<String>? = null
 }
 
-/** A picture by its path on the server, with a quiet placeholder while it loads or if there is none. */
+/** A picture of the game (content/art, bundled in the app's assets), with a quiet placeholder while it loads. */
 @Composable
 fun ArtImage(path: String?, modifier: Modifier = Modifier, contentScale: ContentScale = ContentScale.Crop, dim: Boolean = false) {
     val c = Tz.colors
-    val toUrl = LocalArtUrl.current
-    val url = path?.let { toUrl?.invoke(it) }
-    var image by remember(url) { mutableStateOf(url?.let { ArtCache.images.get(it) }) }
-    if (url != null && image == null && url !in ArtCache.missing) LaunchedEffect(url) {
+    val assets = androidx.compose.ui.platform.LocalContext.current.assets
+    var image by remember(path) { mutableStateOf(path?.let { ArtCache.images.get(it) }) }
+    if (path != null && image == null && path !in ArtCache.missing) LaunchedEffect(path) {
         image = withContext(Dispatchers.IO) {
             try {
-                val bytes = URL(url).openStream().use { it.readBytes() }
-                BitmapFactory.decodeByteArray(bytes, 0, bytes.size)?.asImageBitmap()
+                val items = ArtCache.items ?: (assets.list("art/items")?.toSet() ?: emptySet()).also { ArtCache.items = it }
+                val file = GameScene.bundledArt(path) { it in items } ?: return@withContext null
+                assets.open("art/$file").use { BitmapFactory.decodeStream(it) }?.asImageBitmap()
             } catch (_: Exception) { null }
         }
-        image?.let { ArtCache.images.put(url, it) } ?: ArtCache.missing.add(url)
+        image?.let { ArtCache.images.put(path, it) } ?: ArtCache.missing.add(path)
     }
     Box(modifier.background(c.surfaceSunken)) {
         image?.let { Image(it, null, Modifier.fillMaxSize().alpha(if (dim) 0.45f else 1f), contentScale = contentScale, colorFilter = if (LocalGhost.current) grey else null) }
@@ -271,8 +274,7 @@ fun Playing(
             }
             Sheets(game, busy, onAnswer, onCloseDialog, pending, pendingAbility, more, social, Modifier.align(Alignment.BottomCenter))
         }
-        // The belt shows once something is put on it (Сумка → «на пояс»); empty cells only puzzled.
-        if ((tab == GameTab.PLACE || tab == GameTab.BAG) && GameScene.belt(game).any { it.second != null }) Belt(game, busy, layout) { open(GameTab.BAG) }
+        if (tab == GameTab.PLACE || tab == GameTab.BAG) Belt(game, busy, layout) { open(GameTab.BAG) }
         Exits(game.location.exits, busy, onGo, more.gallop)
         TabBar(tab, game.unread + game.forumReplies) { open(it) }
     }
@@ -351,6 +353,22 @@ private fun TabBar(tab: GameTab, unread: Int, onSelect: (GameTab) -> Unit) {
     }
 }
 
+/** A bold arrow for an exit (north, east, south, west; up and down get a bar), a door for the rest. */
+@Composable
+private fun ExitGlyph(key: String, color: Color) {
+    if (key == "enter") { TzIcon("enter", Modifier.size(26.dp), color); return }
+    val angle = when (key) { "east" -> 90f; "south", "down" -> 180f; "west" -> 270f; else -> 0f }
+    androidx.compose.foundation.Canvas(Modifier.size(26.dp).graphicsLayer { rotationZ = angle }) {
+        val w = size.width; val h = size.height; val sw = w * 0.14f
+        val style = androidx.compose.ui.graphics.drawscope.Stroke(width = sw, cap = androidx.compose.ui.graphics.StrokeCap.Round, join = androidx.compose.ui.graphics.StrokeJoin.Round)
+        val shaft = androidx.compose.ui.graphics.Path().apply { moveTo(w / 2, h * 0.88f); lineTo(w / 2, h * 0.16f) }
+        val head = androidx.compose.ui.graphics.Path().apply { moveTo(w * 0.2f, h * 0.44f); lineTo(w / 2, h * 0.14f); lineTo(w * 0.8f, h * 0.44f) }
+        drawPath(shaft, color, style = style)
+        drawPath(head, color, style = style)
+        if (key == "up" || key == "down") drawLine(color, androidx.compose.ui.geometry.Offset(w * 0.18f, h * 0.04f), androidx.compose.ui.geometry.Offset(w * 0.82f, h * 0.04f), strokeWidth = sw, cap = androidx.compose.ui.graphics.StrokeCap.Round)
+    }
+}
+
 /** Exits as arrow buttons only (owner's note 02.10): one tap goes, a long press shows where it leads. */
 @OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
@@ -369,15 +387,15 @@ private fun Exits(exits: List<ExitView>, busy: Boolean, onGo: (ExitView) -> Unit
             sorted.forEach { e ->
                 val shape = RoundedCornerShape(Design.Radius.M.dp)
                 Box(
-                    Modifier.width(76.dp).heightIn(min = Design.Size.TOUCH.dp + 12.dp).clip(shape).background(c.panel).border(Design.Size.BORDER.dp, c.border, shape)
+                    Modifier.width(76.dp).heightIn(min = Design.Size.TOUCH.dp + 14.dp).clip(shape).background(c.primary).border(Design.Size.BORDER.dp, c.title, shape)
                         .alpha(if (busy) 0.5f else 1f)
                         .combinedClickable(enabled = !busy, onClick = { onGo(e) }, onLongClick = { hint = e.label + if (e.occupied) " — там кто-то есть" else "" })
                         .semantics { contentDescription = e.label },
                     contentAlignment = Alignment.Center,
                 ) {
                     Column(Modifier.padding(vertical = Design.Space.XS.dp, horizontal = 2.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                        TzIcon(GameScene.exitIcon(e.label), Modifier.size(24.dp), c.accent)
-                        Text(GameScene.exitCaption(e.label), style = Tz.type.small, color = c.text, maxLines = 2,
+                        ExitGlyph(GameScene.exitIcon(e.label), c.onPrimary)
+                        Text(GameScene.exitCaption(e.label), style = Tz.type.small, color = c.onPrimary, maxLines = 2,
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center, overflow = TextOverflow.Ellipsis, lineHeight = 12.sp,
                             fontSize = 11.sp)
                     }

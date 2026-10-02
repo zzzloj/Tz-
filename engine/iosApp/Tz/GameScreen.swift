@@ -88,22 +88,34 @@ extension EnvironmentValues {
     }
 }
 
-/// A picture from the server with a quiet placeholder.
+/// A picture of the game, bundled in the app (content/art as the «art» folder), with a quiet placeholder.
+enum BundledArt {
+    static let root = Bundle.main.resourceURL?.appendingPathComponent("art")
+    static let items: Set<String> = {
+        guard let dir = root?.appendingPathComponent("items"), let names = try? FileManager.default.contentsOfDirectory(atPath: dir.path) else { return [] }
+        return Set(names)
+    }()
+    static let cache = NSCache<NSString, UIImage>()
+
+    static func image(_ path: String) -> UIImage? {
+        if let hit = cache.object(forKey: path as NSString) { return hit }
+        guard let file = GameScene.shared.bundledArt(path: path, hasItem: { KotlinBoolean(bool: items.contains($0)) }),
+              let url = root?.appendingPathComponent(file), let img = UIImage(contentsOfFile: url.path) else { return nil }
+        cache.setObject(img, forKey: path as NSString)
+        return img
+    }
+}
+
 struct ArtImage: View {
     let path: String?
     var dim = false
-    @Environment(\.artUrl) private var artUrl
     @Environment(\.tz) private var c
 
     var body: some View {
         ZStack {
             c.surfaceSunken
-            if let p = path, let make = artUrl, let url = URL(string: make(p)) {
-                AsyncImage(url: url) { phase in
-                    if let image = phase.image {
-                        image.resizable().scaledToFill().opacity(dim ? 0.45 : 1)
-                    }
-                }
+            if let p = path, let img = BundledArt.image(p) {
+                Image(uiImage: img).resizable().scaledToFill().opacity(dim ? 0.45 : 1)
             }
         }
         .clipped()
@@ -246,7 +258,7 @@ struct GameScreen: View {
                 Sheets(game: game, busy: busy, onAnswer: onAnswer, onCloseDialog: onCloseDialog, pending: pending,
                        pendingAbility: pendingAbility, more: more, social: social)
             }
-            if (tab == .place || tab == .bag) && SceneData.belt(game).contains(where: { $0.1 != nil }) { Belt(game: game, busy: busy, layout: layout) { tab = .bag; sub = 0 } }
+            if tab == .place || tab == .bag { Belt(game: game, busy: busy, layout: layout) { tab = .bag; sub = 0 } }
             Exits(exits: game.location.exits, busy: busy, onGo: onGo, onGallop: more.gallop)
             TabBar(tab: tab, unread: Int(game.unread + game.forumReplies)) { t in
                 if page != nil { onClosePage() }
@@ -368,6 +380,19 @@ private struct Exits: View {
 
     private static let order = ["west", "north", "up", "enter", "down", "south", "east"]
 
+    /// A bold system arrow for a side, a door for the rest.
+    static func symbol(_ key: String) -> String {
+        switch key {
+        case "north": return "arrow.up"
+        case "south": return "arrow.down"
+        case "east": return "arrow.right"
+        case "west": return "arrow.left"
+        case "up": return "arrow.up.to.line"
+        case "down": return "arrow.down.to.line"
+        default: return "door.left.hand.open"
+        }
+    }
+
     var body: some View {
         let sorted = exits.sorted { (Exits.order.firstIndex(of: GameScene.shared.exitIcon(label: $0.label)) ?? 9) < (Exits.order.firstIndex(of: GameScene.shared.exitIcon(label: $1.label)) ?? 9) }
         let side: CGFloat = 76
@@ -377,14 +402,15 @@ private struct Exits: View {
                 ForEach(sorted, id: \.target) { e in
                     ZStack(alignment: .topTrailing) {
                         VStack(spacing: 2) {
-                            TzIcon(key: GameScene.shared.exitIcon(label: e.label), size: 24, color: c.accent)
-                            Text(GameScene.shared.exitCaption(label: e.label)).font(.system(size: 11)).foregroundStyle(c.text)
+                            Image(systemName: Exits.symbol(GameScene.shared.exitIcon(label: e.label)))
+                                .font(.system(size: 22, weight: .heavy)).foregroundStyle(c.onPrimary)
+                            Text(GameScene.shared.exitCaption(label: e.label)).font(.system(size: 11)).foregroundStyle(c.onPrimary)
                                 .lineLimit(2).multilineTextAlignment(.center).minimumScaleFactor(0.8)
                         }
                             .padding(.vertical, 4).padding(.horizontal, 2)
                             .frame(width: side, height: side + 12)
-                            .background(RoundedRectangle(cornerRadius: CGFloat(Design.Radius.shared.M)).fill(c.panel))
-                            .overlay(RoundedRectangle(cornerRadius: CGFloat(Design.Radius.shared.M)).stroke(c.border, lineWidth: 1))
+                            .background(RoundedRectangle(cornerRadius: CGFloat(Design.Radius.shared.M)).fill(c.primary))
+                            .overlay(RoundedRectangle(cornerRadius: CGFloat(Design.Radius.shared.M)).stroke(c.title, lineWidth: 1))
                         if e.occupied { Circle().fill(c.danger).frame(width: 7, height: 7).padding(4) }
                     }
                     .opacity(busy ? 0.5 : 1)

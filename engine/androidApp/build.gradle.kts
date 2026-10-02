@@ -6,6 +6,14 @@ plugins {
 
 kotlin { jvmToolchain(21) }
 
+// All the game's pictures ship inside the app (owner 02.10): content/art → assets/art.
+val artAssets = layout.buildDirectory.dir("generated/artAssets")
+val copyArt by tasks.registering(Copy::class) {
+    from(rootProject.file("../content/art")) { include("locations/**", "npcs/**", "mobs/**", "items/**", "brand/*.webp") }
+    into(artAssets.map { it.dir("art") })
+}
+tasks.named("preBuild") { dependsOn(copyArt) }
+
 android {
     namespace = "tz.android"
     compileSdk = 36
@@ -20,6 +28,7 @@ android {
         val serverUrl = (project.findProperty("tz.serverUrl") as String?) ?: "https://tz-engine-production.up.railway.app"
         buildConfigField("String", "SERVER_URL", "\"$serverUrl\"")
     }
+    sourceSets["main"].assets.srcDir(artAssets)
     buildFeatures {
         compose = true
         buildConfig = true

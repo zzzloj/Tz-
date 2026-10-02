@@ -111,6 +111,22 @@ object GameScene {
 
     /** Path of an item's picture. */
     fun itemPath(id: String): String = "/art/item/$id"
+
+    /** Pictures a variant of an item may use: the id itself, then its base (before «..», «_», «-»). Same rule as the server. */
+    fun itemArtCandidates(id: String): List<String> = listOf(
+        id, id.substringBefore(".."), id.substringBefore('_'), id.substringBefore('_').substringBefore('-').substringBefore(".."),
+    ).distinct()
+
+    /**
+     * The file inside the app's bundled art (content/art) for a path from [artPath] or [itemPath]:
+     * "npcs/npc-beginner.webp", "items/i.w.k.begin.webp". [hasItem] says whether items/<name>.webp is bundled.
+     */
+    fun bundledArt(path: String, hasItem: (String) -> Boolean): String? {
+        val p = path.removePrefix("/art/")
+        if (!p.startsWith("item/")) return p
+        val name = itemArtCandidates(p.removePrefix("item/").removeSuffix(".webp")).firstOrNull { hasItem("$it.webp") } ?: return null
+        return "items/$name.webp"
+    }
 }
 
 /** See [GameScene.groups]. */

@@ -14,7 +14,12 @@ targets:
   Tz:
     type: application
     platform: iOS
-    sources: [Tz]
+    sources:
+      - Tz
+      # All the game's pictures ship inside the app (owner 02.10), as the «art» folder.
+      - path: ../../content/art
+        type: folder
+        buildPhase: resources
     dependencies:
       - framework: ../shared/build/XCFrameworks/debug/Shared.xcframework
         embed: false

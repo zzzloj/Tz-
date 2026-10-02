@@ -61,7 +61,7 @@ class ScreenshotTest {
         """{"character":$character,"location":{"id":"x","name":"Двор","zone":1,"description":"Мощёная камнем дорога между добротными домами.",
             "exits":[{"label":"дом на севере","target":"a","occupied":true},{"label":"склад на юге","target":"b"},{"label":"на восток","target":"c"},
                      {"label":"выйти на улицу","target":"d"},{"label":"на запад","target":"e"}],
-            "npcs":[{"id":"n1","name":"Жульен","canTalk":true}]},
-            "journal":["Вы на охраняемой территории"],"journalKinds":["sys"],"journalHere":1,"belt":["","","",""],"slots":["","",""]}""",
+            "npcs":[{"id":"n1","name":"Жульен","canTalk":true,"art":"npcs/npc-beginner"}],"art":"locations/loc-city-street"},
+            "journal":["Вы на охраняемой территории"],"journalKinds":["sys"],"journalHere":1,"belt":["i.f.b.health","i.f.bread","",""],"slots":["","",""],"inventory":[{"id":"i.f.b.health","name":"напиток исцеления","count":3,"equipped":false,"equippable":false,"usable":true},{"id":"i.f.bread","name":"хлеб","count":5,"equipped":false,"equippable":false,"usable":true}]}""",
     )
 }
