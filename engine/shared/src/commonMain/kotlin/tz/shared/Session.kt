@@ -549,7 +549,7 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
                 try { enter() } catch (_: Exception) { }
             }
         } catch (e: Exception) {
-            error = "Нет связи с сервером"
+            error = "Нет связи с сервером. Проверьте интернет; если мобильная сеть не пускает к серверу — попробуйте Wi-Fi или VPN."
             if (screen == Screen.LOADING) screen = if (api.token == null) Screen.SIGN_IN else Screen.LOADING
         } finally {
             busy = false

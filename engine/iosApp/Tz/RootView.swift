@@ -241,7 +241,7 @@ struct RootView: View {
         }
         .background {
             if s.screen == Screen.signIn || s.screen == Screen.createCharacter {
-                ArtImage(path: "/art/brand/splash-portrait.webp").ignoresSafeArea()
+                Image("splash").resizable().scaledToFill().ignoresSafeArea()  // bundled: shown even without the server
             }
         }
         .environment(\.artUrl, { [api = s.api] path in api.artUrl(path: path) })

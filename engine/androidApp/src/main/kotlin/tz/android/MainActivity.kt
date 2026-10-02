@@ -252,7 +252,8 @@ fun App(session: Session, live: Boolean = true) {
     val auth = account == null && admin == null && forum == null && pages == null &&
         (session.screen == Screen.SIGN_IN || session.screen == Screen.CREATE_CHARACTER)
     val splashTop = maxHeight * 0.34f
-    if (auth) ArtImage("/art/brand/splash-portrait.webp", Modifier.fillMaxSize(), contentScale = androidx.compose.ui.layout.ContentScale.Crop)
+    // Bundled with the app: the sign-in screen must look right even when the server cannot be reached.
+    if (auth) androidx.compose.foundation.Image(androidx.compose.ui.res.painterResource(R.drawable.splash), null, Modifier.fillMaxSize(), contentScale = androidx.compose.ui.layout.ContentScale.Crop)
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
