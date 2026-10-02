@@ -251,12 +251,13 @@ fun App(session: Session, live: Boolean = true) {
     // Sign-in and a new character: the splash fills the screen, the form sits on its dark lower part.
     val auth = account == null && admin == null && forum == null && pages == null &&
         (session.screen == Screen.SIGN_IN || session.screen == Screen.CREATE_CHARACTER)
+    val splashTop = maxHeight * 0.34f
     if (auth) ArtImage("/art/brand/splash-portrait.webp", Modifier.fillMaxSize(), contentScale = androidx.compose.ui.layout.ContentScale.Crop)
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        if (auth) androidx.compose.foundation.layout.Spacer(Modifier.height(maxHeight * 0.34f))
+        if (auth) androidx.compose.foundation.layout.Spacer(Modifier.height(splashTop))
         when {
             account != null -> AccountPanel(account, session.info, busy, site)
             admin != null -> AdminPanel(admin, busy, site)
