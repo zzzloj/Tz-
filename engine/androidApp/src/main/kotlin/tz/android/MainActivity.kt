@@ -134,10 +134,10 @@ fun App(session: Session, live: Boolean = true) {
     val playing = session.screen == Screen.PLAYING && game != null
     // Account, moderation, forum and pages open inside the game screen; header, exits and tabs stay.
     val sitePage: (@Composable () -> Unit)? = when {
-        account != null -> @Composable { AccountPanel(account, session.info, busy, site) }
-        admin != null -> @Composable { AdminPanel(admin, busy, site) }
-        forum != null -> @Composable { ForumPanel(forum, busy, site) }
-        pages != null -> @Composable { PagesPanel(pages, session.page, busy, site) }
+        account != null -> ({ AccountPanel(account, session.info, busy, site) })
+        admin != null -> ({ AdminPanel(admin, busy, site) })
+        forum != null -> ({ ForumPanel(forum, busy, site) })
+        pages != null -> ({ PagesPanel(pages, session.page, busy, site) })
         else -> null
     }
     fun closePages() { session.closeAccount(); session.closeAdmin(); session.closeForum(); session.closePages(); version++ }
