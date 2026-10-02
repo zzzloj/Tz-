@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -348,21 +349,35 @@ private fun TabBar(tab: GameTab, unread: Int, onSelect: (GameTab) -> Unit) {
     }
 }
 
+/** Exits as arrow buttons only (owner's note 02.10): one tap goes, a long press shows where it leads. */
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 private fun Exits(exits: List<ExitView>, busy: Boolean, onGo: (ExitView) -> Unit, onGallop: (ExitView) -> Unit) {
     val c = Tz.colors
-    Row(
-        Modifier.fillMaxWidth().background(c.surfaceSunken).horizontalScroll(rememberScrollState())
-            .padding(horizontal = Design.Space.S.dp, vertical = Design.Space.XS.dp),
-        horizontalArrangement = Arrangement.spacedBy(Design.Space.XS.dp),
-    ) {
-        exits.forEach { e ->
-            OutlinedButton(onClick = { onGo(e) }, enabled = !busy, modifier = Modifier.heightIn(min = Design.Size.TOUCH.dp)) {
-                TzIcon(GameScene.exitIcon(e.label), Modifier.size(16.dp), c.accent)
-                Spacer(Modifier.width(Design.Space.XS.dp))
-                Text(e.label + if (e.occupied) " !" else "", style = Tz.type.button)
+    var hint by remember(exits) { mutableStateOf<String?>(null) }
+    val order = listOf("west", "north", "up", "enter", "down", "south", "east")
+    val sorted = exits.sortedBy { order.indexOf(GameScene.exitIcon(it.label)) }
+    Column(Modifier.fillMaxWidth().background(c.surfaceSunken).padding(horizontal = Design.Space.S.dp, vertical = Design.Space.XS.dp)) {
+        hint?.let { Text(it, Modifier.fillMaxWidth(), style = Tz.type.small, color = c.textMuted, textAlign = androidx.compose.ui.text.style.TextAlign.Center) }
+        androidx.compose.foundation.layout.FlowRow(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(Design.Space.S.dp, Alignment.CenterHorizontally),
+            verticalArrangement = Arrangement.spacedBy(Design.Space.XS.dp),
+        ) {
+            sorted.forEach { e ->
+                val shape = RoundedCornerShape(Design.Radius.M.dp)
+                Box(
+                    Modifier.size(Design.Size.TOUCH.dp + 8.dp).clip(shape).background(c.panel).border(Design.Size.BORDER.dp, c.border, shape)
+                        .alpha(if (busy) 0.5f else 1f)
+                        .combinedClickable(enabled = !busy, onClick = { onGo(e) }, onLongClick = { hint = e.label + if (e.occupied) " — там кто-то есть" else "" })
+                        .semantics { contentDescription = e.label },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    TzIcon(GameScene.exitIcon(e.label), Modifier.size(26.dp), c.accent)
+                    if (e.occupied) Box(Modifier.align(Alignment.TopEnd).padding(4.dp).size(7.dp).clip(RoundedCornerShape(50)).background(c.danger))
+                }
+                if (e.gallop) ActionButton("галопом ${e.label}", !busy, { onGallop(e) }, icon = "gallop")
             }
-            if (e.gallop) ActionButton("галопом ${e.label}", !busy, { onGallop(e) }, icon = "gallop")
         }
     }
 }

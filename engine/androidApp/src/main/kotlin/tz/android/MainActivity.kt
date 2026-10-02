@@ -247,10 +247,16 @@ fun App(session: Session, live: Boolean = true) {
                 },
             )
         }
-    } else Column(
+    } else androidx.compose.foundation.layout.BoxWithConstraints(Modifier.fillMaxSize()) {
+    // Sign-in and a new character: the splash fills the screen, the form sits on its dark lower part.
+    val auth = account == null && admin == null && forum == null && pages == null &&
+        (session.screen == Screen.SIGN_IN || session.screen == Screen.CREATE_CHARACTER)
+    if (auth) ArtImage("/art/brand/splash-portrait.webp", Modifier.fillMaxSize(), contentScale = androidx.compose.ui.layout.ContentScale.Crop)
+    Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
+        if (auth) androidx.compose.foundation.layout.Spacer(Modifier.height(maxHeight * 0.34f))
         when {
             account != null -> AccountPanel(account, session.info, busy, site)
             admin != null -> AdminPanel(admin, busy, site)
@@ -280,16 +286,16 @@ fun App(session: Session, live: Boolean = true) {
         if (busy) CircularProgressIndicator()
     }
     }
+    }
 }
 
-/** The splash picture over the sign-in forms. */
+/** The game's name over the splash. */
 @Composable
-fun Splash(height: Int = 280) {
+fun GameTitle() {
     val c = Tz.colors
-    Box(Modifier.fillMaxWidth().height(height.dp)) {
-        ArtImage("/art/brand/splash-portrait.webp", Modifier.fillMaxSize(), contentScale = androidx.compose.ui.layout.ContentScale.Crop)
-        Box(Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(androidx.compose.ui.graphics.Color.Transparent, c.background))))
-        Text("Территория Зла", Modifier.align(Alignment.BottomCenter).padding(bottom = 8.dp), style = Tz.type.title, color = c.title)
+    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+        Text("Амулет дракона", style = Tz.type.title, color = c.title, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+        Text("REBORN", style = Tz.type.label, color = c.accent)
     }
 }
 
@@ -300,7 +306,7 @@ fun SignIn(busy: Boolean, onSignIn: (String, String) -> Unit, onRegister: (Strin
     var login by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var again by remember { mutableStateOf("") }
-    Splash()
+    GameTitle()
     Text(if (registering) "Регистрация" else "Вход", style = Tz.type.heading, color = c.title, modifier = Modifier.fillMaxWidth(), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
     OutlinedTextField(login, { login = it }, label = { Text("Логин") }, singleLine = true, modifier = Modifier.fillMaxWidth())
     OutlinedTextField(
@@ -331,7 +337,7 @@ fun CreateCharacter(busy: Boolean, onCreate: (String, Boolean) -> Unit) {
     val c = Tz.colors
     var name by remember { mutableStateOf("") }
     var female by remember { mutableStateOf(false) }
-    Splash(200)
+    GameTitle()
     Text("Новый персонаж", style = Tz.type.heading, color = c.title)
     OutlinedTextField(name, { name = it }, label = { Text("Имя") }, singleLine = true, modifier = Modifier.fillMaxWidth())
     Text("Имя — русскими буквами, его увидят все. Сменить его потом нельзя.", style = Tz.type.small, color = c.textMuted)

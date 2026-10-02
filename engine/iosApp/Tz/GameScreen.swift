@@ -357,32 +357,45 @@ private struct TabBar: View {
     }
 }
 
+/// Exits as arrow buttons only (owner's note 02.10): a tap goes, a long press shows where it leads.
 private struct Exits: View {
     let exits: [ExitView]
     let busy: Bool
     let onGo: (ExitView) -> Void
     let onGallop: (ExitView) -> Void
+    @State private var hint: String? = nil
     @Environment(\.tz) private var c
 
+    private static let order = ["west", "north", "up", "enter", "down", "south", "east"]
+
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: CGFloat(Design.Space.shared.XS)) {
-                ForEach(exits, id: \.target) { e in
-                    Button { onGo(e) } label: {
-                        HStack(spacing: CGFloat(Design.Space.shared.XS)) {
-                            TzIcon(key: GameScene.shared.exitIcon(label: e.label), size: 16, color: c.accent)
-                            Text(e.label + (e.occupied ? " !" : "")).font(TzType.button)
-                        }
-                        .padding(.horizontal, CGFloat(Design.Space.shared.M))
-                        .frame(minHeight: CGFloat(Design.Size.shared.TOUCH))
-                        .overlay(RoundedRectangle(cornerRadius: CGFloat(Design.Radius.shared.M)).stroke(c.border, lineWidth: 1))
-                    }.buttonStyle(.plain).disabled(busy)
+        let sorted = exits.sorted { (Exits.order.firstIndex(of: GameScene.shared.exitIcon(label: $0.label)) ?? 9) < (Exits.order.firstIndex(of: GameScene.shared.exitIcon(label: $1.label)) ?? 9) }
+        let side = CGFloat(Design.Size.shared.TOUCH) + 8
+        VStack(spacing: 2) {
+            if let h = hint { Text(h).font(TzType.small).foregroundStyle(c.textMuted) }
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: side, maximum: side), spacing: 8)], spacing: 4) {
+                ForEach(sorted, id: \.target) { e in
+                    ZStack(alignment: .topTrailing) {
+                        TzIcon(key: GameScene.shared.exitIcon(label: e.label), size: 26, color: c.accent)
+                            .frame(width: side, height: side)
+                            .background(RoundedRectangle(cornerRadius: CGFloat(Design.Radius.shared.M)).fill(c.panel))
+                            .overlay(RoundedRectangle(cornerRadius: CGFloat(Design.Radius.shared.M)).stroke(c.border, lineWidth: 1))
+                        if e.occupied { Circle().fill(c.danger).frame(width: 7, height: 7).padding(4) }
+                    }
+                    .opacity(busy ? 0.5 : 1)
+                    .contentShape(Rectangle())
+                    .onTapGesture { if !busy { onGo(e) } }
+                    .onLongPressGesture { hint = e.label + (e.occupied ? " — там кто-то есть" : "") }
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(e.label)
+                    .accessibilityAddTraits(.isButton)
                     if e.gallop { ActionButton(label: "галопом \(e.label)", enabled: !busy, action: { onGallop(e) }, icon: "gallop") }
                 }
             }
-            .padding(.horizontal, CGFloat(Design.Space.shared.S)).padding(.vertical, CGFloat(Design.Space.shared.XS))
         }
+        .padding(.horizontal, CGFloat(Design.Space.shared.S)).padding(.vertical, CGFloat(Design.Space.shared.XS))
         .background(c.surfaceSunken)
+        .onChange(of: exits.map { $0.target }) { _ in hint = nil }
     }
 }
 

@@ -117,7 +117,7 @@ class SiteTest {
     fun siteAndPages() = withApp {
         val home = client.get("/")
         assertEquals(HttpStatusCode.OK, home.status)
-        assertTrue(home.bodyAsText().contains("Территория Зла"))
+        assertTrue(home.bodyAsText().contains("Амулет дракона"))
         assertTrue(client.get("/pages/rules").bodyAsText().contains("Правила"))
         assertEquals(HttpStatusCode.NotFound, client.get("/pages/nothing").status)
         assertTrue(client.get("/forum").bodyAsText().contains("Торговля"))

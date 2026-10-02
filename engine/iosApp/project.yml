@@ -21,7 +21,7 @@ targets:
     info:
       path: Tz/Info.plist
       properties:
-        CFBundleDisplayName: Территория Зла
+        CFBundleDisplayName: "Амулет дракона"
         UILaunchScreen: {}
         # Fonts of the design system (tz.shared.Design.Fonts, SIL OFL: engine/licenses).
         UIAppFonts:

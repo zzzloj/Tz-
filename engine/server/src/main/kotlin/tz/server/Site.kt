@@ -18,7 +18,7 @@ internal fun Route.siteRoutes(content: Content, game: Game) {
     get("/") {
         val news = game.forum.news(5)
         val w = game.worldView()
-        call.page("Территория Зла", buildString {
+        call.page("Амулет дракона. Reborn", buildString {
             append("<p class=lead>Многопользовательская текстовая ролевая игра. Когда-то — WAP-игра для мобильных телефонов, теперь — приложение для Android и iPhone.</p>")
             append("<p class=soon>Приложения скоро появятся в Google Play и App Store.</p>")
             append("<h2>Новости</h2>")
@@ -119,9 +119,9 @@ private fun html(title: String, body: String, pages: List<Pair<String, String>>)
 <style>
 ${SiteStyle.CSS}
 </style></head><body>
-<header><div class="banner"></div><h1><a href="/">Территория Зла</a></h1><nav><a href="/">Главная</a><a href="/online">Кто в игре</a><a href="/forum">Форум</a>${pages.joinToString("") { (id, t) -> "<a href=\"/pages/$id\">${esc(t)}</a>" }}</nav></header>
+<header><div class="banner"></div><h1><a href="/">Амулет дракона. Reborn</a></h1><nav><a href="/">Главная</a><a href="/online">Кто в игре</a><a href="/forum">Форум</a>${pages.joinToString("") { (id, t) -> "<a href=\"/pages/$id\">${esc(t)}</a>" }}</nav></header>
 <main>$body</main>
-<footer>Территория Зла · 2006–2007, возрождена в ${java.time.Year.now().value}</footer>
+<footer>Амулет дракона. Reborn · возрождение «Территории Зла» (2006–2007), ${java.time.Year.now().value}</footer>
 </body></html>"""
 
 /** The site in the game's style: colours from tz.shared.Design («Ночь» dark, «Пергамент» light), the game's fonts. */

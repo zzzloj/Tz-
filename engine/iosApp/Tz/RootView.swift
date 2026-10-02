@@ -236,8 +236,13 @@ struct RootView: View {
                     Text(error).foregroundStyle(.red)
                 }
             }
-            .navigationTitle(s.screen == Screen.signIn || s.screen == Screen.createCharacter ? "" : "Территория Зла")
+            .navigationTitle(s.screen == Screen.signIn || s.screen == Screen.createCharacter ? "" : "Амулет дракона")
             .overlay { if s.busy { ProgressView() } }
+        }
+        .background {
+            if s.screen == Screen.signIn || s.screen == Screen.createCharacter {
+                ArtImage(path: "/art/brand/splash-portrait.webp").ignoresSafeArea()
+            }
         }
         .environment(\.artUrl, { [api = s.api] path in api.artUrl(path: path) })
     }
@@ -249,11 +254,13 @@ struct SplashHeader: View {
     @Environment(\.tz) private var c
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            ArtImage(path: "/art/brand/splash-portrait.webp")
-            LinearGradient(colors: [.clear, c.background], startPoint: .top, endPoint: .bottom)
-            Text("Территория Зла").font(TzType.title).foregroundStyle(c.title).padding(.bottom, 8)
+        // The splash itself is the screen's background (forms(_:)); here only room for its picture and the name.
+        VStack(spacing: 2) {
+            Spacer()
+            Text("Амулет дракона").font(TzType.title).foregroundStyle(c.title).multilineTextAlignment(.center)
+            Text("REBORN").font(TzType.label).foregroundStyle(c.accent)
         }
+        .frame(maxWidth: .infinity)
         .frame(height: height)
         .listRowInsets(EdgeInsets())
         .listRowBackground(Color.clear)
@@ -303,7 +310,7 @@ struct CreateCharacterView: View {
     @Environment(\.tz) private var c
 
     var body: some View {
-        Section { SplashHeader(height: 200) }
+        Section { SplashHeader() }
         Section("Новый персонаж") {
             TextField("Имя", text: $name)
             Text("Имя — русскими буквами, его увидят все. Сменить его потом нельзя.").font(TzType.small).foregroundStyle(c.textMuted)

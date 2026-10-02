@@ -123,7 +123,7 @@ try:
     steps.append("cheat move refused, forged token refused")
 
     status, page = call("GET", "/")
-    assert status == 200 and "Территория Зла" in page, (status, page[:200])
+    assert status == 200 and "Амулет дракона" in page, (status, page[:200])
     status, forum = call("GET", "/api/forum")
     assert status == 200 and len(forum["sections"]) >= 6, (status, forum)
     status, acc = call("POST", "/api/account", {"op": "recovery", "password": "smoke-pass-123"}, token)

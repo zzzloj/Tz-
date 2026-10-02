@@ -2,6 +2,7 @@ package tz.android
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -60,12 +61,12 @@ class PlayingScreenTest {
         compose.setContent { TzTheme { App(session, live = false) } }
 
         compose.waitUntil(5_000) { compose.onAllNodesWithTextExists("Переулок") }
-        compose.onNodeWithText("на север").performScrollTo().performClick()
+        compose.onNodeWithContentDescription("на север").performClick()
         compose.waitUntil(5_000) { compose.onAllNodesWithTextExists("Двор лекаря") }
 
         // Exits stay on every tab; the backpack is its own tab.
         compose.onNodeWithText("Сумка").performClick()
-        compose.onNodeWithText("на север").assertExists()
+        compose.onNodeWithContentDescription("на север").assertExists()
         compose.onNodeWithText("надеть").performScrollTo().performClick()
         compose.waitUntil(5_000) { compose.onAllNodesWithTextExists("нож (надето)") }
         compose.onNodeWithText("снять").assertExists()
@@ -94,7 +95,7 @@ class PlayingScreenTest {
         assert(!compose.onAllNodesWithTextExists("белый волк  34/34")) { "an unaware monster is folded away in a fight" }
         compose.onNodeWithText("не заметили вас · 1").performScrollTo().performClick()
         compose.waitUntil(5_000) { compose.onAllNodesWithTextExists("белый волк  34/34") }
-        compose.onNodeWithText("на север").assertExists()
+        compose.onNodeWithContentDescription("на север").assertExists()
     }
 }
 
