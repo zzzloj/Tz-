@@ -67,8 +67,8 @@ if(substr($items,legacy_num(strlen($items)-1),1)=='|') $items=substr($items,0,le
 					}
 				if ($tcount==$count && strpos($items,'='.$item.':'.$tcount)===false) {	// удаляем предмет (кроме торговцев, у кот. ver|min|max=id:count), проверяем equip
 					$items=preg_replace('/\|?'.$item.':(\d+)/','',$items);
-					$equip=$l_i[$loc][$from]['equip'];
-					$tbp=strpos($l_i[$loc][$from]['equip'],$item);
+					$equip=is_array($l_i[$loc][$from]) ? ($l_i[$loc][$from]['equip'] ?? '') : '';	// PHP 8: a container item (a corpse) is a string here
+					$tbp=strpos($equip,$item);
 					if ($tbp===false) $tb='a'; else $tb=$l_i[$loc][$from]['equip'][legacy_num($tbp)+strlen($item)];
 					if (!$d && $equip && ($tb=='|' || $tb=='')) {
 						$equip=preg_replace('/'.$item.'\|?/','',$equip);
