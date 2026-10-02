@@ -45,7 +45,8 @@ class ScreenshotTest {
         val session = Session(GameApi("http://test", HttpClient(engine)), tokens)
         compose.setContent { TzTheme(dark = true) { androidx.compose.material3.Surface(color = Tz.colors.background) { App(session, live = false) } } }
         compose.waitUntil(5_000) { compose.onAllNodes(androidx.compose.ui.test.hasText("Scuko")).fetchSemanticsNodes().isNotEmpty() }
-        compose.waitForIdle()
+        // Pictures load from the assets on a background thread: let them arrive.
+        repeat(6) { Thread.sleep(400); compose.mainClock.advanceTimeBy(100); compose.waitForIdle() }
         // Draw the window ourselves: captureToImage waits for a frame Robolectric never reports.
         val bitmap = compose.runOnIdle {
             val view = compose.activity.window.decorView
