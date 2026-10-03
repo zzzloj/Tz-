@@ -682,7 +682,12 @@ private struct PlaceTab: View {
         ForEach(game.people, id: \.name) { p in PersonRow(person: p, game: game, busy: busy, more: more, social: social) }
         ForEach(loc.items, id: \.id) { item in
             let tool = item.id.hasPrefix("i.s.")
-            ListRow(name: item.name + (item.count > 1 ? " ×\(item.count)" : ""), status: "лежит на земле", art: GameScene.shared.itemPath(id: item.id)) {
+            let work = item.useWith.flatMap { id in game.inventory.first { $0.id == id } }
+            let status = work.map { "работать: \($0.name)" } ?? (tool && !item.takeable ? "здесь · нажмите «осмотреть»" : "лежит на земле")
+            ListRow(name: item.name + (item.count > 1 ? " ×\(item.count)" : ""), status: status, art: GameScene.shared.itemPath(id: item.id)) {
+                if let w = work {
+                    ActionButton(label: "работать: \(w.name)", enabled: !busy && !ch.ghost, action: { more.use(w) }, art: GameScene.shared.itemPath(id: w.id))
+                }
                 if item.takeable { ActionButton(label: (tool ? "использовать " : "взять ") + item.name, enabled: !busy, action: { onTake(item) }, icon: tool ? "use" : "take") }
                 ActionButton(label: "осмотреть \(item.name)", enabled: !busy, action: { more.look(item.id) }, icon: "look")
             } extra: {

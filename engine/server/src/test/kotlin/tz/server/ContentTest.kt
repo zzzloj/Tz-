@@ -25,6 +25,14 @@ class ContentTest {
     }
 
     @Test
+    fun workplacesKnowTheirTools() {
+        assertTrue(content.crafting.toolsAt("i.s.nakov").any { it.first == "i.set.molot" })
+        assertTrue(content.crafting.toolsAt("i.s.tree").any { it.first == "i.w.t." })
+        assertTrue(content.crafting.isTool("i.w.t.small", "i.w.t."))
+        assertTrue(!content.crafting.isTool("i.w.k.begin", "i.w.t."))
+    }
+
+    @Test
     fun startLocationHasExitsThatExist() {
         val start = content.locations.getValue(Protocol.START_LOCATION)
         assertTrue(start.exits.isNotEmpty())

@@ -675,6 +675,8 @@ class World(
         val wasInitial = s.initial.toSet()
         for ((id, n) in fresh) if (id in wasInitial && id !in savedIds) npcs[n.location]?.remove(n.key)
         for (d in saved) {
+            // A content NPC that content/ no longer has (the seasonal «Продавец счастья») stays gone.
+            if ("${d.home}|${d.key}" in wasInitial && fresh["${d.home}|${d.key}"] == null && d.owner == null) continue
             val n = fresh["${d.home}|${d.key}"]?.takeIf { it.id in savedIds }
                 ?: Npc(d.key, d.proto.proto(), d.hp, d.location, d.home, Long.MAX_VALUE, HashMap()).also { it.nextMoveAt = nextMove(now, it.proto.wander) }
             npcs[n.location]?.remove(n.key)
@@ -697,7 +699,11 @@ class World(
 
         val fixtures = ground.mapValues { (_, g) -> g.values.filter { it.id.startsWith("i.s.") } }
         ground.clear()
-        for (i in s.items) if (i.location in content.locations && (i.expiresAt == 0L || i.expiresAt > now)) putItem(i.location, GroundItem(i.id, i.name, i.count, i.expiresAt))
+        for (i in s.items) if (i.location in content.locations && (i.expiresAt == 0L || i.expiresAt > now)) {
+            // A permanent fixture content/ removed (the New Year tree) is not brought back from the save.
+            if (i.id.startsWith("i.s.") && i.expiresAt == 0L && fixtures[i.location]?.any { it.id == i.id } != true) continue
+            putItem(i.location, GroundItem(i.id, i.name, i.count, i.expiresAt))
+        }
         for ((loc, list) in fixtures) for (f in list) if (ground[loc]?.containsKey(f.id) != true) putItem(loc, f)
 
         corpses.clear()

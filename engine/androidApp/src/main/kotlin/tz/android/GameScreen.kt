@@ -505,9 +505,17 @@ private fun PlaceTab(
     groups.rest.forEach { npcRow(it) }
     game.people.forEach { p -> PersonRow(p, game, busy, thief, more, social) }
     loc.items.forEach { item ->
-        ListRow(item.name + if (item.count > 1) " ×${item.count}" else "", "лежит на земле", GameScene.itemPath(item.id),
+        val tool = item.useWith?.let { id -> game.inventory.firstOrNull { it.id == id } }
+        val status = when {
+            tool != null -> "работать: ${tool.name}"
+            item.id.startsWith("i.s.") && !item.takeable -> "здесь · нажмите «осмотреть»"
+            else -> "лежит на земле"
+        }
+        ListRow(item.name + if (item.count > 1) " ×${item.count}" else "", status, GameScene.itemPath(item.id),
             extra = { if (item.takeable && item.count > 1) TextButton(onClick = { more.takeOne(item) }, enabled = !busy) { Text("взять одну") } },
         ) {
+            // A workplace (anvil, loom, fire, tree, ore vein): work here with the tool from the backpack.
+            if (tool != null) ActionButton("работать: ${tool.name}", !busy && !ch.ghost, { more.use(tool) }, art = GameScene.itemPath(tool.id))
             if (item.takeable) ActionButton(if (item.id.startsWith("i.s.")) "использовать ${item.name}" else "взять ${item.name}", !busy, { onTake(item) }, icon = if (item.id.startsWith("i.s.")) "use" else "take")
             ActionButton("осмотреть ${item.name}", !busy, { more.look(item.id) }, icon = "look")
         }

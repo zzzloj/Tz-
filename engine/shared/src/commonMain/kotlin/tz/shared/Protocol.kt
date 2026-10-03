@@ -90,6 +90,8 @@ data class GroundItemView(
     val name: String,
     val count: Int,
     val takeable: Boolean,
+    /** A workplace (anvil, loom, fire, tree, ore vein): the item in your backpack that works here — use it (POST /api/game/use). */
+    val useWith: String? = null,
 )
 
 @Serializable

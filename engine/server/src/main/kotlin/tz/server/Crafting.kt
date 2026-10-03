@@ -47,6 +47,24 @@ class Crafting(private val root: JsonObject) {
         return null
     }
 
+    /**
+     * Tools that work at a fixture (an anvil, a loom, a fire, a tree, an ore vein):
+     * the tool's key (an id or an id prefix ending with «.»), what it does, its skill.
+     */
+    fun toolsAt(fixture: String): List<Triple<String, String, String?>> {
+        fun here(x: String) = fixture == x || fixture.startsWith("$x.")
+        val out = mutableListOf<Triple<String, String, String?>>()
+        for (section in listOf(recipes, special, gathering)) for ((key, v) in section) {
+            val o = v as? JsonObject ?: continue
+            val needHere = (o["needHere"] as? kotlinx.serialization.json.JsonArray)?.mapNotNull { (it as? JsonPrimitive)?.contentOrNull }.orEmpty()
+            if (needHere.any(::here) || o.str("node")?.let(::here) == true) out += Triple(key, o.str("about") ?: key, o.str("skill"))
+        }
+        return out
+    }
+
+    /** Whether item [id] is the tool [key] (an exact id, or any id under a prefix ending with «.»). */
+    fun isTool(id: String, key: String): Boolean = if (key.endsWith(".")) id.startsWith(key) else id == key || id.substringBefore('_') == key
+
     /** What the item is used on: "item", "player" or null (nothing). */
     fun targetOf(itemId: String): String? {
         val (kind, key) = find(itemId) ?: return null

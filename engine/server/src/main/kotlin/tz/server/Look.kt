@@ -195,6 +195,10 @@ private fun Game.lookItem(id: String): LookView {
         base.startsWith("i.s.") -> o?.str("description")?.let { lines += strip(it) }
         else -> o?.str("description")?.let { lines += strip(it) }
     }
+    // A workplace: which tools work here and with what skill.
+    if (base.startsWith("i.s.")) for ((_, about, skill) in content.crafting.toolsAt(base)) {
+        lines += "Здесь работают: " + about + (skill?.let { " (навык «${Rules.skillTitle(it)}»)" } ?: "") + "."
+    }
     Regex("-(\\d+)-").find(id)?.let { lines += "Заточен: +" + it.groupValues[1] }
     if ('_' in id && !base.startsWith("i.s.")) id.substringAfter('_').substringBefore('_').takeIf { it.isNotBlank() && !it.startsWith("..") }?.let { lines += "Сделано мастером: $it" }
     val gems = Regex("\\.\\.([A-Za-z0-9]+)").findAll(id).map { it.groupValues[1] }.toList()

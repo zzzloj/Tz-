@@ -1281,8 +1281,14 @@ class Game(
             parry = s.parry, magicDodge = s.magicDodge, magicParry = s.magicParry, magicResist = s.magicResist,
             rank = Levels.rank(Levels.percent(p.skills())), title = Levels.title(p.skills()),
         )
+        // Workplaces show the tool from the backpack that works there.
+        val located = location.copy(items = location.items.map { g ->
+            if (!g.id.startsWith("i.s.")) g else content.crafting.toolsAt(g.id).firstNotNullOfOrNull { (key, _, _) ->
+                inventory.firstOrNull { content.crafting.isTool(it.id, key) }?.id
+            }?.let { g.copy(useWith = it) } ?: g
+        })
         return GameView(
-            character, location, inventory,
+            character, located, inventory,
             journal = p.journal.toList(),
             journalKinds = p.journalKinds.toList(),
             journalHere = (p.logged - p.hereFrom).coerceAtMost(p.journal.size.toLong()).toInt(),
