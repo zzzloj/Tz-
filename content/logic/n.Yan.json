@@ -53,8 +53,8 @@
             "handler": "pet-return",
             "npc": "n.a.dogyan.1",
             "respawn": "x702x312",
-            "min": 1800,
-            "max": 3200
+            "min": 3600,
+            "max": 3600
           },
           {
             "remove": "n.a.dogyan.1"

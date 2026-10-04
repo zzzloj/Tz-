@@ -38,10 +38,11 @@
         ],
         "do": [
           {
-            "handler": "marten-unicorn"
-          },
-          {
-            "remove": "n.a.edinorog.1"
+            "handler": "pet-return",
+            "npc": "n.a.edinorog.1",
+            "respawn": "x618x53",
+            "min": 21600,
+            "max": 21600
           },
           {
             "give": "i.money",
