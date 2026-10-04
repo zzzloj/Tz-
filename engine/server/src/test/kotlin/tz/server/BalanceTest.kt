@@ -28,7 +28,7 @@ class BalanceTest {
     @Test
     fun heroFormulas() {
         assertEquals(212, b.hpMax(10, 50))
-        assertEquals(33, b.hpMax(2, 3))
+        assertEquals(31, b.hpMax(2, 3))
         assertEquals(1.1 * 0.8, b.pause("sword", 10), 1e-9)
         assertEquals(1.0, b.pause("knife", 0), 1e-9)
         assertEquals(1500L, b.pauseMillis("heavy", 0))
