@@ -64,8 +64,9 @@ class FormulasTest {
     @Test
     fun blueTopazDoesNotSlowTheWeapon() {
         // Owner 04.10.2026: the topaz only helps necromancy (Pets.raise); its old data added 10 s to the pause.
+        // Gems go only into named items, made by players (id with "_maker").
         val plain = Formulas.player(Skills.of(3, 3, 3), listOf("i.w.k.begin"), { content.items[it] })
-        val withGem = Formulas.player(Skills.of(3, 3, 3), listOf("i.w.k.begin..gt"), { content.items[it] })
+        val withGem = Formulas.player(Skills.of(3, 3, 3), listOf("i.w.k.begin_Тест..gt"), { content.items[it] })
         assertEquals(plain.delay, withGem.delay)
     }
 }
