@@ -124,7 +124,7 @@ suspend fun Game.shop(account: Account, npcKey: String, mode: String, itemId: St
 // ---- bank ------------------------------------------------------------------------------
 
 /** Banker check (f_speak.dat:37-38) with the faction rule applied to operations too. */
-private suspend fun Game.bankerFee(p: Game.Player, npcKey: String): Int {
+internal suspend fun Game.bankerFee(p: Game.Player, npcKey: String): Int {
     // Uin's "bank" topic was a slip that opened the bank at the start street; not carried over.
     if (npcKey == "n.beginner" || (content.dialogs[npcKey]?.get("topics") as? JsonObject)?.containsKey("bank") != true)
         throw ApiException(HttpStatusCode.BadRequest, Errors.NOT_A_TRADER)
@@ -153,7 +153,7 @@ internal suspend fun Game.bankView(p: Game.Player, npc: World.Npc, message: Stri
     return BankView(
         npc.key, npc.name,
         rows.map { (id, n) -> InventoryItemView(id, content.itemName(id), n, false, false) },
-        fee, message,
+        fee, message, clanVault = p.clanId != null,
     )
 }
 

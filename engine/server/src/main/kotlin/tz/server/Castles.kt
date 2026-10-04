@@ -179,6 +179,7 @@ internal suspend fun Game.castleView(p: Game.Player): CastleView? {
         member = own, guest = p.id in c.guests,
         canOpen = own && now < c.lockedUntil,
         canKnock = !own && c.clanId != null && p.location.endsWith(".in") && !p.ghost,
+        vault = own && p.location == "c.$n.hran",
     )
 }
 

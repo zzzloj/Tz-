@@ -673,6 +673,7 @@ private fun CastleBlock(cs: tz.shared.CastleView, busy: Boolean, social: SocialA
         Row(horizontalArrangement = Arrangement.spacedBy(Design.Space.S.dp)) {
             if (cs.canKnock) OutlinedButton(onClick = { social.castleOp("knock", null) }, enabled = !busy) { Text("Постучать") }
             if (cs.canOpen) OutlinedButton(onClick = { social.castleOp("open", null) }, enabled = !busy) { Text("Открыть ворота") }
+            if (cs.vault) OutlinedButton(onClick = social.vaultOpen, enabled = !busy) { Text("Хранилище клана") }
         }
         if (cs.member) {
             var sign by remember(cs.id) { mutableStateOf(cs.sign) }
@@ -1006,7 +1007,7 @@ private fun Sheets(
     pending: InventoryItemView?, pendingAbility: AbilityView?, more: MoreActions, social: SocialActions, modifier: Modifier,
 ) {
     val c = Tz.colors
-    val any = game.dialog != null || game.shop != null || game.bank != null || game.craft != null || game.exchange != null ||
+    val any = game.dialog != null || game.shop != null || game.bank != null || game.vault != null || game.craft != null || game.exchange != null ||
         game.look != null || game.peek != null || game.choice != null || pending != null || pendingAbility != null
     if (!any) return
     BoxWithConstraints(modifier.fillMaxWidth()) {
@@ -1063,6 +1064,45 @@ private fun Sheets(
                                 Text("${item.name}${if (item.count > 1) " ×${item.count}" else ""}", Modifier.weight(1f), style = small)
                                 TextButton(onClick = { more.bankPut(item, item.count) }, enabled = !busy) { Text("в банк") }
                             }
+                        }
+                        if (bank.clanVault) OutlinedButton(onClick = social.vaultOpen, enabled = !busy) { Text("Хранилище клана") }
+                    }
+                }
+                game.vault?.let { vault ->
+                    Panel("Хранилище клана ${vault.clan} · ${vault.items.size}/${vault.capacity}", onCloseDialog) {
+                        vault.message?.let { Text(it, style = small) }
+                        if (vault.items.isEmpty()) Text("в хранилище пусто", style = small)
+                        vault.items.forEach { item ->
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Column(Modifier.weight(1f)) {
+                                    Text("${item.name}${if (item.count > 1) " ×${item.count}" else ""}", style = small)
+                                    Text("${item.owner} · ${Rules.VAULT_ACCESS[item.access]}", style = Tz.type.small, color = c.textMuted)
+                                }
+                                if (item.canTake) {
+                                    TextButton(onClick = { more.vaultTake(item, 1) }, enabled = !busy) { Text("забрать") }
+                                    if (item.count > 1) TextButton(onClick = { more.vaultTake(item, item.count) }, enabled = !busy) { Text("все") }
+                                }
+                            }
+                        }
+                        var access by remember { mutableStateOf(Rules.CLAN_RANK_ORDER.first()) }
+                        Text("Кто сможет забрать:", style = MaterialTheme.typography.labelMedium)
+                        Row(Modifier.horizontalScroll(rememberScrollState())) {
+                            Rules.CLAN_RANK_ORDER.forEach { r ->
+                                val label = Rules.VAULT_ACCESS.getValue(r)
+                                if (r == access) Button(onClick = {}) { Text(label) }
+                                else TextButton(onClick = { access = r }) { Text(label) }
+                            }
+                        }
+                        Text("Положить из рюкзака:", style = MaterialTheme.typography.labelMedium)
+                        game.inventory.filter { !it.equipped && Rules.tradeable(it.id) }.forEach { item ->
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text("${item.name}${if (item.count > 1) " ×${item.count}" else ""}", Modifier.weight(1f), style = small)
+                                TextButton(onClick = { more.vaultPut(item, item.count, access) }, enabled = !busy) { Text("положить") }
+                            }
+                        }
+                        if (vault.log.isNotEmpty()) {
+                            Text("Журнал:", style = MaterialTheme.typography.labelMedium)
+                            vault.log.forEach { Text(it, style = Tz.type.small, color = c.textMuted) }
                         }
                     }
                 }

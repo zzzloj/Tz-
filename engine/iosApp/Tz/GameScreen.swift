@@ -813,6 +813,7 @@ private struct CastleBlock: View {
             HStack {
                 if cs.canKnock { Button("Постучать") { social.castleOp("knock", nil) }.disabled(busy) }
                 if cs.canOpen { Button("Открыть ворота") { social.castleOp("open", nil) }.disabled(busy) }
+                if cs.vault { Button("Хранилище клана") { social.vaultOpen() }.disabled(busy) }
             }
             if cs.member {
                 HStack {
@@ -1307,10 +1308,11 @@ private struct Sheets: View {
     let more: MoreActions
     let social: SocialActions
     @State private var typed = ""
+    @State private var vaultAccess = "neophyte"
     @Environment(\.tz) private var c
 
     private var any: Bool {
-        game.dialog != nil || game.shop != nil || game.bank != nil || game.craft != nil || game.exchange != nil ||
+        game.dialog != nil || game.shop != nil || game.bank != nil || game.vault != nil || game.craft != nil || game.exchange != nil ||
             game.look != nil || game.peek != nil || game.choice != nil || pending != nil || pendingAbility != nil
     }
 
@@ -1333,6 +1335,69 @@ private struct Sheets: View {
                     .shadow(color: .black.opacity(0.4), radius: 8)
                 }
             }
+        }
+    }
+
+    /// The bank cell and the clan vault (kept apart: a view builder takes at most ten children).
+    @ViewBuilder private var bankAndVault: some View {
+        if let bank = game.bank {
+            SectionTitle(text: "Банк · \(bank.npcName)" + (bank.fee > 0 ? " (плата \(bank.fee))" : ""))
+            if let m = bank.message { Text(m).font(TzType.small) }
+            if bank.items.isEmpty { Text("в ячейке пусто").font(TzType.small).foregroundStyle(c.textMuted) }
+            ForEach(bank.items, id: \.id) { item in
+                HStack {
+                    Text(count(item.name, item.count)).font(TzType.small)
+                    Spacer()
+                    Button("забрать") { more.bankTake(item, 1) }.disabled(busy)
+                    if item.count > 1 { Button("все") { more.bankTake(item, Int(item.count)) }.disabled(busy) }
+                }
+            }
+            Text("Положить из рюкзака:").font(TzType.label)
+            ForEach(game.inventory.filter { !$0.equipped }, id: \.id) { item in
+                HStack {
+                    Text(count(item.name, item.count)).font(TzType.small).foregroundStyle(c.textMuted)
+                    Spacer()
+                    Button("в банк") { more.bankPut(item, Int(item.count)) }.disabled(busy)
+                }
+            }
+            if bank.clanVault { Button("Хранилище клана") { social.vaultOpen() }.disabled(busy) }
+            Button("закрыть") { onCloseDialog() }
+        }
+        if let vault = game.vault {
+            SectionTitle(text: "Хранилище клана \(vault.clan) · \(vault.items.count)/\(vault.capacity)")
+            if let m = vault.message { Text(m).font(TzType.small) }
+            if vault.items.isEmpty { Text("в хранилище пусто").font(TzType.small).foregroundStyle(c.textMuted) }
+            ForEach(vault.items, id: \.slot) { item in
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text(count(item.name, item.count)).font(TzType.small)
+                        Text("\(item.owner) · \(Rules.shared.VAULT_ACCESS[item.access] ?? item.access)").font(TzType.small).foregroundStyle(c.textMuted)
+                    }
+                    Spacer()
+                    if item.canTake {
+                        Button("забрать") { more.vaultTake(item, 1) }.disabled(busy)
+                        if item.count > 1 { Button("все") { more.vaultTake(item, Int(item.count)) }.disabled(busy) }
+                    }
+                }
+            }
+            Text("Кто сможет забрать:").font(TzType.label)
+            Picker("", selection: $vaultAccess) {
+                ForEach(Rules.shared.CLAN_RANK_ORDER, id: \.self) { r in Text(Rules.shared.VAULT_ACCESS[r] ?? r).tag(r) }
+            }
+            .pickerStyle(.segmented)
+            Text("Положить из рюкзака:").font(TzType.label)
+            ForEach(game.inventory.filter { !$0.equipped && Rules.shared.tradeable(id: $0.id) }, id: \.id) { item in
+                HStack {
+                    Text(count(item.name, item.count)).font(TzType.small).foregroundStyle(c.textMuted)
+                    Spacer()
+                    Button("положить") { more.vaultPut(item, Int(item.count), vaultAccess) }.disabled(busy)
+                }
+            }
+            if !vault.log.isEmpty {
+                Text("Журнал:").font(TzType.label)
+                ForEach(vault.log, id: \.self) { Text($0).font(TzType.small).foregroundStyle(c.textMuted) }
+            }
+            Button("закрыть") { onCloseDialog() }
         }
     }
 
@@ -1372,28 +1437,7 @@ private struct Sheets: View {
             }
             Button("закрыть") { onCloseDialog() }
         }
-        if let bank = game.bank {
-            SectionTitle(text: "Банк · \(bank.npcName)" + (bank.fee > 0 ? " (плата \(bank.fee))" : ""))
-            if let m = bank.message { Text(m).font(TzType.small) }
-            if bank.items.isEmpty { Text("в ячейке пусто").font(TzType.small).foregroundStyle(c.textMuted) }
-            ForEach(bank.items, id: \.id) { item in
-                HStack {
-                    Text(count(item.name, item.count)).font(TzType.small)
-                    Spacer()
-                    Button("забрать") { more.bankTake(item, 1) }.disabled(busy)
-                    if item.count > 1 { Button("все") { more.bankTake(item, Int(item.count)) }.disabled(busy) }
-                }
-            }
-            Text("Положить из рюкзака:").font(TzType.label)
-            ForEach(game.inventory.filter { !$0.equipped }, id: \.id) { item in
-                HStack {
-                    Text(count(item.name, item.count)).font(TzType.small).foregroundStyle(c.textMuted)
-                    Spacer()
-                    Button("в банк") { more.bankPut(item, Int(item.count)) }.disabled(busy)
-                }
-            }
-            Button("закрыть") { onCloseDialog() }
-        }
+        bankAndVault
         if let craft = game.craft {
             SectionTitle(text: craft.title)
             ForEach(Array(craft.options.enumerated()), id: \.offset) { _, o in

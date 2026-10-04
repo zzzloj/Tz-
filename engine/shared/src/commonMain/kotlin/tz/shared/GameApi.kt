@@ -126,6 +126,9 @@ class GameApi(
     suspend fun bank(npc: String, op: String, item: String, count: Int): GameView =
         postJson<GameView, BankRequest>("/api/game/bank", BankRequest(npc, op, item, count))
 
+    suspend fun vault(op: String, npc: String, item: String = "", count: Int = 1, access: String = "neophyte", slot: Long = 0): GameView =
+        postJson<GameView, ClanVaultRequest>("/api/game/vault", ClanVaultRequest(op, npc, item, count, access, slot))
+
     suspend fun use(item: String, recipe: Int? = null, target: String? = null): GameView =
         postJson<GameView, UseRequest>("/api/game/use", UseRequest(item, recipe, target))
 

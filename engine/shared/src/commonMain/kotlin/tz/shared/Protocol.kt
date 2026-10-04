@@ -232,6 +232,8 @@ data class GameView(
     val shop: ShopView? = null,
     /** Bank cell, answer to talk («tobank»/«frombank») and POST /api/game/bank. */
     val bank: BankView? = null,
+    /** The clan vault, answer to POST /api/game/vault (at a banker or in the own castle's vault). */
+    val vault: ClanVaultView? = null,
     /** Recipes of a crafting tool, answer to POST /api/game/use without a recipe. */
     val craft: CraftView? = null,
     /** Exchange with another player, while one is open. */
@@ -401,6 +403,8 @@ data class CastleView(
     val guest: Boolean = false,
     val canOpen: Boolean = false,
     val canKnock: Boolean = false,
+    /** In the own castle's vault room: the clan vault opens here. */
+    val vault: Boolean = false,
 )
 
 /** op: knock, open, sign (text). */
@@ -499,7 +503,38 @@ data class BankView(
     /** Coins taken for each deposit (faction banks). */
     val fee: Int = 0,
     val message: String? = null,
+    /** In a clan: the clan vault can be opened here too (POST /api/game/vault op "open" with this npc). */
+    val clanVault: Boolean = false,
 )
+
+/** One stack in the clan vault: who put it and the lowest rank that may take it. */
+@Serializable
+data class ClanVaultItemView(
+    val slot: Long,
+    val id: String,
+    val name: String,
+    val count: Int,
+    /** neophyte, vassal, seneschal or head (Rules.CLAN_RANKS). */
+    val access: String,
+    val owner: String,
+    val canTake: Boolean,
+)
+
+@Serializable
+data class ClanVaultView(
+    /** The banker it was opened at; "" — the castle vault. */
+    val npc: String,
+    val clan: String,
+    val items: List<ClanVaultItemView> = emptyList(),
+    val capacity: Int = Rules.CLAN_VAULT_SLOTS,
+    /** Who put and took what, newest first: only for the head and seneschals. */
+    val log: List<String> = emptyList(),
+    val message: String? = null,
+)
+
+/** op: open, put ([item], [count], [access]) or take ([slot], [count]); [npc] — the banker, "" in the castle vault. */
+@Serializable
+data class ClanVaultRequest(val op: String, val npc: String = "", val item: String = "", val count: Int = 1, val access: String = "neophyte", val slot: Long = 0)
 
 @Serializable
 data class CraftOptionView(val key: Int, val name: String, val chance: Int, val needs: String)
@@ -605,6 +640,8 @@ object Errors {
     const val NOT_FOUND = "not_found"
     const val TOO_FAST = "too_fast"
     const val TOPIC_LOCKED = "topic_locked"
+    const val NO_VAULT_HERE = "no_vault_here"
+    const val VAULT_RIGHTS = "vault_rights"
 
     fun text(code: String): String = when (code) {
         UNAUTHORIZED -> "Нужно войти заново"
@@ -658,6 +695,8 @@ object Errors {
         NOT_FOUND -> "Не найдено"
         TOO_FAST -> "Не так быстро: подождите немного"
         TOPIC_LOCKED -> "Тема закрыта"
+        NO_VAULT_HERE -> "Клановое хранилище открывается у банкира или в хранилище своего замка"
+        VAULT_RIGHTS -> "Эту вещь оставили не для вашего ранга"
         else -> "Ошибка сервера"
     }
 }
@@ -753,6 +792,12 @@ object Rules {
     const val BANK_MONEY_MAX = 70000
     /** The old cell held an 800-character string; here: different stacks. */
     const val BANK_STACKS_MAX = 40
+    /** Stacks in a clan vault (owner 04.10.2026: 50, the castle adds nothing). */
+    const val CLAN_VAULT_SLOTS = 50
+    /** Clan ranks from the lowest: whom a thing in the clan vault is left for. */
+    val CLAN_RANK_ORDER = listOf("neophyte", "vassal", "seneschal", "head")
+    /** How the choice of who may take a thing reads in the vault. */
+    val VAULT_ACCESS = mapOf("neophyte" to "все", "vassal" to "вассалы и выше", "seneschal" to "сенешали и глава", "head" to "только глава")
 
     /**
      * Where a location is on the map (m.php calctc): coordinates from its id,

@@ -41,6 +41,7 @@ import tz.shared.LootRequest
 import tz.shared.TalkRequest
 import tz.shared.ShopRequest
 import tz.shared.BankRequest
+import tz.shared.ClanVaultRequest
 import tz.shared.UseRequest
 import tz.shared.PrefsRequest
 import tz.shared.SayRequest
@@ -165,7 +166,11 @@ private fun Route.accountRoutes(accounts: Accounts, game: Game) {
         call.respond(AuthResponse(token, account.login))
     }
     post("/api/auth/logout") {
-        bearer(call)?.let { accounts.logout(it) }
+        bearer(call)?.let { token ->
+            // Leaving by the button takes the character out of the world at once (owner 04.10.2026).
+            runCatching { accounts.authenticate(token) }.getOrNull()?.let { game.leave(it) }
+            accounts.logout(token)
+        }
         call.respond(HttpStatusCode.NoContent)
     }
     get("/api/me") {
@@ -327,6 +332,11 @@ private fun Route.accountRoutes(accounts: Accounts, game: Game) {
         val account = requireAccount(call, accounts)
         val body = call.receive<MessageRequest>()
         call.respond(game.message(account, body.op, body.to, body.text))
+    }
+    post("/api/game/vault") {
+        val account = requireAccount(call, accounts)
+        val b = call.receive<ClanVaultRequest>()
+        call.respond(game.vault(account, b.op, b.npc, b.item, b.count, b.access, b.slot))
     }
     post("/api/game/castle") {
         val account = requireAccount(call, accounts)

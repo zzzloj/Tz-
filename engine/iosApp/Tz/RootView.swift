@@ -124,6 +124,8 @@ struct RootView: View {
                                     trade: { item, n in model.run { try await $0.trade(item: item, count: Int32(n)) } },
                                     bankPut: { item, n in model.run { try await $0.bankPut(item: item, count: Int32(n)) } },
                                     bankTake: { item, n in model.run { try await $0.bankTake(item: item, count: Int32(n)) } },
+                                    vaultPut: { item, n, access in model.run { try await $0.vaultPut(item: item, count: Int32(n), access: access) } },
+                                    vaultTake: { item, n in model.run { try await $0.vaultTake(item: item, count: Int32(n)) } },
                                     use: { item in model.run { try await $0.use(item: item) } },
                                     useOn: { target in model.run { try await $0.useOn(target: target) } },
                                     cancelUse: { model.run { $0.cancelUse() } },
@@ -169,6 +171,7 @@ struct RootView: View {
                                     closeClan: { model.run { $0.closeClan() } },
                                     clanOp: { op, name, rank, clan in model.run { try await $0.clanOp(op: op, name: name, rank: rank, clan: clan, text: nil) } },
                                     castleOp: { op, text in model.run { try await $0.castleOp(op: op, text: text) } },
+                                    vaultOpen: { model.run { try await $0.vaultOpen() } },
                                     choose: { o in model.run { try await $0.choose(option: o) } },
                                     closeChoice: { model.run { $0.closeChoice() } },
                                     writeAll: { t in model.run { try await $0.writeAll(text: t) } }),
@@ -330,6 +333,8 @@ struct MoreActions {
     let trade: (ShopItemView, Int) -> Void
     let bankPut: (InventoryItemView, Int) -> Void
     let bankTake: (InventoryItemView, Int) -> Void
+    let vaultPut: (InventoryItemView, Int, String) -> Void
+    let vaultTake: (ClanVaultItemView, Int) -> Void
     let use: (InventoryItemView) -> Void
     let useOn: (String) -> Void
     let cancelUse: () -> Void
@@ -377,6 +382,7 @@ struct SocialActions {
     let closeClan: () -> Void
     let clanOp: (String, String?, String?, String?) -> Void
     let castleOp: (String, String?) -> Void
+    let vaultOpen: () -> Void
     let choose: (ChoiceOption) -> Void
     let closeChoice: () -> Void
     let writeAll: (String) -> Void

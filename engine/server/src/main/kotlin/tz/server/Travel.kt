@@ -1,5 +1,6 @@
 package tz.server
 
+import kotlinx.coroutines.sync.withLock
 import tz.shared.ChoiceOption
 import tz.shared.ChoiceView
 import tz.shared.Rules
@@ -124,6 +125,30 @@ internal suspend fun Game.sail(p: Game.Player, arg: String?, now: Long): ChoiceV
  * A character back after a break (f_site_connect2.dat:60-107): out of the
  * arena, castle and tavern rooms, and the crime term does not run while away.
  */
+/**
+ * Leaving by the exit button: the character is out of the world at once, nobody
+ * can strike or rob it (owner 04.10.2026; the old game did so only when nobody
+ * was near, f_logout.dat). Closing the app without it leaves the character
+ * standing for [Game.ACTIVE_SECONDS], as before.
+ */
+suspend fun Game.leave(account: Account) = lock.withLock {
+    val id = byAccount[account.id] ?: return@withLock
+    val p = players[id] ?: return@withLock
+    val now = clock()
+    if (now - p.lastSeen >= Game.ACTIVE_SECONDS) return@withLock
+    if (p.hasFlag) dropFlag(p, "${p.name} бросил флаг!")
+    // The crime clock stops at the moment of leaving, not ACTIVE_SECONDS before it (see afterBreak).
+    if (p.crime != null && p.crimeUntil > now) {
+        p.crimeUntil -= Game.ACTIVE_SECONDS
+        setState(p.id, "crime", p.crime!!, p.crimeUntil)
+    }
+    p.lastSeen = now - Game.ACTIVE_SECONDS
+    p.fightingPlayer = null
+    for (npc in world.npcsIn(p.location)) npc.enemies.remove(p.id)
+    save(p)
+    notifyLocation(p.location, p.id)
+}
+
 internal suspend fun Game.afterBreak(p: Game.Player, away: Long) {
     val loc = Travel.wakeUpAt(p.location)
     if (loc != p.location && loc in content.locations) p.location = loc

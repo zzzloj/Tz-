@@ -43,6 +43,7 @@ import kotlinx.coroutines.launch
 import tz.shared.CorpseView
 import tz.shared.CraftOptionView
 import tz.shared.ClanView
+import tz.shared.ClanVaultItemView
 import tz.shared.MessagesView
 import tz.shared.PersonView
 import tz.shared.AbilityView
@@ -168,6 +169,8 @@ fun App(session: Session, live: Boolean = true) {
                     trade = { item, n -> run { session.trade(item, n) } },
                     bankPut = { item, n -> run { session.bankPut(item, n) } },
                     bankTake = { item, n -> run { session.bankTake(item, n) } },
+                    vaultPut = { item, n, access -> run { session.vaultPut(item, n, access) } },
+                    vaultTake = { item, n -> run { session.vaultTake(item, n) } },
                     use = { item -> run { session.use(item) } },
                     useOn = { target -> run { session.useOn(target) } },
                     cancelUse = { session.cancelUse(); version++ },
@@ -214,6 +217,7 @@ fun App(session: Session, live: Boolean = true) {
                     closeClan = { session.closeClan(); version++ },
                     clanOp = { op, name, rank, clan -> run { session.clanOp(op, name, rank, clan) } },
                     castleOp = { op, text -> run { session.castleOp(op, text) } },
+                    vaultOpen = { run { session.vaultOpen() } },
                     choose = { o -> run { session.choose(o) } },
                     writeAll = { t -> run { session.writeAll(t) } },
                     closeChoice = { session.closeChoice(); version++ },
@@ -369,6 +373,7 @@ class SocialActions(
     val closeClan: () -> Unit = {},
     val clanOp: (String, String?, String?, String?) -> Unit = { _, _, _, _ -> },
     val castleOp: (String, String?) -> Unit = { _, _ -> },
+    val vaultOpen: () -> Unit = {},
     val choose: (ChoiceOption) -> Unit = {},
     val writeAll: (String) -> Unit = {},
     val closeChoice: () -> Unit = {},
@@ -491,6 +496,8 @@ class MoreActions(
     val trade: (ShopItemView, Int) -> Unit = { _, _ -> },
     val bankPut: (InventoryItemView, Int) -> Unit = { _, _ -> },
     val bankTake: (InventoryItemView, Int) -> Unit = { _, _ -> },
+    val vaultPut: (InventoryItemView, Int, String) -> Unit = { _, _, _ -> },
+    val vaultTake: (ClanVaultItemView, Int) -> Unit = { _, _ -> },
     val use: (InventoryItemView) -> Unit = {},
     val useOn: (String) -> Unit = {},
     val cancelUse: () -> Unit = {},

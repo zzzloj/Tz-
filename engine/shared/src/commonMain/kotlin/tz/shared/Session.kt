@@ -190,7 +190,7 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
     }
 
     fun closeDialog() {
-        game = game?.copy(dialog = null, shop = null, bank = null, craft = null)
+        game = game?.copy(dialog = null, shop = null, bank = null, craft = null, vault = null)
     }
 
     /** Buys from (shop mode buy/buy2) or sells to (sell) the open shop. */
@@ -207,6 +207,20 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
     suspend fun bankTake(item: InventoryItemView, count: Int) = action {
         val b = game?.bank ?: return@action
         game = api.bank(b.npc, "take", item.id, count)
+    }
+
+    /** Opens the clan vault: at the banker of the open bank, or (no bank open) in the own castle's vault room. */
+    suspend fun vaultOpen() = action { game = api.vault("open", game?.bank?.npc ?: "") }
+
+    /** Puts a thing into the clan vault for [access] (a rank, Rules.CLAN_RANK_ORDER) and above. */
+    suspend fun vaultPut(item: InventoryItemView, count: Int, access: String) = action {
+        val v = game?.vault ?: return@action
+        game = api.vault("put", v.npc, item.id, count, access)
+    }
+
+    suspend fun vaultTake(item: ClanVaultItemView, count: Int) = action {
+        val v = game?.vault ?: return@action
+        game = api.vault("take", v.npc, count = count, slot = item.slot)
     }
 
     /** An item waiting for its target (a gem to inlay, clothes to cut, a ghost to revive). */
