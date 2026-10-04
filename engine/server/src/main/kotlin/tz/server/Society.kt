@@ -30,7 +30,6 @@ internal object Society {
     const val WEDDING_BOUQUET = "i.buket"
     const val DIVORCE = 500
     /** The thieves' guild gives contracts only with this many characters online (the old code: 30). */
-    const val THIEVES_MIN_ONLINE = 30
     val DEMON_PLACES = listOf("x1141x50", "x1199x47", "x1182x57", "x1225x55", "x1071x46", "x1034x54")
     const val DEMON = "n.c.demogn"
     const val GRED_START = "i.bc_gred_i1h1p1o1"
@@ -228,7 +227,8 @@ internal suspend fun Game.societyHandler(p: Game.Player, a: JsonObject, arg: Str
 
 /**
  * The thieves' guild (quest 46, n.Rudolf): a contract on a random character
- * online; kill him and come back for 1000 coins, thief's gloves and 100 experience.
+ * online, however few are playing (owner 04.10: the old minimum of 30 is gone);
+ * kill him and come back for 1000 coins, thief's gloves and 100 experience.
  */
 private suspend fun Game.thievesContract(p: Game.Player, now: Long): String {
     suspend fun readWorld(key: String) = db.tx { c ->
@@ -258,10 +258,6 @@ private suspend fun Game.thievesContract(p: Game.Player, now: Long): String {
     val online = players.values.filter { now - it.lastSeen < Game.ACTIVE_SECONDS }
     if (target == null || online.none { it.name == target }) {
         target = null
-        if (online.size < Society.THIEVES_MIN_ONLINE) {
-            setWorld("thieves.target", null, null)
-            return prefix + "Сожалею, слишком мало игроков онлайн, нужно как минимум ${Society.THIEVES_MIN_ONLINE} человек."
-        }
         val next = readWorld("thieves.next")
         if (next != null) return prefix + "Извини, сейчас нет заказов."
         val pick = online.filter { it.id != p.id }.randomOrNull(rnd) ?: return prefix + "Извини, сейчас нет заказов."

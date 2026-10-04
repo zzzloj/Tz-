@@ -27,14 +27,6 @@
                 {
                     "label": "Ничего особенного, мне пора",
                     "goto": "end"
-                },
-                {
-                    "label": "eval: if(legacy_cmp(additem($loc,$login,\"\",\"i.pg\",\"count\"))>0) $title_v=\"Я хочу получить дотацию\"; else $title_v=\"\";",
-                    "goto": "vybor"
-                },
-                {
-                    "label": "eval: if(legacy_cmp(additem($loc,$login,\"\",\"i.q.opyt\",\"count\"))>0) $title_v=\"Хочу обменять опыт.\"; else $title_v=\"\";",
-                    "goto": "qv"
                 }
             ]
         },
@@ -137,50 +129,6 @@
                 {
                     "label": "Ясно",
                     "goto": "hum"
-                }
-            ]
-        },
-        "vybor": {
-            "text": "Хм. На кого нужен шмот?",
-            "options": [
-                {
-                    "label": "На война",
-                    "goto": "voin"
-                },
-                {
-                    "label": "На мага",
-                    "goto": "mag"
-                },
-                {
-                    "label": "Я еще не думал об этом",
-                    "goto": "end"
-                }
-            ]
-        },
-        "qv": {
-            "text": "eval: if(strpos($l_i[$loc][$login][\"items\"],\"i.q.opyt:\")!==false) {$title_v=\"Вот твой опыт.\"; additem($loc,$login,\"\",\"i.q.opyt\",1); addexp($loc,$login,600);} else $title_v=\"У тебя нет грамоты.!\";",
-            "options": [
-                {
-                    "label": "Нет проблем",
-                    "goto": "end"
-                }
-            ]
-        },
-        "voin": {
-            "text": "eval: if(legacy_cmp(additem($loc,$login,\"\",\"i.pg\",\"count\"))>0) {additem($loc,$login,\"\",\"i.pg\",1); additem($loc,\"\",$login,\"i.q.pgpt\",1); additem($loc,\"\",$login,\"i.q.opyt\",48); additem($loc,\"\",$login,\"i.a.b.pdosp_zzz_..ag..az..am..\",2); additem($loc,\"\",$login,\"i.a.c.sp1\",2); additem($loc,\"\",$login,\"i.a.e.p_zzz_..ku..ma..me..\",2); additem($loc,\"\",$login,\"i.a.h.p_zzz_..ob..sa..zm..\",2); additem($loc,\"\",$login,\"i.a.p.p_zzz_\",2); additem($loc,\"\",$login,\"i.a.s.obs_zzz_\",2); additem($loc,\"\",$login,\"i.a.l.p_zzz_..do..dy..kp\",2); additem($loc,\"\",$login,\"i.w.s.farmech_zzz_\",2); additem($loc,\"\",$login,\"i.f.b.kv\",50);  additem($loc,\"\",$login,\"i.money\",50000); $title_v=\"Вот. Но учти, 20.01.2008 эти вещи будут удалены.\";} else $title_v=\"\";",
-            "options": [
-                {
-                    "label": "Спасибо!",
-                    "goto": "end"
-                }
-            ]
-        },
-        "mag": {
-            "text": "eval: if(legacy_cmp(additem($loc,$login,\"\",\"i.pg\",\"count\"))>0) {additem($loc,$login,\"\",\"i.pg\",1); additem($loc,\"\",$login,\"i.q.pgpt\",1); additem($loc,\"\",$login,\"i.q.opyt\",48); additem($loc,\"\",$login,\"i.a.b.troll_zzz_..ag..az..am\",2); additem($loc,\"\",$login,\"i.a.c.sp1\",2); additem($loc,\"\",$login,\"i.a.p.ogr_zzz_..do..dy..kp\",2); additem($loc,\"\",$login,\"i.a.h.wolf_zzz_..ku..ma..me\",2); additem($loc,\"\",$login,\"i.a.l.ogr_zzz_..ob..sa..zm\",2); additem($loc,\"\",$login,\"i.a.e.mage_zzz_\",2); additem($loc,\"\",$login,\"i.w.r.c.gazov2_zzz_\",2); additem($loc,\"\",$login,\"i.bolt\",500); additem($loc,\"\",$login,\"i.f.b.kv\",50); additem($loc,\"\",$login,\"i.money\",50000); $title_v=\"Вот. Но учти, 20.01.2008 эти вещи будут удалены.\";} else $title_v=\"\";",
-            "options": [
-                {
-                    "label": "Спасибо!",
-                    "goto": "end"
                 }
             ]
         },
