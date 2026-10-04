@@ -116,7 +116,7 @@ class TravelTest {
         me(b).regenFrom = clock[0]
         clock[0] += 60
         game.tick(clock[0])
-        assertEquals(15, me(b).hp)   // 0.1 a second for the 50 s after the 10 s pause
+        assertEquals(14, me(b).hp)   // 0.1 a second from the moment it was taken, no pause
         game.changeItem(me(b), "i.b.antidot", 1)
         v = game.use(b, "i.b.antidot", null, null)
         assertTrue(!v.character.poisoned)

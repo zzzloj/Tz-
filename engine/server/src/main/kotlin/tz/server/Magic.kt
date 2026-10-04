@@ -765,8 +765,8 @@ private suspend fun Game.useBottle(p: Game.Player, itemId: String, b: Spells.Bot
         if (p.ghost) break
         if (!Law.mayFight(p, (t as? Aim.Pc)?.p, now)) continue
         if (b.poison) when (t) {
-            is Aim.Npc -> t.npc.poisonUntil = now + Spells.POISON_SECONDS
-            is Aim.Pc -> { t.p.poisonUntil = now + Spells.POISON_SECONDS; t.p.log("Вас отравили!"); notify(t.p.id) }
+            is Aim.Npc -> { if (t.npc.poisonLast >= t.npc.poisonUntil) t.npc.poisonLast = now; t.npc.poisonUntil = now + Spells.POISON_SECONDS }
+            is Aim.Pc -> { if (t.p.poisonLast >= t.p.poisonUntil) t.p.poisonLast = now; t.p.poisonUntil = now + Spells.POISON_SECONDS; t.p.log("Вас отравили!"); notify(t.p.id) }
             is Aim.Item -> {}
         }
         blowAt(p, t, blow, now)

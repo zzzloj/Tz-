@@ -93,6 +93,7 @@ class World(
         var expiresAt = 0L
         /** Poisoned till then (i.b.jad.c): loses health instead of regenerating. */
         var poisonUntil = 0L
+        var poisonLast = 0L
         /** Monsters (n.c.*) attack players on sight. */
         val aggressive get() = key.startsWith("n.c.")
         /** Who it is across restarts: the same key may stand in several places. */
@@ -700,6 +701,7 @@ class World(
             n.restockAt = d.restockAt
             n.expiresAt = d.expiresAt
             n.poisonUntil = d.poisonUntil
+            n.poisonLast = now
             n.regenFrom = now
             n.trail.clear()
             addNpc(n)

@@ -130,6 +130,8 @@ class Game(
         var attackTarget: String? = null
         /** Poisoned till then (i.b.jad.c): health goes down instead of regenerating. */
         var poisonUntil = 0L
+        /** Poison counted up to then: it drips from the moment it is taken, no pause after blows. */
+        var poisonLast = 0L
         /** The horse under this character (character_state "mount"). */
         var mount: Mount? = null
         /** Holds the leadership flag (Society.kt). */
@@ -1228,33 +1230,40 @@ class Game(
      * (i.b.jad.c) takes a point every 10 s instead.
      */
     private fun regen(p: Player, now: Long) {
-        val poisoned = now < p.poisonUntil
+        val poisoned = p.poisonLast < p.poisonUntil
+        if (poisoned) {
+            // Poison drips 0.1 a second from the moment it was taken, blows or no blows.
+            val till = minOf(now, p.poisonUntil)
+            if (till > p.poisonLast) { p.regenHp -= 0.1 * (till - p.poisonLast); p.poisonLast = till }
+        }
         if (!poisoned && p.hp >= p.hpMax && p.mana >= p.manaMax) return
         // Seconds of rest since the last blow (+10 s) or the last time this ran, whichever is later.
-        val seconds = now - maxOf(p.regenFrom + balance.regenAfter, p.regenLast)
-        if (seconds <= 0) return
-        p.regenLast = now
+        val seconds = maxOf(0L, now - maxOf(p.regenFrom + balance.regenAfter, p.regenLast))
+        if (seconds > 0) p.regenLast = now
         val safe = p.location == Rules.BANK_LOCATION || p.location in Spells.TAVERN || p.location == Society.TAVERN_HALL
         val perSecond = seconds.toDouble() / balance.regenEvery
-        if (poisoned) p.regenHp -= 0.1 * seconds else p.regenHp += balance.regenPerTick(p.hpMax, p.skill("regeneration"), safe) * perSecond
+        if (!(now < p.poisonUntil)) p.regenHp += balance.regenPerTick(p.hpMax, p.skill("regeneration"), safe) * perSecond
         p.regenMana += balance.regenPerTick(p.manaMax, p.skill("meditation"), safe) * perSecond
         val dh = p.regenHp.toInt(); p.regenHp -= dh
         val dm = p.regenMana.toInt(); p.regenMana -= dm
         if (dh == 0 && dm == 0) return
-        p.hp = if (poisoned) (p.hp + dh).coerceAtLeast(1) else (p.hp + dh).coerceAtMost(p.hpMax)
+        p.hp = (p.hp + dh).coerceAtMost(p.hpMax).let { if (poisoned) it.coerceAtLeast(1) else it }
         p.mana = (p.mana + dm).coerceAtMost(p.manaMax)
         dirty += p.id
     }
 
     internal fun regenNpc(npc: World.Npc, now: Long) {
-        val poisoned = now < npc.poisonUntil
+        val poisoned = npc.poisonLast < npc.poisonUntil
+        if (poisoned) {
+            val till = minOf(now, npc.poisonUntil)
+            if (till > npc.poisonLast) { npc.regenCarry -= 0.1 * (till - npc.poisonLast); npc.poisonLast = till }
+        }
         if (!poisoned && npc.hp >= npc.proto.hpMax) return
-        val seconds = now - maxOf(npc.regenFrom + balance.regenAfter, npc.regenLast)
-        if (seconds <= 0) return
-        npc.regenLast = now
-        npc.regenCarry += if (poisoned) -0.1 * seconds else balance.regenPerTick(npc.proto.hpMax, 0, false) * seconds / balance.regenEvery
+        val seconds = maxOf(0L, now - maxOf(npc.regenFrom + balance.regenAfter, npc.regenLast))
+        if (seconds > 0) npc.regenLast = now
+        if (!(now < npc.poisonUntil)) npc.regenCarry += balance.regenPerTick(npc.proto.hpMax, 0, false) * seconds / balance.regenEvery
         val d = npc.regenCarry.toInt(); npc.regenCarry -= d
-        npc.hp = if (poisoned) (npc.hp + d).coerceAtLeast(1) else (npc.hp + d).coerceAtMost(npc.proto.hpMax)
+        npc.hp = (npc.hp + d).coerceAtMost(npc.proto.hpMax).let { if (poisoned) it.coerceAtLeast(1) else it }
     }
 
     private val dirty = HashSet<Long>()
