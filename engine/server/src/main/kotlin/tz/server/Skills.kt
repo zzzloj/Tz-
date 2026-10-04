@@ -38,7 +38,8 @@ internal object Levels {
     fun percent(s: Skills): Int {
         var sum = 0
         for (i in 0 until Skills.SIZE) if (i != Skills.EXP && i != Skills.POINTS) sum += s[i]
-        return Math.round((sum - 5) * 100.0 / (Rules.ATTR_SUM + Rules.SKILL_SUM)).toInt()
+        // The old scale: 62 points to the top; on the new one (attributes 24 + skills) the share is the same idea.
+        return Math.round((sum - 6) * 100.0 / (Rules.ATTR_SUM + Rules.SKILL_SUM - 6)).toInt().coerceIn(0, 100)
     }
 
     fun rank(lev: Int): String = when {
@@ -71,7 +72,7 @@ internal object Levels {
 
     /** «сильный и ловкий, но не очень умный» (f_lookuser.dat:121-136). */
     fun build(str: Int, dex: Int, int: Int): String {
-        val good = listOfNotNull("сильный".takeIf { str > 3 }, "ловкий".takeIf { dex > 3 }, "умный".takeIf { int > 3 })
+        val good = listOfNotNull("сильный".takeIf { str > 6 }, "ловкий".takeIf { dex > 6 }, "умный".takeIf { int > 6 })
         val bad = listOfNotNull("слабый".takeIf { str == 1 }, "медлительный".takeIf { dex == 1 }, "не очень умный".takeIf { int == 1 })
         fun join(l: List<String>) = when (l.size) { 0 -> ""; 1 -> l[0]; 2 -> "${l[0]} и ${l[1]}"; else -> "${l[0]}, ${l[1]} и ${l[2]}" }
         if (good.isEmpty() && bad.isEmpty()) return "Телосложение среднее"
@@ -83,7 +84,7 @@ internal object Levels {
 suspend fun Game.skill(account: Account, skill: String, target: String?, item: String?): GameView = lock.withLock {
     val p = alive(player(account))
     val now = clock()
-    if (now < p.busyUntil) throw ApiException(HttpStatusCode.Conflict, Errors.RESTING)
+    if (clockMs() < p.busyUntil) throw ApiException(HttpStatusCode.Conflict, Errors.RESTING)
     when (skill) {
         "meditation" -> meditate(p, now)
         "steal" -> steal(p, target, item, now)
@@ -97,12 +98,13 @@ suspend fun Game.skill(account: Account, skill: String, target: String?, item: S
 
 /** f_useskill.dat:6-14: S·12 % for +rand(1, S) mana, 5 s. */
 private fun Game.meditate(p: Game.Player, now: Long) {
-    val s = p.skill("meditation")
+    val s = p.oldSkill("meditation")
     if (p.mana >= p.manaMax) { p.log("Ваш запас маны полон"); return }
     if (s == 0) { p.log("Ваш навык медитации равен нулю, вы не умеете медитировать"); return }
-    p.busyUntil = now + 5
+    p.busyUntil = clockMs() + 1000L * (5)
     if (dice.roll(0, 100) <= s * 12) {
-        val gain = dice.roll(1, s).coerceAtMost(p.manaMax - p.mana)
+        // Old gain 1..S of 20–60 mana: a share of the maximum now.
+        val gain = (dice.roll(1, s) * p.manaMax / 40).coerceAtLeast(1).coerceAtMost(p.manaMax - p.mana)
         p.mana += gain
         p.log("Мана +$gain")
     } else p.log("Медитация прервалась")
@@ -164,11 +166,11 @@ private suspend fun Game.steal(p: Game.Player, target: String?, item: String?, n
     }
     if (fighting) { p.log("Нельзя воровать у того, кто вас атакует или кого атакуете вы"); return }
     // Awareness: a character's own skill, any NPC's is 3.
-    val awareness = if (aim is Aim.Pc) aim.p.skill("look") else 3
+    val awareness = if (aim is Aim.Pc) aim.p.oldSkill("look") else 3
     val name = aim.title()
     if (item == null) {
-        p.busyUntil = now + 5
-        if (dice.roll(0, 100) < 6 * (p.dex + p.skill("steallook") - awareness)) showPeek(p, aim, now)
+        p.busyUntil = clockMs() + 1000L * (5)
+        if (dice.roll(0, 100) < 6 * (p.oldSkill("dex") + p.oldSkill("steallook") - awareness)) showPeek(p, aim, now)
         else caught(p, aim, "Вас заметили!", "${p.name} пытался подглядеть в ваш рюкзак!", "${p.name} пытался подглядеть в рюкзак $name!", now)
         return
     }
@@ -177,11 +179,11 @@ private suspend fun Game.steal(p: Game.Player, target: String?, item: String?, n
             "${p.name} пытался вас обворовать!", "${p.name} пытался обворовать $name!", now)
         return
     }
-    p.busyUntil = now + 10
+    p.busyUntil = clockMs() + 1000L * (10)
     val backpack = backpackOf(aim)
     val (count, equipped) = backpack[item] ?: run { p.log("У $name нет этого предмета"); return }
     if (aim is Aim.Pc && !Rules.tradeable(item)) { p.log("Эту вещь украсть нельзя"); return }
-    var chance = 4 * (p.dex + p.skill("steal") - awareness)
+    var chance = 4 * (p.oldSkill("dex") + p.oldSkill("steal") - awareness)
     if (equipped) chance /= 2
     if (chance <= 0) { p.log("У вас слишком низкие навыки воровства и подглядывания"); return }
     if (dice.roll(0, 100) >= chance) {

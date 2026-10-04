@@ -150,10 +150,10 @@ class CombatTest {
         view = game.resurrect(account)
         assertTrue(!view.character.ghost)
         assertEquals(0, view.character.hp)
-        // Health comes back by itself: +1 after 31 s without blows.
-        clock[0] += 31
+        // Health comes back by itself 10 s after the last blow: 1.5 % of the maximum every 5 s.
+        clock[0] += 10 + 5 * 30
         game.tick(clock[0])
-        assertEquals(1, game.view(account).character.hp)
+        assertTrue(game.view(account).character.hp >= 1)
         assertEquals(Errors.NOT_GHOST, assertFailsWith<ApiException> { game.resurrect(account) }.code)
 
         // Back to the corpse for the knife.

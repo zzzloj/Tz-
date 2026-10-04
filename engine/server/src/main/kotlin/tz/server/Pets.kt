@@ -23,18 +23,21 @@ internal object Pets {
     /** Escorts: Jofe counts as rescued once out of the dungeon, below Y 840 (docs/quests.md §29). */
     const val DUNGEON_Y = 840
 
-    /** Summoned creatures of plugin/m.s.dat: name, HP, war numbers. */
-    private fun s(hit: Int, min: Int, max: Int, delay: Int, armor: Int, dodge: Int, md: Int, mp: Int, mr: Int, verb: String) =
-        Stats(hit, min, max, delay, false, armor, dodge, 0, 0, md, mp, mr, verb, 0, "")
-    val SUMMONS: Map<String, Triple<String, Int, Stats>> = mapOf(
-        "m.s.wolf" to Triple("призванный волк", 20, s(70, 4, 11, 5, 0, 5, 0, 0, 0, "зубами")),
-        "m.s.tree" to Triple("призванное гигантское дерево", 80, s(90, 15, 30, 10, 0, 10, 20, 80, 50, "ветвями")),
-        "m.s.volna" to Triple("призванная волна", 80, s(90, 15, 30, 10, 0, 10, 20, 80, 50, "струей воды")),
-        "m.s.skeleton" to Triple("призванный скелет", 30, s(65, 5, 16, 6, 0, 10, 0, 0, 0, "бьёт")),
-        "m.s.golem" to Triple("призванный голем", 50, s(90, 8, 18, 7, 5, 10, 30, 50, 4, "бьёт")),
-        "m.s.fantom" to Triple("призванный фантом", 50, s(100, 4, 12, 4, 0, 10, 10, 70, 40, "магией")),
-        "m.s.tucha" to Triple("призванная грозовая туча", 50, s(200, 0, 25, 4, 0, 10, 10, 70, 40, "молнией")),
-        "m.s.demon" to Triple("призванный демон", 80, s(95, 10, 25, 7, 3, 10, 20, 70, 8, "бьёт")),
+    /**
+     * Summoned creatures of plugin/m.s.dat on the balance of 04.10.2026: they
+     * come at the caster's level; health and blow are shares of an ordinary
+     * monster of that level, the pause in seconds, and the verb.
+     */
+    class Summon(val name: String, val hp: Double, val dmg: Double, val pause: Double, val verb: String)
+    val SUMMONS: Map<String, Summon> = mapOf(
+        "m.s.wolf" to Summon("призванный волк", 0.6, 0.7, 1.2, "зубами"),
+        "m.s.tree" to Summon("призванное гигантское дерево", 1.6, 0.9, 2.0, "ветвями"),
+        "m.s.volna" to Summon("призванная волна", 1.6, 0.9, 2.0, "струей воды"),
+        "m.s.skeleton" to Summon("призванный скелет", 0.8, 0.8, 1.4, "бьёт"),
+        "m.s.golem" to Summon("призванный голем", 1.2, 0.9, 1.6, "бьёт"),
+        "m.s.fantom" to Summon("призванный фантом", 0.8, 0.8, 1.2, "магией"),
+        "m.s.tucha" to Summon("призванная грозовая туча", 0.8, 1.0, 1.2, "молнией"),
+        "m.s.demon" to Summon("призванный демон", 1.4, 1.2, 1.5, "бьёт"),
     )
 
     /** f_rndname.dat: a name from 4–6 letters of syllables, «Garsl». */
@@ -169,7 +172,7 @@ internal suspend fun Game.petDialog(p: Game.Player, npc: World.Npc, topic: Strin
             !npc.key.startsWith(Pets.HORSE) -> say("Это не лошадь")
             p.ghost -> say("Вы призрак, лошадь вас боится и не подпускает близко")
             p.mount != null -> say("Вы и так на коне")
-            now < p.busyUntil -> say("Вы должны отдохнуть")
+            clockMs() < p.busyUntil -> say("Вы должны отдохнуть")
             else -> {
                 mountHorse(p, npc, now)
                 DialogView(npc.key, name, "Вы сели на лошадь и теперь вы всадник")
@@ -233,9 +236,9 @@ internal suspend fun Game.petDialog(p: Game.Player, npc: World.Npc, topic: Strin
             o.until == 0L -> say("$name будет вам предан всегда, нет нужды в поощрении")
             o.until > now + 240 -> say("$name не собирается покидать вас в ближайшие несколько минут, нет смысла уговаривать его остаться ещё (попробуйте, когда срок службы будет на исходе).")
             else -> {
-                p.busyUntil = now + 10
-                if (dice.roll(0, 100) < p.skill("animaltaming") * 10) {
-                    o.until += dice.roll(60, 60 + p.skill("animallore") * 60)
+                p.busyUntil = clockMs() + 1000L * (10)
+                if (dice.roll(0, 100) < p.oldSkill("animaltaming") * 10) {
+                    o.until += dice.roll(60, 60 + p.oldSkill("animallore") * 60)
                     say("Кажется, вы стали $name нравиться немного больше")
                 } else say("Ваша попытка не произвела на $name впечатления")
             }
@@ -244,7 +247,7 @@ internal suspend fun Game.petDialog(p: Game.Player, npc: World.Npc, topic: Strin
             val left = (o.until - now) / 60.0
             val text = if (left < 60 * 6) {
                 // Animal lore makes the guess exact (f_speakowner.dat:150-162).
-                val error = dice.roll(0, 10 * (10 - 2 * p.skill("animallore"))) * left / 100
+                val error = dice.roll(0, 10 * (10 - 2 * p.oldSkill("animallore"))) * left / 100
                 "${Math.round(left - error).coerceAtLeast(0)} - ${Math.round(left + error)} минут"
             } else "примерно ${Math.round(left / 60)} часа"
             say("$name покинет вас через $text")
@@ -267,7 +270,7 @@ internal suspend fun Game.petDialog(p: Game.Player, npc: World.Npc, topic: Strin
 /** Into the saddle (f_speakowner.dat:16-31, f_usekon.dat): the horse leaves the location, its HP and name go with the rider. */
 internal suspend fun Game.mountHorse(p: Game.Player, horse: World.Npc, now: Long) {
     p.mount = Mount(horse.hp, horse.customName)
-    p.busyUntil = now + 3
+    p.busyUntil = clockMs() + 1000L * (3)
     world.removeNpc(horse.key, horse.location)
     setState(p.id, "mount", "${horse.hp}|${horse.customName ?: ""}", null)
     refreshStats(p)
@@ -294,7 +297,7 @@ internal suspend fun Game.leaveHorse(p: Game.Player, now: Long, hour: Boolean) {
 internal suspend fun Game.unhorse(t: Game.Player, now: Long) {
     if (t.mount == null) return
     leaveHorse(t, now, hour = true)
-    t.busyUntil = now + 5
+    t.busyUntil = clockMs() + 1000L * (5)
     t.log("Вы выбиты из седла!")
     tellOthers(t.location, t.id, "${t.name} выбит из седла")
     notify(t.id)
@@ -328,11 +331,11 @@ private suspend fun Game.tame(p: Game.Player, target: String?, now: Long) {
     if (diff <= 0) { p.log("Это существо не приручаемо"); return }
     // Someone else's pet cannot be taken over (the old engine did not check).
     if (npc.owner != null && npc.owner?.ownerId != p.id) { p.log("${npc.name} принадлежит другому"); return }
-    val tame = 10 * (p.skill("animaltaming") + 1 - diff)
-    if (tame <= 0 || p.skill("animallore") <= 0) { p.log("У вас слишком низкие навыки изучения и/или приручения животных"); return }
-    p.busyUntil = now + 5
+    val tame = 10 * (p.oldSkill("animaltaming") + 1 - diff)
+    if (tame <= 0 || p.oldSkill("animallore") <= 0) { p.log("У вас слишком низкие навыки изучения и/или приручения животных"); return }
+    p.busyUntil = clockMs() + 1000L * (5)
     if (dice.roll(0, 100) <= tame) {
-        adopt(npc, p, follow = true, guard = false, until = now + 60 + dice.roll(0, p.skill("animallore") * 600), vanish = false, now = now)
+        adopt(npc, p, follow = true, guard = false, until = now + 60 + dice.roll(0, p.oldSkill("animallore") * 600), vanish = false, now = now)
         p.count(Stat.TAMED)
         p.log("Вы приручили ${npc.name}")
         addExp(p, dice.roll(0, diff))
@@ -346,12 +349,13 @@ private suspend fun Game.raise(p: Game.Player, corpseId: String?, now: Long) {
     val corpse = corpseId?.let { world.corpse(p.location, it, now) } ?: run { p.log("Нет цели"); return }
     val template = corpse.template?.takeIf { it.startsWith("n.c.") || it.startsWith("n.a.") }
         ?: run { p.log("Поднимать можно только трупы монстров и животных"); return }
-    if (p.mana < 6) { p.log("Недостаточно маны (надо 6)"); return }
-    p.mana -= 6
-    p.busyUntil = now + 10
+    val mana = balance.raiseMana
+    if (p.mana < mana) { p.log("Недостаточно маны (надо $mana)"); return }
+    p.mana -= mana
+    p.busyUntil = clockMs() + 1000L * (10)
     val title = corpse.name.removePrefix("труп: ")
-    val bonus = if (p.equipped.any { "..gt" in it }) 10 else 0
-    if (dice.roll(0, 100) > s * 5 + p.int * 2 + bonus) {
+    // Necromancy is not a magic skill (owner 04.10.2026): 10 % a step, +10 % with a blue topaz; intelligence does not count.
+    if (dice.roll(0, 99) >= balance.raiseChance(s, p.equipped.any { "..gt" in it })) {
         p.log("Вам не удалось поднять из мёртвых труп $title")
         tellOthers(p.location, p.id, "${p.name} пытался поднять из мёртвых труп $title")
         return
@@ -359,12 +363,14 @@ private suspend fun Game.raise(p: Game.Player, corpseId: String?, now: Long) {
     releaseExtras(p, onlySummoned = false, now)
     world.removeCorpse(p.location, corpse.id)
     val base = world.proto(template) ?: return
-    val hp = Math.round(base.hpMax * 0.7).toInt().coerceAtLeast(1)
-    val stats = base.stats.copy(dmgMin = Math.round(base.stats.dmgMin * 0.7).toInt(), dmgMax = Math.round(base.stats.dmgMax * 0.7).toInt(), expValue = 0)
+    // The stronger the necromancer, the stronger the zombie: 45–90 % of the living one.
+    val k = 0.4 + 0.05 * s
+    val hp = Math.round(base.hpMax * k).toInt().coerceAtLeast(1)
+    val stats = base.stats.copy(dmgMin = Math.round(base.stats.dmgMin * k).toInt(), dmgMax = Math.round(base.stats.dmgMax * k).toInt().coerceAtLeast(1), expValue = 0)
     val proto = World.Proto(template, "$title-зомби", hp, stats, emptyMap(), emptyList(), emptyMap(), null, null)
     val key = "n.z.$template." + (1..4).map { 'a' + dice.roll(0, 25) }.joinToString("")
     val zombie = world.spawnProto(key, proto, p.location, now, 0)
-    adopt(zombie, p, follow = true, guard = true, until = now + dice.roll(300, 300 + (s + p.int) * 90), vanish = true, now = now)
+    adopt(zombie, p, follow = true, guard = true, until = now + dice.roll(300, 300 + s * 90), vanish = true, now = now)
     p.log("Вы подняли из мёртвых $title")
     tellOthers(p.location, p.id, "${p.name} поднял из мёртвых $title")
     if (dice.roll(1, 100) < 5) addExp(p, 1)
@@ -375,7 +381,14 @@ private suspend fun Game.raise(p: Game.Player, corpseId: String?, now: Long) {
 
 /** plugin/m.s.dat: a creature follows and guards the mage for 1–10 minutes; the demon is a criminal. */
 internal suspend fun Game.summon(p: Game.Player, spell: String, now: Long) {
-    val (name, hp, stats) = Pets.SUMMONS[spell] ?: run { p.log("Заклинания $spell не существует"); return }
+    val sm = Pets.SUMMONS[spell] ?: run { p.log("Заклинания $spell не существует"); return }
+    val name = sm.name
+    val l = p.level
+    val hp = Math.round(balance.monsterHp(l) * sm.hp).toInt().coerceAtLeast(1)
+    val blow = balance.monsterDamagePer4s(l) * sm.dmg * sm.pause / 4
+    val stats = Stats(hit = (1.6 * l + 4).toInt(), dmgMin = Math.round(blow * 0.6).toInt(), dmgMax = Math.round(blow * 1.4).toInt().coerceAtLeast(1),
+        pauseMs = (sm.pause * 1000).toLong(), ranged = false, armor = 0, dodge = (1.3 * l).toInt(), parry = 0,
+        magicDodge = (1.3 * l).toInt(), magicResist = (2 * l), verb = sm.verb, expValue = 0, ammo = "", level = l, critChance = 3.0)
     if (spell == "m.s.tree" && !world.hasFixture(p.location, "i.s.tree")) { p.log("Рядом нет деревьев."); return }
     if (spell == "m.s.volna" && p.location !in water()) { p.log("Рядом нет воды."); return }
     releaseExtras(p, onlySummoned = true, now)

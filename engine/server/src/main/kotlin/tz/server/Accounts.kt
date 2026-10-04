@@ -271,8 +271,8 @@ class Accounts(private val db: Db, private val content: Content) {
                     st.setString(2, clean)
                     st.setString(3, sex)
                     st.setString(4, Protocol.START_LOCATION)
-                    st.setInt(5, Rules.hpMax(1))
-                    st.setInt(6, Rules.manaMax(1))
+                    st.setInt(5, Rules.hpMax(Rules.ATTR_START))
+                    st.setInt(6, Rules.manaMax(Rules.ATTR_START))
                     st.executeUpdate()
                 }
                 c.prepareStatement(

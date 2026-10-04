@@ -30,7 +30,6 @@ internal object Law {
 
     val GUARD_NAMES = listOf("Ганс", "Бруно", "Отто", "Курт", "Фриц", "Карл", "Вальтер", "Густав", "Эрик", "Рольф")
     const val GUARD_LIFETIME = 600L
-    val GUARD_STATS = Stats(100, 30, 45, 3, false, 100, 30, 0, 0, 80, 80, 70, "алебардой", 15, "")
 }
 
 internal fun Game.Player.criminal(now: Long) = crime != null && now < crimeUntil
@@ -72,8 +71,8 @@ suspend fun Game.attackPlayer(account: Account, name: String): GameView = lock.w
         ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NO_SUCH_PLAYER)
     if (t.ghost) throw ApiException(HttpStatusCode.Conflict, Errors.GHOST)
     if (!Law.mayFight(p, t, now)) throw ApiException(HttpStatusCode.BadRequest, Errors.NO_FIGHT_HERE)
-    if (now < p.busyUntil) throw ApiException(HttpStatusCode.Conflict, Errors.RESTING)
-    p.busyUntil = now + p.stats.delay
+    if (clockMs() < p.busyUntil) throw ApiException(HttpStatusCode.Conflict, Errors.RESTING)
+    p.busyUntil = clockMs() + pauseOf(p)
     if (p.stats.ammo.isNotEmpty() && !useAmmo(p)) throw ApiException(HttpStatusCode.BadRequest, Errors.NO_AMMO)
     // One swing already makes a criminal, before the roll (f_attackf.dat:50-63).
     if (!p.criminal(now) && !guiltyPlayer(t, p, now)) commitCrime(p, "бандит", now)
@@ -109,13 +108,14 @@ internal suspend fun Game.playerHitsPlayer(a: Game.Player, b: Game.Player, now: 
         b.hp -= h.damage
         b.regenFrom = now
         woundedSpouse(b, now)
+        ailmentAfter(stats, h.damage, b.stats.ailmentGuard, b.dots) { b.chilledUntil = it }
         if (b.hp < 1) {
             killPlayer(b, a.name, now, a, attackerWasCriminal)
             return
         }
     }
     // The victim answers at once if not resting — self-defence, no crime. Spells get no answer.
-    if (answer && blow?.rmagic != true && now >= b.busyUntil && !b.ghost) playerHitsPlayer(b, a, now, answer = false, attackerWasCriminal = b.criminal(now))
+    if (answer && blow?.rmagic != true && clockMs() >= b.busyUntil && !b.ghost) playerHitsPlayer(b, a, now, answer = false, attackerWasCriminal = b.criminal(now))
 }
 
 /**
@@ -155,7 +155,10 @@ internal suspend fun Game.lawTick(loc: String, living: List<Game.Player>, now: L
     val criminals = living.filter { it.criminal(now) }
     if (zone == 1 && (criminals.isNotEmpty() || monsters.isNotEmpty()) && npcs.none { it.key.startsWith("n.g.") }) {
         val name = Law.GUARD_NAMES[rnd.nextInt(Law.GUARD_NAMES.size)] + " [стража]"
-        val proto = World.Proto("n.g.guard", name, 200, Law.GUARD_STATS, emptyMap(), emptyList(), emptyMap(), null, null)
+        // The city guard of content/balance (an elite of level 30+), with its halberd.
+        val nb = content.balanceNpcs["n.g.guard"]
+        val stats = Formulas.npc(content.npcs["n.g.guard"]?.get("war") as? kotlinx.serialization.json.JsonObject, nb).copy(verb = "алебардой")
+        val proto = World.Proto("n.g.guard", name, nb?.int("hp") ?: 200, stats, emptyMap(), emptyList(), emptyMap(), null, null)
         world.spawnProto("n.g.${rnd.nextInt(5, 10000)}", proto, loc, now, Law.GUARD_LIFETIME)
         for (q in living) { q.log("Появляется $name"); notify(q.id) }
     }
@@ -182,8 +185,8 @@ internal suspend fun Game.lawTick(loc: String, living: List<Game.Player>, now: L
 
 /** An NPC striking another NPC (a guard and a monster that wandered into town). */
 internal suspend fun Game.npcHitsNpc(a: World.Npc, b: World.Npc, now: Long, living: List<Game.Player>) {
-    a.busyUntil = now + a.stats.delay
-    val h = Formulas.attack(a.stats, b.stats, dice)
+    a.busyUntil = clockMs() + pauseOf(a)
+    val h = Formulas.attack(balance, a.stats, b.stats, dice)
     if (h.outcome == Formulas.Outcome.FIZZLED) return
     val line = "${a.name} по ${b.name} ${describe(h, a.stats.verb)}"
     for (q in living) { q.log(line); notify(q.id) }

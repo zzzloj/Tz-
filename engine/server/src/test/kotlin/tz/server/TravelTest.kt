@@ -116,18 +116,18 @@ class TravelTest {
         me(b).regenFrom = clock[0]
         clock[0] += 60
         game.tick(clock[0])
-        assertEquals(14, me(b).hp)
+        assertEquals(15, me(b).hp)   // 0.1 a second for the 50 s after the 10 s pause
         game.changeItem(me(b), "i.b.antidot", 1)
         v = game.use(b, "i.b.antidot", null, null)
         assertTrue(!v.character.poisoned)
 
-        // Regeneration skill 5: +round(31/10) a tick instead of +1.
+        // Regeneration skill 5 (of 10) quickens it.
         me(b).other["regeneration"] = 5
         me(b).hp = 1
         me(b).regenFrom = clock[0]
         clock[0] += 31
         game.tick(clock[0])
-        assertEquals(4, me(b).hp)
+        assertEquals(5, me(b).hp)
     }
 
     @Test

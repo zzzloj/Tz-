@@ -91,7 +91,7 @@ internal suspend fun Game.chase(npc: World.Npc, targetId: Long, loc: String, now
     val there = content.locations[q.location] ?: return false
     val guard = npc.key.startsWith("n.g.")
     if (!guard && there.zone != here.zone) return false
-    if (!guard && dice.roll(0, 100) <= q.skill("hiding") * 4 + q.dex) {
+    if (!guard && dice.roll(0, 100) <= q.oldSkill("hiding") * 4 + q.oldSkill("dex")) {
         q.log("Вы скрылись от погони")
         notify(q.id)
         return false

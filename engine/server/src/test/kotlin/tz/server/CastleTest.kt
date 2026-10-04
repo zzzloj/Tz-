@@ -22,7 +22,7 @@ class CastleTest {
         val database = db ?: run { println("TZ_TEST_DATABASE_URL not set, skipping"); return }
         runBlocking {
             // Castle 1 starts free in every test run.
-            database.tx { c -> c.createStatement().use { it.execute("UPDATE castles SET clan_id = NULL, locked_until = 0, open_until = 0 WHERE id = 1; DELETE FROM castle_guards WHERE castle_id = 1") } }
+            database.tx { c -> c.createStatement().use { it.execute("UPDATE castles SET clan_id = NULL, locked_until = 0, open_until = 0, knock_at = 0 WHERE id = 1; DELETE FROM castle_guards WHERE castle_id = 1") } }
             val accounts = Accounts(database, content)
             fun login() = "k" + (1..10).map { ('a'..'z').random() }.joinToString("")
             val (a, _) = accounts.register(login(), "secret-123")

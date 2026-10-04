@@ -149,8 +149,34 @@ internal fun Game.strike(a: Stats, attacker: Game.Player?, d: Stats, defender: G
     }
     // A spell stopped by «защита от магии» is a miss, not silence.
     val magicStats = if (rmagic && !aw.magic) aw.copy(verb = "магией") else aw
-    val h = Formulas.attack(magicStats, dw, dice)
+    val h = Formulas.attack(balance, magicStats, dw, dice)
     return StrikeResult(if (h.outcome == Formulas.Outcome.FIZZLED && rmagic && note.isNotEmpty()) Formulas.Hit(Formulas.Outcome.MISS) else h, note)
+}
+
+// ---- spells on the balance of 04.10.2026 (balance.md §8) ------------------------------------
+
+/**
+ * The old chance (f_usemagic.dat) with skills and attributes counting half on
+ * the new scale: strength over 4 spoils it, the saddle −10, the flag +20.
+ */
+internal fun Game.spellChance(p: Game.Player, level: Int): Int =
+    ((p.skill("magic") * 0.25 + p.int * 0.75) * 10 - level * 10 + 10 - (p.str - 4).coerceAtLeast(0) * 2 -
+        (if (p.mount != null) 10 else 0) + (if (p.hasFlag) 20 else 0)).coerceAtMost(95.0).toInt()
+
+/** Damage of a battle spell: ≈1.8 of a weapon's 4 s at the mage's level, by its old power (15 = a fire bolt), more with intelligence and magic. */
+internal fun Game.spellDamage(p: Game.Player, pmin: Int, pmax: Int): Pair<Int, Int> {
+    val unit = balance.weaponDps(maxOf(1, p.level - 2)) * 4 * 1.8 * (1 + 0.04 * p.int + 0.03 * p.skill("magic")) * (1 + p.stats.spellPct / 100.0)
+    val k = unit / 15.0
+    return Math.round(pmin * k).toInt().coerceAtLeast(0) to Math.round(pmax * k).toInt().coerceAtLeast(1)
+}
+
+/** Casting takes a staff's pause plus a tenth of the old cast time. */
+internal fun Game.castMs(p: Game.Player, def: JsonObject): Long = balance.pauseMillis("staff", p.dex) + 100L * (def.int("cast_time") ?: 0)
+
+/** Cooldowns of battle spells: 10–60 s instead of 1–20 min, so a mage plays with spells. */
+internal fun spellCooldown(spell: String, def: JsonObject): Long {
+    val base = (def.int("cooldown") ?: 0).toLong()
+    return if (spell.startsWith("m.w.")) (base / 10).coerceIn(10, 60) else base
 }
 
 // ---- what the character can use --------------------------------------------------------
@@ -234,8 +260,8 @@ suspend fun Game.technique(account: Account, id: String, target: String?): GameV
         ?: throw ApiException(HttpStatusCode.BadRequest, Errors.UNKNOWN_ABILITY)
     val name = def.str("name") ?: id
     val cooldown = (def.int("cooldown") ?: 0).toLong()
-    // Intelligence spoils the aim of techniques, and so does the saddle (f_usepriem.dat:24-26).
-    val intPenalty = (p.int - 1) * 10 + (if (p.mount != null) 10 else 0) - (if (p.hasFlag) 10 else 0)
+    // Intelligence spoils the aim of techniques, and so does the saddle (f_usepriem.dat:24-26); on the scale of 04.10.2026.
+    val intPenalty = (p.int - Rules.ATTR_START).coerceAtLeast(0) * 3 + (if (p.mount != null) 10 else 0) - (if (p.hasFlag) 10 else 0)
     if (p.stats.ranged) {
         p.log("Приемы можно использовать только в рукопашном бою или с холодным оружием ближнего боя")
         return@withLock viewLocked(p)
@@ -245,14 +271,14 @@ suspend fun Game.technique(account: Account, id: String, target: String?): GameV
             p.log("Щит должен находиться у вас в руках")
             return@withLock viewLocked(p)
         }
-        p.stance = Stance(id, name, now + cooldown, if (id == "p.d.c") p.int * 16 else p.stats.hit - intPenalty)
-        if (id == "p.d.o") p.busyUntil = now + cooldown
+        p.stance = Stance(id, name, now + cooldown, if (id == "p.d.c") p.int * 8 else (p.stats.hit - intPenalty).coerceIn(5, 95))
+        if (id == "p.d.o") p.busyUntil = clockMs() + 1000L * (cooldown)
         p.log("Вы встали в стойку «$name»")
         return@withLock viewLocked(p)
     }
     val aim = aim(p, target, now)?.takeIf { it !is Aim.Item }
     if (aim == null) { p.log("Нет цели"); return@withLock viewLocked(p) }
-    if (now < p.busyUntil) throw ApiException(HttpStatusCode.Conflict, Errors.RESTING)
+    if (clockMs() < p.busyUntil) throw ApiException(HttpStatusCode.Conflict, Errors.RESTING)
     if (!Law.mayFight(p, (aim as? Aim.Pc)?.p, now)) throw ApiException(HttpStatusCode.BadRequest, Errors.NO_FIGHT_HERE)
     val ready = p.cooldowns[id] ?: 0
     if (now < ready) {
@@ -269,10 +295,10 @@ suspend fun Game.technique(account: Account, id: String, target: String?): GameV
     var hit = w.hit - intPenalty
     var min = w.dmgMin
     var max = w.dmgMax
-    var delay = w.delay
+    var pause = w.pauseMs
     fun scale(k: Double) { min = roundHalf(min * k); max = roundHalf(max * k) }
     when (id) {
-        "p.b" -> { scale(0.7); delay = roundHalf(delay * 0.5) }
+        "p.b" -> { scale(0.7); pause /= 2 }
         "p.d" -> hit -= 15
         "p.me" -> hit -= 10
         "p.m" -> { scale(0.7); hit += 40 }
@@ -284,20 +310,19 @@ suspend fun Game.technique(account: Account, id: String, target: String?): GameV
         "p.s" -> { hit -= 10; max += if (weapon) str * 2 + cold else str + hand }
     }
     if (hit < 1) hit = 5
-    if (hit > 95) hit = 95
-    val stats = w.copy(hit = hit, dmgMin = min.coerceAtLeast(0), dmgMax = max.coerceAtLeast(0), delay = delay)
+    val stats = w.copy(hit = hit, dmgMin = min.coerceAtLeast(0), dmgMax = max.coerceAtLeast(0), pauseMs = pause)
     val blow = Blow(stats, id, name)
-    p.busyUntil = now + stats.delay
+    p.busyUntil = clockMs() + stats.pauseMs
     blowAt(p, aim, blow, now)
     when (id) {
         "p.d" -> {
             if (aim.alive() && !p.ghost) blowAt(p, aim, blow, now)
-            p.busyUntil = now + w.delay
+            p.busyUntil = clockMs() + w.pauseMs
         }
         "p.me" -> {
             // The mill strikes everyone else here too — the innocent and your own (f_usepriem.dat:54).
             for (other in othersHere(p, now)) if (other.name() != aim.name() && !p.ghost) blowAt(p, other, blow, now)
-            p.busyUntil = now + 2L * w.delay
+            p.busyUntil = clockMs() + 2L * w.pauseMs
         }
     }
     if (!p.ghost && aim.alive()) afterEffects(p, aim, id, hit, now)
@@ -317,8 +342,8 @@ private suspend fun Game.afterEffects(p: Game.Player, aim: Aim, id: String, hit:
     when (id) {
         "p.n" -> if (dice.roll(0, 100) <= hit - 40 && !guarded("p.d.n")) {
             when (aim) {
-                is Aim.Npc -> aim.npc.busyUntil = now + 15
-                is Aim.Pc -> { aim.p.busyUntil = now + 15; aim.p.log("Вас оглушили!"); notify(aim.p.id) }
+                is Aim.Npc -> aim.npc.busyUntil = clockMs() + 1000L * (15)
+                is Aim.Pc -> { aim.p.busyUntil = clockMs() + 1000L * (15); aim.p.log("Вас оглушили!"); notify(aim.p.id) }
                 is Aim.Item -> {}
             }
             p.log("${aim.name()} оглушен!")
@@ -346,7 +371,7 @@ private suspend fun Game.knockOut(p: Game.Player, t: Game.Player, itemId: String
     changeItem(t, itemId, -1)
     world.drop(t.location, itemId, 1, now)
     refreshStats(t)
-    t.busyUntil = now + 5
+    t.busyUntil = clockMs() + 1000L * (5)
     t.log("У вас выбит $what!")
     p.log("У ${t.name} выбит $what!")
     tellHere(p, "У ${t.name} выбит $what!")
@@ -373,7 +398,7 @@ internal suspend fun Game.castSpell(p: Game.Player, spell: String, target: Strin
     val now = clock()
     val def = content.items[spell] ?: throw ApiException(HttpStatusCode.BadRequest, Errors.UNKNOWN_ABILITY)
     val name = def.str("name") ?: spell
-    if (now < p.busyUntil) throw ApiException(HttpStatusCode.Conflict, Errors.RESTING)
+    if (clockMs() < p.busyUntil) throw ApiException(HttpStatusCode.Conflict, Errors.RESTING)
     val kind = Spells.target(spell, def)
     val aim: Aim? = when (kind) {
         null -> null
@@ -399,18 +424,11 @@ internal suspend fun Game.castSpell(p: Game.Player, spell: String, target: Strin
     val ready = p.cooldowns[spell] ?: 0
     if (scroll == null && now < ready) { p.log("Период «$name» не истек (еще ${(ready - now) / 60 + 1} минут)"); return }
     val magicSkill = p.skill("magic")
-    val level = def.int("level") ?: 1
-    val strPenalty = (maxOf(p.str, 2) - 2) * 4
-    // On horseback −10 (f_usemagic.dat:25).
-    // On horseback −10 (f_usemagic.dat:25), the flag +20 (:26).
-    val chance = ((magicSkill * 0.5 + p.int * 1.5) * 10 - level * 10 + 10 - strPenalty - (if (p.mount != null) 10 else 0) + (if (p.hasFlag) 20 else 0)).coerceAtMost(95.0)
+    val chance = spellChance(p, def.int("level") ?: 1)
     if (chance <= 0 || magicSkill == 0) { p.log("Слишком слабый навык магии"); return }
     p.mana -= cost
-    p.busyUntil = now + (def.int("cast_time") ?: 0) + 3 - p.dex + strPenalty
-    if (scroll == null) {
-        val period = (def.int("cooldown") ?: 0).toLong() + if (spell.startsWith("m.w.")) (maxOf(p.str, 2) - 2) * 1200L else 0L
-        p.cooldowns[spell] = now + period
-    }
+    p.busyUntil = clockMs() + castMs(p, def)
+    if (scroll == null) p.cooldowns[spell] = now + spellCooldown(spell, def)
     if (scroll != null && scroll.startsWith("i.m.")) changeItem(p, scroll, -1)
     def.str("words")?.takeIf { it.isNotBlank() }?.let { words ->
         val line = "${p.name}: $words" + if (spell.startsWith("m.w.") && p.stance?.id == "p.d.c") " (концентрация)" else ""
@@ -436,7 +454,7 @@ private suspend fun Game.spellEffect(p: Game.Player, spell: String, def: JsonObj
         spell.startsWith("m.heal") -> heal(p, spell, pmin, pmax, aim, now)
         spell == "m.n" || spell == "m.roj" -> {
             val t = (aim as Aim.Pc).p
-            t.busyUntil = now + 20
+            t.busyUntil = clockMs() + 1000L * (20)
             t.log("Рой мошек мешает вам что-либо сделать!")
             tellHere(p, "${t.name} облеплен мошкой!")
             p.log("${t.name} облеплен мошкой!")
@@ -455,9 +473,10 @@ private suspend fun Game.spellEffect(p: Game.Player, spell: String, def: JsonObj
             crimeFor(p, aim, now)
             unhorse(t, now)
         }
-        spell == "m.armor" -> buff(p, (aim as Aim.Pc).p, "Броня", int) { it.armorBuff = int; refreshStats(it) }
-        spell == "m.str" -> buff(p, (aim as Aim.Pc).p, "Макс.жизнь", int * 2) { it.hpBuff = int * 2 }
-        spell == "m.man" -> buff(p, (aim as Aim.Pc).p, "Макс.мана", int * 2) { it.manaBuff = int * 2 }
+        // Buffs on the scale of 04.10.2026: armour by the caster's level, health and mana by a share of the target's maximum.
+        spell == "m.armor" -> { val a = int + p.level; buff(p, (aim as Aim.Pc).p, "Броня", a) { it.armorBuff = a; refreshStats(it) } }
+        spell == "m.str" -> { val t = (aim as Aim.Pc).p; val a = t.stats.hpMax * int * 2 / 100; buff(p, t, "Макс.жизнь", a) { it.hpBuff = a } }
+        spell == "m.man" -> { val t = (aim as Aim.Pc).p; val a = t.stats.manaMax * int * 2 / 100; buff(p, t, "Макс.мана", a) { it.manaBuff = a } }
         spell == "m.meditation" -> {
             var gain = roundHalf((p.hp - 1) * 0.7).coerceAtLeast(0)
             gain = gain.coerceAtMost(p.manaMax - p.mana)
@@ -501,13 +520,13 @@ private suspend fun Game.spellEffect(p: Game.Player, spell: String, def: JsonObj
 
 /** Battle spells m.w.* (plugin/m.w.dat): a magic blow at the target or, for m.w.a.*, at everyone here. */
 private suspend fun Game.battleSpell(p: Game.Player, spell: String, def: JsonObject, aim: Aim?, now: Long, loss: Boolean) {
-    val int = p.int
     val pmin = def.int("power_min") ?: 0
     val pmax = def.int("power_max") ?: 0
+    val (dmin, dmax) = spellDamage(p, pmin, pmax)
     val stats = p.stats.copy(
-        hit = if (loss) 0 else 100,
-        dmgMin = (pmin - 10 + int * 2).coerceAtLeast(0), dmgMax = pmax + int * 2,
-        delay = def.int("cast_time") ?: 0, ranged = false, verb = "магией", ammo = "",
+        hit = if (loss) 0 else p.stats.hit + 20,
+        dmgMin = dmin, dmgMax = dmax,
+        pauseMs = 0, ranged = false, verb = "магией", ammo = "", critChance = balance.critBase("spell"), ailment = null,
     )
     val blow = Blow(stats, title = null, rmagic = true)
     val criminalsOnly = (def.int("criminals_only") ?: 0) != 0
@@ -524,7 +543,7 @@ private suspend fun Game.battleSpell(p: Game.Player, spell: String, def: JsonObj
         if (loss) crimeFor(p, t, now) else blowAt(p, t, blow, now)
     }
     if (spell == "m.w.vamp" && !loss && !p.ghost) {
-        val gain = dice.roll(2, maxOf(2, pmin)).coerceAtMost(p.hpMax - p.hp)
+        val gain = (p.hpMax * dice.roll(2, maxOf(2, pmin)) / 100).coerceAtMost(p.hpMax - p.hp)
         if (gain > 0) { p.hp += gain; p.log("Жизнь +$gain") }
     }
 }
@@ -538,9 +557,11 @@ private suspend fun Game.heal(p: Game.Player, spell: String, pmin: Int, pmax: In
             world.npcsIn(p.location).filter { it.key.startsWith("n.o.") && castle?.clanId != null && castle.clanId == p.clanId }.map { Aim.Npc(it) }
     } else listOfNotNull(aim)
     for (t in targets) {
-        val amount = dice.roll((pmin - 10 + p.int * 2).coerceAtLeast(0), pmax + p.int * 2)
+        // A share of the target's maximum (old power 10–20 against 20–60 health), more with intelligence.
+        fun amount(max: Int) = Math.round(max * dice.roll(pmin, maxOf(pmin, pmax)) / 50.0 * (1 + 0.04 * p.int)).toInt()
         when (t) {
             is Aim.Pc -> {
+                val amount = amount(t.p.hpMax)
                 val gain = amount.coerceAtMost(t.p.hpMax - t.p.hp).coerceAtLeast(0)
                 t.p.hp += gain
                 t.p.log("Жизнь +$gain")
@@ -548,7 +569,7 @@ private suspend fun Game.heal(p: Game.Player, spell: String, pmin: Int, pmax: In
                 if (t.p.id != p.id && !p.criminal(now) && t.p.criminal(now)) commitCrime(p, "лечил преступника", now)
             }
             is Aim.Npc -> {
-                val gain = amount.coerceAtMost(t.npc.proto.hpMax - t.npc.hp).coerceAtLeast(0)
+                val gain = amount(t.npc.proto.hpMax).coerceAtMost(t.npc.proto.hpMax - t.npc.hp).coerceAtLeast(0)
                 t.npc.hp += gain
                 p.log("${t.npc.name}: жизнь +$gain")
                 if (!p.criminal(now) && t.npc.key.startsWith("n.c.")) commitCrime(p, "лечил преступника", now)
@@ -598,7 +619,7 @@ private suspend fun Game.madness(p: Game.Player, now: Long) {
         }
         is Aim.Npc -> {
             val n = mad.npc
-            n.busyUntil = now + n.stats.delay
+            n.busyUntil = clockMs() + pauseOf(n)
             when (victim) {
                 is Aim.Npc -> { n.npcTarget = victim.npc.key; npcHitsNpc(n, victim.npc, now, players.values.filter { it.location == p.location }) }
                 is Aim.Pc -> { n.enemies += victim.p.id; npcHits(n, victim.p, now, answer = true); save(victim.p) }
@@ -700,14 +721,14 @@ internal suspend fun Game.useMagicItem(p: Game.Player, itemId: String, target: S
     }
     val place = Spells.runePlace(itemId) ?: return false
     val now = clock()
-    if (now < p.busyUntil) throw ApiException(HttpStatusCode.Conflict, Errors.RESTING)
+    if (clockMs() < p.busyUntil) throw ApiException(HttpStatusCode.Conflict, Errors.RESTING)
     if (p.mana < 7) { p.log("Недостаточно маны"); return true }
     val magicSkill = p.skill("magic")
-    var chance = (magicSkill * 0.5 + p.int * 1.5) * 10 - 20
+    var chance = (magicSkill * 0.25 + p.int * 0.75) * 10 - 20
     if (chance < 25) chance = 10.0
     if (magicSkill == 0) { p.log("Слишком слабый навык магии"); return true }
     p.mana -= 7
-    p.busyUntil = now + 10
+    p.busyUntil = clockMs() + 1000L * (10)
     val line = "${p.name}: Tira Ruen"
     p.log(line); tellHere(p, line)
     if (dice.roll(0, 100) > chance) { p.log("Заклинание сорвалось"); return true }
@@ -720,22 +741,25 @@ internal suspend fun Game.useMagicItem(p: Game.Player, itemId: String, target: S
 /** Throws a bottle or strikes with a one-shot weapon (Spells.BOTTLES). */
 private suspend fun Game.useBottle(p: Game.Player, itemId: String, b: Spells.Bottle, target: String?) {
     val now = clock()
-    if (now < p.busyUntil) throw ApiException(HttpStatusCode.Conflict, Errors.RESTING)
+    if (clockMs() < p.busyUntil) throw ApiException(HttpStatusCode.Conflict, Errors.RESTING)
     val name = content.itemName(itemId)
     if (b.notInBank && p.location == Rules.BANK_LOCATION) { p.log("В банке нельзя использовать: $name"); return }
-    if (itemId == "i.q.ssword" && (p.str < 5 || p.dex < 4)) { p.log("Необходимо минимум сила 5 и ловкость 4"); return }
+    if (itemId == "i.q.ssword" && (p.str < 10 || p.dex < 8)) { p.log("Необходимо минимум сила 10 и ловкость 8"); return }
     val targets: List<Aim> = if (b.single) {
         listOfNotNull(aim(p, target, now)?.takeIf { it !is Aim.Item }).ifEmpty { p.log("Нет цели"); return }
     } else othersHere(p, now).filter { t ->
         !b.holy || when (t) { is Aim.Npc -> t.npc.key.startsWith("n.c."); is Aim.Pc -> t.p.criminal(now); is Aim.Item -> false }
     }
     changeItem(p, itemId, -1)
-    p.busyUntil = now + b.rest
+    p.busyUntil = clockMs() + 1000L * (b.rest)
     if (itemId == "i.q.pdeath" && p.location == "x2375x934") {
         val line = "[громовой голос] КАК ТЫ СМЕЕШЬ МЕНЯ ТРЕВОЖИТЬ, ${p.name.uppercase()}?"
         p.log(line); tellHere(p, line)
     }
-    val stats = p.stats.copy(hit = 100, dmgMin = b.min, dmgMax = b.max, delay = b.rest, ranged = false, verb = b.verb, ammo = "")
+    // Old damage of a bottle (a 15 then was a fire bolt) grows with the thrower's level like spells do.
+    val k = balance.weaponDps(maxOf(1, p.level - 2)) * 4 * 1.8 / 15.0
+    val stats = p.stats.copy(hit = p.stats.hit + 20, dmgMin = Math.round(b.min * k).toInt(), dmgMax = Math.round(b.max * k).toInt().coerceAtLeast(1),
+        pauseMs = b.rest * 1000L, ranged = false, verb = b.verb, ammo = "", ailment = null)
     val blow = Blow(stats, rmagic = b.magic)
     for (t in targets) {
         if (p.ghost) break

@@ -717,7 +717,7 @@ private fun HeroTab(game: GameView, busy: Boolean, sub: Int, more: MoreActions, 
                 ActionButton("Аккаунт", !busy, layout.openAccount, icon = "settings")
             }
             Text("сила ${ch.str} · ловкость ${ch.dex} · интеллект ${ch.int}" + if (ch.skillPoints > 0) " · свободных очков ${ch.skillPoints}" else "", style = Tz.type.body, color = c.text)
-            Text("опыт ${ch.exp}/${ch.expNext}", style = Tz.type.small, color = c.textMuted)
+            Text("уровень ${ch.level} · опыт ${ch.exp}/${ch.expNext}", style = Tz.type.small, color = c.textMuted)
             TzBar(ch.exp, ch.expNext, c.exp)
             Text("удар ${ch.hit}% · урон ${ch.dmgMin}–${ch.dmgMax} · броня ${ch.armor} · уклон ${ch.dodge}", style = Tz.type.small, color = c.text)
             Text("парирование ${ch.parry} · уклон от магии ${ch.magicDodge} · защита от магии ${ch.magicParry} · сопр. магии ${ch.magicResist}", style = Tz.type.small, color = c.text)

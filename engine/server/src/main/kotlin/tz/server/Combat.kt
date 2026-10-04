@@ -4,34 +4,56 @@ import kotlinx.serialization.json.JsonObject
 import kotlin.random.Random
 
 /**
- * Combat parameters of a character or NPC — the old engine's `war` string
- * with names (docs/data-fields.md §3.2, docs/mechanics-combat.md §1).
+ * Combat parameters of a character or NPC on the balance of 04.10.2026
+ * (claude/balance.md): accuracy and evasion in points (hit chance =
+ * 60 + accuracy − evasion), damage per blow, the pause in milliseconds, armour
+ * and magic defence that stop a share of damage, block chance with a shield,
+ * crit only from items.
  */
 @kotlinx.serialization.Serializable
 data class Stats(
+    /** Accuracy (points); 0 for magic means the spell fizzles (a stance stopped it). */
     val hit: Int,
     val dmgMin: Int,
     val dmgMax: Int,
-    val delay: Int,
+    /** Pause after a blow, milliseconds. */
+    val pauseMs: Long,
     val ranged: Boolean,
     val armor: Int,
+    /** Evasion (points) against blows and against magic. */
     val dodge: Int,
+    /** Block chance in percent (only with a shield). */
     val parry: Int,
-    val shieldArmor: Int,
     val magicDodge: Int,
-    val magicParry: Int,
+    /** Magic defence (points): stops a share of magic damage. */
     val magicResist: Int,
     val verb: String,
-    val expValue: Int,
+    /** Experience for killing (NPCs). */
+    val expValue: Long,
     val ammo: String,
-    /** Gems (i.i.am, i.i.ne…) change maximum HP and mana (char[2], char[4]). */
-    val hpBonus: Int = 0,
-    val manaBonus: Int = 0,
-    /** Extra crit chance in percent (the ..kp gem, f_attackf.dat:99). */
-    val critBonus: Int = 0,
+    val level: Int = 1,
+    /** Maximum health and mana before spell buffs (characters). */
+    val hpMax: Int = 0,
+    val manaMax: Int = 0,
+    val critChance: Double = 5.0,
+    val critMult: Double = 1.5,
+    /** Armour the blow meets: 0.75 heavy weapons, 1.15 light ones. */
+    val pen: Double = 1.0,
+    /** A gem in the weapon: ignite, chill or poison. */
+    val ailment: String? = null,
+    /** Gems in the necklace: these ailments last half as long on this character. */
+    val ailmentGuard: Set<String> = emptySet(),
+    /** Extra damage of spells, percent (sets). */
+    val spellPct: Int = 0,
+    val weaponClass: String = "hand",
 ) {
     val magic: Boolean get() = verb == "магией" || verb == "молнией"
+    /** Pause in whole seconds, for messages and old-style timers. */
+    val pauseSeconds: Long get() = (pauseMs + 999) / 1000
 }
+
+/** Damage over time from an ailment (ignite, poison): [perSecond] till [untilMs]. */
+class Dot(val kind: String, val untilMs: Long, val perSecond: Double) { var carry = 0.0 }
 
 /** A character's attributes and skills, indexed like the old `skills` string (§3.3). */
 class Skills(private val values: IntArray = IntArray(SIZE)) {
@@ -61,149 +83,122 @@ fun interface Dice {
 }
 
 object Formulas {
-    private fun phpRound(x: Double): Int = Math.round(x).toInt()   // half away from zero for x >= 0, as PHP round()
+    private fun d(o: JsonObject?, key: String): Double? = (o?.get(key) as? kotlinx.serialization.json.JsonPrimitive)?.content?.toDoubleOrNull()
+    private fun ints(o: JsonObject?, key: String): List<Int> =
+        (o?.get(key) as? kotlinx.serialization.json.JsonArray)?.map { (it as? kotlinx.serialization.json.JsonPrimitive)?.content?.toDoubleOrNull()?.toInt() ?: 0 } ?: emptyList()
+
+    /** Effects of gems and sets in the new terms (content/balance/items.json "effects", sets.json "bonus"). */
+    class Bonus {
+        var acc = 0.0; var eva = 0.0; var hpPct = 0.0; var manaPct = 0.0; var armorPct = 0.0; var mdefPct = 0.0
+        var dmgPct = 0.0; var pausePct = 0.0; var critChance = 0.0; var critMult = 0.0; var block = 0.0; var spellPct = 0.0
+        fun add(e: JsonObject) {
+            for ((k, v) in e) {
+                val x = (v as? kotlinx.serialization.json.JsonPrimitive)?.content?.toDoubleOrNull() ?: continue
+                when (k) {
+                    "acc" -> acc += x; "eva" -> eva += x; "hpPct" -> hpPct += x; "manaPct" -> manaPct += x
+                    "armorPct" -> armorPct += x; "mdefPct" -> mdefPct += x; "dmgPct" -> dmgPct += x; "pausePct" -> pausePct += x
+                    "critChance" -> critChance += x; "critMult" -> critMult += x; "block" -> block += x; "spellPct" -> spellPct += x
+                }
+            }
+        }
+    }
+
+    /** Requirements of a recalculated item: [level, str, dex, int] — what a character must have to put it on. */
+    fun requirement(ov: JsonObject?): List<Int> = listOf(d(ov, "level")?.toInt() ?: 1) + ints(ov, "req").let { it + List(3 - it.size.coerceAtMost(3)) { 0 } }.take(3)
 
     /**
-     * Player combat parameters from attributes, skills and equipped items:
-     * f_calcparam.dat with the gems set into items ("i.a.b.dr..ob..am"), but
-     * without sharpening, sets and the leadership flag (not in the game yet).
-     * [item] gives the item's content/ JSON.
+     * A character's combat parameters (balance.md §5, §13): from attributes,
+     * skills, level and the things worn. [item] gives the content JSON, [ov]
+     * the new balance of an item (content/balance/items.json).
      */
-    fun player(skills: Skills, equipped: List<String>, item: (String) -> JsonObject?, mounted: Boolean = false): Stats {
+    fun player(
+        b: Balance, skills: Skills, level: Int, equipped: List<String>,
+        item: (String) -> JsonObject?, ov: (String) -> JsonObject?, sets: List<JsonObject> = emptyList(), mounted: Boolean = false,
+    ): Stats {
         val str = skills[Skills.STR]; val dex = skills[Skills.DEX]; val int = skills[Skills.INT]
-        var hit = 0; var dmgMin = 0; var dmgMax = 0; var delay = 0; var ranged = false
-        var armor = 0; var shieldArmor = 0; var verb = ""; var ammo = ""
-        var parry = 2 * (dex + skills[Skills.PARRY] + (str - 1) * 2)
-        var dodge = dex + skills[Skills.DODGE] + (str - 1) * 2
-        var magicDodge = 5 * (int + skills[Skills.MDODGE] - str)
-        var magicParry = 10 * (int + skills[Skills.MRES] - str)
-        var magicResist = 15 * (skills[Skills.MRES] + int - str)
-        var hitPenalty = 0
-        var weapon = false
-        var hpBonus = 0
-        var manaBonus = 0
+        val bonus = Bonus()
+        var armor = 0.0
+        var weaponId: String? = null
+        var shield = false
+        var ailment: String? = null
+        val guard = HashSet<String>()
         val gemsUsed = HashSet<String>()
-
-        // A gem effect [index, value]: war[index] += value, or char[index − 50] for HP (52) and mana (54).
-        fun addEffect(index: Int, v: Int) {
-            when (index) {
-                0 -> hit += v
-                1 -> dmgMin += v
-                2 -> dmgMax += v
-                3 -> delay += v
-                5 -> armor += v
-                6 -> dodge += v
-                7 -> parry += v
-                8 -> shieldArmor += v
-                9 -> magicDodge += v
-                10 -> magicParry += v
-                11 -> magicResist += v
-                52 -> hpBonus += v
-                54 -> manaBonus += v
-            }
-        }
-
         for (id in equipped) {
-            val o = item(baseId(id)) ?: continue
-            val req = requirement(o, id)
-            val strDef = (req.getOrElse(0) { 0 } - str).coerceAtLeast(0)
-            val dexDef = (req.getOrElse(1) { 0 } - dex).coerceAtLeast(0)
-            val intDef = (req.getOrElse(2) { 0 } - int).coerceAtLeast(0)
-            hitPenalty += dexDef * 10
+            val base = baseId(id)
+            val o = item(base) ?: continue
+            val bo = ov(base) ?: ov(base.substringBefore(".."))
             if (id.startsWith("i.a.")) {
-                val a = o.int("armor") ?: 0
-                val eff = a - strDef * 2 - intDef * 2
-                if (id.startsWith("i.a.s.")) { if (eff > 0) shieldArmor = eff } else if (eff > 0) armor += eff
+                armor += d(bo, "armor") ?: 0.0
+                if (id.startsWith("i.a.s.")) shield = true
             }
-            if (id.startsWith("i.w.")) {
-                weapon = true
-                delay = (o.int("speed") ?: 0) - phpRound(dex / 2.0)
-                if (id.startsWith("i.w.r.")) ranged = true
-                verb = o.str("verb") ?: ""
-                ammo = o.str("ammo") ?: ""
-                hit += if (ranged) 10 * (dex + skills[Skills.RANGED] - 1) - (if (mounted) 10 else 0)
-                else 10 * (dex + skills[Skills.COLD])
-                val min = o.int("dmg_min") ?: 0
-                val max = o.int("dmg_max") ?: 0
-                if (verb == "магией") {
-                    dmgMin += min - strDef * 2 - intDef * 4
-                    dmgMax += max - strDef * 2 - intDef * 5
-                } else {
-                    dmgMin += min - strDef * 2 - intDef * 2
-                    dmgMax += max - strDef * 2 - intDef * 2
-                }
-                // Sharpening "-N-" adds up to +6 (f_calcparam.dat:68-70).
-                SHARP.find(id)?.groupValues?.get(1)?.toIntOrNull()?.let { val n = it.coerceAtMost(6); dmgMin += n; dmgMax += n }
-                if (!id.startsWith("i.w.r.c.")) { dmgMin += str; dmgMax += str }
-            }
-            // Gems: each kind counts once however many items carry it.
+            if (id.startsWith("i.w.")) weaponId = id
             for (m in GEM.findAll(id)) {
                 val gem = m.groupValues[1]
-                if (!gemsUsed.add(gem)) continue
-                val effects = item("i.i.$gem")?.get("effects") as? kotlinx.serialization.json.JsonArray ?: continue
-                for (e in effects) {
-                    val pair = (e as? kotlinx.serialization.json.JsonArray)?.mapNotNull { (it as? kotlinx.serialization.json.JsonPrimitive)?.content?.toIntOrNull() }
-                    if (pair != null && pair.size == 2) addEffect(pair[0], pair[1])
+                val e = ov("i.i.$gem")?.get("effects") as? JsonObject ?: continue
+                val a = (e["ailment"] as? kotlinx.serialization.json.JsonPrimitive)?.content
+                if (a != null) {
+                    // A gem of an ailment works in the weapon, and guards against it in the necklace.
+                    if (id.startsWith("i.w.")) ailment = a else if (id.startsWith("i.a.m.")) guard += a
+                    continue
                 }
+                if (gemsUsed.add(gem)) bonus.add(e)
             }
+            if (o.isEmpty()) continue
         }
-        if (!weapon) {
-            dmgMin += str + skills[Skills.HAND] - 1
-            dmgMax += str + skills[Skills.HAND] + 1
-            hit += 10 * (dex + skills[Skills.HAND] + 2)
-            if (hit >= 100) hit = 95
-            if (mounted) hit -= 20
-            delay = 5 - phpRound(dex / 2.0)
-            verb = "кулаками"
+        // Set bonuses: groups of alternatives, a bonus by how many groups are worn.
+        val bases = equipped.map { baseId(it).substringBefore("..") }.toSet()
+        for (set in sets) {
+            val groups = set["groups"] as? kotlinx.serialization.json.JsonArray ?: continue
+            val worn = groups.count { g -> (g as? kotlinx.serialization.json.JsonArray)?.any { (it as? kotlinx.serialization.json.JsonPrimitive)?.content in bases } == true }
+            val by = set["bonus"] as? JsonObject ?: continue
+            for ((n, e) in by) if (worn >= (n.toIntOrNull() ?: 99)) (e as? JsonObject)?.let { bonus.add(it) }
         }
-        // Sets (f_calcparam.dat:100-102): the adamant one, and the ogre and troll one with a wolf's head.
-        fun wears(part: String) = equipped.any { part in it }
-        if (wears("i.a.h.ms") && wears("i.a.b.sborn") && wears("i.a.p.ms") && wears("i.a.l.ms") && wears("i.w.s.master")) {
-            hpBonus += 5; manaBonus += 5; hit += 5; armor += 5; dmgMin += 4; dmgMax += 3
-        }
-        if (wears("i.a.l.ogr") && wears("i.a.p.ogr") && wears("i.a.b.troll") && (wears("i.a.h.whitewolf") || wears("i.a.h.wolf"))) {
-            hpBonus += 5; manaBonus += 5; armor += 4
-        }
-        if (equipped.any { it.contains("..do") }) hitPenalty += 20   // dolerite: −20 % accuracy
-        hit -= hitPenalty
-        if (hit <= 0) hit = 5
-        if (hit > 95) hit = 95
-        if (equipped.none { it.startsWith("i.a.s.") }) parry = 0
+        // Sharpening "-N-" (f_calcparam.dat:68-70): +5 % damage a point, at most +30 %.
+        weaponId?.let { w -> SHARP.find(w)?.groupValues?.get(1)?.toIntOrNull()?.let { bonus.dmgPct += 5.0 * it.coerceAtMost(6) } }
+        val wo = weaponId?.let { item(baseId(it)) }
+        val wov = weaponId?.let { ov(baseId(it)) ?: ov(baseId(it).substringBefore("..")) }
+        val cls = if (weaponId == null) "hand" else Balance.weaponClass(baseId(weaponId), wo?.str("name") ?: "", wov?.str("class"))
+        val ranged = weaponId?.startsWith("i.w.r.") == true
+        val verb = if (weaponId == null) "кулаками" else wo?.str("verb") ?: ""
+        val magicWeapon = verb == "магией" || verb == "молнией"
+        val wskill = when { weaponId == null -> skills[Skills.HAND]; ranged -> skills[Skills.RANGED]; else -> skills[Skills.COLD] }
+        val pause = b.pause(cls, dex) * (1 + bonus.pausePct / 100)
+        val dmg = ints(wov, "dmg").takeIf { it.size == 2 } ?: if (weaponId == null) listOf(1, 3) else listOf(
+            wo?.int("dmg_min") ?: 0, wo?.int("dmg_max") ?: 1)
+        val flat = if (cls == "crossbow" || magicWeapon) 0.0 else b.strengthBonus(str, pause)
+        val mult = b.weaponSkillMultiplier(wskill) * (1 + bonus.dmgPct / 100)
+        var acc = b.accuracy(dex, wskill, level) + bonus.acc
+        if (mounted) acc -= if (ranged) 10 else 20
+        val totalArmor = armor * (1 + bonus.armorPct / 100)
         return Stats(
-            hit = hit,
-            dmgMin = dmgMin.coerceAtLeast(0),
-            dmgMax = dmgMax.coerceAtLeast(0),
-            delay = delay.coerceAtLeast(3),
+            hit = acc.toInt().coerceAtLeast(1),
+            dmgMin = ((dmg[0] + flat) * mult).toInt().coerceAtLeast(0),
+            dmgMax = Math.round((dmg[1] + flat) * mult).toInt().coerceAtLeast(1),
+            pauseMs = (pause * 1000).toLong().coerceAtLeast(500),
             ranged = ranged,
-            armor = armor.coerceAtLeast(0),
-            dodge = dodge.coerceAtLeast(0),
-            parry = parry.coerceAtLeast(0),
-            shieldArmor = shieldArmor,
-            magicDodge = magicDodge.coerceAtLeast(0),
-            magicParry = magicParry.coerceAtLeast(0),
-            magicResist = magicResist,
+            armor = Math.round(totalArmor).toInt(),
+            dodge = (b.evasion(dex, skills[Skills.DODGE], level) + bonus.eva).toInt().coerceAtLeast(0),
+            parry = if (shield) (b.blockChance(skills[Skills.PARRY], dex) + bonus.block).toInt() else 0,
+            magicDodge = b.evasion(dex, skills[Skills.MDODGE], level).toInt(),
+            magicResist = (b.magicDefence(int, skills[Skills.MRES], totalArmor) * (1 + bonus.mdefPct / 100)).toInt(),
             verb = verb,
-            expValue = skills.sumExceptExp(),
-            ammo = ammo,
-            hpBonus = hpBonus,
-            manaBonus = manaBonus,
-            critBonus = if (equipped.any { it.contains("..kp") }) 4 else 0,
+            expValue = 0,
+            ammo = wo?.str("ammo") ?: "",
+            level = level,
+            hpMax = Math.round(b.hpMax(str, level) * (1 + bonus.hpPct / 100)).toInt().coerceAtLeast(1),
+            manaMax = Math.round(b.manaMax(int, level) * (1 + bonus.manaPct / 100)).toInt().coerceAtLeast(0),
+            critChance = b.critBase(cls) + bonus.critChance,
+            critMult = b.critMultiplier + bonus.critMult,
+            pen = b.penetration(cls),
+            ailment = ailment,
+            ailmentGuard = guard,
+            spellPct = bonus.spellPct.toInt(),
+            weaponClass = cls,
         )
     }
 
-    private val SHARP = Regex("""-(\d+)-""")
     private val GEM = Regex("""\.\.([A-Za-z0-9]+)""")
-
-    /** "str:dex:int[:hp]" of armour (field req) or a weapon (field req). */
-    private fun requirement(o: JsonObject, id: String): List<Int> {
-        if (!id.startsWith("i.a.") && !id.startsWith("i.w.")) return emptyList()
-        val r = o["req"] ?: return emptyList()
-        return when (r) {
-            is kotlinx.serialization.json.JsonArray -> r.map { (it as? kotlinx.serialization.json.JsonPrimitive)?.content?.toIntOrNull() ?: 0 }
-            is kotlinx.serialization.json.JsonPrimitive -> r.content.split(':').map { it.toIntOrNull() ?: 0 }
-            else -> emptyList()
-        }
-    }
+    private val SHARP = Regex("""-(\d+)-""")
 
     /** Base item id without maker, sharpening and gem suffixes (data-fields §0). */
     fun baseId(id: String): String = when {
@@ -212,65 +207,61 @@ object Formulas {
         else -> id
     }
 
-    /** NPC parameters straight from its `war` fields (NPCs never go through calcparam). */
-    fun npc(war: JsonObject?): Stats = Stats(
-        hit = war?.int("hit_chance") ?: 0,
-        dmgMin = war?.int("dmg_min") ?: 0,
-        dmgMax = war?.int("dmg_max") ?: 0,
-        delay = (war?.int("attack_delay") ?: 5).coerceAtLeast(1),
-        ranged = (war?.int("is_ranged") ?: 0) != 0,
-        armor = war?.int("armor") ?: 0,
-        dodge = war?.int("dodge") ?: 0,
-        parry = war?.int("parry") ?: 0,
-        shieldArmor = war?.int("shield_armor") ?: 0,
-        magicDodge = war?.int("magic_dodge") ?: 0,
-        magicParry = war?.int("magic_parry") ?: 0,
-        magicResist = war?.int("magic_resist") ?: 0,
-        verb = war?.str("verb")?.takeIf { it.isNotBlank() } ?: "бьёт",
-        expValue = war?.int("exp_value") ?: 0,
-        ammo = war?.str("ammo") ?: "",
-    )
+    /**
+     * NPC parameters: the new balance of its template ([ov], content/balance/npcs.json)
+     * with the verb and range of its old `war` fields.
+     */
+    fun npc(war: JsonObject?, ov: JsonObject?): Stats {
+        val dmg = ints(ov, "dmg").takeIf { it.size == 2 } ?: listOf(war?.int("dmg_min") ?: 0, war?.int("dmg_max") ?: 0)
+        val verb = war?.str("verb")?.takeIf { it.isNotBlank() } ?: "бьёт"
+        val eva = d(ov, "evasion") ?: (war?.int("dodge") ?: 0).toDouble()
+        return Stats(
+            hit = (d(ov, "accuracy") ?: (war?.int("hit_chance") ?: 50).toDouble()).toInt(),
+            dmgMin = dmg[0], dmgMax = dmg[1],
+            pauseMs = ((d(ov, "pause") ?: (war?.int("attack_delay") ?: 4).toDouble()) * 1000).toLong().coerceAtLeast(500),
+            ranged = (war?.int("is_ranged") ?: 0) != 0,
+            armor = (d(ov, "armor") ?: (war?.int("armor") ?: 0).toDouble()).toInt(),
+            dodge = eva.toInt(),
+            parry = 0,
+            magicDodge = eva.toInt(),
+            magicResist = (d(ov, "magicDefence") ?: (war?.int("magic_resist") ?: 0).toDouble()).toInt(),
+            verb = verb,
+            expValue = d(ov, "exp")?.toLong() ?: (war?.int("exp_value") ?: 0).toLong(),
+            ammo = war?.str("ammo") ?: "",
+            level = d(ov, "level")?.toInt() ?: 1,
+            critChance = 3.0,
+        )
+    }
 
     enum class Outcome { MISS, DODGED, HIT, FIZZLED }
 
     data class Hit(val outcome: Outcome, val damage: Int = 0, val crit: Boolean = false, val shield: Int = 0, val resisted: Int = 0)
 
     /**
-     * One blow, f_attackf.dat §2.5–2.6, in the same order of dice rolls.
-     * Deliberate change: the old «time of day» term (always −rand(0,5)
-     * because of a bug) is left out.
+     * One blow (balance.md §5): hit chance = 60 + accuracy − evasion (15–95 %);
+     * a shield may block half of it; armour stops a share of a physical blow
+     * (heavy weapons meet less of it), magic defence of a magic one; crit
+     * multiplies what is left.
      */
-    fun attack(a: Stats, d: Stats, dice: Dice): Hit {
+    fun attack(b: Balance, a: Stats, d: Stats, dice: Dice): Hit {
         val magic = a.magic
         if (magic && a.hit == 0) return Hit(Outcome.FIZZLED)
-        if (dice.roll(0, 100) > a.hit) return Hit(Outcome.MISS)
-        var damage = dice.roll(minOf(a.dmgMin, a.dmgMax), maxOf(a.dmgMin, a.dmgMax))
-        val dodge = if (magic) d.magicDodge else d.dodge
-        if (dice.roll(0, 100) <= dodge) return Hit(Outcome.DODGED)
-        val parry = if (magic) d.magicParry else d.parry
-        val shield = if (magic) d.magicResist else d.shieldArmor
-        var shieldCut = 0
+        val chance = b.hitChance(a.hit.toDouble(), (if (magic) d.magicDodge else d.dodge).toDouble())
+        if (dice.roll(0, 99) >= chance) return Hit(Outcome.MISS)
+        var damage = dice.roll(minOf(a.dmgMin, a.dmgMax), maxOf(a.dmgMin, a.dmgMax)).toDouble()
+        var shield = 0
         var resisted = 0
-        if (parry > 0 && shield > 0 && dice.roll(0, 100) <= parry) {
-            if (!magic) { shieldCut = shield; damage -= shield }
-            else {
-                val resist = phpRound(damage * shield / 100.0)
-                resisted = if (resist > 0) dice.roll(0, resist) else 0
-                damage -= resisted
-            }
+        if (!magic && d.parry > 0 && dice.roll(0, 99) < d.parry) {
+            shield = Math.round(damage * b.blockCut).toInt()
+            damage -= shield
         }
-        if (!magic && d.armor > 0) damage -= dice.roll(0, d.armor)
-        if (damage < 0) damage = 0
-        val critChance = (if (a.ranged) 5 else if (magic) 4 else 2) + a.critBonus
+        if (magic) {
+            resisted = Math.round(damage * b.magicCut(d.magicResist.toDouble(), a.level)).toInt()
+            damage -= resisted
+        } else damage *= 1 - b.armorCut(d.armor.toDouble(), a.level, a.pen)
         var crit = false
-        if (damage > 0 && dice.roll(0, 100) < critChance) { damage *= 2; crit = true }
-        return Hit(Outcome.HIT, damage, crit, shieldCut, resisted)
+        if (damage > 0 && dice.roll(0, 9999) < a.critChance * 100) { damage *= a.critMult; crit = true }
+        val dealt = if (damage <= 0) 0 else Math.round(damage).toInt().coerceAtLeast(1)
+        return Hit(Outcome.HIT, dealt, crit, shield, resisted)
     }
-
-    /** Experience needed for the next point: over war[13]·g_exp (f_kill.dat:105-112). */
-    fun expThreshold(skills: Skills): Int = skills.sumExceptExp() * 10
-
-    /** Regeneration after [seconds] without being hit (g.php:571-579): +round(t/(30−4·skill)). */
-    fun regen(seconds: Long, skill: Int = 0): Int =
-        if (seconds <= 30) 0 else phpRound(seconds.toDouble() / (30 - 4 * skill).coerceAtLeast(1))
 }

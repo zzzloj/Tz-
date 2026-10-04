@@ -71,7 +71,7 @@ class SocietyTest {
         val hp = v.character.hpMax
         v = game.take(a, Society.FLAG)
         assertTrue(v.character.flag)
-        assertEquals(hp + 10, v.character.hpMax)
+        assertEquals(hp + hp / 10, v.character.hpMax)   // +10 %
         assertEquals(names[0], game.worldView().flagHolder)
         // The holder is fair game: striking him is no crime.
         clock[0] += 10

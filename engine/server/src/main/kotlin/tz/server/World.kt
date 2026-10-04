@@ -73,7 +73,15 @@ class World(
          * whoever it picked). Its blows go round them in turn.
          */
         val enemies = LinkedHashSet<Long>()
+        /** Free to strike again from this moment, milliseconds. */
         var busyUntil: Long = 0
+        /** Ignite and poison burning on it; chilled (slower blows) till then, ms. */
+        val dots = ArrayList<Dot>()
+        var chilledUntil = 0L
+        /** Damage dealt by each character, for sharing the experience. */
+        val damageBy = HashMap<Long, Int>()
+        var regenCarry = 0.0
+        var regenLast = 0L
         /** Regeneration counts from the last hit or heal (char[5] in the old engine). */
         var regenFrom: Long = 0
         /** A trader's goods: id → count left, refilled at [restockAt] (only when someone looks, as before). */
@@ -215,16 +223,17 @@ class World(
                 val char = value["char"] as? JsonObject ?: return
                 val war = value["war"] as? JsonObject
                 val name = char.str("name")?.substringBefore('*')?.takeIf { it.isNotBlank() } ?: return
-                val hpMax = (char.int("hp_max") ?: 1).coerceAtLeast(1)
+                val nb = content.balanceNpcs[templateOf(key)]
+                val hpMax = (nb?.int("hp") ?: char.int("hp_max") ?: 1).coerceAtLeast(1)
                 val respawn = parseRespawn(war?.str("respawn"))
                 val wander = parseWander(char.str("wander"))
                 val proto = Proto(
-                    templateOf(key), name, hpMax, Formulas.npc(war),
+                    templateOf(key), name, hpMax, Formulas.npc(war, nb),
                     counted(value["items"]), emptyList(), counted(value["osvej"]), wander, respawn,
                     stockOf((value["bank"] as? JsonPrimitive)?.contentOrNull ?: content.npcs[templateOf(key)]?.str("bank")),
                 )
                 val home = respawn?.location ?: loc
-                addNpc(Npc(key, proto, (char.int("hp") ?: hpMax).coerceIn(1, hpMax), loc, home, nextMove(now, wander), proto.items.toMutableMap()))
+                addNpc(Npc(key, proto, if (nb != null) hpMax else (char.int("hp") ?: hpMax).coerceIn(1, hpMax), loc, home, nextMove(now, wander), proto.items.toMutableMap()))
             }
             value is JsonPrimitive && key.startsWith("i.") -> {
                 // "name|count|expires": expires 0 = never. Items whose time ran
@@ -309,9 +318,10 @@ class World(
         val o = content.npcs[template] ?: return null
         val char = o["char"] as? JsonObject ?: return null
         val name = char.str("name")?.takeIf { it.isNotBlank() } ?: return null
-        val hpMax = (char.int("hp_max") ?: 1).coerceAtLeast(1)
+        val nb = content.balanceNpcs[template]
+        val hpMax = (nb?.int("hp") ?: char.int("hp_max") ?: 1).coerceAtLeast(1)
         return Proto(
-            template, name, hpMax, Formulas.npc(o["war"] as? JsonObject),
+            template, name, hpMax, Formulas.npc(o["war"] as? JsonObject, nb),
             counted(o["items"]), randomLoot(o["itemsrnd"]), counted(o["osvej"]), wander, respawn,
             stockOf(o.str("bank")),
         )

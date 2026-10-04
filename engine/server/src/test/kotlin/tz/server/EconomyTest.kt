@@ -88,13 +88,14 @@ class EconomyTest {
 
     @Test
     fun eatMineAndForge() = withGame {
-        sql("UPDATE characters SET hp = 5, skills = '{\"mine\": 5, \"smith\": 5}'::jsonb WHERE account_id = ?")
+        sql("UPDATE characters SET hp = 5, skills = '{\"mine\": 10, \"smith\": 10}'::jsonb WHERE account_id = ?")
         give("i.f.apple", 1)
         var v = game.use(account, "i.f.apple", null, null)
-        assertEquals(7, v.character.hp)
+        // An apple heals 5 % of the maximum (25 for a new character): +1.
+        assertEquals(6, v.character.hp)
         assertEquals(0, v.count("i.f.apple"))
 
-        // Mining at a vein: each try pauses 4 s; skill 5 gives about half the time.
+        // Mining at a vein: each try pauses 4 s; skill 10 (5 on the old scale) gives about half the time.
         give("i.kirka", 1)
         game.place(account, "x1523x472")
         repeat(12) {

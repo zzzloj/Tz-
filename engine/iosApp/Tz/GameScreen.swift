@@ -864,7 +864,7 @@ private struct HeroTab: View {
                 ActionButton(label: "Аккаунт", enabled: !busy, action: layout.openAccount, icon: "settings")
             }
             Text("сила \(ch.str) · ловкость \(ch.dex) · интеллект \(ch.int_)" + (ch.skillPoints > 0 ? " · свободных очков \(ch.skillPoints)" : ""))
-            Text("опыт \(ch.exp)/\(ch.expNext)").font(TzType.small).foregroundStyle(c.textMuted)
+            Text("уровень \(ch.level) · опыт \(ch.exp)/\(ch.expNext)").font(TzType.small).foregroundStyle(c.textMuted)
             TzBar(value: Int(ch.exp), max: Int(ch.expNext), fill: c.exp)
             Text("удар \(ch.hit)% · урон \(ch.dmgMin)–\(ch.dmgMax) · броня \(ch.armor) · уклон \(ch.dodge)").font(TzType.small)
             Text("парирование \(ch.parry) · уклон от магии \(ch.magicDodge) · защита от магии \(ch.magicParry) · сопр. магии \(ch.magicResist)").font(TzType.small)

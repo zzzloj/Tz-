@@ -52,6 +52,23 @@ class Content(
     /** Balance constants and formulas, content/logic/balance.json (owner 04.10.2026). */
     val balance: Balance by lazy { Balance.load(dir.resolve("logic/balance.json")) }
 
+    private fun overlay(name: String): Map<String, JsonObject> =
+        dir.resolve("balance/$name").takeIf { it.isFile }?.let { f ->
+            json.parseToJsonElement(f.readText()).jsonObject.filterKeys { !it.startsWith("_") }.mapValues { it.value.jsonObject }
+        } ?: emptyMap()
+
+    /** The new balance of items and NPCs (content/balance, tools/balance/run.py) on top of their old fields. */
+    val balanceItems: Map<String, JsonObject> by lazy { overlay("items.json") }
+    val balanceNpcs: Map<String, JsonObject> by lazy { overlay("npcs.json") }
+    val sets: List<JsonObject> by lazy {
+        dir.resolve("balance/sets.json").takeIf { it.isFile }?.let { f ->
+            (json.parseToJsonElement(f.readText()).jsonObject["sets"] as? JsonArray)?.map { it.jsonObject }
+        } ?: emptyList()
+    }
+
+    /** New balance of an item by its base id (gems in the id are tried off too). */
+    fun itemBalance(baseId: String): JsonObject? = balanceItems[baseId] ?: balanceItems[baseId.substringBefore("..")]
+
     /** Painted pictures and their rules, content/art (stage 16). */
     val art: Art by lazy { Art(dir) }
 

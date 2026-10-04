@@ -33,14 +33,21 @@ import kotlin.random.Random
  * One lock ([lock]) serialises all actions and the world tick, like the old
  * engine's game.lock — simple and fast enough for one world.
  */
+/** The real clock in seconds; [Game.clockMs] then reads real milliseconds. */
+val SYSTEM_SECONDS: () -> Long = { System.currentTimeMillis() / 1000 }
+
 class Game(
     internal val content: Content,
     internal val db: Db,
     internal val accounts: Accounts,
     val world: World,
-    internal val clock: () -> Long = { System.currentTimeMillis() / 1000 },
+    internal val clock: () -> Long = SYSTEM_SECONDS,
     random: Random = Random.Default,
+    /** Milliseconds for combat pauses (1–1.5 s); tests that drive [clock] get its seconds × 1000. */
+    internal val clockMs: () -> Long = { if (clock === SYSTEM_SECONDS) System.currentTimeMillis() else clock() * 1000 },
 ) {
+    /** Balance constants and formulas (content/logic/balance.json). */
+    internal val balance get() = content.balance
     internal val dice = Dice.of(random)
     internal val rnd = random
     internal val lock = Mutex()
@@ -57,12 +64,23 @@ class Game(
         var str: Int,
         var dex: Int,
         var int: Int,
-        var exp: Int,
+        /** All experience ever gained; the level is counted from it (it keeps growing past the top level). */
+        var exp: Long,
+        /** Training points not spent yet. */
         var points: Int,
     ) {
         var equipped: List<String> = emptyList()
-        var stats: Stats = Formulas.player(Skills.of(str, dex, int, exp, points), emptyList(), { null })
+        var level = 1
+        var stats: Stats = Stats(1, 1, 3, 1000, false, 0, 0, 0, 0, 0, "кулаками", 0, "", hpMax = 25, manaMax = 20)
+        /** Free to act again from this moment, milliseconds. */
         var busyUntil = 0L
+        /** Ignite and poison burning on this character; chilled (slower blows) till then, ms. */
+        val dots = ArrayList<Dot>()
+        var chilledUntil = 0L
+        /** Parts of a point of health and mana come back between ticks. */
+        var regenHp = 0.0
+        var regenMana = 0.0
+        var regenLast = 0L
         var regenFrom = 0L
         var lastSeen = 0L
         /** Lines logged in all, and how many were logged before arriving here: the place shows only its own. */
@@ -132,16 +150,22 @@ class Game(
         var hpBuff = 0
         var manaBuff = 0
 
+        /**
+         * A skill or attribute on the old 0–5 (1–5) scale, for the old formulas
+         * that are still tuned to it (stealing, hiding, taming, crafts): 2 → 1, 10 → 5.
+         */
+        fun oldSkill(key: String): Int = (skill(key) + 1) / 2
+
         fun skill(key: String): Int = when (key) {
-            "str" -> str; "dex" -> dex; "int" -> int; "exp" -> exp; "points" -> points
+            "str" -> str; "dex" -> dex; "int" -> int; "exp" -> exp.coerceAtMost(Int.MAX_VALUE.toLong()).toInt(); "points" -> points
             else -> other[key] ?: 0
         }
 
-        fun skills() = Skills.of(str, dex, int, exp, points).also { s ->
+        fun skills() = Skills.of(str, dex, int, 0, points).also { s ->
             for ((key, index, _) in Rules.SKILLS) if (index > 4) s[index] = other[key] ?: 0
         }
-        val hpMax get() = (Rules.hpMax(str) + stats.hpBonus + hpBuff + (if (hasFlag) 10 else 0)).coerceAtLeast(1)
-        val manaMax get() = (Rules.manaMax(int) + stats.manaBonus + manaBuff).coerceAtLeast(0)
+        val hpMax get() = (stats.hpMax + hpBuff + (if (hasFlag) stats.hpMax / 10 else 0)).coerceAtLeast(1)
+        val manaMax get() = (stats.manaMax + manaBuff).coerceAtLeast(0)
 
         fun clearBuffs() { armorBuff = 0; hpBuff = 0; manaBuff = 0 }
 
@@ -188,7 +212,7 @@ class Game(
         castleEntry(p, p.location, target)?.let { p.log(it); return@withLock viewLocked(p) }
         // Walking away is always allowed, even mid-fight (g.php go=); the enemies here may follow (Travel.chase).
         val from = p.location
-        val hidden = dice.roll(1, 100) <= p.skill("hiding") * 8
+        val hidden = dice.roll(1, 100) <= p.oldSkill("hiding") * 8
         p.location = target
         p.attackTarget = null
         walkLines(p, from, target, exit.label, hidden)
@@ -262,6 +286,16 @@ class Game(
     suspend fun equip(account: Account, itemId: String): GameView = lock.withLock {
         val p = alive(player(account))
         val slot = Rules.equipSlot(itemId) ?: throw ApiException(HttpStatusCode.BadRequest, Errors.CANNOT_EQUIP)
+        // Requirements of the new balance: level and attributes (balance.md §7).
+        val r = Formulas.requirement(content.itemBalance(Formulas.baseId(itemId)))
+        val missing = listOfNotNull(
+            "уровень ${r[0]}".takeIf { p.level < r[0] }, "сила ${r[1]}".takeIf { p.str < r[1] },
+            "ловкость ${r[2]}".takeIf { p.dex < r[2] }, "интеллект ${r[3]}".takeIf { p.int < r[3] },
+        )
+        if (missing.isNotEmpty()) {
+            p.log("Чтобы надеть ${content.itemName(itemId)}, нужно: ${missing.joinToString()}")
+            throw ApiException(HttpStatusCode.BadRequest, Errors.TOO_WEAK)
+        }
         db.tx { c ->
             val owned = inventoryRows(c, p.id)
             if (owned.none { it.first == itemId }) throw ApiException(HttpStatusCode.BadRequest, Errors.NOT_IN_INVENTORY)
@@ -292,9 +326,9 @@ class Game(
         val now = clock()
         val npc = world.npc(p.location, target) ?: throw ApiException(HttpStatusCode.BadRequest, Errors.NO_TARGET)
         if (!Law.mayFight(p, null, now)) throw ApiException(HttpStatusCode.BadRequest, Errors.NO_FIGHT_HERE)
-        if (now < p.busyUntil) throw ApiException(HttpStatusCode.Conflict, Errors.RESTING)
+        if (clockMs() < p.busyUntil) throw ApiException(HttpStatusCode.Conflict, Errors.RESTING)
         npcAttackCrime(p, npc, now)
-        p.busyUntil = now + p.stats.delay
+        p.busyUntil = clockMs() + pauseOf(p)
         if (p.stats.ammo.isNotEmpty() && !useAmmo(p)) {
             viewLocked(p)
             throw ApiException(HttpStatusCode.BadRequest, Errors.NO_AMMO)
@@ -554,7 +588,7 @@ class Game(
                 val v = p.skill(c.str("skill")!!)
                 (c.int("min")?.let { v >= it } ?: true) && (c.int("max")?.let { v <= it } ?: true)
             }
-            "newbie" in c -> (p.skills().sumExceptExp() == 5) == Dialogs.truthy(c["newbie"])
+            "newbie" in c -> newbie(p) == Dialogs.truthy(c["newbie"])
             "ready" in c -> ctx.timerEnd(c.str("ready")!!) == null
             "waiting" in c -> ctx.timerEnd(c.str("waiting")!!) != null
             "flag" in c -> ctx.flag(c.str("flag")!!, Dialogs.truthy(c["world"]) && "world" in c)?.let { v -> c.str("value")?.let { it == v } ?: true } ?: false
@@ -728,19 +762,23 @@ class Game(
     }
 
     /**
-     * A teacher (f_speakskillup.dat, docs/mechanics-progression.md §3.4):
-     * attributes and skills for a skill point (free while the character has
-     * only its starting points), spells and techniques for money.
-     * [ctx.arg] is the attribute or skill chosen to lower when at the limit.
+     * A teacher (f_speakskillup.dat, docs/mechanics-progression.md §3.4) on the
+     * balance of 04.10.2026 (balance.md §4): attributes and the 19 skills for a
+     * training point and 15·n² coins for the n-th step (the first 4 points
+     * free); crafts only their first steps, for money — further only by
+     * practice; spells and techniques for money. The dialog's old limits are
+     * on the 0–5 scale and count double. [ctx.arg] is the attribute or skill
+     * chosen to lower when at the limit.
      */
     private suspend fun teach(ctx: TalkCtx, what: String, cost: Int, min: Int, max: Int): Pair<String, List<DialogOption>?> {
         val p = ctx.p
+        val b = balance
         if (what.startsWith("m.") || what.startsWith("p.")) {
             val spell = what.startsWith("m.")
             if (what in p.known) return (if (spell) "У вас уже есть это заклинание" else "Вы уже знаете этот прием") to null
             val magic = p.skill("magic")
-            if (spell && min > 0 && magic < min) return "У вас недостаточный навык магии (надо минимум $min)" to null
-            if (spell && max > 0 && magic > max) return "У вас слишком высокий навык магии (максимум $max)" to null
+            if (spell && min > 0 && magic < min * 2) return "У вас недостаточный навык магии (надо минимум ${min * 2})" to null
+            if (spell && max > 0 && magic > max * 2 + 1) return "У вас слишком высокий навык магии (максимум ${max * 2 + 1})" to null
             if (cost > 0) {
                 if (ctx.count(Rules.MONEY) < cost) return "У вас недостаточно денег (надо $cost монет)" to null
                 changeItem(p, Rules.MONEY, -cost)
@@ -749,42 +787,51 @@ class Game(
             return (if (spell) "Вы выучили новое заклинание!" else "Вы выучили новый прием!") to null
         }
         if (Rules.SKILLS.none { it.first == what }) return "Этому здесь не учат." to null
-        if (p.points < 1) return "Недостаточно очков опыта" to null
         val current = p.skill(what)
-        if (min > 0 && current < min) return "Вы должны иметь уровень навыка не ниже $min" to null
-        if (max > 0 && current > max) return "Вы и так достаточно опытны, я учу только до уровня ${max + 1}" to null
+        if (min > 0 && current < min * 2) return "Вы должны иметь уровень навыка не ниже ${min * 2}" to null
+        val craft = what in b.crafts
+        val price = b.teacherPrice(current + 1)
+        if (craft) {
+            // Crafts: the teacher gives the first steps for money, the rest comes with practice.
+            if (current >= b.craftTeacherMax) return "Дальше я тебя не научу — только практика. Работай, и ремесло вырастет само." to null
+            if (b.crafts.sumOf { p.skill(it) } >= b.craftSumMax) return "Вы и так владеете ремёслами на пределе (${b.craftSumMax}): сначала забудьте другое." to null
+            if (ctx.count(Rules.MONEY) < price) return "У вас недостаточно денег (надо $price монет)" to null
+            changeItem(p, Rules.MONEY, -price)
+            ctx.inventory.merge(Rules.MONEY, -price, Int::plus)
+            setSkill(p, what, current + 1)
+            refreshStats(p)
+            save(p)
+            return "${Rules.skillTitle(what)}: +1 (плата $price монет)" to null
+        }
+        if (p.points < 1) return "Недостаточно очков обучения: они приходят с новыми уровнями" to null
+        if (max > 0 && current > max * 2 + 1) return "Вы и так достаточно опытны, я учу только до уровня ${max * 2 + 2}" to null
         val attribute = what in Rules.ATTRIBUTES
         val down = ctx.arg?.takeIf { it.isNotEmpty() }
         if (attribute) {
-            if (current >= Rules.ATTR_MAX) return "Невозможно повысить, т.к. аттрибут уже на максимальном уровне ${Rules.ATTR_MAX}" to null
-            if (down != null && down !in Rules.ATTRIBUTES) return "Неверный аттрибут" to null
-            if (down != null && p.skill(down) <= 1) return "Невозможно понизить, т.к. аттрибут уже на минимальном уровне 1, выберите другой" to null
-            if (down == null && p.str + p.dex + p.int >= Rules.ATTR_SUM) {
-                return "Превышен предел суммы очков (${Rules.ATTR_SUM}) для аттрибутов, выберите что уменьшить:" to
+            if (current >= b.attrMax) return "Невозможно повысить, т.к. атрибут уже на максимальном уровне ${b.attrMax}" to null
+            if (down != null && down !in Rules.ATTRIBUTES) return "Неверный атрибут" to null
+            if (down != null && p.skill(down) <= 1) return "Невозможно понизить, т.к. атрибут уже на минимальном уровне 1, выберите другой" to null
+            if (down == null && p.str + p.dex + p.int >= b.attrSumMax) {
+                return "Превышен предел суммы атрибутов (${b.attrSumMax}), выберите что уменьшить:" to
                     Rules.ATTRIBUTES.filter { it != what }.map { DialogOption("${Rules.skillTitle(it)}: ${p.skill(it)}", ctx.topic, it) }
             }
         } else {
-            if (current >= Rules.SKILL_MAX) return "Невозможно повысить, т.к. навык уже на максимальном уровне ${Rules.SKILL_MAX}" to null
-            if (down != null && (down in Rules.ATTRIBUTES || Rules.SKILLS.none { it.first == down })) return "Неверный навык" to null
+            if (current >= b.skillMax) return "Невозможно повысить, т.к. навык уже на максимальном уровне ${b.skillMax}" to null
+            if (down != null && (down in Rules.ATTRIBUTES || down in b.crafts || Rules.SKILLS.none { it.first == down })) return "Неверный навык" to null
             if (down != null && p.skill(down) <= 0) return "Невозможно понизить, т.к. навык уже на минимальном уровне 0, выберите другой" to null
-            if (down == null && p.other.values.sum() >= Rules.SKILL_SUM) {
-                return "Превышен предел суммы очков (${Rules.SKILL_SUM}) для навыков, выберите что уменьшить:" to
-                    Rules.SKILLS.filter { it.first !in Rules.ATTRIBUTES && it.first != what && p.skill(it.first) > 0 }
-                        .map { DialogOption("${it.third}: ${p.skill(it.first)}", ctx.topic, it.first) }
-            }
         }
         var text = ""
-        if (cost > 0) {
-            if (p.skills().sumExceptExp() == 5) text = "Ладно, так уж и быть, раз ты новичок, то я это сделаю бесплатно.\n"
-            else {
-                if (ctx.count(Rules.MONEY) < cost) return "У вас недостаточно денег (надо $cost монет)" to null
-                changeItem(p, Rules.MONEY, -cost)
-                ctx.inventory.merge(Rules.MONEY, -cost, Int::plus)
-            }
+        // The first points of a new character are free, as in the old game for a newcomer.
+        if (newbie(p)) text = "Ладно, так уж и быть, раз ты новичок, то я это сделаю бесплатно.\n"
+        else {
+            if (ctx.count(Rules.MONEY) < price) return "У вас недостаточно денег (надо $price монет)" to null
+            changeItem(p, Rules.MONEY, -price)
+            ctx.inventory.merge(Rules.MONEY, -price, Int::plus)
         }
         setSkill(p, what, current + 1)
         if (down != null) setSkill(p, down, p.skill(down) - 1)
-        p.points -= 1
+        // Lowering one thing to raise another costs no point: it moves the point.
+        if (down == null) p.points -= 1
         refreshStats(p)
         save(p)
         text += Rules.skillTitle(what) + ": +1"
@@ -887,7 +934,7 @@ class Game(
                 npc.npcTarget?.let { key ->
                     val other = world.npc(loc, key)
                     if (other == null || other.hp < 1) npc.npcTarget = null
-                    else if (now >= npc.busyUntil && npc.hp > 0) { npcHitsNpc(npc, other, now, here); continue }
+                    else if (clockMs() >= npc.busyUntil && npc.hp > 0) { npcHitsNpc(npc, other, now, here); continue }
                 }
                 // The firebird never lets anyone near (g.php:719).
                 if (npc.key == Travel.FIREBIRD && living.isNotEmpty() && firebirdFlees(npc, loc)) continue
@@ -898,27 +945,114 @@ class Game(
                 npc.enemies.retainAll(livingIds)
                 // A monster picks its victim among those it notices: hiding·6 % of the time you are unseen (g.php:680).
                 if (npc.enemies.isEmpty() && npc.npcTarget == null && (npc.aggressive || npc.criminal) && npc.owner?.guard == null) {
-                    val seen = living.filter { dice.roll(0, 100) > it.skill("hiding") * 6 }
+                    val seen = living.filter { dice.roll(0, 100) > it.oldSkill("hiding") * 6 }
                     if (seen.isNotEmpty()) npc.enemies += seen[rnd.nextInt(seen.size)].id
                 }
-                // Blows go round all its enemies in turn.
-                val victimId = npc.enemies.firstOrNull() ?: continue
-                val victim = living.firstOrNull { it.id == victimId } ?: continue
-                if (now < npc.busyUntil || npc.hp < 1) continue
-                if (npc.hp < npc.proto.hpMax / 4 && dice.roll(0, 100) < 50 && world.flee(npc)) {
-                    npc.enemies.clear()
-                    for (q in here) { q.log("${npc.name} убегает."); notify(q.id) }
-                    continue
+            }
+        }
+        combatLocked()
+    }
+
+    private var lastCombat = 0L
+
+    /**
+     * Blows of monsters and burning ailments, several times a second (pauses are
+     * 1–2 s since 04.10.2026). [tick] runs it too, so a test driving the clock sees it.
+     */
+    suspend fun combat() = lock.withLock { combatLocked() }
+
+    private suspend fun combatLocked() {
+        val now = clock()
+        val ms = clockMs()
+        val dt = (ms - lastCombat).coerceIn(0, 2000)
+        lastCombat = ms
+        val active = players.values.filter { now - it.lastSeen < ACTIVE_SECONDS }
+        for (p in active) if (!p.ghost && p.dots.isNotEmpty()) {
+            val lost = burn(p.dots, dt)
+            if (lost > 0) {
+                p.hp -= lost; p.regenFrom = now
+                p.log("Вы теряете $lost здоровья", JournalKind.HURT); notify(p.id)
+                if (p.hp < 1) killPlayer(p, "яд и огонь", now)
+            }
+        }
+        for ((loc, here) in active.groupBy { it.location }) {
+            val living = here.filter { !it.ghost }
+            for (npc in world.npcsIn(loc)) {
+                if (npc.dots.isNotEmpty() && npc.hp > 0) {
+                    val lost = burn(npc.dots, dt)
+                    if (lost > 0) {
+                        npc.hp -= lost; npc.regenFrom = now
+                        if (npc.hp < 1) {
+                            val killer = living.firstOrNull { it.id in npc.enemies }
+                            if (killer != null) killNpc(killer, npc, now) else world.kill(npc, now)
+                            continue
+                        }
+                    }
                 }
-                npc.busyUntil = now + npc.stats.delay
-                npc.enemies.remove(victimId); npc.enemies.add(victimId)
-                npcHits(npc, victim, now, answer = true)
-                save(victim)
+                npcBlow(npc, here, living, now)
             }
         }
     }
 
+    /** A monster's blow when its pause is over; blows go round all its enemies in turn. */
+    private suspend fun npcBlow(npc: World.Npc, here: List<Player>, living: List<Player>, now: Long) {
+        if (npc.npcTarget != null) return
+        val victimId = npc.enemies.firstOrNull() ?: return
+        val victim = living.firstOrNull { it.id == victimId } ?: return
+        if (clockMs() < npc.busyUntil || npc.hp < 1) return
+        if (npc.hp < npc.proto.hpMax / 4 && dice.roll(0, 100) < 50 && world.flee(npc)) {
+            npc.enemies.clear()
+            for (q in here) { q.log("${npc.name} убегает."); notify(q.id) }
+            return
+        }
+        npc.busyUntil = clockMs() + pauseOf(npc)
+        npc.enemies.remove(victimId); npc.enemies.add(victimId)
+        npcHits(npc, victim, now, answer = true)
+        save(victim)
+    }
+
     // ---- fighting -------------------------------------------------------------------
+
+    /** The pause after a blow, longer while chilled (balance.md §13). */
+    internal fun pauseOf(p: Player): Long = chilled(p.stats.pauseMs, p.chilledUntil)
+    internal fun pauseOf(n: World.Npc): Long = chilled(n.stats.pauseMs, n.chilledUntil)
+    private fun chilled(ms: Long, until: Long) = if (clockMs() < until) (ms * (1 + balance.ailment("chill").slow)).toLong() else ms
+
+    /**
+     * A gem's ailment after a blow that landed: ignite and poison burn a share of
+     * the blow over a few seconds, chill makes the target's blows slower; a
+     * necklace with the same gem halves it on its wearer.
+     */
+    internal fun ailmentAfter(a: Stats, dealt: Int, guard: Set<String>, dots: MutableList<Dot>, chill: (Long) -> Unit) {
+        val kind = a.ailment ?: return
+        if (dealt <= 0) return
+        val ail = balance.ailment(kind)
+        if (dice.roll(0, 9999) >= ail.chance * 100) return
+        val seconds = ail.seconds * (if (kind in guard) balance.amuletCut else 1.0)
+        val until = clockMs() + (seconds * 1000).toLong()
+        when (kind) {
+            "chill" -> chill(until)
+            "ignite" -> { dots.removeAll { it.kind == "ignite" }; dots += Dot(kind, until, dealt * ail.share / ail.seconds) }
+            "poison" -> {
+                dots.removeAll { it.kind == "poison" && it.untilMs <= clockMs() }
+                if (dots.count { it.kind == "poison" } >= ail.stacks) dots.remove(dots.first { it.kind == "poison" })
+                dots += Dot(kind, until, dealt * ail.share / ail.seconds)
+            }
+        }
+    }
+
+    /** Burns [dots] for [ms] milliseconds; returns whole health points lost. */
+    internal fun burn(dots: MutableList<Dot>, ms: Long): Int {
+        val now = clockMs()
+        var lost = 0
+        for (d in dots) {
+            val left = (d.untilMs - (now - ms)).coerceIn(0, ms)
+            d.carry += d.perSecond * left / 1000.0
+            val whole = d.carry.toInt(); d.carry -= whole; lost += whole
+        }
+        dots.removeAll { it.untilMs <= now }
+        return lost
+    }
 
     internal fun describe(h: Formulas.Hit, verb: String): String = when (h.outcome) {
         Formulas.Outcome.MISS, Formulas.Outcome.FIZZLED -> "мимо"
@@ -946,6 +1080,8 @@ class Game(
         if (h.outcome == Formulas.Outcome.HIT) {
             npc.hp -= h.damage
             npc.regenFrom = now
+            npc.damageBy.merge(p.id, h.damage, Int::plus)
+            ailmentAfter(stats, h.damage, emptySet(), npc.dots) { npc.chilledUntil = it }
         }
         // Everyone who strikes an NPC becomes its enemy; it answers them all.
         npc.enemies += p.id
@@ -955,7 +1091,7 @@ class Game(
             return
         }
         // Free counter-blow of a target that is not resting (f_attackf.dat:171); spells get none.
-        if (answer && blow?.rmagic != true && now >= npc.busyUntil) npcHits(npc, p, now, answer = false)
+        if (answer && blow?.rmagic != true && clockMs() >= npc.busyUntil) npcHits(npc, p, now, answer = false)
     }
 
     internal suspend fun npcHits(npc: World.Npc, p: Player, now: Long, answer: Boolean) {
@@ -977,7 +1113,7 @@ class Game(
             return
         }
         // The player answers too, if not resting (the old engine did this for players as well).
-        if (answer && now >= p.busyUntil && !p.ghost) playerHits(p, npc, now, answer = false)
+        if (answer && clockMs() >= p.busyUntil && !p.ghost) playerHits(p, npc, now, answer = false)
     }
 
     internal suspend fun killNpc(p: Player, npc: World.Npc, now: Long) {
@@ -987,21 +1123,44 @@ class Game(
         killOrder(p, npc)
         p.log("${npc.name} погибает.")
         tellOthers(p.location, p.id, "${npc.name} погибает.")
-        addExp(p, npc.stats.expValue)
+        // Experience by the share of damage among those still here, +10 % per extra fighter,
+        // less for a monster far below one's level, more for one above (balance.md §3).
+        val fighters = npc.damageBy.filterKeys { id -> id == p.id || players[id]?.let { it.location == p.location && !it.ghost } == true }
+            .ifEmpty { mapOf(p.id to 1) }
+        val total = fighters.values.sum().coerceAtLeast(1)
+        val group = 1 + balance.groupBonusPerMember * (fighters.size - 1)
+        for ((id, dmg) in fighters) {
+            val q = players[id] ?: continue
+            val gained = npc.stats.expValue * dmg / total.toDouble() * group * balance.expByGap(q.level, npc.stats.level)
+            addExp(q, Math.round(gained))
+            if (q.id != p.id) notify(q.id)
+        }
+        npc.damageBy.clear()
     }
 
-    /** f_addexp.dat: over the threshold the experience turns into one skill point (the rest burns). */
-    internal suspend fun addExp(p: Player, gained: Int) {
+    internal suspend fun addExp(p: Player, gained: Int) = addExp(p, gained.toLong())
+
+    /**
+     * Experience counts on past the top level (owner 04.10.2026); every level
+     * reached gives its training points, spent at the teachers.
+     */
+    internal suspend fun addExp(p: Player, gained: Long) {
         if (gained <= 0) return
         p.exp += gained
         p.log("Опыт +$gained")
-        if (p.exp > Formulas.expThreshold(p.skills())) {
-            p.exp = 0
-            p.points += 1
-            p.log("Вы получили очко опыта! Потратить его можно у учителей.")
+        val level = balance.level(p.exp)
+        if (level > p.level) {
+            val points = (p.level + 1..level).sumOf { balance.pointsForLevel(it) }
+            p.points += points
+            p.log("Новый уровень: $level! Очков обучения +$points — потратить их можно у учителей.")
             refreshStats(p)
+            p.hp = p.hpMax; p.mana = p.manaMax
         }
     }
+
+    /** Combat parameters of [p] wearing [equipped] (balance.md). */
+    internal fun statsOf(p: Player, equipped: List<String>): Stats =
+        Formulas.player(balance, p.skills(), p.level, equipped, { content.items[it] }, { content.itemBalance(it) }, content.sets, mounted = p.mount != null)
 
     /** Death (f_kill.dat): everything carried falls into a corpse, the character becomes a ghost. */
     internal suspend fun killPlayer(p: Player, killer: String, now: Long, by: Player? = null, killerWasCriminal: Boolean = false) {
@@ -1025,7 +1184,7 @@ class Game(
             changeItem(p, FEATHER, -1)
             db.tx { c -> c.prepareStatement("UPDATE character_items SET equipped = FALSE WHERE character_id = ?").use { it.setLong(1, p.id); it.executeUpdate() } }
             p.equipped = emptyList()
-            p.stats = Formulas.player(p.skills(), emptyList(), { content.items[it] })
+            p.stats = statsOf(p, emptyList())
             p.log("Вас убил $killer. Вы спасли свои вещи пером жар-птицы!")
             tellOthers(p.location, p.id, "${p.name} спасает свои вещи пером жар-птицы!")
         } else {
@@ -1037,7 +1196,7 @@ class Game(
             val free = p.criminal(now) || CastleRules.inside(p.location)
             world.addCorpse(p.location, "труп: ${p.name}", items, now, p.id, free, p.clanId)
             p.equipped = emptyList()
-            p.stats = Formulas.player(p.skills(), emptyList(), { content.items[it] })
+            p.stats = statsOf(p, emptyList())
             p.log("Вас убил $killer. Вы призрак; ваши вещи остались в трупе на 10 минут.")
         }
         if (by != null && !Law.lawless(p.location)) murder(p, by, now, killerWasCriminal, guilty)
@@ -1063,29 +1222,39 @@ class Game(
     }
 
     /**
-     * g.php:703-708: health comes back by the regeneration skill, mana by
-     * meditation; poison takes round(t/10) health instead, never below 1.
+     * Rest (balance.md §5): 10 s after the last blow health comes back by
+     * (1.5 % + 0.3 % per regeneration step) of the maximum every 5 s, mana the
+     * same by meditation; three times faster in the bank and the tavern. Poison
+     * (i.b.jad.c) takes a point every 10 s instead.
      */
     private fun regen(p: Player, now: Long) {
         val poisoned = now < p.poisonUntil
-        if (!poisoned && p.hp >= p.hpMax && p.mana >= p.manaMax) { p.regenFrom = now; return }
-        val since = now - p.regenFrom
-        if (since <= 30) return
-        p.hp = if (poisoned) (p.hp - Math.round(since / 10.0).toInt()).coerceAtLeast(1)
-        else (p.hp + Formulas.regen(since, p.skill("regeneration"))).coerceAtMost(p.hpMax)
-        p.mana = (p.mana + Formulas.regen(since, p.skill("meditation"))).coerceAtMost(p.manaMax)
-        p.regenFrom = now
+        if (!poisoned && p.hp >= p.hpMax && p.mana >= p.manaMax) return
+        // Seconds of rest since the last blow (+10 s) or the last time this ran, whichever is later.
+        val seconds = now - maxOf(p.regenFrom + balance.regenAfter, p.regenLast)
+        if (seconds <= 0) return
+        p.regenLast = now
+        val safe = p.location == Rules.BANK_LOCATION || p.location in Spells.TAVERN || p.location == Society.TAVERN_HALL
+        val perSecond = seconds.toDouble() / balance.regenEvery
+        if (poisoned) p.regenHp -= 0.1 * seconds else p.regenHp += balance.regenPerTick(p.hpMax, p.skill("regeneration"), safe) * perSecond
+        p.regenMana += balance.regenPerTick(p.manaMax, p.skill("meditation"), safe) * perSecond
+        val dh = p.regenHp.toInt(); p.regenHp -= dh
+        val dm = p.regenMana.toInt(); p.regenMana -= dm
+        if (dh == 0 && dm == 0) return
+        p.hp = if (poisoned) (p.hp + dh).coerceAtLeast(1) else (p.hp + dh).coerceAtMost(p.hpMax)
+        p.mana = (p.mana + dm).coerceAtMost(p.manaMax)
         dirty += p.id
     }
 
     internal fun regenNpc(npc: World.Npc, now: Long) {
         val poisoned = now < npc.poisonUntil
-        if (!poisoned && npc.hp >= npc.proto.hpMax) { npc.regenFrom = now; return }
-        val since = now - npc.regenFrom
-        if (since <= 30) return
-        npc.hp = if (poisoned) (npc.hp - Math.round(since / 10.0).toInt()).coerceAtLeast(1)
-        else (npc.hp + Formulas.regen(since)).coerceAtMost(npc.proto.hpMax)
-        npc.regenFrom = now
+        if (!poisoned && npc.hp >= npc.proto.hpMax) return
+        val seconds = now - maxOf(npc.regenFrom + balance.regenAfter, npc.regenLast)
+        if (seconds <= 0) return
+        npc.regenLast = now
+        npc.regenCarry += if (poisoned) -0.1 * seconds else balance.regenPerTick(npc.proto.hpMax, 0, false) * seconds / balance.regenEvery
+        val d = npc.regenCarry.toInt(); npc.regenCarry -= d
+        npc.hp = if (poisoned) (npc.hp + d).coerceAtLeast(1) else (npc.hp + d).coerceAtMost(npc.proto.hpMax)
     }
 
     private val dirty = HashSet<Long>()
@@ -1127,7 +1296,7 @@ class Game(
                     if (!rs.next()) null else Player(
                         rs.getLong("id"), account.id, rs.getString("name"), rs.getString("sex"), rs.getString("location"),
                         rs.getInt("hp"), rs.getInt("mana"), rs.getBoolean("ghost"),
-                        rs.getInt("str"), rs.getInt("dex"), rs.getInt("intel"), rs.getInt("exp"), rs.getInt("skill_points"),
+                        rs.getInt("str"), rs.getInt("dex"), rs.getInt("intel"), rs.getLong("exp"), rs.getInt("skill_points"),
                     ).also { p ->
                         for ((k, v) in kotlinx.serialization.json.Json.parseToJsonElement(rs.getString("skills")).jsonObject) {
                             (v as? kotlinx.serialization.json.JsonPrimitive)?.intOrNull?.let { p.other[k] = it }
@@ -1171,7 +1340,8 @@ class Game(
 
     internal suspend fun refreshStats(p: Player) {
         p.equipped = db.tx { c -> inventoryRows(c, p.id) }.filter { it.third }.map { it.first }
-        p.stats = Formulas.player(p.skills(), p.equipped, { content.items[it] }, mounted = p.mount != null).let { if (p.armorBuff != 0) it.copy(armor = it.armor + p.armorBuff) else it }
+        p.level = balance.level(p.exp)
+        p.stats = statsOf(p, p.equipped).let { if (p.armorBuff != 0) it.copy(armor = it.armor + p.armorBuff) else it }
         p.hp = p.hp.coerceAtMost(p.hpMax)
         p.mana = p.mana.coerceAtMost(p.manaMax)
     }
@@ -1185,7 +1355,7 @@ class Game(
             st.setInt(2, p.hp.coerceAtLeast(0))
             st.setInt(3, p.mana.coerceAtLeast(0))
             st.setBoolean(4, p.ghost)
-            st.setInt(5, p.exp)
+            st.setLong(5, p.exp)
             st.setInt(6, p.points)
             st.setInt(7, p.str)
             st.setInt(8, p.dex)
@@ -1244,7 +1414,7 @@ class Game(
                 mine = it.owner?.ownerId == p.id,
                 owner = it.owner?.let { o -> if (o.ownerId == p.id) "вы" else players[o.ownerId]?.name },
                 art = pic?.first, undead = pic?.second == true,
-                nextBlow = it.enemies.indexOf(p.id).takeIf { i -> i >= 0 }?.let { i -> ((it.busyUntil - now).coerceAtLeast(0) + i.toLong() * it.stats.delay).toInt() },
+                nextBlow = it.enemies.indexOf(p.id).takeIf { i -> i >= 0 }?.let { i -> (((it.busyUntil - clockMs()).coerceAtLeast(0) + i.toLong() * it.stats.pauseMs + 999) / 1000).toInt() },
                 hostile = (it.aggressive || it.criminal) && it.owner == null)
         }
         val occupied = loc.exits.map { it.target }.distinct().filter { t ->
@@ -1277,9 +1447,12 @@ class Game(
             mounted = p.mount != null,
             flag = p.hasFlag,
             spouse = p.spouseName,
-            ghost = p.ghost, exp = p.exp, expNext = Formulas.expThreshold(p.skills()),
+            ghost = p.ghost,
+            exp = (p.exp - balance.expForLevel(p.level)).coerceIn(0, Int.MAX_VALUE.toLong()).toInt(),
+            expNext = if (p.level >= balance.maxLevel) 0 else balance.expToNext(p.level).toInt(),
+            level = p.level, expTotal = p.exp,
             hit = s.hit, dmgMin = s.dmgMin, dmgMax = s.dmgMax, armor = s.armor, dodge = s.dodge,
-            parry = s.parry, magicDodge = s.magicDodge, magicParry = s.magicParry, magicResist = s.magicResist,
+            parry = s.parry, magicDodge = s.magicDodge, magicParry = 0, magicResist = s.magicResist,
             rank = Levels.rank(Levels.percent(p.skills())), title = Levels.title(p.skills()),
         )
         // Workplaces show the tool from the backpack that works there.
@@ -1295,7 +1468,7 @@ class Game(
             journalHere = (p.logged - p.hereFrom).coerceAtMost(p.journal.size.toLong()).toInt(),
             forumReplies = forum.replies(p.accountId),
             corpseAt = if (p.ghost) world.corpseOf(p.id, now)?.let { content.locations[it]?.name ?: it } else null,
-            restSeconds = (p.busyUntil - now).coerceAtLeast(0).toInt(),
+            restSeconds = ((p.busyUntil - clockMs()).coerceAtLeast(0) + 999).div(1000).toInt(),
             canResurrect = canResurrect(p),
             exchange = exchangeView(p),
             castle = castleView(p),
@@ -1367,4 +1540,11 @@ class Game(
         const val TIMER_PREFIX = "timer:"
         const val UNTRANSLATED = "Этот разговор пока не перенесён в новую версию игры."
     }
+}
+
+/** A newcomer: first level, the starting points not all spent yet (the old «сумма навыков = 5»). Teachers are free for him. */
+internal fun Game.newbie(p: Game.Player): Boolean {
+    val b = balance
+    val spent = (p.str + p.dex + p.int - 3 * b.attrStart) + p.other.filterKeys { it !in b.crafts }.values.sum()
+    return p.level == 1 && spent < b.creationPoints
 }

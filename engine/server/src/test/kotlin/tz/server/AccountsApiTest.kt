@@ -78,8 +78,8 @@ class AccountsApiTest {
         assertEquals(HttpStatusCode.Created, created.status, created.bodyAsText())
         val character = json.decodeFromString(CharacterView.serializer(), created.bodyAsText())
         assertEquals(Protocol.START_LOCATION, character.location)
-        assertEquals(20, character.hpMax)
-        assertEquals(2, character.skillPoints)
+        assertEquals(25, character.hpMax)   // 15 + 5 · 2 (balance of 04.10.2026)
+        assertEquals(4, character.skillPoints)   // 4 at the first level
 
         val game = json.decodeFromString(GameView.serializer(), client.getAuth("/api/game", token).bodyAsText())
         val exit = game.location.exits.first()

@@ -33,8 +33,8 @@ class MagicTest {
                 val (a, _) = accounts.register(login(), "secret-123")
                 accounts.createCharacter(a, n, "m")
                 database.tx { c ->
-                    c.prepareStatement("UPDATE characters SET str = 3, dex = 4, intel = 5, hp = ?, mana = ?, skills = '{\"magic\": 5, \"coldweapon\": 5}'::jsonb WHERE account_id = ?").use {
-                        it.setInt(1, Rules.hpMax(3)); it.setInt(2, Rules.manaMax(5)); it.setLong(3, a.id); it.executeUpdate()
+                    c.prepareStatement("UPDATE characters SET str = 6, dex = 8, intel = 10, hp = ?, mana = ?, skills = '{\"magic\": 10, \"coldweapon\": 10}'::jsonb WHERE account_id = ?").use {
+                        it.setInt(1, Rules.hpMax(6)); it.setInt(2, Rules.manaMax(10)); it.setLong(3, a.id); it.executeUpdate()
                     }
                 }
                 a
@@ -87,7 +87,7 @@ class MagicTest {
         assertEquals(manaBefore - 5, v.character.mana)
         assertTrue(v.journal.any { it.endsWith(": In Ost") }, v.journal.toString())
         assertTrue(v.abilities.single { it.id == "m.w.arrow" }.readyIn > 0)
-        clock[0] += 30
+        clock[0] += 5   // battle spells: at least 10 s between casts
         v = game.cast(a, "m.w.arrow", rat.key)
         assertTrue(v.journal.last().startsWith("Период «Магическая стрела» не истек"), v.journal.last())
         v = retry(61, { view -> view.journal.any { it.contains("по ${rat.name} ") && it.contains("магией") } }) { game.cast(a, "m.w.arrow", rat.key) }
@@ -130,7 +130,7 @@ class MagicTest {
         learn(a, "p.m", "p.n", "p.d.o")
         learn(b, "p.d.re", "p.d.o")
         game.equip(a, Rules.STARTING_KNIFE)
-        me(a).int = 1   // intelligence spoils the aim of techniques
+        me(a).int = 2   // intelligence spoils the aim of techniques
         game.view(b)
 
         // A guard stance: «реакция» goes with the first physical blow at its owner.

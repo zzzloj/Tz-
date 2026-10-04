@@ -169,25 +169,33 @@ private fun Game.lookItem(id: String): LookView {
         base.startsWith("i.r.") -> lines += "Руна с заклинанием, после использования не исчезает.\n" + spellText(Spells.spellOfItem(base))
         base.startsWith("i.b.") -> lines += "Бутылка с зельем, которую можно бросить под ноги цели."
         base.startsWith("i.f.") && o != null -> {
-            val food = content.crafting.consumables[base] as? JsonObject
+            val nb = content.itemBalance(base)
             lines += "Пища восстанавливает здоровье и иногда ману"
-            lines += "Здоровье +" + (food?.int("hp") ?: o.int("heal_hp") ?: 0)
-            lines += "Мана +" + (food?.int("mana") ?: o.int("heal_mana") ?: 0)
+            nb?.int("healPct")?.let { lines += "Здоровье +$it % от максимума" }
+            nb?.int("manaPct")?.let { lines += "Мана +$it % от максимума" }
         }
         base.startsWith("i.a.") && o != null -> {
-            lines += "Броня: " + (o.int("armor") ?: 0)
-            val r = req(o)
-            listOf("Требует силы", "Требует ловкости", "Требует интеллекта").forEachIndexed { i, t -> r.getOrNull(i)?.takeIf { it > 0 }?.let { lines += "$t: $it" } }
+            val nb = content.itemBalance(base)
+            nb?.int("tier")?.let { lines += "Ступень: $it" }
+            lines += "Броня: " + (nb?.int("armor") ?: 0)
+            reqLines(nb, lines)
         }
         base.startsWith("i.w.") && o != null -> {
+            val nb = content.itemBalance(base)
             lines += (if (base.startsWith("i.w.r.")) "Стрелковое/метательное" else "Холодное") + " оружие" +
                 (if (base.startsWith("i.w.k.")) ", подходит для разделки трупов" else "") +
                 (if (base.startsWith("i.w.t.")) ", подходит для рубки деревьев" else "")
-            lines += "Урон: ${o.int("dmg_min") ?: 0}-${o.int("dmg_max") ?: 0}"
-            val r = req(o)
-            r.getOrNull(3)?.takeIf { it > 0 }?.let { lines += "Требует жизни: $it" }
-            listOf("Требует силы", "Требует ловкости", "Требует интеллекта").forEachIndexed { i, t -> r.getOrNull(i)?.takeIf { it > 0 }?.let { lines += "$t: $it" } }
-            lines += "Скорость: " + (o.int("speed") ?: 0)
+            nb?.int("tier")?.let { lines += "Ступень: $it" }
+            val dmg = (nb?.get("dmg") as? kotlinx.serialization.json.JsonArray)?.map { it.toString() }
+            lines += "Урон: " + (dmg?.joinToString("-") ?: "${o.int("dmg_min") ?: 0}-${o.int("dmg_max") ?: 0}")
+            val cls = Balance.weaponClass(base, o.str("name") ?: "", nb?.str("class"))
+            lines += "Пауза: " + String.format("%.1f", balance.pause(cls, 0)) + " сек"
+            when (balance.penetration(cls)) {
+                in 0.0..0.99 -> lines += "Тяжёлое: пробивает часть брони"
+                in 1.01..9.0 -> lines += "Лёгкое: броня цели защищает лучше"
+            }
+            lines += "Шанс крита: " + balance.critBase(cls).toInt() + " %"
+            reqLines(nb, lines)
             o.str("ammo")?.takeIf { it.isNotBlank() }?.let { lines += "Использует: " + content.itemName(it) }
         }
         base.startsWith("i.note") || base.startsWith("i.s.note") || base.startsWith("i.book") || base.startsWith("i.s.book") ->
@@ -210,6 +218,13 @@ private fun Game.lookItem(id: String): LookView {
     return LookView(content.itemName(id), lines.joinToString("\n"))
 }
 
+/** Requirements of the new balance: level and attributes (content/balance/items.json). */
+private fun reqLines(nb: kotlinx.serialization.json.JsonObject?, lines: MutableList<String>) {
+    val r = Formulas.requirement(nb)
+    if (r[0] > 1) lines += "Требует уровня: ${r[0]}"
+    listOf("Требует силы", "Требует ловкости", "Требует интеллекта").forEachIndexed { i, t -> r[i + 1].takeIf { it > 0 }?.let { lines += "$t: $it" } }
+}
+
 private fun Game.spellText(spell: String?): String = spell?.let { content.items[it] }?.str("description")?.let { strip(it) } ?: ""
 
 /** f_lookmagic.dat and the technique page of f_look.dat, with the viewer's own numbers. */
@@ -220,7 +235,7 @@ private fun Game.lookAbility(p: Game.Player, id: String): LookView? {
     o.str("description")?.let { lines += strip(it) }
     if (id.startsWith("p.")) {
         lines += "Период: " + (o.int("cooldown") ?: 0) + " сек"
-        val penalty = (p.int - 1) * 10
+        val penalty = (p.int - 2).coerceAtLeast(0) * 3
         if (id != "p.d.c" && penalty > 0) lines += "Шанс успешного использования (с учётом вашего интеллекта): -$penalty%"
         return LookView(name, lines.joinToString("\n"))
     }
@@ -236,14 +251,13 @@ private fun Game.lookAbility(p: Game.Player, id: String): LookView? {
     if (pmin != 0 || pmax != 0) lines += (if (id.startsWith("m.heal")) "Лечение: " else "Урон: ") + "$pmin-$pmax"
     if ((o.int("needs_target") ?: 0) != 0) lines += "Требует цель"
     if ((o.int("criminals_only") ?: 0) != 0) lines += "Действует только на преступников"
-    lines += "Скорость: $cast сек"
-    lines += "Период: " + time(period)
+    lines += "Период: " + time(spellCooldown(id, o).toInt())
     lines += "— С учётом ваших характеристик —"
     val magic = p.skill("magic")
-    val chance = ((magic * 0.5 + p.int * 1.5) * 10 - level * 10 + 10 - (maxOf(p.str, 2) - 2) * 4).toInt()
-    lines += "Шанс: " + (if (magic == 0) 0 else chance.coerceIn(0, 95)) + " %"
-    if (pmin != 0 || pmax != 0) lines += (if (id.startsWith("m.heal")) "Лечение: " else "Урон: ") + "${(pmin - 10 + p.int * 2).coerceAtLeast(0)} - ${pmax + p.int * 2}"
-    lines += "Скорость: " + (cast + 3 - p.dex + (maxOf(p.str, 2) - 2) * 4) + " сек"
-    lines += "Период: " + time(period + if (id.startsWith("m.w.")) (maxOf(p.str, 2) - 2) * 1200 else 0)
+    lines += "Шанс: " + (if (magic == 0) 0 else spellChance(p, level).coerceIn(0, 95)) + " %"
+    if (id.startsWith("m.w.") && (pmin != 0 || pmax != 0)) spellDamage(p, pmin, pmax).let { (a, b) -> lines += "Урон: $a - $b" }
+    if (id.startsWith("m.heal") && (pmin != 0 || pmax != 0)) lines += "Лечение: ${pmin * 2}–${pmax * 2} % здоровья цели"
+    lines += "Скорость: " + String.format("%.1f", castMs(p, o) / 1000.0) + " сек"
+    lines += "Период: " + time(spellCooldown(id, o).toInt())
     return LookView(name, lines.joinToString("\n"))
 }

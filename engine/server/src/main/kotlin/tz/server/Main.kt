@@ -96,8 +96,13 @@ fun main() {
         launch {
             var lastFlush = 0L
             var lastSnapshot = System.currentTimeMillis() / 1000
+            var lastTick = 0L
             while (isActive) {
                 val now = System.currentTimeMillis() / 1000
+                // Blows are 1–2 s apart (balance of 04.10.2026): combat five times a second, the rest of the world once.
+                try { game.combat() } catch (e: Exception) { environment.log.error("combat", e) }
+                if (now == lastTick) { delay(200); continue }
+                lastTick = now
                 try { game.tick(now) } catch (e: Exception) { environment.log.error("world tick", e) }
                 if (now - lastFlush >= 30) {
                     try { game.flush() } catch (e: Exception) { environment.log.error("flush", e) }
@@ -107,7 +112,7 @@ fun main() {
                     try { store.save(game) } catch (e: Exception) { environment.log.error("world save", e) }
                     lastSnapshot = now
                 }
-                delay(1000)
+                delay(200)
             }
         }
         game(content, accounts, game)

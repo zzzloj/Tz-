@@ -102,6 +102,9 @@ class Balance(private val o: JsonObject) {
     val regenAfter get() = num(h, "regenAfter", 10.0).toLong()
     val regenEvery get() = num(h, "regenEvery", 5.0).toLong()
 
+    /** Damage per second of a tier-[t] weapon (items, spells and bottles scale by it). */
+    fun weaponDps(t: Int): Double { val w = obj("items"); return num(w, "dpsBase", 1.2) + num(w, "dpsPerTier", 0.36) * (t - 1) }
+
     // ---- crit, armour, magic, block -----------------------------------------------------------
     private val cr2 = obj("crit")
     /** Base crit chance of a weapon class, in percent; items add to it (no caps). */

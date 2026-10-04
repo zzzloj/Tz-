@@ -164,9 +164,12 @@ data class CharacterView(
     val skillPoints: Int,
     /** Dead: a ghost walks, cannot fight or take things, and is revived at a resurrection stone. */
     val ghost: Boolean = false,
+    /** Experience gained on this level, and how much the level needs (balance of 04.10.2026). */
     val exp: Int = 0,
-    /** Experience over this value gives a skill point. */
     val expNext: Int = 0,
+    /** Level 1–50 and all experience ever gained (it keeps counting past the top level). */
+    val level: Int = 1,
+    val expTotal: Long = 0,
     /** Criminal title (бандит, убийца, мародер…) and minutes left; null — innocent. */
     val crime: String? = null,
     val crimeMinutes: Long = 0,
@@ -643,6 +646,7 @@ object Errors {
     const val NO_VAULT_HERE = "no_vault_here"
     const val VAULT_RIGHTS = "vault_rights"
     const val IN_COMBAT = "in_combat"
+    const val TOO_WEAK = "too_weak"
 
     fun text(code: String): String = when (code) {
         UNAUTHORIZED -> "Нужно войти заново"
@@ -698,6 +702,7 @@ object Errors {
         TOPIC_LOCKED -> "Тема закрыта"
         NO_VAULT_HERE -> "Клановое хранилище открывается у банкира или в хранилище своего замка"
         VAULT_RIGHTS -> "Эту вещь оставили не для вашего ранга"
+        TOO_WEAK -> "Не хватает уровня или атрибутов, чтобы надеть это"
         IN_COMBAT -> "Во время боя выйти нельзя: закончите сражение или отойдите в другую локацию"
         else -> "Ошибка сервера"
     }
@@ -769,11 +774,19 @@ object Rules {
     val ATTRIBUTES = setOf("str", "dex", "int")
     fun skillTitle(key: String): String = SKILLS.firstOrNull { it.first == key }?.third ?: key
 
-    /** Limits (g.php:44-47): attributes 1..5 with sum ≤ 12, skills 0..5 with sum ≤ 50. */
-    const val ATTR_MAX = 5
-    const val ATTR_SUM = 12
-    const val SKILL_MAX = 5
-    const val SKILL_SUM = 50
+    /**
+     * Limits of the balance of 04.10.2026 (the server reads them from
+     * content/logic/balance.json; these are for the screens): attributes 1..10
+     * starting at 2 with sum ≤ 24, skills 0..10, crafts 0..10 with sum ≤ 30.
+     */
+    const val ATTR_MAX = 10
+    const val ATTR_SUM = 24
+    const val ATTR_START = 2
+    const val SKILL_MAX = 10
+    const val SKILL_SUM = 100
+    const val CRAFT_SUM = 30
+    /** Crafts grow by practice, not by training points. */
+    val CRAFTS = setOf("alchemy", "mine", "smith", "lumb", "bow", "stone", "fish", "food", "currier", "weaver")
     const val MONEY = "i.money"
     /** f_docrim.dat: a crime lasts 30 minutes (g_crim), theft 20. */
     const val CRIME_SECONDS = 1800L
@@ -829,8 +842,9 @@ object Rules {
     const val POST_MAX = 3000
     const val FORUM_PAGE = 20
 
-    fun hpMax(str: Int) = 10 + str * 10
-    fun manaMax(int: Int) = 10 + int * 10
+    /** Health and mana before items (balance.md §5). */
+    fun hpMax(str: Int, level: Int = 1) = 15 + 5 * str + 3 * (level - 1)
+    fun manaMax(int: Int, level: Int = 1) = 10 + 5 * int + 2 * (level - 1)
 }
 
 // ---- account, site, forum, moderation (stage 13) ------------------------------------

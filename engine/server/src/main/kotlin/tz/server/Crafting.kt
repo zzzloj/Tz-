@@ -16,6 +16,7 @@ import tz.shared.CraftOptionView
 import tz.shared.CraftView
 import tz.shared.Errors
 import tz.shared.GameView
+import tz.shared.Rules
 import java.io.File
 
 /**
@@ -158,7 +159,7 @@ suspend fun Game.use(account: Account, itemId: String, recipe: Int?, target: Str
         return@withLock viewLocked(p)
     }
     val (kind, key) = c.find(itemId) ?: throw ApiException(HttpStatusCode.BadRequest, Errors.CANNOT_USE)
-    if (now < p.busyUntil) throw ApiException(HttpStatusCode.Conflict, Errors.RESTING)
+    if (clockMs() < p.busyUntil) throw ApiException(HttpStatusCode.Conflict, Errors.RESTING)
     var menu: CraftView? = null
     try {
         when (kind) {
@@ -181,11 +182,13 @@ private fun msg(o: JsonObject, key: String, default: String): String =
 private suspend fun Game.eat(p: Game.Player, itemId: String, food: JsonObject, now: Long) {
     changeItem(p, itemId, -1)
     food.str("leaves")?.let { changeItem(p, it, 1) }
-    val hp = food.int("hp") ?: 0
-    val mana = food.int("mana") ?: 0
+    // Food heals a share of the maximum (balance of 04.10.2026, content/balance/items.json); the old points otherwise.
+    val nb = content.itemBalance(itemId)
+    val hp = nb?.int("healPct")?.let { p.hpMax * it / 100 } ?: food.int("hp") ?: 0
+    val mana = nb?.int("manaPct")?.let { p.manaMax * it / 100 } ?: food.int("mana") ?: 0
     p.hp = (p.hp + hp).coerceAtMost(p.hpMax)
     p.mana = (p.mana + mana).coerceAtMost(p.manaMax)
-    p.busyUntil = now + (food.int("busy") ?: 0)
+    p.busyUntil = clockMs() + 1000L * ((food.int("busy") ?: 0))
     // The antidote shortens poisoning (plugin/i.b.antidot.dat).
     food.int("curesPoisonSeconds")?.let { p.poisonUntil -= it }
     p.log(food.str("message") ?: buildString {
@@ -198,10 +201,11 @@ private suspend fun Game.eat(p: Game.Player, itemId: String, food: JsonObject, n
 /** Checks the skill and the place; sets the pause (the old code paused even on failure). */
 private fun Game.prepare(p: Game.Player, o: JsonObject, now: Long): Int {
     val skillKey = o.str("skill")
-    val skill = skillKey?.let { p.skill(it) } ?: 0
+    // The craft tables are tuned to the old 0–5 scale (balance of 04.10.2026: steps 0–10 count half).
+    val skill = skillKey?.let { p.oldSkill(it) } ?: 0
     if (skillKey != null && (o["needSkill"] == null || Dialogs.truthy(o["needSkill"])) && skill <= 0)
         refuse(msg(o, "lowSkill", "Вы этого не умеете"))
-    p.busyUntil = now + (o.int("busy") ?: 0)
+    p.busyUntil = clockMs() + 1000L * ((o.int("busy") ?: 0))
     return skill
 }
 
@@ -220,7 +224,7 @@ private suspend fun Game.craft(
 ): CraftView? {
     val list = (o["recipes"] as? JsonArray).orEmpty().map { it.jsonObject }
     val menu = o["menu"]?.let { Dialogs.truthy(it) } ?: (list.size > 1)
-    val skill = o.str("skill")?.let { p.skill(it) } ?: 0
+    val skill = o.str("skill")?.let { p.oldSkill(it) } ?: 0
     if (choice == null && menu) {
         return CraftView(tool, o.str("about") ?: content.itemName(tool), list.map { r ->
             val needs = (Crafting.counts(r["takes"]) + Crafting.counts(r["takesOnSuccess"]))
@@ -243,7 +247,7 @@ private suspend fun Game.craft(
         Crafting.value(chance, skill, difficulty) <= 0) refuse("Ваш навык слишком низок, чтобы сделать это")
     val takes = Crafting.counts(r["takes"]).map { (id, n) -> (resolve(id, n, inventory) ?: refuse("Не хватает: " + content.itemName(id.removeSuffix(".*")) + " ×$n")) to n }
     val onSuccess = Crafting.counts(r["takesOnSuccess"]).map { (id, n) -> (resolve(id, n, inventory) ?: refuse("Не хватает: " + content.itemName(id) + " ×$n")) to n }
-    p.busyUntil = now + (o.int("busy") ?: 0)
+    p.busyUntil = clockMs() + 1000L * ((o.int("busy") ?: 0))
     for ((id, n) in takes) changeItem(p, id, -n)
     val ok = Crafting.roll(chance, skill, difficulty, dice)
     val name = r.str("name") ?: content.itemName(r.str("make") ?: "")
@@ -253,7 +257,7 @@ private suspend fun Game.craft(
         val id = if (Dialogs.truthy(r["named"]) && "named" in r) "${make}_${p.name}_" else make
         changeItem(p, id, r.int("count") ?: 1)
         p.log(msg(o, "success", "Вы сделали: $name"))
-        addExp(p, Crafting.exp(r["exp"], dice))
+        craftSuccess(p, o.str("skill"), Crafting.exp(r["exp"], dice))
     } else {
         for ((id, n) in Crafting.counts(r["failGives"])) changeItem(p, id, n)
         p.log(msg(o, "fail", "Не получилось: $name"))
@@ -274,14 +278,14 @@ private suspend fun Game.breakTool(p: Game.Player, tool: String, percent: Int, t
 }
 
 private suspend fun Game.gather(p: Game.Player, tool: String, o: JsonObject, now: Long) {
-    val skill = p.skill(o.str("skill") ?: "")
+    val skill = p.oldSkill(o.str("skill") ?: "")
     if (skill <= 0 && o.str("skill") != null) refuse(msg(o, "lowSkill", "Вы этого не умеете"))
     val node = o.str("node")
     val nodeInfo = node?.let { content.crafting.nodes[it] as? JsonObject }
     if (node != null && !world.hasFixture(p.location, node, exact = true)) refuse(msg(o, "noNode", "Здесь нечего добывать"))
     val places = Crafting.strings(o["locations"])
     if (places.isNotEmpty() && p.location !in places) refuse(msg(o, "noWater", msg(o, "noNode", "Здесь нечего добывать")))
-    p.busyUntil = now + (o.int("busy") ?: 0)
+    p.busyUntil = clockMs() + 1000L * ((o.int("busy") ?: 0))
     if (node != null && nodeInfo != null) {
         val here = (nodeInfo["locations"] as? JsonObject)?.get(p.location) as? JsonObject
         val stockMax = here?.int("stockMax") ?: 4
@@ -298,13 +302,13 @@ private suspend fun Game.gather(p: Game.Player, tool: String, o: JsonObject, now
             changeItem(p, row.str("give")!!, row.int("count") ?: 1)
             p.log("Вы поймали " + (row.str("text") ?: content.itemName(row.str("give")!!)))
             o.int("stat")?.let { p.count(it) }
-            addExp(p, Crafting.exp(o["exp"], dice))
+            craftSuccess(p, o.str("skill"), Crafting.exp(o["exp"], dice))
         } else p.log(msg(o, "fail", "Ничего не вышло"))
     } else if (Crafting.roll(o["chance"] as? JsonObject, skill, 0, dice)) {
         if (node != null && nodeInfo != null) world.spendNode(p.location, node, nodeInfo.int("regrowSeconds") ?: 300, now)
         for ((id, n) in Crafting.counts(o["gives"])) changeItem(p, id, n)
         p.log(msg(o, "success", "Удалось"))
-        addExp(p, Crafting.exp(o["exp"], dice))
+        craftSuccess(p, o.str("skill"), Crafting.exp(o["exp"], dice))
         o.int("stat")?.let { p.count(it) }
         gatherExtras(p, o["extra"] as? JsonObject, now)
     } else p.log(msg(o, "fail", "Не получилось"))
@@ -391,13 +395,13 @@ private suspend fun Game.special(
         "campfire" -> {
             val skill = prepare(p, o, now)
             val log = Crafting.counts(o["needOnGround"]).keys.firstOrNull() ?: "i.log"
-            if (!world.takeFromGround(p.location, log, 1, now)) { p.busyUntil = now; refuse(fail("noLog", "Положите на землю ветку")) }
+            if (!world.takeFromGround(p.location, log, 1, now)) { p.busyUntil = clockMs(); refuse(fail("noLog", "Положите на землю ветку")) }
             changeItem(p, tool, -1)
             if (Crafting.roll(o["chance"] as? JsonObject, skill, 0, dice)) {
                 val spawn = o["spawns"] as? JsonObject
                 world.placeFor(p.location, spawn?.str("fixture") ?: "i.s.fire", (spawn?.int("lifetimePerLevelSeconds") ?: 120) * skill, now)
                 p.log(fail("success", "Вы разожгли костер"))
-                addExp(p, Crafting.exp(o["exp"], dice))
+                craftSuccess(p, o.str("skill"), Crafting.exp(o["exp"], dice))
             } else p.log(fail("fail", "Вам не удалось разжечь костер"))
         }
         "fry" -> {
@@ -408,7 +412,7 @@ private suspend fun Game.special(
             if (Crafting.roll(o["chance"] as? JsonObject, skill, 0, dice)) {
                 for ((id, n) in Crafting.counts(o["gives"])) changeItem(p, id, n)
                 p.log(fail("success", "Вы поджарили мясо на костре"))
-                addExp(p, Crafting.exp(o["exp"], dice))
+                craftSuccess(p, o.str("skill"), Crafting.exp(o["exp"], dice))
             } else p.log(fail("fail", "Мясо подгорело"))
         }
         "polishGem" -> {
@@ -419,7 +423,7 @@ private suspend fun Game.special(
                 changeItem(p, t, -1)
                 changeItem(p, "$t.good", 1)
                 p.log(fail("success", "Вы отшлифовали камень"))
-                addExp(p, Crafting.exp(o["exp"], dice))
+                craftSuccess(p, o.str("skill"), Crafting.exp(o["exp"], dice))
             } else p.log(fail("fail", "Вам не удалось отшлифовать камень"))
             breakTool(p, tool, o.int("toolBreakPercent") ?: 5, fail("broken", "Вы сломали набор ювелира"))
         }
@@ -440,7 +444,7 @@ private suspend fun Game.special(
             if (dice.roll(0, 100) >= need) {
                 changeItem(p, "$t..$gem", 1)
                 p.log(fail("success", "Вы инкрустировали самоцвет в {name}").replace("{name}", content.itemName(t)))
-                addExp(p, Crafting.exp(o["exp"], dice))
+                craftSuccess(p, o.str("skill"), Crafting.exp(o["exp"], dice))
                 p.count(o.int("stat") ?: Stat.GEMS_SET)
             } else p.log(fail("fail", "Вы испортили {name}").replace("{name}", content.itemName(t)))
             breakTool(p, "i.set.shlif", 5, fail("broken", "Вы сломали набор ювелира"))
@@ -467,7 +471,7 @@ private suspend fun Game.special(
             if (!t.contains("i.w.") || (inventory[t] ?: 0) < 1) refuse(fail("bad", "Точить можно только оружие"))
             val current = Regex("-(\\d+)-").find(t)?.groupValues?.get(1)?.toIntOrNull() ?: 0
             val level = current + 1
-            p.busyUntil = now + (o.int("busy") ?: 10)
+            p.busyUntil = clockMs() + 1000L * ((o.int("busy") ?: 10))
             changeItem(p, tool, -1)
             changeItem(p, t, -1)
             if (dice.roll(1, level * level + 22) < 12) {
@@ -498,3 +502,39 @@ private suspend fun Game.special(
         else -> throw ApiException(HttpStatusCode.BadRequest, Errors.CANNOT_USE)
     }
 }
+
+// ---- crafts grow by practice (owner 04.10.2026, balance.md §4) ----------------------------------
+
+/**
+ * A craft or a gathering that worked: experience (an old point is a fifth of
+ * a monster of one's level, so a craft gives ~60 % of a kill) and a step of
+ * practice in the craft.
+ */
+internal suspend fun Game.craftSuccess(p: Game.Player, craft: String?, oldExp: Int) {
+    if (oldExp > 0) addExp(p, Math.round(oldExp * balance.monsterExp(p.level) * 0.2))
+    if (craft != null && craft in balance.crafts) practice(p, craft)
+}
+
+/** One more piece of practice; enough of it raises the craft a step, up to 10, all crafts together up to 30. */
+internal suspend fun Game.practice(p: Game.Player, craft: String) {
+    val step = p.skill(craft)
+    if (step >= balance.craftMax) return
+    if (balance.crafts.sumOf { p.skill(it) } >= balance.craftSumMax) return
+    val progress = db.tx { c ->
+        c.prepareStatement(
+            "INSERT INTO character_craft (character_id, craft, progress) VALUES (?, ?, 1) " +
+                "ON CONFLICT (character_id, craft) DO UPDATE SET progress = character_craft.progress + 1 RETURNING progress"
+        ).use { st -> st.setLong(1, p.id); st.setString(2, craft); st.executeQuery().use { rs -> rs.next(); rs.getInt(1) } }
+    }
+    if (progress < balance.craftExpToNext(step)) return
+    db.tx { c ->
+        c.prepareStatement("UPDATE character_craft SET progress = 0 WHERE character_id = ? AND craft = ?").use { st ->
+            st.setLong(1, p.id); st.setString(2, craft); st.executeUpdate()
+        }
+    }
+    p.other[craft] = step + 1
+    p.log("Ремесло «${Rules.skillTitle(craft)}» выросло: ${step + 1}")
+    refreshStats(p)
+    save(p)
+}
+

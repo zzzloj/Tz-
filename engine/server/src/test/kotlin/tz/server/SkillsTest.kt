@@ -31,8 +31,8 @@ class SkillsTest {
                 val (a, _) = accounts.register(login(), "secret-123")
                 accounts.createCharacter(a, n, "m")
                 database.tx { c ->
-                    c.prepareStatement("UPDATE characters SET str = 3, dex = 5, hp = ?, skills = '{\"steal\": 5, \"steallook\": 5, \"meditation\": 5}'::jsonb WHERE account_id = ?").use {
-                        it.setInt(1, Rules.hpMax(3)); it.setLong(2, a.id); it.executeUpdate()
+                    c.prepareStatement("UPDATE characters SET str = 6, dex = 10, hp = ?, skills = '{\"steal\": 10, \"steallook\": 10, \"meditation\": 10}'::jsonb WHERE account_id = ?").use {
+                        it.setInt(1, Rules.hpMax(6)); it.setLong(2, a.id); it.executeUpdate()
                     }
                 }
                 a
@@ -91,7 +91,7 @@ class SkillsTest {
         val l = assertNotNull(v.look)
         assertTrue(l.text.contains("Искусный вор") && l.text.contains("Убил монстров: 0"), l.text)
         v = game.look(a, Rules.STARTING_KNIFE)
-        assertTrue(v.look!!.text.contains("Урон: 0-2"), v.look!!.text)
+        assertTrue(v.look!!.text.contains("Урон: 1-2") && v.look!!.text.contains("Ступень: 1"), v.look!!.text)
         v = game.look(a, "i.w.k.begin-3-")
         assertTrue(v.look!!.text.contains("Заточен: +3"), v.look!!.text)
         v = game.look(a, "m.w.arrow")
@@ -122,13 +122,13 @@ class SkillsTest {
     }
 
     @Test
-    fun sharpeningAndSets() {
+    fun sharpening() {
         val content = Content.load(contentDir())
-        fun stats(vararg eq: String) = Formulas.player(Skills.of(3, 3, 1), eq.toList(), { content.items[it] })
-        val plain = stats("i.w.k.begin")
-        val sharp = stats("i.w.k.begin-3-")
-        assertEquals(plain.dmgMin + 3, sharp.dmgMin)
-        assertEquals(plain.dmgMax + 3, sharp.dmgMax)
-        assertEquals(plain.dmgMax + 6, stats("i.w.k.begin-9-").dmgMax)
+        fun stats(vararg eq: String) = Formulas.player(content.balance, Skills.of(6, 6, 2), 20, eq.toList(), { content.items[it] }, { content.itemBalance(it) })
+        // On a weapon of tier 20: +5 % damage a sharpening point, at most +30 %.
+        val plain = stats("i.w.s.kriv")
+        val sharp = stats("i.w.s.kriv-3-")
+        assertTrue(sharp.dmgMax > plain.dmgMax)
+        assertEquals(stats("i.w.s.kriv-6-").dmgMax, stats("i.w.s.kriv-9-").dmgMax)
     }
 }

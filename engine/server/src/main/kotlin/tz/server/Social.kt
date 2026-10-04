@@ -62,9 +62,9 @@ suspend fun Game.say(account: Account, raw: String, channel: String): GameView =
             val line = "${p.name} говорит: $text"
             p.log(line)
             // A ghost is heard by all with spiritism·10 %, otherwise each listener hears with his spiritism·20 % (f_say.dat:69-83).
-            val loud = !p.ghost || dice.roll(0, 100) <= p.skill("spirit") * 10
+            val loud = !p.ghost || dice.roll(0, 100) <= p.oldSkill("spirit") * 10
             for (q in players.values) if (q.id != p.id && q.location == p.location && now - q.lastSeen < Game.ACTIVE_SECONDS) {
-                val heard = loud || dice.roll(0, 100) <= q.skill("spirit") * 20
+                val heard = loud || dice.roll(0, 100) <= q.oldSkill("spirit") * 20
                 q.log(if (heard) line else "${p.name} говорит: " + text.replace(Regex("\\p{Lu}"), "O").replace(Regex("\\p{Ll}"), "o"))
                 notify(q.id)
             }

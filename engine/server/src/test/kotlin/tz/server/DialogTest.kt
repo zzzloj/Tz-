@@ -81,23 +81,26 @@ class DialogTest {
         assertTrue(v.dialog!!.text.startsWith("Так как ты новичок"), v.dialog!!.text)
         v = game.choose(account, npc, v, "Согласен")
         assertTrue(v.dialog!!.text.contains("Интеллект: +1"), v.dialog!!.text)
-        assertEquals(2, v.character.int)
-        assertEquals(1, v.character.skillPoints)
-        assertEquals(30, v.character.manaMax)
-        // Second point: still free (the sum of skills and points stays 5).
-        v = game.talk(account, npc, "begin", null)
-        v = game.choose(account, npc, v, "Ты можешь меня чему-нибудь научить?")
-        v = game.choose(account, npc, v, "Я хочу повысить интеллект")
-        v = game.choose(account, npc, v, "Согласен")
         assertEquals(3, v.character.int)
+        assertEquals(3, v.character.skillPoints)
+        assertEquals(25, v.character.manaMax)   // 10 + 5 · 3
+        // The other three starting points: still free.
+        for (n in 4..6) {
+            v = game.talk(account, npc, "begin", null)
+            v = game.choose(account, npc, v, "Ты можешь меня чему-нибудь научить?")
+            v = game.choose(account, npc, v, "Я хочу повысить интеллект")
+            assertTrue(v.dialog!!.text.startsWith("Так как ты новичок"), v.dialog!!.text)
+            v = game.choose(account, npc, v, "Согласен")
+            assertEquals(n, v.character.int)
+        }
         assertEquals(0, v.character.skillPoints)
         // No points left.
         v = game.talk(account, npc, "begin", null)
         v = game.choose(account, npc, v, "Ты можешь меня чему-нибудь научить?")
         v = game.choose(account, npc, v, "Я хочу повысить интеллект")
         v = game.choose(account, npc, v, "Согласен")
-        assertEquals("Недостаточно очков опыта", v.dialog!!.text)
-        assertEquals(3, v.character.int)
+        assertEquals("Недостаточно очков обучения: они приходят с новыми уровнями", v.dialog!!.text)
+        assertEquals(6, v.character.int)
     }
 
     @Test
