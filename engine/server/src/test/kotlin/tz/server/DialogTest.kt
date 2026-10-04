@@ -164,9 +164,9 @@ class DialogTest {
     }
 
     @Test
-    fun worldTimerIsSharedByAllPlayers() {
+    fun recruitingTimerIsPersonal() {
+        // Owner 04.10: Ditrih's recruiting timer is each player's own (was shared by the whole world).
         val database = db ?: return
-        runBlocking { database.tx { c -> c.createStatement().use { it.execute("DELETE FROM world_state WHERE key = 'timer:n.Ditrih.qv'") } } }
         withGame { game, first ->
             val accounts = Accounts(database, content)
             val (second, _) = accounts.register("d" + (1..10).map { ('a'..'z').random() }.joinToString(""), "secret-123")
@@ -181,7 +181,8 @@ class DialogTest {
             assertTrue(v.inventory.any { it.id == "i.q.ditrih" })
             var w = game.talk(second, npc, "begin", null)
             w = game.choose(second, npc, w, "Я хочу поступить к вам на службу")
-            assertTrue(Regex("приходи минут через \\d+").containsMatchIn(w.dialog!!.text), w.dialog!!.text)
+            assertTrue(w.dialog!!.text.startsWith("Да, нам требуются люди"), w.dialog!!.text)
+            assertTrue(w.inventory.any { it.id == "i.q.ditrih" })
             // The first one is already in.
             v = game.talk(first, npc, "begin", null)
             v = game.choose(first, npc, v, "Я хочу поступить к вам на службу")
