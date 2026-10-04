@@ -60,4 +60,12 @@ class FormulasTest {
         // Attributes 1/1/1 and 2 free points: over 50 experience gives a point.
         assertEquals(50, Formulas.expThreshold(Skills.of(1, 1, 1, exp = 40, points = 2)))
     }
+
+    @Test
+    fun blueTopazDoesNotSlowTheWeapon() {
+        // Owner 04.10.2026: the topaz only helps necromancy (Pets.raise); its old data added 10 s to the pause.
+        val plain = Formulas.player(Skills.of(3, 3, 3), listOf("i.w.k.begin"), { content.items[it] })
+        val withGem = Formulas.player(Skills.of(3, 3, 3), listOf("i.w.k.begin..gt"), { content.items[it] })
+        assertEquals(plain.delay, withGem.delay)
+    }
 }
