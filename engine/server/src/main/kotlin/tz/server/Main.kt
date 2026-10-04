@@ -168,7 +168,8 @@ private fun Route.accountRoutes(accounts: Accounts, game: Game) {
     post("/api/auth/logout") {
         bearer(call)?.let { token ->
             // Leaving by the button takes the character out of the world at once (owner 04.10.2026).
-            runCatching { accounts.authenticate(token) }.getOrNull()?.let { game.leave(it) }
+            // In a fight the character stays standing, as if the app were closed.
+            runCatching { accounts.authenticate(token) }.getOrNull()?.let { game.leave(it, force = true) }
             accounts.logout(token)
         }
         call.respond(HttpStatusCode.NoContent)
@@ -332,6 +333,10 @@ private fun Route.accountRoutes(accounts: Accounts, game: Game) {
         val account = requireAccount(call, accounts)
         val body = call.receive<MessageRequest>()
         call.respond(game.message(account, body.op, body.to, body.text))
+    }
+    post("/api/game/leave") {
+        game.leave(requireAccount(call, accounts))
+        call.respond(HttpStatusCode.NoContent)
     }
     post("/api/game/vault") {
         val account = requireAccount(call, accounts)

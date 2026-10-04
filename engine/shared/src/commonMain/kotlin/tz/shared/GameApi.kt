@@ -69,6 +69,12 @@ class GameApi(
     suspend fun login(login: String, password: String): AuthResponse =
         postJson<AuthResponse, Credentials>("/api/auth/login", Credentials(login, password)).also { token = it.token }
 
+    /** Takes the character out of the world (Errors.IN_COMBAT while a fight goes on here). */
+    suspend fun leave() {
+        val r = http.post(url("/api/game/leave")) { auth() }
+        if (!r.status.isSuccess()) check<Unit>(r)
+    }
+
     suspend fun logout() {
         try {
             http.post(url("/api/auth/logout")) { auth() }

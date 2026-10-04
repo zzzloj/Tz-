@@ -1,6 +1,8 @@
 package tz.server
 
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.sync.withLock
+import tz.shared.Errors
 import tz.shared.ChoiceOption
 import tz.shared.ChoiceView
 import tz.shared.Rules
@@ -13,6 +15,8 @@ import tz.shared.Rules
  */
 
 internal object Travel {
+    /** How long a blow between two characters keeps them in a fight (no leaving the game). */
+    const val COMBAT_SECONDS = 30L
     /** Exits the old engine refused (g.php:249-253); [has] tells whether a backpack item id contains the text. */
     fun locked(from: String, to: String, has: (String) -> Boolean): String? = when {
         from == "x927x253" && to == "x902x254" -> "Стражник: Стой!"
@@ -128,14 +132,20 @@ internal suspend fun Game.sail(p: Game.Player, arg: String?, now: Long): ChoiceV
 /**
  * Leaving by the exit button: the character is out of the world at once, nobody
  * can strike or rob it (owner 04.10.2026; the old game did so only when nobody
- * was near, f_logout.dat). Closing the app without it leaves the character
- * standing for [Game.ACTIVE_SECONDS], as before.
+ * was near, f_logout.dat) — but not in a fight: walk away or finish it first.
+ * Closing the app without it leaves the character standing for
+ * [Game.ACTIVE_SECONDS], as before. [force] = false throws [Errors.IN_COMBAT];
+ * true (signing out anyway) just leaves the fighter standing.
  */
-suspend fun Game.leave(account: Account) = lock.withLock {
+suspend fun Game.leave(account: Account, force: Boolean = false) = lock.withLock {
     val id = byAccount[account.id] ?: return@withLock
     val p = players[id] ?: return@withLock
     val now = clock()
     if (now - p.lastSeen >= Game.ACTIVE_SECONDS) return@withLock
+    if (inCombat(p, now)) {
+        if (force) return@withLock
+        throw ApiException(HttpStatusCode.Conflict, Errors.IN_COMBAT)
+    }
     if (p.hasFlag) dropFlag(p, "${p.name} бросил флаг!")
     // The crime clock stops at the moment of leaving, not ACTIVE_SECONDS before it (see afterBreak).
     if (p.crime != null && p.crimeUntil > now) {
@@ -144,9 +154,20 @@ suspend fun Game.leave(account: Account) = lock.withLock {
     }
     p.lastSeen = now - Game.ACTIVE_SECONDS
     p.fightingPlayer = null
-    for (npc in world.npcsIn(p.location)) npc.enemies.remove(p.id)
     save(p)
     notifyLocation(p.location, p.id)
+}
+
+/**
+ * A fight here: a living monster set on this character (it forgets those who
+ * walk away), or a blow with another character still here within
+ * [Travel.COMBAT_SECONDS]. A ghost has nothing to fight.
+ */
+internal suspend fun Game.inCombat(p: Game.Player, now: Long): Boolean {
+    if (p.ghost) return false
+    if (world.npcsIn(p.location).any { it.hp > 0 && p.id in it.enemies }) return true
+    val q = p.pvpWith?.let { players[it] } ?: return false
+    return now - p.pvpAt < Travel.COMBAT_SECONDS && q.location == p.location && !q.ghost && now - q.lastSeen < Game.ACTIVE_SECONDS
 }
 
 internal suspend fun Game.afterBreak(p: Game.Player, away: Long) {

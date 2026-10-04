@@ -519,7 +519,9 @@ class Session(val api: GameApi, private val tokens: TokenStore) {
     /** Re-reads the screen: NPCs wander and other players come and go. */
     suspend fun refresh() = action { enter() }
 
+    /** Leaves the game: not in a fight (owner 04.10.2026: walk away or finish it first). */
     suspend fun signOut() = action {
+        try { api.leave() } catch (e: ApiError) { if (e.code == Errors.IN_COMBAT) throw e } catch (e: CancellationException) { throw e } catch (_: Exception) { }
         try { api.logout() } finally { forget() }
     }
 

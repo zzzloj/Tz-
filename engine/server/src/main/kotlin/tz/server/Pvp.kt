@@ -98,6 +98,7 @@ internal suspend fun Game.playerHitsPlayer(a: Game.Player, b: Game.Player, now: 
     val t = blow?.title?.let { " ($it)" } ?: ""
     // Only the one who strikes first is «fighting»; answering blows are self-defence and keep the victim innocent.
     if (answer) { a.fightingPlayer = b.id; a.attackTarget = "u:${b.id}" }
+    a.pvpAt = now; a.pvpWith = b.id; b.pvpAt = now; b.pvpWith = a.id
     a.log(if (answer) "Вы$t по ${b.name} $text" else "  вы отвечаете: $text", JournalKind.FIGHT)
     b.log(if (answer) "${a.name}$t по вам $text" else "  ${a.name} отвечает: $text", JournalKind.HURT)
     for (q in players.values) if (q.id != a.id && q.id != b.id && q.location == a.location && now - q.lastSeen < Game.ACTIVE_SECONDS) {

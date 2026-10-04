@@ -116,6 +116,20 @@ class VaultTest {
             game.place(a, "x1141x506"); game.place(b, "x1141x506")
             game.view(b)
             assertTrue(game.view(a).people.any { it.name == bName })
+            // Not in a fight: a blow between the two a moment ago, or a monster set on him here.
+            val pa = game.players.values.first { it.accountId == a.id }; val pb = game.players.values.first { it.accountId == b.id }
+            pa.pvpAt = clock[0]; pa.pvpWith = pb.id; pb.pvpAt = clock[0]; pb.pvpWith = pa.id
+            assertEquals(Errors.IN_COMBAT, assertFailsWith<ApiException> { game.leave(b) }.code)
+            game.leave(b, force = true)   // signing out anyway leaves him standing
+            assertTrue(game.view(a).people.any { it.name == bName })
+            clock[0] += Travel.COMBAT_SECONDS
+            val npc = game.world.allNpcs().first { it.hp > 0 }
+            game.place(b, npc.location)
+            npc.enemies += pb.id
+            assertEquals(Errors.IN_COMBAT, assertFailsWith<ApiException> { game.leave(b) }.code)
+            npc.enemies -= pb.id
+            game.place(b, "x1141x506")
+            game.view(b)
             game.leave(b)
             assertTrue(game.view(a).people.none { it.name == bName }, "gone at once, not after ten minutes")
             // Coming back puts the character where it stood.

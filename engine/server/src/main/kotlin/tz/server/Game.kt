@@ -97,6 +97,9 @@ class Game(
         var faction: String? = null
         /** The character last struck by this one: striking back is self-defence. */
         var fightingPlayer: Long? = null
+        /** The last blow between this character and another one, either way: when and with whom (no leaving mid-fight). */
+        var pvpAt = 0L
+        var pvpWith: Long? = null
         /** Last thing said, to refuse repeats (f_say.dat:65). */
         var lastSaid: String? = null
         /** Statistics, the old `st` string (Skills.kt, Stat). */

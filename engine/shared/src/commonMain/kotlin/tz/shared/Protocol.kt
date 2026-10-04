@@ -642,6 +642,7 @@ object Errors {
     const val TOPIC_LOCKED = "topic_locked"
     const val NO_VAULT_HERE = "no_vault_here"
     const val VAULT_RIGHTS = "vault_rights"
+    const val IN_COMBAT = "in_combat"
 
     fun text(code: String): String = when (code) {
         UNAUTHORIZED -> "Нужно войти заново"
@@ -697,6 +698,7 @@ object Errors {
         TOPIC_LOCKED -> "Тема закрыта"
         NO_VAULT_HERE -> "Клановое хранилище открывается у банкира или в хранилище своего замка"
         VAULT_RIGHTS -> "Эту вещь оставили не для вашего ранга"
+        IN_COMBAT -> "Во время боя выйти нельзя: закончите сражение или отойдите в другую локацию"
         else -> "Ошибка сервера"
     }
 }
