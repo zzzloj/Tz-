@@ -11,8 +11,8 @@ php -d short_open_tag=On "$root/tools/content/export.php" "$tmp/game1" "$tmp/aga
 python3 - "$root/content" "$tmp/again" <<'PY'
 import json, pathlib, sys
 a, b = map(pathlib.Path, sys.argv[1:])
-# logic/, pages/, art/ and crafting.* are read only by the new engine (engine/), the old one has no such files.
-def files(d): return {p.relative_to(d).as_posix() for p in d.rglob("*") if p.is_file() and not p.relative_to(d).as_posix().startswith(("logic/", "pages/", "art/", "crafting."))}
+# logic/, pages/, art/, balance/ and crafting.* are read only by the new engine (engine/), the old one has no such files.
+def files(d): return {p.relative_to(d).as_posix() for p in d.rglob("*") if p.is_file() and not p.relative_to(d).as_posix().startswith(("logic/", "pages/", "art/", "balance/", "crafting."))}
 fa, fb = files(a) - {"README.md"}, files(b)
 bad = [f"only in content: {f}" for f in sorted(fa - fb)] + [f"only after rebuild: {f}" for f in sorted(fb - fa)]
 for f in sorted(fa & fb):
