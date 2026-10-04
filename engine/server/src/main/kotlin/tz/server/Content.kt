@@ -49,6 +49,9 @@ class Content(
     /** Crafting, gathering and item use (content/crafting.json). */
     val crafting: Crafting by lazy { Crafting.load(dir.resolve("crafting.json")) }
 
+    /** Balance constants and formulas, content/logic/balance.json (owner 04.10.2026). */
+    val balance: Balance by lazy { Balance.load(dir.resolve("logic/balance.json")) }
+
     /** Painted pictures and their rules, content/art (stage 16). */
     val art: Art by lazy { Art(dir) }
 

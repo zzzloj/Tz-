@@ -74,7 +74,7 @@ class Dialogs(private val content: Content, dir: File) {
                 gifts[key] = o.str("name") ?: key
             }
         }
-        for (f in (logicDir.listFiles { f -> f.name.endsWith(".json") && f.name != "timers.json" && f.name != "gifts.json" } ?: emptyArray()).sortedBy { it.name }) {
+        for (f in (logicDir.listFiles { f -> f.name.endsWith(".json") && f.name != "timers.json" && f.name != "gifts.json" && f.name != "balance.json" } ?: emptyArray()).sortedBy { it.name }) {
             val id = f.name.removeSuffix(".json")
             try {
                 val o = Json.parseToJsonElement(f.readText()).jsonObject

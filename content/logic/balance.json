@@ -1,0 +1,47 @@
+{
+  "_comment": "Balance constants (owner 04.10.2026, claude/balance.md). Change numbers here, not in code. Times in seconds.",
+  "level": {
+    "max": 50,
+    "expBase": 25, "expPower": 2.7,
+    "creationPoints": 4, "pointsPerLevel": 2, "bonusEvery": 10, "bonusPoints": 2
+  },
+  "attributes": { "start": 2, "max": 10, "sumMax": 24 },
+  "skills": { "max": 10 },
+  "crafts": {
+    "list": ["alchemy", "mine", "smith", "lumb", "bow", "stone", "fish", "food", "currier", "weaver"],
+    "max": 10, "sumMax": 30, "teacherMax": 2,
+    "expToNext": [40, 90, 160, 260, 400, 580, 800, 1080, 1420, 1850]
+  },
+  "teacherPrice": 15,
+  "hero": {
+    "hpBase": 15, "hpPerStr": 5, "hpPerLevel": 3,
+    "manaBase": 10, "manaPerInt": 5, "manaPerLevel": 2,
+    "accPerDex": 2, "accPerWeaponSkill": 3,
+    "evaPerDex": 1, "evaPerDodge": 3,
+    "hitBase": 60, "hitMin": 15, "hitMax": 95,
+    "strDamagePer4s": 0.5, "weaponSkillDamage": 0.03,
+    "pauseDexCut": 0.02, "pauseMin": 0.7,
+    "regenBase": 0.015, "regenPerSkill": 0.003, "regenSafeMult": 3, "regenAfter": 10, "regenEvery": 5
+  },
+  "pause": { "knife": 1.0, "spear": 1.0, "rapier": 1.0, "thrown": 1.0, "sword": 1.1, "axe": 1.2, "bow": 1.3, "staff": 1.3, "heavy": 1.5, "crossbow": 1.5, "hand": 1.0 },
+  "crit": { "base": { "knife": 7, "thrown": 7, "bow": 6, "crossbow": 6, "hand": 3 }, "default": 5, "mult": 1.5 },
+  "armor": { "k": 50, "kPerLevel": 10, "heavyPen": 0.75, "lightPen": 1.15 },
+  "magic": { "perInt": 5, "perResist": 8, "armorShare": 0.25 },
+  "block": { "base": 5, "perParry": 2, "perDex": 0.5, "max": 30, "cut": 0.5 },
+  "ailments": {
+    "ignite": { "chance": 15, "share": 0.30, "seconds": 3 },
+    "chill": { "chance": 20, "slow": 0.30, "seconds": 2 },
+    "poison": { "chance": 20, "share": 0.20, "seconds": 4, "stacks": 3 },
+    "amuletCut": 0.5
+  },
+  "monsters": {
+    "hp": [7.7, 4.1, 0.122], "hpMin": 18,
+    "dmgPer4s": [2.9, 0.85, 0.0054],
+    "pauseMin": 1.0, "pauseMax": 2.0,
+    "exp": [8, 1.45], "gold": [2, 0.9, 1.6],
+    "kinds": { "mob": [1, 1, 1], "animal": [1, 1, 1], "elite": [3.0, 1.3, 3], "boss": [8.0, 1.6, 8] }
+  },
+  "expByLevelGap": { "upPerLevel": 0.08, "upMax": 1.5, "freeBelow": 4, "downPerLevel": 0.15, "downMin": 0.1 },
+  "groupBonusPerMember": 0.10,
+  "necro": { "perSkill": 10, "topaz": 10, "mana": 6 }
+}
