@@ -1,0 +1,28 @@
+name: devcache
+# One-off: packs the Gradle dependency cache of the server build so that a
+# sandbox without Maven Central can compile offline. Runs only on this branch.
+on:
+  push:
+    branches: [devcache]
+permissions:
+  contents: write
+jobs:
+  cache:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Resolve and compile the server and its tests
+        working-directory: engine
+        run: ./gradlew --no-daemon -Dorg.gradle.configureondemand=true :server:testClasses :shared:jvmMainClasses
+      - name: Pack
+        run: |
+          cd ~ && tar czf /tmp/gradle-cache.tgz .gradle/caches/modules-2 .gradle/wrapper/dists
+          ls -la /tmp/gradle-cache.tgz
+      - name: Publish as a release asset
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "devcache-${{ github.run_id }}" /tmp/gradle-cache.tgz --prerelease --title "devcache" --notes "Gradle cache for offline server builds" --target "${{ github.sha }}"
