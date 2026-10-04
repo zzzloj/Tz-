@@ -33,6 +33,15 @@ class ContentTest {
     }
 
     @Test
+    fun hiddenItemsGoToCastlesButNotToRooms() {
+        val places = content.hidingPlaces().toSet()
+        assertTrue("c.1.main" in places && "c.3.tron" in places, "castle halls are open to hidden items")
+        assertTrue("c.1.x1087x543" !in places && "c.2.hran" !in places, "castle rooms and vaults are not")
+        assertTrue(places.none { it.startsWith("z.") || it.startsWith("qv") || it == "arena" || it == Protocol.START_LOCATION })
+        assertTrue(places.none { content.locations.getValue(it).name == "Комната" }, "no room behind a key")
+    }
+
+    @Test
     fun startLocationHasExitsThatExist() {
         val start = content.locations.getValue(Protocol.START_LOCATION)
         assertTrue(start.exits.isNotEmpty())

@@ -596,9 +596,7 @@ class Game(
                 return if (n == 0) "Сейчас на арене никого нет." else "Сейчас на арене $n человек."
             }
             "hide-item-random" -> {
-                val places = content.locations.keys.filter { id ->
-                    !id.startsWith("z.") && !id.startsWith("c.") && !id.startsWith("arena") && !id.startsWith("qv") && id != Protocol.START_LOCATION
-                }
+                val places = content.hidingPlaces()
                 if (places.isNotEmpty()) world.placePermanent(places[rnd.nextInt(places.size)], a.str("item")!!, 1)
             }
             "repair-boat" -> {

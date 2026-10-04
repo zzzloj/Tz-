@@ -13,6 +13,7 @@ import tz.shared.ContentReport
 import tz.shared.ExitView
 import tz.shared.LocationView
 import tz.shared.NpcView
+import tz.shared.Protocol
 import java.io.File
 
 /**
@@ -68,6 +69,17 @@ class Content(
         return id
     }
 
+    /**
+     * Where a quest hides an item in a random place (the clover, amulet parts,
+     * black-book leaves): anywhere a player walks, castle halls included, but
+     * not rooms, storerooms and vaults behind keys, tavern rooms, the arena, the
+     * GM rooms or the start (owner 04.10).
+     */
+    fun hidingPlaces(): List<String> = locations.values.filter { l ->
+        !l.id.startsWith("z.") && !l.id.startsWith("arena") && !l.id.startsWith("qv") && !l.id.startsWith("ne_lapat") &&
+            l.id != Protocol.START_LOCATION && l.name !in LOCKED_ROOMS && !CASTLE_ROOM.matches(l.id)
+    }.map { it.id }
+
     data class Location(
         val id: String,
         val name: String,
@@ -86,6 +98,10 @@ class Content(
 
         /** Dialog topics handled by the engine itself (f_speak.dat): trade and bank. */
         val ENGINE_TOPICS = setOf("buy", "buy2", "sell", "tobank", "frombank")
+
+        /** Rooms behind keys: castle and tavern rooms, vaults, storerooms. */
+        private val LOCKED_ROOMS = setOf("Комната", "Хранилище", "Кладовая")
+        private val CASTLE_ROOM = Regex("""c\.\d+\.(hran|x\d+x\d+)""")
 
         fun load(dir: File): Content {
             require(dir.isDirectory) { "content directory not found: $dir" }
