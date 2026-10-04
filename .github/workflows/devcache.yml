@@ -17,7 +17,7 @@ jobs:
           java-version: 21
       - name: Resolve and compile the server and its tests
         working-directory: engine
-        run: ./gradlew --no-daemon -Dorg.gradle.configureondemand=true :server:testClasses :shared:jvmMainClasses
+        run: ./gradlew --no-daemon -Ptz.serverOnly :server:test :shared:jvmTest
       - name: Pack
         run: |
           cd ~ && tar czf /tmp/gradle-cache.tgz .gradle/caches/modules-2 .gradle/wrapper/dists
