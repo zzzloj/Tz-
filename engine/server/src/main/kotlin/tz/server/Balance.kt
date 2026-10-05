@@ -105,6 +105,14 @@ class Balance(private val o: JsonObject) {
     /** Damage per second of a tier-[t] weapon (items, spells and bottles scale by it). */
     fun weaponDps(t: Int): Double { val w = obj("items"); return num(w, "dpsBase", 1.2) + num(w, "dpsPerTier", 0.36) * (t - 1) }
 
+    /**
+     * Tier of the things a hero of [level] wears (tools/balance/model.py tier_worn): items of
+     * level L − 2, an item asking for a level 3 below its tier; a newcomer starts with the
+     * starting things, the gap grows to all of it by level 10.
+     */
+    fun tierWorn(level: Int): Int =
+        Math.round(level - 2 + 3 * minOf(1.0, (level - 1) / 9.0)).toInt().coerceIn(1, 50)
+
     // ---- crit, armour, magic, block -----------------------------------------------------------
     private val cr2 = obj("crit")
     /** Base crit chance of a weapon class, in percent; items add to it (no caps). */

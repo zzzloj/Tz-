@@ -23,6 +23,8 @@ class BalanceTest {
         assertEquals(24, b.totalPoints(10))
         assertEquals(112, b.totalPoints(50))
         assertEquals(15 * 9, b.teacherPrice(3))
+        // What a hero of a level wears: the starting things at 1, items of level L − 2 (tier L + 1) from 10.
+        assertEquals(listOf(1, 1, 2, 3, 4, 6, 7, 8, 10, 11, 21, 50, 50), listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 49, 50).map { b.tierWorn(it) })
     }
 
     @Test

@@ -163,9 +163,9 @@ internal fun Game.spellChance(p: Game.Player, level: Int): Int =
     ((p.skill("magic") * 0.25 + p.int * 0.75) * 10 - level * 10 + 10 - (p.str - 4).coerceAtLeast(0) * 2 -
         (if (p.mount != null) 10 else 0) + (if (p.hasFlag) 20 else 0)).coerceAtMost(95.0).toInt()
 
-/** Damage of a battle spell: ≈1.8 of a weapon's 4 s at the mage's level, by its old power (15 = a fire bolt), more with intelligence and magic. */
+/** Damage of a battle spell: ≈1.8 of 4 s of the weapon a mage of this level wears, by its old power (15 = a fire bolt), more with intelligence and magic. */
 internal fun Game.spellDamage(p: Game.Player, pmin: Int, pmax: Int): Pair<Int, Int> {
-    val unit = balance.weaponDps(maxOf(1, p.level - 2)) * 4 * 1.8 * (1 + 0.04 * p.int + 0.03 * p.skill("magic")) * (1 + p.stats.spellPct / 100.0)
+    val unit = balance.weaponDps(balance.tierWorn(p.level)) * 4 * 1.8 * (1 + 0.04 * p.int + 0.03 * p.skill("magic")) * (1 + p.stats.spellPct / 100.0)
     val k = unit / 15.0
     return Math.round(pmin * k).toInt().coerceAtLeast(0) to Math.round(pmax * k).toInt().coerceAtLeast(1)
 }
@@ -757,7 +757,7 @@ private suspend fun Game.useBottle(p: Game.Player, itemId: String, b: Spells.Bot
         p.log(line); tellHere(p, line)
     }
     // Old damage of a bottle (a 15 then was a fire bolt) grows with the thrower's level like spells do.
-    val k = balance.weaponDps(maxOf(1, p.level - 2)) * 4 * 1.8 / 15.0
+    val k = balance.weaponDps(balance.tierWorn(p.level)) * 4 * 1.8 / 15.0
     val stats = p.stats.copy(hit = p.stats.hit + 20, dmgMin = Math.round(b.min * k).toInt(), dmgMax = Math.round(b.max * k).toInt().coerceAtLeast(1),
         pauseMs = b.rest * 1000L, ranged = false, verb = b.verb, ammo = "", ailment = null)
     val blow = Blow(stats, rmagic = b.magic)

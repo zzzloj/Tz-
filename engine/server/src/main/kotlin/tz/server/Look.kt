@@ -251,7 +251,6 @@ private fun Game.lookAbility(p: Game.Player, id: String): LookView? {
     if (pmin != 0 || pmax != 0) lines += (if (id.startsWith("m.heal")) "Лечение: " else "Урон: ") + "$pmin-$pmax"
     if ((o.int("needs_target") ?: 0) != 0) lines += "Требует цель"
     if ((o.int("criminals_only") ?: 0) != 0) lines += "Действует только на преступников"
-    lines += "Период: " + time(spellCooldown(id, o).toInt())
     lines += "— С учётом ваших характеристик —"
     val magic = p.skill("magic")
     lines += "Шанс: " + (if (magic == 0) 0 else spellChance(p, level).coerceIn(0, 95)) + " %"
