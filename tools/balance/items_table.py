@@ -1,5 +1,5 @@
 import json,glob,sys
-from model import weapon_dps, armor_set, item_price
+from model import weapon_dps, armor_set, item_price, ITEM_LEVEL_BELOW_TIER
 from paths import CONTENT, out
 import os
 C=CONTENT+'/items'
@@ -42,6 +42,8 @@ def gems(k): return [GEMN.get(g,g) for g in k.split('..')[1:]]
 
 # ---- special decisions (proposals) ----
 DRAK_W={'i.w.s.dr1..me'}
+# Levels set by the owner, whatever the tiers say.
+LEVEL_SET={'i.w.r.b.short':(8,'Владелец 05.10: короткий лук с 8 уровня — у лучника не было оружия на уровнях 2–10.')}
 weapons=[]
 for w in NEW['weapons']:
     if w['id'] not in I: continue
@@ -90,6 +92,11 @@ for w in NEW['weapons']:
         light=o['type'] in ('Ножи и кинжалы','Метательное') or 'шпага' in nm
         prop='пробивает 25 % брони' if heavy else ('броня цели считается на 15 % больше' if light else '')
         if prop: o['note']=(prop[0].upper()+prop[1:]+'.'+(' '+o['note'] if o['note'] else ''))
+    if k in LEVEL_SET:
+        # The owner's level for a thing: its tier follows (level + 3), damage and price by the tier.
+        L,why=LEVEL_SET[k]; T=L+ITEM_LEVEL_BELOW_TIER; f=weapon_dps(T)/weapon_dps(nw['tier'])
+        nw.update(tier=T,level=L,dmg=[max(1,round(nw['dmg'][0]*f)),max(1,round(nw['dmg'][1]*f))],price=item_price(T))
+        o['note']=why+(' '+o['note'] if o['note'] else '')
     weapons.append(o)
 
 DRAK={'i.a.b.dr1..ob..am','i.a.h.dr1..ag','i.a.l.dr1..zm..az','i.a.p.dr1..ku','i.a.e.dr1..ma..sa..dy'}
