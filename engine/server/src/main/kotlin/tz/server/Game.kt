@@ -701,7 +701,8 @@ class Game(
                 }
                 "take" in a -> { changeItem(p, a.str("take")!!, -count); ctx.inventory.merge(a.str("take")!!, -count, Int::plus); statsChanged = true }
                 "give" in a -> { changeItem(p, a.str("give")!!, count); ctx.inventory.merge(a.str("give")!!, count, Int::plus) }
-                "exp" in a -> addExp(p, a.int("exp") ?: 0)
+                "exp" in a -> addExp(p, (a.int("exp") ?: 0).toLong())
+                "kills" in a -> addExp(p, questExp(p, a.int("kills") ?: 0, a.int("level") ?: 1))
                 "start" in a -> {
                     val key = a.str("start")!!
                     val t = content.logic.timers.getValue(key)
@@ -1192,6 +1193,15 @@ class Game(
     }
 
     internal suspend fun addExp(p: Player, gained: Int) = addExp(p, gained.toLong())
+
+    /**
+     * A quest's reward (balance.md §3): [kills] monsters of the quest's [level]. A hero far
+     * below it is paid as for monsters 4 levels above him, one above it less, as for monsters.
+     */
+    internal fun questExp(p: Player, kills: Int, level: Int): Long {
+        val l = minOf(level, p.level + 4).coerceAtLeast(1)
+        return Math.round(kills * balance.monsterExp(l) * balance.expByGap(p.level, l))
+    }
 
     /**
      * Experience counts on past the top level (owner 04.10.2026); every level

@@ -99,7 +99,8 @@
             "take": "i.q.jofe"
           },
           {
-            "exp": 100
+            "kills": 20,
+            "level": 25
           },
           {
             "give": "i.f.b.health.great",

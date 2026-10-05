@@ -173,7 +173,9 @@ class DialogTest {
         assertEquals(null, inv["i.q.instrum"])
         assertEquals(12, inv["i.arrow"])
         assertEquals(1, inv["i.w.r.b.short"])
-        assertEquals(10, v.character.exp)
+        // A quest of level 2 pays 11 monsters of level 2 (22 each, +8 % for a level above the hero).
+        assertEquals(261L, v.character.expTotal)
+        assertEquals(3, v.character.level)
     }
 
     @Test

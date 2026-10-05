@@ -228,7 +228,7 @@ class Dialogs(private val content: Content, dir: File) {
             "known", "unknown", "here", "notHere", "npcAt", "noNpcAt", "arg", "chance", "sex", "ghost", "any", "not",
         )
         val ACTIONS = setOf(
-            "take", "give", "exp", "start", "stop", "set", "clear", "learn", "teach", "teleport", "spawn", "remove",
+            "take", "give", "exp", "kills", "start", "stop", "set", "clear", "learn", "teach", "teleport", "spawn", "remove",
             "place", "removeHere", "resurrect", "heal", "say", "journal", "handler", "giveNpc",
         )
 
