@@ -42,6 +42,10 @@ data class NpcView(
     val undead: Boolean = false,
     /** Fighting you: seconds until its next blow at you (it strikes its enemies in turn). */
     val nextBlow: Int? = null,
+    /** The same in milliseconds, for a countdown in tenths. */
+    val nextBlowMs: Long? = null,
+    /** Monster level 1–50 (0 — not shown: townsfolk without one, someone's creature). */
+    val level: Int = 0,
     /** A monster or an outlaw that attacks whoever it notices. */
     val hostile: Boolean = false,
 )
@@ -184,6 +188,10 @@ data class CharacterView(
     /** Skills above 0 by key (Rules.SKILLS), spells and techniques learnt. */
     val skills: Map<String, Int> = emptyMap(),
     val known: List<String> = emptyList(),
+    /** Crafts grow by practice: level, practice gathered and needed for the next step; their sum is limited. */
+    val crafts: List<CraftSkillView> = emptyList(),
+    val craftSum: Int = 0,
+    val craftSumMax: Int = 0,
     /** Combat numbers for the character screen. */
     val hit: Int = 0,
     val dmgMin: Int = 0,
@@ -227,6 +235,8 @@ data class GameView(
     val belt: List<String> = emptyList(),
     /** Seconds until the character may strike again. */
     val restSeconds: Int = 0,
+    /** The same in milliseconds, for a countdown in tenths. */
+    val restMs: Long = 0,
     /** A ghost standing at a resurrection stone or healer. */
     val canResurrect: Boolean = false,
     /** Open conversation, answer to POST /api/game/talk; null after any other action. */
@@ -569,7 +579,31 @@ data class DialogView(
     val inputTopic: String? = null,
     /** Empty: the conversation is over, the app shows «Конец диалога». */
     val options: List<DialogOption> = emptyList(),
+    /** A teacher: what the options lead to learning, at today's prices. */
+    val teach: List<TeachOfferView> = emptyList(),
 )
+
+/**
+ * One thing a teacher offers (balance of 04.10.2026): [topic] is the option that
+ * leads to it; [points] — training points it takes, [price] — coins (0 with
+ * [free] for a newcomer); [note] — why it cannot be learnt now.
+ */
+@Serializable
+data class TeachOfferView(
+    val topic: String,
+    val key: String,
+    val title: String,
+    val level: Int,
+    val max: Int,
+    val price: Int,
+    val points: Int,
+    val free: Boolean = false,
+    val note: String? = null,
+)
+
+/** A craft: [level] of [max]; [practice] gathered of [next] needed for the next step (0 — at the top). */
+@Serializable
+data class CraftSkillView(val key: String, val title: String, val level: Int, val max: Int, val practice: Int, val next: Int)
 
 @Serializable
 data class TalkRequest(val npc: String, val topic: String = "begin", val arg: String? = null)

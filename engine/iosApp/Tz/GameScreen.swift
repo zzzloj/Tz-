@@ -77,10 +77,19 @@ private struct ElapsedKey: EnvironmentKey {
     static let defaultValue: Int64 = 0
 }
 
+/// The same in milliseconds, ticking by tenths while a blow or a pause is near.
+private struct ElapsedMsKey: EnvironmentKey {
+    static let defaultValue: Int64 = 0
+}
+
 extension EnvironmentValues {
     var elapsed: Int64 {
         get { self[ElapsedKey.self] }
         set { self[ElapsedKey.self] = newValue }
+    }
+    var elapsedMs: Int64 {
+        get { self[ElapsedMsKey.self] }
+        set { self[ElapsedMsKey.self] = newValue }
     }
     var artUrl: ((String) -> String)? {
         get { self[ArtUrlKey.self] }
@@ -203,7 +212,14 @@ struct GameScreen: View {
     @State private var tab = GameTab.place
     @State private var sub = 0
     @State private var elapsed: Int64 = 0
+    @State private var elapsedMs: Int64 = 0
     @Environment(\.tz) private var c
+
+    /** The nearest pause or blow, ms (up to 10 s): it counts down by tenths. */
+    private var nearestMs: Int64 {
+        let blows = game.location.npcs.compactMap { GameScene.shared.blowLeftMs(npc: $0, elapsedMs: 0)?.int64Value }.max() ?? 0
+        return min(max(GameScene.shared.restLeftMs(game: game, elapsedMs: 0), blows), 10_000)
+    }
 
     /** The longest countdown in the view: rest, an enemy's next blow, a cooldown under 10 minutes. */
     private var longest: Int {
@@ -268,6 +284,7 @@ struct GameScreen: View {
         }
         .grayscale(game.character.ghost ? 0.85 : 0)
         .environment(\.elapsed, elapsed)
+        .environment(\.elapsedMs, elapsedMs)
         .background(c.background.ignoresSafeArea())
         .overlay { if busy { ProgressView() } }
         .task(id: ObjectIdentifier(game)) {
@@ -278,6 +295,15 @@ struct GameScreen: View {
                 elapsed += 1
             }
         }
+        .task(id: "ms-\(ObjectIdentifier(game).hashValue)") {
+            elapsedMs = 0
+            let until = nearestMs
+            while elapsedMs < until {
+                try? await Task.sleep(nanoseconds: 100_000_000)
+                if Task.isCancelled { return }
+                elapsedMs += 100
+            }
+        }
     }
 }
 
@@ -285,14 +311,15 @@ private struct Header: View {
     let game: GameView
     let onRefresh: () -> Void
     @Environment(\.tz) private var c
-    @Environment(\.elapsed) private var elapsed
+    @Environment(\.elapsedMs) private var elapsedMs
 
     var body: some View {
         let ch = game.character
         let fighting = game.location.npcs.contains { $0.fightingYou } || game.people.contains { $0.attacking == "вас" }
-        let rest = Int(GameScene.shared.left(seconds: KotlinInt(int: game.restSeconds), elapsed: elapsed))
+        let restMs = GameScene.shared.restLeftMs(game: game, elapsedMs: elapsedMs)
+        let rest = GameScene.shared.tenths(ms: restMs)
         let low = GameScene.shared.lowHealth(game: game) && !ch.ghost
-        let state = ch.ghost ? "призрак" : rest > 0 ? "отдых \(rest) с" : fighting ? "в бою" : game.location.guarded ? "в безопасности" : ""
+        let state = ch.ghost ? "призрак" : restMs > 0 ? "отдых \(rest) с" : fighting ? "в бою" : game.location.guarded ? "в безопасности" : ""
         VStack(spacing: CGFloat(Design.Space.shared.XS)) {
             HStack {
                 Button(action: onRefresh) {
@@ -523,7 +550,7 @@ private struct ListSection: View {
 
 /// While resting the row buttons are pale; the belt works.
 private struct RestBanner: View {
-    let seconds: Int
+    let seconds: String
     @Environment(\.tz) private var c
 
     var body: some View {
@@ -593,13 +620,16 @@ private struct PlaceTab: View {
     let social: SocialActions
     let layout: LayoutActions
     @Environment(\.tz) private var c
-    @Environment(\.elapsed) private var elapsed
+    @Environment(\.elapsedMs) private var elapsedMs
     @State private var unawareShown: Bool? = nil
 
-    private func left(_ v: KotlinInt?) -> Int { Int(GameScene.shared.left(seconds: v, elapsed: elapsed)) }
+    private var restLeft: Int64 { GameScene.shared.restLeftMs(game: game, elapsedMs: elapsedMs) }
 
     private func status(_ npc: NpcView) -> String? {
-        if npc.fightingYou { return "бьёт вас" + (npc.nextBlow != nil ? " · удар через \(left(npc.nextBlow)) с" : "") }
+        if npc.fightingYou {
+            let blow = GameScene.shared.blowLeftMs(npc: npc, elapsedMs: elapsedMs)
+            return "бьёт вас" + (blow != nil ? " · удар через \(GameScene.shared.tenths(ms: blow!.int64Value)) с" : "")
+        }
         if let a = npc.attacking { return "бьёт \(a)" }
         if npc.mine { return "ваш" }
         if let o = npc.owner { return "хозяин: \(o)" }
@@ -616,7 +646,7 @@ private struct PlaceTab: View {
     private func npcRow(_ npc: NpcView, resting: Bool, slots: [AbilityView?]) -> some View {
         let ch = game.character
         let fight = npc.attackable && !ch.ghost && (npc.fightingYou || npc.attacking != nil || !npc.canTalk)
-        let title = npc.name + (npc.attackable && npc.hpMax > 0 ? "  \(npc.hp)/\(npc.hpMax)" : "")
+        let title = npc.name + (npc.level > 0 ? " · ур. \(npc.level)" : "") + (npc.attackable && npc.hpMax > 0 ? "  \(npc.hp)/\(npc.hpMax)" : "")
         return ListRow(name: title, status: status(npc), art: npc.art.map { GameScene.shared.artPath(key: $0) },
                 hp: npc.attackable && npc.hpMax > 0 ? (Int(npc.hp), Int(npc.hpMax)) : nil, hurt: npc.fightingYou, undead: npc.undead) {
             if fight {
@@ -637,7 +667,7 @@ private struct PlaceTab: View {
     var body: some View {
         let ch = game.character
         let loc = game.location
-        let resting = left(KotlinInt(int: game.restSeconds)) > 0
+        let resting = restLeft > 0
         let groups = GameScene.shared.groups(game: game)
         let fight = !groups.atYou.isEmpty || !groups.atOthers.isEmpty
         let showUnaware = unawareShown ?? !fight
@@ -663,7 +693,7 @@ private struct PlaceTab: View {
         if let cs = game.castle { CastleBlock(castle: cs, busy: busy, social: social) }
 
         Group {
-        if resting && !groups.atYou.isEmpty { RestBanner(seconds: left(KotlinInt(int: game.restSeconds))) }
+        if resting && !groups.atYou.isEmpty { RestBanner(seconds: GameScene.shared.tenths(ms: restLeft)) }
         if !groups.atYou.isEmpty { ListSection(title: "бьют вас · \(groups.atYou.count)", note: groups.atYou.count > 1 ? "ближайший удар — сверху" : nil) }
         ForEach(groups.atYou, id: \.id) { npc in npcRow(npc, resting: resting, slots: slots) }
         if !groups.atOthers.isEmpty { ListSection(title: "бьют других · \(groups.atOthers.count)") }
@@ -735,10 +765,12 @@ private struct PersonRow: View {
     let busy: Bool
     let more: MoreActions
     let social: SocialActions
+    @Environment(\.elapsedMs) private var elapsedMs
 
     var body: some View {
         let p = person
         let ch = game.character
+        let restLeft = GameScene.shared.restLeftMs(game: game, elapsedMs: elapsedMs)
         var parts: [String] = []
         if let cl = p.clan { parts.append("клан \(cl)") }
         if let cr = p.crime { parts.append(cr) }
@@ -752,7 +784,7 @@ private struct PersonRow: View {
             ActionButton(label: "осмотреть \(p.name)", enabled: !busy, action: { more.look(p.name) }, icon: "look")
             if !ch.ghost && !p.ghost {
                 ActionButton(label: "обмен с \(p.name)", enabled: !busy, action: { social.startExchange(p) }, icon: "give")
-                ActionButton(label: "удар по \(p.name)", enabled: !busy && game.restSeconds == 0, action: { social.attackPlayer(p) }, icon: "attack", danger: p.attacking == "вас")
+                ActionButton(label: "удар по \(p.name)", enabled: !busy && restLeft == 0, action: { social.attackPlayer(p) }, icon: "attack", danger: p.attacking == "вас")
             }
         } extra: {
             if SceneData.thief(ch) && !ch.ghost && !p.ghost { Button("подглядеть") { more.peek(p.name) }.disabled(busy) }
@@ -898,6 +930,21 @@ private struct HeroTab: View {
                         }.buttonStyle(.plain).disabled(busy)
                         if k == "meditation" && v > 0 && !ch.ghost { Button("медитировать") { more.meditate() }.disabled(busy) }
                         Pips(value: v, max: Int(Rules.shared.SKILL_MAX))
+                    }
+                }
+            }
+            if !ch.crafts.isEmpty {
+                SectionTitle(text: "Ремёсла · \(ch.craftSum) из \(ch.craftSumMax)")
+                Text("Растут от работы; учитель даёт только первые шаги.").font(TzType.small).foregroundStyle(c.textMuted)
+                ForEach(ch.crafts, id: \.key) { cr in
+                    HStack {
+                        Button { more.look("skill." + cr.key) } label: {
+                            VStack(alignment: .leading) {
+                                Text(cr.title).foregroundStyle(cr.level > 0 ? c.text : c.textFaint)
+                                Text(GameScene.shared.craftLine(c: cr)).font(TzType.small).foregroundStyle(c.textMuted)
+                            }.frame(maxWidth: .infinity, alignment: .leading)
+                        }.buttonStyle(.plain).disabled(busy)
+                        Pips(value: Int(cr.level), max: Int(cr.max))
                     }
                 }
             }
@@ -1415,6 +1462,17 @@ private struct Sheets: View {
             if d.inputTopic != nil {
                 TextField("Ответ", text: $typed).textFieldStyle(.roundedBorder)
                 Button("ответить") { social.answerText(typed); typed = "" }.disabled(busy || typed.isEmpty)
+            }
+            if !d.teach.isEmpty {
+                VStack(alignment: .leading, spacing: CGFloat(Design.Space.shared.XS)) {
+                    Text("Обучение · свободных очков: \(game.character.skillPoints)").font(TzType.label).foregroundStyle(c.title)
+                    ForEach(Array(d.teach.enumerated()), id: \.offset) { _, o in
+                        Text(GameScene.shared.teachLine(o: o)).font(TzType.small).foregroundStyle(o.note != nil ? c.textMuted : c.text)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(CGFloat(Design.Space.shared.S))
+                .tzPanel(c)
             }
             ForEach(Array(d.options.enumerated()), id: \.offset) { _, o in
                 Button("› " + o.label) { onAnswer(o) }.disabled(busy)

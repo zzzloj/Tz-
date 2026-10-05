@@ -116,6 +116,8 @@ val LocalArtUrl = compositionLocalOf<((String) -> String)?> { null }
 
 /** Seconds since the shown view came from the server: countdowns (rest, next blow, cooldowns) run on from it. */
 val LocalElapsed = compositionLocalOf { 0L }
+/** The same in milliseconds, ticking by tenths while a blow or a pause is near (combat pauses are 1–2 s). */
+val LocalElapsedMs = compositionLocalOf { 0L }
 
 /** A ghost sees the world grey. */
 val LocalGhost = compositionLocalOf { false }
@@ -241,8 +243,11 @@ fun Playing(
     val longest = maxOf(game.restSeconds, game.location.npcs.maxOfOrNull { it.nextBlow ?: 0 } ?: 0,
         game.abilities.filter { it.readyIn <= 600 }.maxOfOrNull { it.readyIn.toInt() } ?: 0)
     LaunchedEffect(game) { repeat(longest) { delay(1000); elapsed++ } }
+    var elapsedMs by remember(game) { mutableLongStateOf(0L) }
+    val nearest = maxOf(GameScene.restLeftMs(game, 0), game.location.npcs.maxOfOrNull { GameScene.blowLeftMs(it, 0) ?: 0 } ?: 0).coerceAtMost(10_000)
+    LaunchedEffect(game) { while (elapsedMs < nearest) { delay(100); elapsedMs += 100 } }
 
-    CompositionLocalProvider(LocalElapsed provides elapsed, LocalGhost provides game.character.ghost) {
+    CompositionLocalProvider(LocalElapsed provides elapsed, LocalElapsedMs provides elapsedMs, LocalGhost provides game.character.ghost) {
     Column(Modifier.fillMaxSize().background(c.background)) {
         Header(game, onRefresh)
         Box(Modifier.weight(1f).fillMaxWidth()) {
@@ -286,11 +291,11 @@ private fun Header(game: GameView, onRefresh: () -> Unit) {
     val c = Tz.colors
     val ch = game.character
     val fighting = game.location.npcs.any { it.fightingYou } || game.people.any { it.attacking == "вас" }
-    val rest = GameScene.left(game.restSeconds, LocalElapsed.current)
+    val rest = GameScene.restLeftMs(game, LocalElapsedMs.current)
     val low = GameScene.lowHealth(game) && !ch.ghost
     val state = when {
         ch.ghost -> "призрак"
-        rest > 0 -> "отдых $rest с"
+        rest > 0 -> "отдых ${GameScene.tenths(rest)} с"
         fighting -> "в бою"
         game.location.zone == 1 -> "в безопасности"
         else -> ""
@@ -457,12 +462,13 @@ private fun PlaceTab(
 
     val thief = (ch.skills["steal"] ?: 0) > 0 || (ch.skills["steallook"] ?: 0) > 0
     val slots = GameScene.slots(game)
-    val resting = GameScene.left(game.restSeconds, LocalElapsed.current) > 0
-    val elapsed = LocalElapsed.current
+    val elapsedMs = LocalElapsedMs.current
+    val restLeft = GameScene.restLeftMs(game, elapsedMs)
+    val resting = restLeft > 0
     val groups = GameScene.groups(game)
     @Composable fun npcRow(npc: NpcView) {
         val status = when {
-            npc.fightingYou -> "бьёт вас" + (npc.nextBlow?.let { " · удар через ${GameScene.left(it, elapsed)} с" } ?: "")
+            npc.fightingYou -> "бьёт вас" + (GameScene.blowLeftMs(npc, elapsedMs)?.let { " · удар через ${GameScene.tenths(it)} с" } ?: "")
             npc.attacking != null -> "бьёт ${npc.attacking}"
             npc.mine -> "ваш"
             npc.owner != null -> "хозяин: ${npc.owner}"
@@ -470,7 +476,7 @@ private fun PlaceTab(
             npc.canTalk -> "можно поговорить"
             else -> null
         }
-        val title = npc.name + if (npc.attackable && npc.hpMax > 0) "  ${npc.hp}/${npc.hpMax}" else ""
+        val title = npc.name + (if (npc.level > 0) " · ур. ${npc.level}" else "") + if (npc.attackable && npc.hpMax > 0) "  ${npc.hp}/${npc.hpMax}" else ""
         ListRow(title, status, npc.art?.let(GameScene::artPath), hp = if (npc.attackable && npc.hpMax > 0) npc.hp to npc.hpMax else null, hurt = npc.fightingYou, undead = npc.undead,
             extra = {
                 TextButton(onClick = { more.look(npc.id) }, enabled = !busy) { Text("осмотреть") }
@@ -490,7 +496,7 @@ private fun PlaceTab(
         }
     }
     val fight = groups.atYou.isNotEmpty() || groups.atOthers.isNotEmpty()
-    if (resting && groups.atYou.isNotEmpty()) RestBanner(GameScene.left(game.restSeconds, elapsed))
+    if (resting && groups.atYou.isNotEmpty()) RestBanner(GameScene.tenths(restLeft))
     if (groups.atYou.isNotEmpty()) ListSection("бьют вас · ${groups.atYou.size}", if (groups.atYou.size > 1) "ближайший удар — сверху" else null)
     groups.atYou.forEach { npcRow(it) }
     if (groups.atOthers.isNotEmpty()) ListSection("бьют других · ${groups.atOthers.size}")
@@ -562,7 +568,7 @@ private fun PersonRow(p: PersonView, game: GameView, busy: Boolean, thief: Boole
     ) {
         ActionButton("осмотреть ${p.name}", !busy, { more.look(p.name) }, icon = "look")
         if (!ch.ghost && !p.ghost) ActionButton("обмен с ${p.name}", !busy, { social.startExchange(p) }, icon = "give")
-        if (!ch.ghost && !p.ghost) ActionButton("удар по ${p.name}", !busy && game.restSeconds == 0, { social.attackPlayer(p) }, icon = "attack", danger = p.attacking == "вас")
+        if (!ch.ghost && !p.ghost) ActionButton("удар по ${p.name}", !busy && GameScene.restLeftMs(game, LocalElapsedMs.current) == 0L, { social.attackPlayer(p) }, icon = "attack", danger = p.attacking == "вас")
     }
 }
 
@@ -611,7 +617,7 @@ private fun ListSection(title: String, note: String? = null, onClick: (() -> Uni
 
 /** While resting the row buttons are pale; the belt works. */
 @Composable
-private fun RestBanner(seconds: Int) {
+private fun RestBanner(seconds: String) {
     val c = Tz.colors
     Text(
         "Отдых $seconds с — удары и приёмы ждут. Зелье можно выпить сейчас.",
@@ -748,6 +754,19 @@ private fun HeroTab(game: GameView, busy: Boolean, sub: Int, more: MoreActions, 
                         Text(Rules.skillTitle(k), Modifier.weight(1f), style = Tz.type.body, color = if (v > 0) c.text else c.textFaint)
                         if (k == "meditation" && v > 0 && !ch.ghost) TextButton(onClick = more.meditate, enabled = !busy) { Text("медитировать") }
                         Pips(v, Rules.SKILL_MAX)
+                    }
+                }
+            }
+            if (ch.crafts.isNotEmpty()) {
+                SectionTitle("Ремёсла · ${ch.craftSum} из ${ch.craftSumMax}")
+                Text("Растут от работы; учитель даёт только первые шаги.", style = Tz.type.small, color = c.textMuted)
+                ch.crafts.forEach { cr ->
+                    Row(Modifier.fillMaxWidth().clickable(enabled = !busy) { more.look("skill.${cr.key}") }, verticalAlignment = Alignment.CenterVertically) {
+                        Column(Modifier.weight(1f)) {
+                            Text(cr.title, style = Tz.type.body, color = if (cr.level > 0) c.text else c.textFaint)
+                            Text(GameScene.craftLine(cr), style = Tz.type.small, color = c.textMuted)
+                        }
+                        Pips(cr.level, cr.max)
                     }
                 }
             }
@@ -1028,6 +1047,10 @@ private fun Sheets(
                         var typed by remember(d.text) { mutableStateOf("") }
                         OutlinedTextField(typed, { typed = it }, singleLine = true, modifier = Modifier.fillMaxWidth())
                         Button(onClick = { social.answerText(typed) }, enabled = !busy && typed.isNotBlank()) { Text("ответить") }
+                    }
+                    if (d.teach.isNotEmpty()) Column(Modifier.fillMaxWidth().tzPanel(c).padding(Design.Space.S.dp), verticalArrangement = Arrangement.spacedBy(Design.Space.XS.dp)) {
+                        Text("Обучение · свободных очков: ${game.character.skillPoints}", style = Tz.type.label, color = c.title)
+                        d.teach.forEach { o -> Text(GameScene.teachLine(o), style = Tz.type.small, color = if (o.note != null) c.textMuted else c.text) }
                     }
                     d.options.forEach { o -> TextButton(onClick = { onAnswer(o) }, enabled = !busy) { Text("› " + o.label) } }
                     if (game.shop == null && game.bank == null && game.craft == null)

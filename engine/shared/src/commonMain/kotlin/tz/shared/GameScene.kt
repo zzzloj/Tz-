@@ -34,6 +34,39 @@ object GameScene {
     /** A countdown from the server, [elapsed] seconds after the view came. */
     fun left(seconds: Int?, elapsed: Long): Int = ((seconds ?: 0) - elapsed).coerceAtLeast(0).toInt()
 
+    /** The character's pause before the next blow, ms, [elapsedMs] after the view came (older servers send whole seconds). */
+    fun restLeftMs(game: GameView, elapsedMs: Long): Long =
+        ((if (game.restMs > 0) game.restMs else game.restSeconds * 1000L) - elapsedMs).coerceAtLeast(0)
+
+    /** Time until a monster's next blow at you, ms; null — it is not striking you. */
+    fun blowLeftMs(npc: NpcView, elapsedMs: Long): Long? =
+        (npc.nextBlowMs ?: npc.nextBlow?.let { it * 1000L })?.let { (it - elapsedMs).coerceAtLeast(0) }
+
+    /** Milliseconds as seconds with tenths, rounded up: 1250 → «1,3», 0 → «0». */
+    fun tenths(ms: Long): String {
+        val t = (ms.coerceAtLeast(0) + 99) / 100
+        return if (t % 10 == 0L) (t / 10).toString() else "${t / 10},${t % 10}"
+    }
+
+    /** A craft's progress for the hero screen: «практика 12 из 40», at the top — «предел». */
+    fun craftLine(c: CraftSkillView): String = if (c.next <= 0) "предел" else "практика ${c.practice} из ${c.next}"
+
+    /**
+     * What a teacher's offer costs, one line for the dialog: «Интеллект 2 → 3 (из 10) · бесплатно · 1 очко»,
+     * «Кузнец 0 → 1 (учитель — до 2) · 15 монет», and why not now if so.
+     */
+    fun teachLine(o: TeachOfferView): String {
+        val craft = o.points == 0
+        val step = if (o.level >= o.max) "${o.title} ${o.level}" else "${o.title} ${o.level} → ${o.level + 1}"
+        val limit = if (craft) "учитель — до ${o.max}" else "из ${o.max}"
+        val cost = when {
+            o.free -> "бесплатно"
+            else -> "${o.price} монет"
+        }
+        val points = if (o.points > 0) " · ${o.points} очко" else ""
+        return "$step ($limit) · $cost$points" + (o.note?.let { " — $it" } ?: "")
+    }
+
     /** The last [n] journal lines with their kinds (old servers send no kinds: sorted by words). */
     fun journal(game: GameView, n: Int, hereOnly: Boolean = false): List<Pair<String, String>> {
         val count = if (hereOnly && game.journalHere >= 0) minOf(n, game.journalHere) else n
@@ -68,8 +101,7 @@ object GameScene {
         "Магия" to listOf("magic", "magic_resist", "magic_uklon", "meditation", "spirit", "necro"),
         "Выживание" to listOf("regeneration", "hiding", "look", "healing"),
         "Воровство" to listOf("steal", "steallook"),
-        "Звери" to listOf("animaltaming", "animallore", "currier"),
-        "Ремёсла" to listOf("alchemy", "mine", "smith", "lumb", "bow", "stone", "fish", "food", "weaver"),
+        "Звери" to listOf("animaltaming", "animallore"),
     )
 
     /** A skill's level (attributes from the character, the rest from its skills; 0 — not learnt). */

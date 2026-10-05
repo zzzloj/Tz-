@@ -79,6 +79,9 @@ class DialogTest {
         v = game.choose(account, npc, v, "Ты можешь меня чему-нибудь научить?")
         v = game.choose(account, npc, v, "Я хочу повысить интеллект")
         assertTrue(v.dialog!!.text.startsWith("Так как ты новичок"), v.dialog!!.text)
+        // The teacher's card: free for a newcomer, one training point.
+        val offer = v.dialog!!.teach.single { it.key == "int" }
+        assertTrue(offer.free && offer.price == 0 && offer.points == 1 && offer.level == 2 && offer.max == 10 && offer.note == null, offer.toString())
         v = game.choose(account, npc, v, "Согласен")
         assertTrue(v.dialog!!.text.contains("Интеллект: +1"), v.dialog!!.text)
         assertEquals(3, v.character.int)
@@ -101,6 +104,13 @@ class DialogTest {
         v = game.choose(account, npc, v, "Согласен")
         assertEquals("Недостаточно очков обучения: они приходят с новыми уровнями", v.dialog!!.text)
         assertEquals(6, v.character.int)
+        // No longer a newcomer: today's price in the old line (15 · 7² for the 7th step), and why not now.
+        v = game.talk(account, npc, "begin", null)
+        v = game.choose(account, npc, v, "Ты можешь меня чему-нибудь научить?")
+        v = game.choose(account, npc, v, "Я хочу повысить интеллект")
+        assertEquals("Я помогу развить твой интеллект за 735 монет", v.dialog!!.text)
+        val paid = v.dialog!!.teach.single()
+        assertTrue(!paid.free && paid.price == 735 && paid.note == "нет очков обучения", paid.toString())
     }
 
     @Test

@@ -10,6 +10,8 @@ import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.JsonObject
 import tz.shared.CharacterView
+import tz.shared.CraftSkillView
+import tz.shared.TeachOfferView
 import tz.shared.DialogOption
 import tz.shared.DialogView
 import tz.shared.PersonView
@@ -97,6 +99,8 @@ class Game(
 
         /** Skills other than the attributes, by key of [Rules.SKILLS]. */
         val other = HashMap<String, Int>()
+        /** Practice gathered toward the next step of each craft (character_craft). */
+        val practice = HashMap<String, Int>()
         /** Spells and techniques learnt. */
         val known = HashSet<String>()
         /** Open conversation: NPC and the (topic, arg) choices shown last, the only ones accepted next. */
@@ -449,9 +453,14 @@ class Game(
                 arg?.let { ctx.vars["arg"] = it }
                 val shown = showTopic(ctx, topic, 0)
                 fun fill(t: String) = ctx.vars.entries.fold(Dialogs.plain(t).replace("<imja>", p.name)) { acc, (k, v) -> acc.replace("{$k}", v) }
-                DialogView(npcKey, npc.name, fill(shown.first),
-                    options = shown.second.map { it.copy(label = fill(it.label)) }.filter { it.label.isNotBlank() },
-                    inputTopic = ctx.inputTopic)
+                val options = shown.second.map { it.copy(label = fill(it.label)) }.filter { it.label.isNotBlank() }
+                val offers = options.mapNotNull { o -> teachSpec(dialogId, o.topic)?.let { o.topic to it } }
+                    .distinctBy { it.second.what }.map { (t, spec) -> spec to teachOffer(p, t, spec) }
+                // The old lines name the old prices: today's go in their place.
+                var text = fill(shown.first)
+                for ((spec, offer) in offers) if (spec.cost > 0)
+                    text = text.replace(Regex("(?<!\\d)${spec.cost}(\\s+монет)"), "${balance.teacherPrice(offer.level + 1)}$1")
+                DialogView(npcKey, npc.name, text, options = options, inputTopic = ctx.inputTopic, teach = offers.map { it.second })
             }
         }
         p.talkingTo = npcKey
@@ -839,6 +848,48 @@ class Game(
         text += Rules.skillTitle(what) + ": +1"
         if (down != null) text += "\n" + Rules.skillTitle(down) + ": -1"
         return text to null
+    }
+
+    /** What a topic teaches: «skill|what|cost|min|max» in the dialog, or a "teach" action of its logic. */
+    private class TeachSpec(val what: String, val cost: Int, val min: Int, val max: Int)
+
+    private fun teachSpec(dialog: String, topic: String): TeachSpec? {
+        val base = content.logic.baseTopic(dialog, topic)?.first
+        val spec = if (base != null && base.startsWith("skill|")) base.split('|').let { s ->
+            TeachSpec(s.getOrElse(1) { "" }, s.getOrNull(2)?.toIntOrNull() ?: 0, s.getOrNull(3)?.toIntOrNull() ?: 0, s.getOrNull(4)?.toIntOrNull() ?: 0)
+        } else content.logic.logic[dialog]?.get(topic)?.flatMap { it.actions }?.lastOrNull { "teach" in it }?.let { a ->
+            TeachSpec(a.str("teach")!!, a.int("cost") ?: 0, a.int("min") ?: 0, a.int("max") ?: 0)
+        }
+        return spec?.takeIf { s -> Rules.SKILLS.any { it.first == s.what } }
+    }
+
+    /** The teacher's offer at today's prices, and why it is out of reach, the same checks as [teach]. */
+    private fun teachOffer(p: Player, topic: String, s: TeachSpec): TeachOfferView {
+        val b = balance
+        val current = p.skill(s.what)
+        val craft = s.what in b.crafts
+        val attribute = s.what in Rules.ATTRIBUTES
+        val price = b.teacherPrice(current + 1)
+        val title = Rules.skillTitle(s.what)
+        if (craft) {
+            val note = when {
+                current >= b.craftTeacherMax -> "дальше только практикой"
+                b.crafts.sumOf { p.skill(it) } >= b.craftSumMax -> "ремёсла на пределе (${b.craftSumMax})"
+                else -> null
+            }
+            return TeachOfferView(topic, s.what, title, current, b.craftTeacherMax, price, 0, note = note)
+        }
+        val max = if (attribute) b.attrMax else b.skillMax
+        val free = newbie(p)
+        val note = when {
+            s.min > 0 && current < s.min * 2 -> "нужно не ниже ${s.min * 2}"
+            current >= max -> "предел"
+            s.max > 0 && current > s.max * 2 + 1 -> "учит только до ${s.max * 2 + 2}"
+            p.points < 1 -> "нет очков обучения"
+            attribute && p.str + p.dex + p.int >= b.attrSumMax -> "сумма атрибутов ${b.attrSumMax}: придётся понизить другой"
+            else -> null
+        }
+        return TeachOfferView(topic, s.what, title, current, max, if (free) 0 else price, 1, free, note)
     }
 
     private fun setSkill(p: Player, key: String, v: Int) {
@@ -1316,6 +1367,12 @@ class Game(
                 }
             }
         } ?: return null
+        db.tx { c ->
+            c.prepareStatement("SELECT craft, progress FROM character_craft WHERE character_id = ?").use { st ->
+                st.setLong(1, p.id)
+                st.executeQuery().use { rs -> while (rs.next()) p.practice[rs.getString(1)] = rs.getInt(2) }
+            }
+        }
         p.known += db.tx { c ->
             c.prepareStatement("SELECT id FROM character_known WHERE character_id = ?").use { st ->
                 st.setLong(1, p.id)
@@ -1417,13 +1474,15 @@ class Game(
         }
         val npcs = npcsHere.map {
             val pic = content.art.creature(it.name)
+            val blowMs = it.enemies.indexOf(p.id).takeIf { i -> i >= 0 }?.let { i -> (it.busyUntil - clockMs()).coerceAtLeast(0) + i.toLong() * it.stats.pauseMs }
             NpcView(it.key, it.name, it.hp, it.proto.hpMax, p.id in it.enemies, true,
                 content.logic.hasDialog(if (it.key.startsWith("n.g.")) "n.g.guard" else it.key) || it.owner?.ownerId == p.id,
                 attacking = whom(it.enemies.firstOrNull()) ?: it.npcTarget?.let { k -> npcsHere.firstOrNull { n -> n.key == k }?.name },
                 mine = it.owner?.ownerId == p.id,
                 owner = it.owner?.let { o -> if (o.ownerId == p.id) "вы" else players[o.ownerId]?.name },
                 art = pic?.first, undead = pic?.second == true,
-                nextBlow = it.enemies.indexOf(p.id).takeIf { i -> i >= 0 }?.let { i -> (((it.busyUntil - clockMs()).coerceAtLeast(0) + i.toLong() * it.stats.pauseMs + 999) / 1000).toInt() },
+                nextBlow = blowMs?.let { ms -> ((ms + 999) / 1000).toInt() }, nextBlowMs = blowMs,
+                level = if (it.owner == null) it.stats.level else 0,
                 hostile = (it.aggressive || it.criminal) && it.owner == null)
         }
         val occupied = loc.exits.map { it.target }.distinct().filter { t ->
@@ -1451,6 +1510,12 @@ class Game(
             hp = p.hp.coerceAtLeast(0), hpMax = p.hpMax, mana = p.mana.coerceAtLeast(0), manaMax = p.manaMax,
             str = p.str, dex = p.dex, int = p.int, skillPoints = p.points,
             skills = p.other.filterValues { it > 0 }.toSortedMap(), known = p.known.sorted(),
+            crafts = Rules.CRAFTS.map { k ->
+                val step = p.skill(k)
+                CraftSkillView(k, Rules.skillTitle(k), step, balance.craftMax, p.practice[k] ?: 0,
+                    if (step >= balance.craftMax) 0 else balance.craftExpToNext(step))
+            },
+            craftSum = Rules.CRAFTS.sumOf { p.skill(it) }, craftSumMax = balance.craftSumMax,
             crime = p.crime.takeIf { p.criminal(now) }, crimeMinutes = if (p.criminal(now)) (p.crimeUntil - now + 59) / 60 else 0,
             poisoned = now < p.poisonUntil,
             mounted = p.mount != null,
@@ -1478,6 +1543,7 @@ class Game(
             forumReplies = forum.replies(p.accountId),
             corpseAt = if (p.ghost) world.corpseOf(p.id, now)?.let { content.locations[it]?.name ?: it } else null,
             restSeconds = ((p.busyUntil - clockMs()).coerceAtLeast(0) + 999).div(1000).toInt(),
+            restMs = (p.busyUntil - clockMs()).coerceAtLeast(0),
             canResurrect = canResurrect(p),
             exchange = exchangeView(p),
             castle = castleView(p),

@@ -526,7 +526,9 @@ internal suspend fun Game.practice(p: Game.Player, craft: String) {
                 "ON CONFLICT (character_id, craft) DO UPDATE SET progress = character_craft.progress + 1 RETURNING progress"
         ).use { st -> st.setLong(1, p.id); st.setString(2, craft); st.executeQuery().use { rs -> rs.next(); rs.getInt(1) } }
     }
+    p.practice[craft] = progress
     if (progress < balance.craftExpToNext(step)) return
+    p.practice[craft] = 0
     db.tx { c ->
         c.prepareStatement("UPDATE character_craft SET progress = 0 WHERE character_id = ? AND craft = ?").use { st ->
             st.setLong(1, p.id); st.setString(2, craft); st.executeUpdate()
