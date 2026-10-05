@@ -6,7 +6,7 @@ M={m['id']:m for m in json.load(open(out('mobs_new.json')))}
 def simmob(m):
     L=m['lvl']
     return dict(name=m['name'],L=L,hp=m['hp'],maxhp=m['hp'],acc=1.6*L+4+m['acc_bonus'],eva=1.3*L+m['eva_bonus'],
-                dmin=m['dmin'],dmax=m['dmax'],delay=m['delay'],crit=3,pen=1.0,magic=False,armor=m['armor'],mres=armor_set(L)*0.1,block=(0,0),regen=0)
+                dmin=m['dmin'],dmax=m['dmax'],delay=m['delay'],crit=3,pen=1.0,magic=m.get('magic',False),armor=m['armor'],mres=armor_set(L)*0.1,block=(0,0),regen=0)
 if __name__=='__main__':
     print('--- newbie, level 1')
     for label,h in [('knife, no points, naked',hero('warrior',1,spend=False,weapon_tier=1,armor_share=0)),

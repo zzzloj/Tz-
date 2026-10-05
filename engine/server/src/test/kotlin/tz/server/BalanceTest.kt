@@ -43,8 +43,9 @@ class BalanceTest {
 
     @Test
     fun monstersAndExperience() {
-        assertEquals(18.0, b.monsterHp(1))
-        assertEquals(186.45, b.monsterHp(25), 1e-6)
+        // Calibrated 05.10 on the real items a warrior of each level may wear (tools/balance/calib_all.py).
+        assertEquals(25.159, b.monsterHp(1), 1e-3)
+        assertEquals(262.05, b.monsterHp(25), 1e-2)
         assertEquals(1109L, b.monsterExp(30))
         assertEquals(210, b.monsterGold(30))
         assertEquals(1.5, b.expByGap(20, 30), 1e-9)

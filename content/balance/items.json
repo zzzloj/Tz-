@@ -131,55 +131,55 @@
   "type": "armor"
  },
  "i.a.b.bdosp": {
-  "armor": 62,
-  "level": 31,
-  "price": 2084,
+  "armor": 43,
+  "level": 20,
+  "price": 955,
   "relic": false,
   "req": [
    8,
    6,
    0
   ],
-  "tier": 34,
+  "tier": 23,
   "type": "armor"
  },
  "i.a.b.bkol": {
-  "armor": 41,
-  "level": 19,
-  "price": 874,
+  "armor": 19,
+  "level": 7,
+  "price": 183,
   "relic": false,
   "req": [
    4,
    4,
    0
   ],
-  "tier": 22,
+  "tier": 10,
   "type": "armor"
  },
  "i.a.b.bone": {
-  "armor": 50,
-  "level": 24,
-  "price": 1315,
+  "armor": 26,
+  "level": 11,
+  "price": 356,
   "relic": false,
   "req": [
    0,
    8,
    0
   ],
-  "tier": 27,
+  "tier": 14,
   "type": "armor"
  },
  "i.a.b.bpanc": {
-  "armor": 55,
-  "level": 27,
-  "price": 1623,
+  "armor": 30,
+  "level": 13,
+  "price": 464,
   "relic": false,
   "req": [
    6,
    6,
    0
   ],
-  "tier": 30,
+  "tier": 16,
   "type": "armor"
  },
  "i.a.b.c": {
@@ -248,16 +248,16 @@
   "type": "armor"
  },
  "i.a.b.heavykol": {
-  "armor": 55,
-  "level": 27,
-  "price": 1623,
+  "armor": 35,
+  "level": 16,
+  "price": 653,
   "relic": false,
   "req": [
    8,
    4,
    0
   ],
-  "tier": 30,
+  "tier": 19,
   "type": "armor"
  },
  "i.a.b.j": {
@@ -300,68 +300,68 @@
   "type": "armor"
  },
  "i.a.b.kristal": {
-  "armor": 91,
-  "level": 47,
-  "price": 4503,
+  "armor": 89,
+  "level": 46,
+  "price": 4325,
   "relic": false,
   "req": [
    10,
    10,
    0
   ],
-  "tier": 50,
+  "tier": 49,
   "type": "armor"
  },
  "i.a.b.latndosp": {
-  "armor": 70,
-  "level": 35,
-  "price": 2602,
+  "armor": 55,
+  "level": 27,
+  "price": 1623,
   "relic": false,
   "req": [
    10,
    6,
    0
   ],
-  "tier": 38,
+  "tier": 30,
   "type": "armor"
  },
  "i.a.b.leather": {
-  "armor": 3,
+  "armor": 5,
   "level": 1,
-  "price": 5,
+  "price": 10,
   "relic": false,
   "req": [
    0,
    0,
    0
   ],
-  "tier": 1,
+  "tier": 2,
   "type": "armor"
  },
  "i.a.b.mag": {
-  "armor": 75,
-  "level": 38,
-  "price": 3029,
+  "armor": 68,
+  "level": 34,
+  "price": 2467,
   "relic": false,
   "req": [
    0,
    10,
    10
   ],
-  "tier": 41,
+  "tier": 37,
   "type": "armor"
  },
  "i.a.b.mdosp": {
-  "armor": 62,
-  "level": 31,
-  "price": 2084,
+  "armor": 44,
+  "level": 21,
+  "price": 1040,
   "relic": false,
   "req": [
    8,
    6,
    0
   ],
-  "tier": 34,
+  "tier": 24,
   "type": "armor"
  },
  "i.a.b.meh": {
@@ -378,29 +378,29 @@
   "type": "armor"
  },
  "i.a.b.mkol": {
-  "armor": 44,
-  "level": 21,
-  "price": 1040,
+  "armor": 23,
+  "level": 9,
+  "price": 262,
   "relic": false,
   "req": [
    6,
    4,
    0
   ],
-  "tier": 24,
+  "tier": 12,
   "type": "armor"
  },
  "i.a.b.mmage": {
-  "armor": 75,
-  "level": 38,
-  "price": 3029,
+  "armor": 70,
+  "level": 35,
+  "price": 2602,
   "relic": false,
   "req": [
    0,
    10,
    10
   ],
-  "tier": 41,
+  "tier": 38,
   "type": "armor"
  },
  "i.a.b.moroz": {
@@ -417,16 +417,16 @@
   "type": "armor"
  },
  "i.a.b.mpanc": {
-  "armor": 55,
-  "level": 27,
-  "price": 1623,
+  "armor": 34,
+  "level": 15,
+  "price": 586,
   "relic": false,
   "req": [
    6,
    6,
    0
   ],
-  "tier": 30,
+  "tier": 18,
   "type": "armor"
  },
  "i.a.b.obsnagrud": {
@@ -456,42 +456,42 @@
   "type": "armor"
  },
  "i.a.b.plastdosp": {
-  "armor": 79,
-  "level": 40,
-  "price": 3331,
+  "armor": 73,
+  "level": 37,
+  "price": 2883,
   "relic": false,
   "req": [
    10,
    8,
    0
   ],
-  "tier": 43,
+  "tier": 40,
   "type": "armor"
  },
  "i.a.b.rdosp": {
-  "armor": 64,
-  "level": 32,
-  "price": 2208,
+  "armor": 50,
+  "level": 24,
+  "price": 1315,
   "relic": false,
   "req": [
    8,
    8,
    0
   ],
-  "tier": 35,
+  "tier": 27,
   "type": "armor"
  },
  "i.a.b.rmage": {
-  "armor": 70,
-  "level": 35,
-  "price": 2602,
+  "armor": 59,
+  "level": 29,
+  "price": 1846,
   "relic": false,
   "req": [
    0,
    8,
    10
   ],
-  "tier": 38,
+  "tier": 32,
   "type": "armor"
  },
  "i.a.b.s": {
@@ -508,55 +508,55 @@
   "type": "armor"
  },
  "i.a.b.sborn": {
-  "armor": 84,
-  "level": 43,
-  "price": 3812,
+  "armor": 82,
+  "level": 42,
+  "price": 3648,
   "relic": false,
   "req": [
    10,
    10,
    0
   ],
-  "tier": 46,
+  "tier": 45,
   "type": "armor"
  },
  "i.a.b.sdosp": {
-  "armor": 75,
-  "level": 38,
-  "price": 3029,
+  "armor": 64,
+  "level": 32,
+  "price": 2208,
   "relic": false,
   "req": [
    10,
    8,
    0
   ],
-  "tier": 41,
+  "tier": 35,
   "type": "armor"
  },
  "i.a.b.skol": {
-  "armor": 57,
-  "level": 28,
-  "price": 1733,
+  "armor": 37,
+  "level": 17,
+  "price": 723,
   "relic": false,
   "req": [
    6,
    8,
    0
   ],
-  "tier": 31,
+  "tier": 20,
   "type": "armor"
  },
  "i.a.b.spanc": {
-  "armor": 64,
-  "level": 32,
-  "price": 2208,
+  "armor": 48,
+  "level": 23,
+  "price": 1220,
   "relic": false,
   "req": [
    8,
    8,
    0
   ],
-  "tier": 35,
+  "tier": 26,
   "type": "armor"
  },
  "i.a.b.svpl.b": {
@@ -638,42 +638,42 @@
   "type": "armor"
  },
  "i.a.b.tmage": {
-  "armor": 70,
-  "level": 35,
-  "price": 2602,
+  "armor": 61,
+  "level": 30,
+  "price": 1963,
   "relic": false,
   "req": [
    0,
    10,
    8
   ],
-  "tier": 38,
+  "tier": 33,
   "type": "armor"
  },
  "i.a.b.troll": {
-  "armor": 79,
-  "level": 40,
-  "price": 3331,
+  "armor": 75,
+  "level": 38,
+  "price": 3029,
   "relic": false,
   "req": [
    0,
    10,
    10
   ],
-  "tier": 43,
+  "tier": 41,
   "type": "armor"
  },
  "i.a.b.turndosp": {
-  "armor": 70,
-  "level": 35,
-  "price": 2602,
+  "armor": 53,
+  "level": 26,
+  "price": 1517,
   "relic": false,
   "req": [
    10,
    6,
    0
   ],
-  "tier": 38,
+  "tier": 29,
   "type": "armor"
  },
  "i.a.b.z": {
@@ -729,16 +729,16 @@
   "type": "armor"
  },
  "i.a.c.shch": {
-  "armor": 23,
-  "level": 44,
-  "price": 1061,
+  "armor": 19,
+  "level": 35,
+  "price": 694,
   "relic": false,
   "req": [
    0,
    10,
    10
   ],
-  "tier": 47,
+  "tier": 38,
   "type": "armor"
  },
  "i.a.c.shch1": {
@@ -807,16 +807,16 @@
   "type": "armor"
  },
  "i.a.c.twar": {
-  "armor": 23,
-  "level": 44,
-  "price": 1061,
+  "armor": 13,
+  "level": 23,
+  "price": 325,
   "relic": false,
   "req": [
    10,
    10,
    0
   ],
-  "tier": 47,
+  "tier": 26,
   "type": "armor"
  },
  "i.a.d.msl": {
@@ -911,16 +911,16 @@
   "type": "armor"
  },
  "i.a.e.dempl": {
-  "armor": 14,
-  "level": 43,
-  "price": 635,
+  "armor": 12,
+  "level": 37,
+  "price": 480,
   "relic": false,
   "req": [
    4,
    8,
    4
   ],
-  "tier": 46,
+  "tier": 40,
   "type": "armor"
  },
  "i.a.e.dr": {
@@ -989,29 +989,29 @@
   "type": "armor"
  },
  "i.a.e.mage": {
-  "armor": 13,
-  "level": 39,
-  "price": 530,
+  "armor": 10,
+  "level": 28,
+  "price": 289,
   "relic": false,
   "req": [
    0,
    6,
    8
   ],
-  "tier": 42,
+  "tier": 31,
   "type": "armor"
  },
  "i.a.e.p": {
-  "armor": 11,
-  "level": 33,
-  "price": 389,
+  "armor": 6,
+  "level": 17,
+  "price": 120,
   "relic": false,
   "req": [
    8,
    6,
    4
   ],
-  "tier": 36,
+  "tier": 20,
   "type": "armor"
  },
  "i.a.e.s": {
@@ -1054,16 +1054,16 @@
   "type": "armor"
  },
  "i.a.h.b": {
-  "armor": 10,
-  "level": 8,
-  "price": 110,
+  "armor": 6,
+  "level": 3,
+  "price": 34,
   "relic": false,
   "req": [
    4,
    0,
    0
   ],
-  "tier": 11,
+  "tier": 6,
   "type": "armor"
  },
  "i.a.h.b1": {
@@ -1093,16 +1093,16 @@
   "type": "armor"
  },
  "i.a.h.bone": {
-  "armor": 17,
-  "level": 15,
-  "price": 293,
+  "armor": 10,
+  "level": 8,
+  "price": 110,
   "relic": false,
   "req": [
    0,
    8,
    0
   ],
-  "tier": 18,
+  "tier": 11,
   "type": "armor"
  },
  "i.a.h.c1": {
@@ -1210,16 +1210,16 @@
   "type": "armor"
  },
  "i.a.h.m": {
-  "armor": 19,
-  "level": 17,
-  "price": 362,
+  "armor": 13,
+  "level": 11,
+  "price": 178,
   "relic": false,
   "req": [
    6,
    4,
    0
   ],
-  "tier": 20,
+  "tier": 14,
   "type": "armor"
  },
  "i.a.h.massf": {
@@ -1236,16 +1236,16 @@
   "type": "armor"
  },
  "i.a.h.massf_set_": {
-  "armor": 46,
-  "level": 47,
-  "price": 2252,
+  "armor": 44,
+  "level": 45,
+  "price": 2075,
   "relic": false,
   "req": [
    8,
    10,
    4
   ],
-  "tier": 50,
+  "tier": 48,
   "type": "armor"
  },
  "i.a.h.medved": {
@@ -1262,29 +1262,29 @@
   "type": "armor"
  },
  "i.a.h.ms": {
-  "armor": 42,
-  "level": 43,
-  "price": 1906,
+  "armor": 38,
+  "level": 39,
+  "price": 1589,
   "relic": false,
   "req": [
    10,
    10,
    4
   ],
-  "tier": 46,
+  "tier": 42,
   "type": "armor"
  },
  "i.a.h.p": {
-  "armor": 38,
-  "level": 38,
-  "price": 1514,
+  "armor": 33,
+  "level": 33,
+  "price": 1168,
   "relic": false,
   "req": [
    10,
    8,
    0
   ],
-  "tier": 41,
+  "tier": 36,
   "type": "armor"
  },
  "i.a.h.p1": {
@@ -1314,42 +1314,42 @@
   "type": "armor"
  },
  "i.a.h.rog": {
-  "armor": 44,
-  "level": 45,
-  "price": 2075,
+  "armor": 41,
+  "level": 42,
+  "price": 1824,
   "relic": false,
   "req": [
    10,
    10,
    0
   ],
-  "tier": 48,
+  "tier": 45,
   "type": "armor"
  },
  "i.a.h.rycarsk": {
-  "armor": 35,
-  "level": 35,
-  "price": 1301,
+  "armor": 28,
+  "level": 27,
+  "price": 812,
   "relic": false,
   "req": [
    10,
    8,
    0
   ],
-  "tier": 38,
+  "tier": 30,
   "type": "armor"
  },
  "i.a.h.s": {
-  "armor": 28,
-  "level": 28,
-  "price": 866,
+  "armor": 20,
+  "level": 18,
+  "price": 398,
   "relic": false,
   "req": [
    8,
    6,
    0
   ],
-  "tier": 31,
+  "tier": 21,
   "type": "armor"
  },
  "i.a.h.s1": {
@@ -1366,16 +1366,16 @@
   "type": "armor"
  },
  "i.a.h.sh": {
-  "armor": 31,
-  "level": 31,
-  "price": 1042,
+  "armor": 25,
+  "level": 24,
+  "price": 658,
   "relic": false,
   "req": [
    4,
    10,
    4
   ],
-  "tier": 34,
+  "tier": 27,
   "type": "armor"
  },
  "i.a.h.vk": {
@@ -1405,29 +1405,29 @@
   "type": "armor"
  },
  "i.a.h.whitewolf": {
-  "armor": 38,
-  "level": 39,
-  "price": 1589,
+  "armor": 35,
+  "level": 35,
+  "price": 1301,
   "relic": false,
   "req": [
    0,
    10,
    10
   ],
-  "tier": 42,
+  "tier": 38,
   "type": "armor"
  },
  "i.a.h.wolf": {
-  "armor": 28,
-  "level": 28,
-  "price": 866,
+  "armor": 18,
+  "level": 16,
+  "price": 326,
   "relic": false,
   "req": [
    0,
    6,
    8
   ],
-  "tier": 31,
+  "tier": 19,
   "type": "armor"
  },
  "i.a.h.wood": {
@@ -1470,16 +1470,16 @@
   "type": "armor"
  },
  "i.a.h.zakr": {
-  "armor": 29,
-  "level": 29,
-  "price": 923,
+  "armor": 22,
+  "level": 21,
+  "price": 520,
   "relic": false,
   "req": [
    10,
    6,
    0
   ],
-  "tier": 32,
+  "tier": 24,
   "type": "armor"
  },
  "i.a.h.zhaba": {
@@ -1509,29 +1509,29 @@
   "type": "armor"
  },
  "i.a.l.b": {
-  "armor": 30,
-  "level": 30,
-  "price": 982,
+  "armor": 27,
+  "level": 26,
+  "price": 758,
   "relic": false,
   "req": [
    8,
    6,
    0
   ],
-  "tier": 33,
+  "tier": 29,
   "type": "armor"
  },
  "i.a.l.bone": {
-  "armor": 19,
-  "level": 17,
-  "price": 362,
+  "armor": 12,
+  "level": 10,
+  "price": 154,
   "relic": false,
   "req": [
    0,
    8,
    0
   ],
-  "tier": 20,
+  "tier": 13,
   "type": "armor"
  },
  "i.a.l.dr": {
@@ -1587,29 +1587,29 @@
   "type": "armor"
  },
  "i.a.l.m": {
-  "armor": 23,
-  "level": 22,
-  "price": 564,
+  "armor": 17,
+  "level": 15,
+  "price": 293,
   "relic": false,
   "req": [
    6,
    6,
    0
   ],
-  "tier": 25,
+  "tier": 18,
   "type": "armor"
  },
  "i.a.l.ms": {
-  "armor": 37,
-  "level": 37,
-  "price": 1442,
+  "armor": 38,
+  "level": 38,
+  "price": 1514,
   "relic": false,
   "req": [
    10,
    10,
    4
   ],
-  "tier": 40,
+  "tier": 41,
   "type": "armor"
  },
  "i.a.l.obspon": {
@@ -1626,42 +1626,42 @@
   "type": "armor"
  },
  "i.a.l.ogr": {
-  "armor": 28,
-  "level": 28,
-  "price": 866,
+  "armor": 20,
+  "level": 19,
+  "price": 437,
   "relic": false,
   "req": [
    0,
    8,
    10
   ],
-  "tier": 31,
+  "tier": 22,
   "type": "armor"
  },
  "i.a.l.p": {
-  "armor": 33,
-  "level": 33,
-  "price": 1168,
+  "armor": 30,
+  "level": 30,
+  "price": 982,
   "relic": false,
   "req": [
    10,
    8,
    0
   ],
-  "tier": 36,
+  "tier": 33,
   "type": "armor"
  },
  "i.a.l.s": {
-  "armor": 33,
-  "level": 33,
-  "price": 1168,
+  "armor": 34,
+  "level": 34,
+  "price": 1234,
   "relic": false,
   "req": [
    10,
    8,
    0
   ],
-  "tier": 36,
+  "tier": 37,
   "type": "armor"
  },
  "i.a.l.ship": {
@@ -1678,16 +1678,16 @@
   "type": "armor"
  },
  "i.a.l.wood": {
-  "armor": 2,
+  "armor": 4,
   "level": 1,
-  "price": 2,
+  "price": 16,
   "relic": false,
   "req": [
    4,
    0,
    0
   ],
-  "tier": 1,
+  "tier": 4,
   "type": "armor"
  },
  "i.a.m.oj": {
@@ -1808,29 +1808,29 @@
   "type": "armor"
  },
  "i.a.p.b": {
-  "armor": 24,
-  "level": 30,
-  "price": 785,
+  "armor": 21,
+  "level": 26,
+  "price": 607,
   "relic": false,
   "req": [
    8,
    6,
    0
   ],
-  "tier": 33,
+  "tier": 29,
   "type": "armor"
  },
  "i.a.p.bone": {
-  "armor": 15,
-  "level": 17,
-  "price": 289,
+  "armor": 10,
+  "level": 10,
+  "price": 123,
   "relic": false,
   "req": [
    0,
    8,
    0
   ],
-  "tier": 20,
+  "tier": 13,
   "type": "armor"
  },
  "i.a.p.dr": {
@@ -1873,42 +1873,42 @@
   "type": "armor"
  },
  "i.a.p.leater": {
-  "armor": 1,
+  "armor": 3,
   "level": 1,
-  "price": 2,
+  "price": 13,
   "relic": false,
   "req": [
    0,
    4,
    0
   ],
-  "tier": 1,
+  "tier": 4,
   "type": "armor"
  },
  "i.a.p.m": {
-  "armor": 18,
-  "level": 22,
-  "price": 451,
+  "armor": 13,
+  "level": 15,
+  "price": 234,
   "relic": false,
   "req": [
    6,
    6,
    0
   ],
-  "tier": 25,
+  "tier": 18,
   "type": "armor"
  },
  "i.a.p.ms": {
-  "armor": 29,
-  "level": 37,
-  "price": 1153,
+  "armor": 30,
+  "level": 38,
+  "price": 1212,
   "relic": false,
   "req": [
    10,
    10,
    4
   ],
-  "tier": 40,
+  "tier": 41,
   "type": "armor"
  },
  "i.a.p.obspor": {
@@ -1925,42 +1925,42 @@
   "type": "armor"
  },
  "i.a.p.ogr": {
-  "armor": 23,
-  "level": 28,
-  "price": 693,
+  "armor": 16,
+  "level": 19,
+  "price": 350,
   "relic": false,
   "req": [
    0,
    8,
    10
   ],
-  "tier": 31,
+  "tier": 22,
   "type": "armor"
  },
  "i.a.p.p": {
-  "armor": 28,
-  "level": 35,
-  "price": 1041,
+  "armor": 27,
+  "level": 34,
+  "price": 987,
   "relic": false,
   "req": [
    10,
    10,
    0
   ],
-  "tier": 38,
+  "tier": 37,
   "type": "armor"
  },
  "i.a.p.s": {
-  "armor": 28,
-  "level": 35,
-  "price": 1041,
+  "armor": 25,
+  "level": 31,
+  "price": 834,
   "relic": false,
   "req": [
    10,
    10,
    0
   ],
-  "tier": 38,
+  "tier": 34,
   "type": "armor"
  },
  "i.a.p.ship": {
@@ -2315,29 +2315,29 @@
   "type": "armor"
  },
  "i.a.s.b": {
-  "armor": 14,
-  "level": 12,
-  "price": 408,
+  "armor": 10,
+  "level": 8,
+  "price": 221,
   "relic": false,
   "req": [
    6,
    6,
    0
   ],
-  "tier": 15,
+  "tier": 11,
   "type": "armor"
  },
  "i.a.s.big": {
-  "armor": 28,
-  "level": 27,
-  "price": 1623,
+  "armor": 26,
+  "level": 25,
+  "price": 1414,
   "relic": false,
   "req": [
    10,
    8,
    0
   ],
-  "tier": 30,
+  "tier": 28,
   "type": "armor"
  },
  "i.a.s.dub": {
@@ -2354,68 +2354,68 @@
   "type": "armor"
  },
  "i.a.s.jdub": {
-  "armor": 45,
-  "level": 46,
-  "price": 4325,
+  "armor": 43,
+  "level": 44,
+  "price": 3979,
   "relic": false,
   "req": [
    10,
    10,
    0
   ],
-  "tier": 49,
+  "tier": 47,
   "type": "armor"
  },
  "i.a.s.jmdub": {
-  "armor": 34,
-  "level": 34,
-  "price": 2467,
+  "armor": 30,
+  "level": 30,
+  "price": 1963,
   "relic": false,
   "req": [
    4,
    10,
    4
   ],
-  "tier": 37,
+  "tier": 33,
   "type": "armor"
  },
  "i.a.s.krugl": {
-  "armor": 2,
+  "armor": 4,
   "level": 1,
-  "price": 5,
+  "price": 32,
   "relic": false,
   "req": [
    6,
    4,
    0
   ],
-  "tier": 1,
+  "tier": 4,
   "type": "armor"
  },
  "i.a.s.m": {
-  "armor": 17,
-  "level": 15,
-  "price": 586,
+  "armor": 13,
+  "level": 11,
+  "price": 356,
   "relic": false,
   "req": [
    8,
    6,
    0
   ],
-  "tier": 18,
+  "tier": 14,
   "type": "armor"
  },
  "i.a.s.obit": {
-  "armor": 17,
-  "level": 15,
-  "price": 586,
+  "armor": 16,
+  "level": 14,
+  "price": 523,
   "relic": false,
   "req": [
    8,
    6,
    0
   ],
-  "tier": 18,
+  "tier": 17,
   "type": "armor"
  },
  "i.a.s.obschit": {
@@ -2432,55 +2432,55 @@
   "type": "armor"
  },
  "i.a.s.osadn": {
-  "armor": 36,
-  "level": 36,
-  "price": 2741,
+  "armor": 33,
+  "level": 33,
+  "price": 2336,
   "relic": false,
   "req": [
    10,
    10,
    0
   ],
-  "tier": 39,
+  "tier": 36,
   "type": "armor"
  },
  "i.a.s.prochn": {
-  "armor": 20,
-  "level": 18,
-  "price": 797,
+  "armor": 19,
+  "level": 17,
+  "price": 723,
   "relic": false,
   "req": [
    8,
    8,
    0
   ],
-  "tier": 21,
+  "tier": 20,
   "type": "armor"
  },
  "i.a.s.s": {
-  "armor": 28,
-  "level": 27,
-  "price": 1623,
+  "armor": 24,
+  "level": 23,
+  "price": 1220,
   "relic": false,
   "req": [
    8,
    10,
    0
   ],
-  "tier": 30,
+  "tier": 26,
   "type": "armor"
  },
  "i.a.s.ship": {
-  "armor": 41,
-  "level": 42,
-  "price": 3648,
+  "armor": 39,
+  "level": 40,
+  "price": 3331,
   "relic": false,
   "req": [
    10,
    10,
    0
   ],
-  "tier": 45,
+  "tier": 43,
   "type": "armor"
  },
  "i.a.s.wood": {
@@ -3034,18 +3034,18 @@
   "class": "knife",
   "dmg": [
    6,
-   11
+   12
   ],
-  "level": 18,
+  "level": 19,
   "pause": 1.0,
-  "price": 2656,
+  "price": 2914,
   "relic": false,
   "req": [
    6,
    0,
    0
   ],
-  "tier": 21,
+  "tier": 22,
   "type": "weapon"
  },
  "i.w.k.begin": {
@@ -3070,18 +3070,18 @@
   "class": "knife",
   "dmg": [
    4,
-   14
+   15
   ],
-  "level": 19,
+  "level": 21,
   "pause": 1.0,
-  "price": 2914,
+  "price": 3466,
   "relic": false,
   "req": [
    4,
    4,
    0
   ],
-  "tier": 22,
+  "tier": 24,
   "type": "weapon"
  },
  "i.w.k.kinj": {
@@ -3090,142 +3090,142 @@
    3,
    10
   ],
-  "level": 14,
+  "level": 13,
   "pause": 1.0,
-  "price": 1744,
+  "price": 1546,
   "relic": false,
   "req": [
    4,
    0,
    0
   ],
-  "tier": 17,
+  "tier": 16,
   "type": "weapon"
  },
  "i.w.k.kor": {
   "class": "knife",
   "dmg": [
    1,
-   6
+   4
   ],
-  "level": 5,
+  "level": 2,
   "pause": 1.0,
-  "price": 394,
+  "price": 160,
   "relic": false,
   "req": [
    0,
    0,
    0
   ],
-  "tier": 8,
+  "tier": 5,
   "type": "weapon"
  },
  "i.w.k.korkinj": {
   "class": "knife",
   "dmg": [
-   2,
-   7
+   1,
+   5
   ],
-  "level": 7,
+  "level": 4,
   "pause": 1.0,
-  "price": 610,
+  "price": 304,
   "relic": false,
   "req": [
    0,
    0,
    0
   ],
-  "tier": 10,
+  "tier": 7,
   "type": "weapon"
  },
  "i.w.k.kortik": {
   "class": "knife",
   "dmg": [
    1,
-   6
+   4
   ],
-  "level": 5,
+  "level": 2,
   "pause": 1.0,
-  "price": 394,
+  "price": 160,
   "relic": false,
   "req": [
    0,
    0,
    0
   ],
-  "tier": 8,
+  "tier": 5,
   "type": "weapon"
  },
  "i.w.k.long": {
   "class": "knife",
   "dmg": [
-   2,
-   7
+   1,
+   5
   ],
-  "level": 7,
+  "level": 4,
   "pause": 1.0,
-  "price": 610,
+  "price": 304,
   "relic": false,
   "req": [
    0,
    0,
    0
   ],
-  "tier": 10,
+  "tier": 7,
   "type": "weapon"
  },
  "i.w.k.lonjkinj": {
   "class": "knife",
   "dmg": [
    4,
-   16
+   17
   ],
-  "level": 22,
+  "level": 24,
   "pause": 1.0,
-  "price": 3760,
+  "price": 4384,
   "relic": false,
   "req": [
    6,
    4,
    0
   ],
-  "tier": 25,
+  "tier": 27,
   "type": "weapon"
  },
  "i.w.k.myasn": {
   "class": "knife",
   "dmg": [
-   4,
-   8
+   3,
+   7
   ],
-  "level": 11,
+  "level": 9,
   "pause": 1.0,
-  "price": 1186,
+  "price": 874,
   "relic": false,
   "req": [
    4,
    0,
    0
   ],
-  "tier": 14,
+  "tier": 12,
   "type": "weapon"
  },
  "i.w.k.per": {
   "class": "knife",
   "dmg": [
    1,
-   3
+   2
   ],
   "level": 1,
   "pause": 1.0,
-  "price": 64,
+  "price": 34,
   "relic": false,
   "req": [
    0,
    0,
    0
   ],
-  "tier": 3,
+  "tier": 2,
   "type": "weapon"
  },
  "i.w.k.raskl": {
@@ -3249,73 +3249,73 @@
  "i.w.k.razd": {
   "class": "knife",
   "dmg": [
-   2,
-   4
+   1,
+   3
   ],
-  "level": 3,
+  "level": 1,
   "pause": 1.0,
-  "price": 226,
+  "price": 106,
   "relic": false,
   "req": [
    0,
    0,
    0
   ],
-  "tier": 6,
+  "tier": 4,
   "type": "weapon"
  },
  "i.w.k.shir": {
   "class": "knife",
   "dmg": [
-   4,
-   8
+   3,
+   6
   ],
-  "level": 11,
+  "level": 8,
   "pause": 1.0,
-  "price": 1186,
+  "price": 736,
   "relic": false,
   "req": [
    4,
    0,
    0
   ],
-  "tier": 14,
+  "tier": 11,
   "type": "weapon"
  },
  "i.w.k.shtyk": {
   "class": "knife",
   "dmg": [
    6,
-   15
-  ],
-  "level": 24,
-  "pause": 1.0,
-  "price": 4384,
-  "relic": false,
-  "req": [
-   6,
-   4,
-   0
-  ],
-  "tier": 27,
-  "type": "weapon"
- },
- "i.w.k.smage": {
-  "class": "knife",
-  "dmg": [
-   4,
-   17
+   16
   ],
   "level": 25,
   "pause": 1.0,
   "price": 4714,
   "relic": false,
   "req": [
+   6,
+   4,
+   0
+  ],
+  "tier": 28,
+  "type": "weapon"
+ },
+ "i.w.k.smage": {
+  "class": "knife",
+  "dmg": [
+   5,
+   20
+  ],
+  "level": 30,
+  "pause": 1.0,
+  "price": 6544,
+  "relic": false,
+  "req": [
    0,
    10,
    6
   ],
-  "tier": 28,
+  "tier": 33,
   "type": "weapon"
  },
  "i.w.k.stolov": {
@@ -3339,170 +3339,44 @@
  "i.w.k.tesak": {
   "class": "knife",
   "dmg": [
-   6,
-   8
+   5,
+   7
   ],
-  "level": 13,
+  "level": 11,
   "pause": 1.0,
-  "price": 1546,
+  "price": 1186,
   "relic": false,
   "req": [
    4,
    0,
    0
   ],
-  "tier": 16,
+  "tier": 14,
   "type": "weapon"
  },
  "i.w.k.zasap": {
   "class": "knife",
   "dmg": [
-   3,
-   13
+   4,
+   14
   ],
-  "level": 17,
+  "level": 19,
   "pause": 1.0,
-  "price": 2410,
+  "price": 2914,
   "relic": false,
   "req": [
    4,
    0,
    0
   ],
-  "tier": 20,
+  "tier": 22,
   "type": "weapon"
  },
  "i.w.r.b.air": {
   "class": "bow",
   "dmg": [
    6,
-   23
-  ],
-  "level": 25,
-  "pause": 1.3,
-  "price": 4714,
-  "relic": false,
-  "req": [
-   6,
-   6,
-   0
-  ],
-  "tier": 28,
-  "type": "weapon"
- },
- "i.w.r.b.battle": {
-  "class": "bow",
-  "dmg": [
-   10,
-   24
-  ],
-  "level": 31,
-  "pause": 1.3,
-  "price": 6946,
-  "relic": false,
-  "req": [
-   8,
-   8,
-   0
-  ],
-  "tier": 34,
-  "type": "weapon"
- },
- "i.w.r.b.berezov": {
-  "class": "bow",
-  "dmg": [
-   7,
-   21
-  ],
-  "level": 25,
-  "pause": 1.3,
-  "price": 4714,
-  "relic": false,
-  "req": [
-   6,
-   4,
-   0
-  ],
-  "tier": 28,
-  "type": "weapon"
- },
- "i.w.r.b.bow": {
-  "class": "bow",
-  "dmg": [
-   4,
-   16
-  ],
-  "level": 16,
-  "pause": 1.3,
-  "price": 2176,
-  "relic": false,
-  "req": [
-   0,
-   4,
-   0
-  ],
-  "tier": 19,
-  "type": "weapon"
- },
- "i.w.r.b.compozit": {
-  "class": "bow",
-  "dmg": [
-   8,
-   32
-  ],
-  "level": 38,
-  "pause": 1.3,
-  "price": 10096,
-  "relic": false,
-  "req": [
-   10,
-   10,
-   0
-  ],
-  "tier": 41,
-  "type": "weapon"
- },
- "i.w.r.b.detsk": {
-  "class": "bow",
-  "dmg": [
-   2,
-   3
-  ],
-  "level": 1,
-  "pause": 1.3,
-  "price": 64,
-  "relic": false,
-  "req": [
-   0,
-   0,
-   0
-  ],
-  "tier": 3,
-  "type": "weapon"
- },
- "i.w.r.b.elven": {
-  "class": "bow",
-  "dmg": [
-   8,
-   30
-  ],
-  "level": 35,
-  "pause": 1.3,
-  "price": 8674,
-  "relic": false,
-  "req": [
-   4,
-   8,
-   0
-  ],
-  "tier": 38,
-  "type": "weapon"
- },
- "i.w.r.b.hunter": {
-  "class": "bow",
-  "dmg": [
-   9,
-   23
+   26
   ],
   "level": 29,
   "pause": 1.3,
@@ -3516,29 +3390,11 @@
   "tier": 32,
   "type": "weapon"
  },
- "i.w.r.b.ivov": {
+ "i.w.r.b.battle": {
   "class": "bow",
   "dmg": [
-   5,
-   20
-  ],
-  "level": 22,
-  "pause": 1.3,
-  "price": 3760,
-  "relic": false,
-  "req": [
-   4,
-   6,
-   0
-  ],
-  "tier": 25,
-  "type": "weapon"
- },
- "i.w.r.b.kach": {
-  "class": "bow",
-  "dmg": [
-   8,
-   31
+   12,
+   27
   ],
   "level": 36,
   "pause": 1.3,
@@ -3546,13 +3402,85 @@
   "relic": false,
   "req": [
    8,
-   10,
+   8,
    0
   ],
   "tier": 39,
   "type": "weapon"
  },
- "i.w.r.b.lb": {
+ "i.w.r.b.berezov": {
+  "class": "bow",
+  "dmg": [
+   8,
+   23
+  ],
+  "level": 28,
+  "pause": 1.3,
+  "price": 5776,
+  "relic": false,
+  "req": [
+   6,
+   4,
+   0
+  ],
+  "tier": 31,
+  "type": "weapon"
+ },
+ "i.w.r.b.bow": {
+  "class": "bow",
+  "dmg": [
+   4,
+   17
+  ],
+  "level": 17,
+  "pause": 1.3,
+  "price": 2410,
+  "relic": false,
+  "req": [
+   0,
+   4,
+   0
+  ],
+  "tier": 20,
+  "type": "weapon"
+ },
+ "i.w.r.b.compozit": {
+  "class": "bow",
+  "dmg": [
+   9,
+   35
+  ],
+  "level": 42,
+  "pause": 1.3,
+  "price": 12160,
+  "relic": false,
+  "req": [
+   10,
+   10,
+   0
+  ],
+  "tier": 45,
+  "type": "weapon"
+ },
+ "i.w.r.b.detsk": {
+  "class": "bow",
+  "dmg": [
+   1,
+   3
+  ],
+  "level": 1,
+  "pause": 1.3,
+  "price": 34,
+  "relic": false,
+  "req": [
+   0,
+   0,
+   0
+  ],
+  "tier": 2,
+  "type": "weapon"
+ },
+ "i.w.r.b.elven": {
   "class": "bow",
   "dmg": [
    8,
@@ -3564,85 +3492,31 @@
   "relic": false,
   "req": [
    4,
-   10,
-   4
+   8,
+   0
   ],
   "tier": 43,
   "type": "weapon"
  },
- "i.w.r.b.long": {
+ "i.w.r.b.hunter": {
   "class": "bow",
   "dmg": [
-   5,
-   16
+   11,
+   26
   ],
-  "level": 18,
+  "level": 34,
   "pause": 1.3,
-  "price": 2656,
-  "relic": false,
-  "req": [
-   4,
-   4,
-   0
-  ],
-  "tier": 21,
-  "type": "weapon"
- },
- "i.w.r.b.lset": {
-  "class": "bow",
-  "dmg": [
-   12,
-   33
-  ],
-  "level": 43,
-  "pause": 1.3,
-  "price": 12706,
+  "price": 8224,
   "relic": false,
   "req": [
    6,
-   10,
-   0
-  ],
-  "tier": 46,
-  "type": "weapon"
- },
- "i.w.r.b.master": {
-  "class": "bow",
-  "dmg": [
-   10,
-   29
-  ],
-  "level": 36,
-  "pause": 1.3,
-  "price": 9136,
-  "relic": false,
-  "req": [
-   10,
-   10,
-   0
-  ],
-  "tier": 39,
-  "type": "weapon"
- },
- "i.w.r.b.prochn": {
-  "class": "bow",
-  "dmg": [
-   10,
-   22
-  ],
-  "level": 29,
-  "pause": 1.3,
-  "price": 6154,
-  "relic": false,
-  "req": [
    6,
-   8,
    0
   ],
-  "tier": 32,
+  "tier": 37,
   "type": "weapon"
  },
- "i.w.r.b.samod": {
+ "i.w.r.b.ivov": {
   "class": "bow",
   "dmg": [
    5,
@@ -3660,148 +3534,274 @@
   "tier": 27,
   "type": "weapon"
  },
- "i.w.r.b.short": {
+ "i.w.r.b.kach": {
   "class": "bow",
   "dmg": [
-   3,
-   14
+   9,
+   35
   ],
-  "level": 13,
+  "level": 41,
   "pause": 1.3,
-  "price": 1546,
+  "price": 11626,
   "relic": false,
   "req": [
-   0,
-   4,
-   0
-  ],
-  "tier": 16,
-  "type": "weapon"
- },
- "i.w.r.b.sport": {
-  "class": "bow",
-  "dmg": [
-   6,
-   25
-  ],
-  "level": 28,
-  "pause": 1.3,
-  "price": 5776,
-  "relic": false,
-  "req": [
-   4,
    8,
+   10,
    0
   ],
-  "tier": 31,
+  "tier": 44,
   "type": "weapon"
  },
- "i.w.r.b.veter": {
+ "i.w.r.b.lb": {
   "class": "bow",
   "dmg": [
-   11,
-   30
+   9,
+   36
   ],
-  "level": 39,
+  "level": 43,
   "pause": 1.3,
-  "price": 10594,
+  "price": 12706,
   "relic": false,
   "req": [
    4,
    10,
    4
   ],
-  "tier": 42,
+  "tier": 46,
+  "type": "weapon"
+ },
+ "i.w.r.b.long": {
+  "class": "bow",
+  "dmg": [
+   6,
+   18
+  ],
+  "level": 20,
+  "pause": 1.3,
+  "price": 3184,
+  "relic": false,
+  "req": [
+   4,
+   4,
+   0
+  ],
+  "tier": 23,
+  "type": "weapon"
+ },
+ "i.w.r.b.lset": {
+  "class": "bow",
+  "dmg": [
+   13,
+   34
+  ],
+  "level": 45,
+  "pause": 1.3,
+  "price": 13834,
+  "relic": false,
+  "req": [
+   6,
+   10,
+   0
+  ],
+  "tier": 48,
+  "type": "weapon"
+ },
+ "i.w.r.b.master": {
+  "class": "bow",
+  "dmg": [
+   11,
+   33
+  ],
+  "level": 41,
+  "pause": 1.3,
+  "price": 11626,
+  "relic": false,
+  "req": [
+   10,
+   10,
+   0
+  ],
+  "tier": 44,
+  "type": "weapon"
+ },
+ "i.w.r.b.prochn": {
+  "class": "bow",
+  "dmg": [
+   12,
+   26
+  ],
+  "level": 35,
+  "pause": 1.3,
+  "price": 8674,
+  "relic": false,
+  "req": [
+   6,
+   8,
+   0
+  ],
+  "tier": 38,
+  "type": "weapon"
+ },
+ "i.w.r.b.samod": {
+  "class": "bow",
+  "dmg": [
+   6,
+   23
+  ],
+  "level": 26,
+  "pause": 1.3,
+  "price": 5056,
+  "relic": false,
+  "req": [
+   4,
+   6,
+   0
+  ],
+  "tier": 29,
+  "type": "weapon"
+ },
+ "i.w.r.b.short": {
+  "class": "bow",
+  "dmg": [
+   3,
+   12
+  ],
+  "level": 11,
+  "pause": 1.3,
+  "price": 1186,
+  "relic": false,
+  "req": [
+   0,
+   4,
+   0
+  ],
+  "tier": 14,
+  "type": "weapon"
+ },
+ "i.w.r.b.sport": {
+  "class": "bow",
+  "dmg": [
+   7,
+   28
+  ],
+  "level": 32,
+  "pause": 1.3,
+  "price": 7360,
+  "relic": false,
+  "req": [
+   4,
+   8,
+   0
+  ],
+  "tier": 35,
+  "type": "weapon"
+ },
+ "i.w.r.b.veter": {
+  "class": "bow",
+  "dmg": [
+   12,
+   33
+  ],
+  "level": 43,
+  "pause": 1.3,
+  "price": 12706,
+  "relic": false,
+  "req": [
+   4,
+   10,
+   4
+  ],
+  "tier": 46,
   "type": "weapon"
  },
  "i.w.r.boebum": {
   "class": "thrown",
   "dmg": [
    2,
-   5
+   4
   ],
-  "level": 5,
+  "level": 3,
   "pause": 1.0,
-  "price": 394,
+  "price": 226,
   "relic": false,
   "req": [
    8,
    10,
    0
   ],
-  "tier": 8,
+  "tier": 6,
   "type": "weapon"
  },
  "i.w.r.bumerang": {
   "class": "thrown",
   "dmg": [
    5,
-   10
+   11
   ],
-  "level": 16,
+  "level": 17,
   "pause": 1.0,
-  "price": 2176,
+  "price": 2410,
   "relic": false,
   "req": [
    0,
    4,
    0
   ],
-  "tier": 19,
+  "tier": 20,
   "type": "weapon"
  },
  "i.w.r.c.arbalet": {
   "class": "crossbow",
   "dmg": [
    6,
-   14
+   12
   ],
-  "level": 11,
+  "level": 9,
   "pause": 1.5,
-  "price": 1186,
+  "price": 874,
   "relic": false,
   "req": [
    4,
    0,
    0
   ],
-  "tier": 14,
+  "tier": 12,
   "type": "weapon"
  },
  "i.w.r.c.gazov": {
   "class": "crossbow",
   "dmg": [
    8,
-   17
+   16
   ],
-  "level": 15,
+  "level": 14,
   "pause": 1.5,
-  "price": 1954,
+  "price": 1744,
   "relic": false,
   "req": [
    4,
    0,
    0
   ],
-  "tier": 18,
+  "tier": 17,
   "type": "weapon"
  },
  "i.w.r.c.gazov1": {
   "class": "crossbow",
   "dmg": [
    8,
-   17
+   16
   ],
-  "level": 15,
+  "level": 14,
   "pause": 1.5,
-  "price": 1954,
+  "price": 1744,
   "relic": false,
   "req": [
    4,
    0,
    0
   ],
-  "tier": 18,
+  "tier": 17,
   "type": "weapon"
  },
  "i.w.r.c.gazov2": {
@@ -3825,19 +3825,19 @@
  "i.w.r.c.heavy": {
   "class": "crossbow",
   "dmg": [
-   8,
-   16
+   7,
+   14
   ],
-  "level": 14,
+  "level": 12,
   "pause": 1.5,
-  "price": 1744,
+  "price": 1360,
   "relic": false,
   "req": [
    6,
    0,
    0
   ],
-  "tier": 17,
+  "tier": 15,
   "type": "weapon"
  },
  "i.w.r.c.impersk": {
@@ -3846,34 +3846,34 @@
    10,
    16
   ],
-  "level": 15,
+  "level": 16,
   "pause": 1.5,
-  "price": 1954,
+  "price": 2176,
   "relic": false,
   "req": [
    8,
    0,
    0
   ],
-  "tier": 18,
+  "tier": 19,
   "type": "weapon"
  },
  "i.w.r.c.legk": {
   "class": "crossbow",
   "dmg": [
    6,
-   14
+   12
   ],
-  "level": 11,
+  "level": 9,
   "pause": 1.5,
-  "price": 1186,
+  "price": 874,
   "relic": false,
   "req": [
    4,
    0,
    0
   ],
-  "tier": 14,
+  "tier": 12,
   "type": "weapon"
  },
  "i.w.r.c.osadn": {
@@ -3897,37 +3897,37 @@
  "i.w.r.c.ruchn": {
   "class": "crossbow",
   "dmg": [
-   9,
+   8,
    15
   ],
-  "level": 14,
+  "level": 13,
   "pause": 1.5,
-  "price": 1744,
+  "price": 1546,
   "relic": false,
   "req": [
    4,
    0,
    0
   ],
-  "tier": 17,
+  "tier": 16,
   "type": "weapon"
  },
  "i.w.r.c.sredn": {
   "class": "crossbow",
   "dmg": [
-   7,
-   14
+   6,
+   11
   ],
-  "level": 11,
+  "level": 8,
   "pause": 1.5,
-  "price": 1186,
+  "price": 736,
   "relic": false,
   "req": [
    6,
    0,
    0
   ],
-  "tier": 14,
+  "tier": 11,
   "type": "weapon"
  },
  "i.w.r.drotik": {
@@ -3936,40 +3936,94 @@
    2,
    9
   ],
-  "level": 11,
+  "level": 10,
   "pause": 1.0,
-  "price": 30,
+  "price": 26,
   "relic": false,
   "req": [
    0,
    6,
    0
   ],
-  "tier": 14,
+  "tier": 13,
   "type": "weapon"
  },
  "i.w.r.knife": {
   "class": "thrown",
   "dmg": [
    5,
-   13
+   14
   ],
-  "level": 20,
+  "level": 21,
   "pause": 1.0,
-  "price": 80,
+  "price": 87,
   "relic": false,
   "req": [
    4,
    8,
    0
   ],
-  "tier": 23,
+  "tier": 24,
   "type": "weapon"
  },
  "i.w.r.molot": {
   "class": "thrown",
   "dmg": [
+   9,
+   18
+  ],
+  "level": 33,
+  "pause": 1.0,
+  "price": 195,
+  "relic": false,
+  "req": [
+   10,
+   4,
+   0
+  ],
+  "tier": 36,
+  "type": "weapon"
+ },
+ "i.w.r.pilum": {
+  "class": "thrown",
+  "dmg": [
+   12,
+   16
+  ],
+  "level": 33,
+  "pause": 1.0,
+  "price": 195,
+  "relic": false,
+  "req": [
    8,
+   4,
+   0
+  ],
+  "tier": 36,
+  "type": "weapon"
+ },
+ "i.w.r.prasha": {
+  "class": "thrown",
+  "dmg": [
+   6,
+   11
+  ],
+  "level": 18,
+  "pause": 1.0,
+  "price": 2656,
+  "relic": false,
+  "req": [
+   4,
+   6,
+   0
+  ],
+  "tier": 21,
+  "type": "weapon"
+ },
+ "i.w.r.spear": {
+  "class": "thrown",
+  "dmg": [
+   7,
    16
   ],
   "level": 28,
@@ -3977,119 +4031,65 @@
   "price": 144,
   "relic": false,
   "req": [
-   10,
-   4,
+   6,
+   6,
    0
   ],
   "tier": 31,
-  "type": "weapon"
- },
- "i.w.r.pilum": {
-  "class": "thrown",
-  "dmg": [
-   11,
-   14
-  ],
-  "level": 29,
-  "pause": 1.0,
-  "price": 154,
-  "relic": false,
-  "req": [
-   8,
-   4,
-   0
-  ],
-  "tier": 32,
-  "type": "weapon"
- },
- "i.w.r.prasha": {
-  "class": "thrown",
-  "dmg": [
-   5,
-   10
-  ],
-  "level": 16,
-  "pause": 1.0,
-  "price": 2176,
-  "relic": false,
-  "req": [
-   4,
-   6,
-   0
-  ],
-  "tier": 19,
-  "type": "weapon"
- },
- "i.w.r.spear": {
-  "class": "thrown",
-  "dmg": [
-   7,
-   15
-  ],
-  "level": 25,
-  "pause": 1.0,
-  "price": 118,
-  "relic": false,
-  "req": [
-   6,
-   6,
-   0
-  ],
-  "tier": 28,
   "type": "weapon"
  },
  "i.w.r.stone": {
   "class": "thrown",
   "dmg": [
    3,
-   7
+   5
   ],
-  "level": 9,
+  "level": 6,
   "pause": 1.0,
-  "price": 22,
+  "price": 12,
   "relic": false,
   "req": [
    4,
    4,
    0
   ],
-  "tier": 12,
+  "tier": 9,
   "type": "weapon"
  },
  "i.w.r.surriken": {
   "class": "thrown",
   "dmg": [
-   3,
-   8
+   2,
+   7
   ],
-  "level": 9,
+  "level": 7,
   "pause": 1.0,
-  "price": 22,
+  "price": 15,
   "relic": false,
   "req": [
    0,
    6,
    0
   ],
-  "tier": 12,
+  "tier": 10,
   "type": "weapon"
  },
  "i.w.r.tomagavk": {
   "class": "thrown",
   "dmg": [
-   8,
-   13
+   9,
+   14
   ],
-  "level": 24,
+  "level": 26,
   "pause": 1.0,
-  "price": 110,
+  "price": 126,
   "relic": false,
   "req": [
    4,
    8,
    0
   ],
-  "tier": 27,
+  "tier": 29,
   "type": "weapon"
  },
  "i.w.s.dr": {
@@ -4149,137 +4149,371 @@
  "i.w.s.dvtop": {
   "class": "heavy",
   "dmg": [
-   9,
-   14
+   10,
+   15
   ],
-  "level": 16,
+  "level": 18,
   "pause": 1.5,
-  "price": 2176,
+  "price": 2656,
   "relic": false,
   "req": [
    10,
    10,
    0
   ],
-  "tier": 19,
+  "tier": 21,
   "type": "weapon"
  },
  "i.w.s.dvuruchn": {
   "class": "heavy",
   "dmg": [
-   12,
-   24
+   13,
+   27
   ],
-  "level": 28,
+  "level": 32,
   "pause": 1.5,
-  "price": 5776,
+  "price": 7360,
   "relic": false,
   "req": [
    8,
    6,
    0
   ],
-  "tier": 31,
+  "tier": 35,
   "type": "weapon"
  },
  "i.w.s.farmech": {
   "class": "sword",
   "dmg": [
-   11,
-   19
+   12,
+   22
   ],
-  "level": 32,
+  "level": 37,
   "pause": 1.1,
-  "price": 7360,
+  "price": 9610,
   "relic": false,
   "req": [
    10,
    6,
    0
   ],
-  "tier": 35,
+  "tier": 40,
   "type": "weapon"
  },
  "i.w.s.fire": {
   "class": "sword",
   "dmg": [
-   11,
-   19
+   12,
+   22
   ],
-  "level": 32,
+  "level": 37,
   "pause": 1.1,
-  "price": 7360,
+  "price": 9610,
   "relic": false,
   "req": [
    10,
    6,
    0
   ],
-  "tier": 35,
+  "tier": 40,
   "type": "weapon"
  },
  "i.w.s.flamberg": {
   "class": "heavy",
   "dmg": [
-   12,
-   21
+   13,
+   24
   ],
-  "level": 25,
+  "level": 29,
   "pause": 1.5,
-  "price": 4714,
+  "price": 6154,
   "relic": false,
   "req": [
    10,
    8,
    0
   ],
-  "tier": 28,
+  "tier": 32,
   "type": "weapon"
  },
  "i.w.s.glefa": {
   "class": "heavy",
   "dmg": [
-   11,
-   30
+   12,
+   34
   ],
-  "level": 32,
+  "level": 38,
   "pause": 1.5,
-  "price": 7360,
+  "price": 10096,
   "relic": false,
   "req": [
    6,
    10,
    0
   ],
-  "tier": 35,
+  "tier": 41,
   "type": "weapon"
  },
  "i.w.s.jezl": {
   "class": "sword",
   "dmg": [
    9,
-   21
+   22
   ],
-  "level": 45,
+  "level": 46,
   "pause": 1.1,
-  "price": 13834,
+  "price": 14416,
   "relic": false,
   "req": [
    4,
    10,
    10
   ],
-  "tier": 48,
+  "tier": 49,
   "type": "weapon"
  },
  "i.w.s.kach": {
   "class": "sword",
   "dmg": [
+   7,
+   22
+  ],
+  "level": 31,
+  "pause": 1.1,
+  "price": 6946,
+  "relic": false,
+  "req": [
+   8,
    6,
-   20
+   0
+  ],
+  "tier": 34,
+  "type": "weapon"
+ },
+ "i.w.s.kriv": {
+  "class": "sword",
+  "dmg": [
+   5,
+   15
+  ],
+  "level": 20,
+  "pause": 1.1,
+  "price": 3184,
+  "relic": false,
+  "req": [
+   4,
+   0,
+   0
+  ],
+  "tier": 23,
+  "type": "weapon"
+ },
+ "i.w.s.long": {
+  "class": "sword",
+  "dmg": [
+   7,
+   18
+  ],
+  "level": 26,
+  "pause": 1.1,
+  "price": 5056,
+  "relic": false,
+  "req": [
+   6,
+   4,
+   0
+  ],
+  "tier": 29,
+  "type": "weapon"
+ },
+ "i.w.s.master": {
+  "class": "sword",
+  "dmg": [
+   10,
+   25
+  ],
+  "level": 39,
+  "pause": 1.1,
+  "price": 10594,
+  "relic": false,
+  "req": [
+   10,
+   8,
+   0
+  ],
+  "tier": 42,
+  "type": "weapon"
+ },
+ "i.w.s.mvr": {
+  "class": "sword",
+  "dmg": [
+   14,
+   24
+  ],
+  "level": 42,
+  "pause": 1.1,
+  "price": 12160,
+  "relic": false,
+  "req": [
+   10,
+   6,
+   0
+  ],
+  "tier": 45,
+  "type": "weapon"
+ },
+ "i.w.s.p": {
+  "class": "sword",
+  "dmg": [
+   9,
+   27
+  ],
+  "level": 40,
+  "pause": 1.1,
+  "price": 11104,
+  "relic": false,
+  "req": [
+   10,
+   10,
+   0
+  ],
+  "tier": 43,
+  "type": "weapon"
+ },
+ "i.w.s.polutorn": {
+  "class": "sword",
+  "dmg": [
+   2,
+   8
+  ],
+  "level": 7,
+  "pause": 1.1,
+  "price": 610,
+  "relic": false,
+  "req": [
+   4,
+   0,
+   0
+  ],
+  "tier": 10,
+  "type": "weapon"
+ },
+ "i.w.s.sable": {
+  "class": "sword",
+  "dmg": [
+   5,
+   9
+  ],
+  "level": 13,
+  "pause": 1.1,
+  "price": 1546,
+  "relic": false,
+  "req": [
+   0,
+   4,
+   0
+  ],
+  "tier": 16,
+  "type": "weapon"
+ },
+ "i.w.s.samur": {
+  "class": "sword",
+  "dmg": [
+   5,
+   22
+  ],
+  "level": 29,
+  "pause": 1.1,
+  "price": 6154,
+  "relic": false,
+  "req": [
+   4,
+   8,
+   0
+  ],
+  "tier": 32,
+  "type": "weapon"
+ },
+ "i.w.s.shir": {
+  "class": "sword",
+  "dmg": [
+   5,
+   9
+  ],
+  "level": 12,
+  "pause": 1.1,
+  "price": 1360,
+  "relic": false,
+  "req": [
+   6,
+   0,
+   0
+  ],
+  "tier": 15,
+  "type": "weapon"
+ },
+ "i.w.s.short": {
+  "class": "sword",
+  "dmg": [
+   3,
+   4
+  ],
+  "level": 3,
+  "pause": 1.1,
+  "price": 226,
+  "relic": false,
+  "req": [
+   0,
+   0,
+   0
+  ],
+  "tier": 6,
+  "type": "weapon"
+ },
+ "i.w.s.shpaga": {
+  "class": "rapier",
+  "dmg": [
+   3,
+   11
+  ],
+  "level": 14,
+  "pause": 1.0,
+  "price": 1744,
+  "relic": false,
+  "req": [
+   0,
+   6,
+   0
+  ],
+  "tier": 17,
+  "type": "weapon"
+ },
+ "i.w.s.yatagan": {
+  "class": "sword",
+  "dmg": [
+   9,
+   22
+  ],
+  "level": 34,
+  "pause": 1.1,
+  "price": 8224,
+  "relic": false,
+  "req": [
+   6,
+   6,
+   0
+  ],
+  "tier": 37,
+  "type": "weapon"
+ },
+ "i.w.spear.long": {
+  "class": "heavy",
+  "dmg": [
+   7,
+   27
   ],
   "level": 27,
-  "pause": 1.1,
+  "pause": 1.5,
   "price": 5410,
   "relic": false,
   "req": [
@@ -4290,292 +4524,58 @@
   "tier": 30,
   "type": "weapon"
  },
- "i.w.s.kriv": {
-  "class": "sword",
-  "dmg": [
-   5,
-   13
-  ],
-  "level": 18,
-  "pause": 1.1,
-  "price": 2656,
-  "relic": false,
-  "req": [
-   4,
-   0,
-   0
-  ],
-  "tier": 21,
-  "type": "weapon"
- },
- "i.w.s.long": {
-  "class": "sword",
-  "dmg": [
-   6,
-   17
-  ],
-  "level": 24,
-  "pause": 1.1,
-  "price": 4384,
-  "relic": false,
-  "req": [
-   6,
-   4,
-   0
-  ],
-  "tier": 27,
-  "type": "weapon"
- },
- "i.w.s.master": {
-  "class": "sword",
-  "dmg": [
-   9,
-   22
-  ],
-  "level": 33,
-  "pause": 1.1,
-  "price": 7786,
-  "relic": false,
-  "req": [
-   10,
-   8,
-   0
-  ],
-  "tier": 36,
-  "type": "weapon"
- },
- "i.w.s.mvr": {
-  "class": "sword",
-  "dmg": [
-   13,
-   22
-  ],
-  "level": 38,
-  "pause": 1.1,
-  "price": 10096,
-  "relic": false,
-  "req": [
-   10,
-   6,
-   0
-  ],
-  "tier": 41,
-  "type": "weapon"
- },
- "i.w.s.p": {
-  "class": "sword",
-  "dmg": [
-   9,
-   24
-  ],
-  "level": 36,
-  "pause": 1.1,
-  "price": 9136,
-  "relic": false,
-  "req": [
-   10,
-   10,
-   0
-  ],
-  "tier": 39,
-  "type": "weapon"
- },
- "i.w.s.polutorn": {
-  "class": "sword",
-  "dmg": [
-   2,
-   9
-  ],
-  "level": 9,
-  "pause": 1.1,
-  "price": 874,
-  "relic": false,
-  "req": [
-   4,
-   0,
-   0
-  ],
-  "tier": 12,
-  "type": "weapon"
- },
- "i.w.s.sable": {
-  "class": "sword",
-  "dmg": [
-   6,
-   10
-  ],
-  "level": 14,
-  "pause": 1.1,
-  "price": 1744,
-  "relic": false,
-  "req": [
-   0,
-   4,
-   0
-  ],
-  "tier": 17,
-  "type": "weapon"
- },
- "i.w.s.samur": {
-  "class": "sword",
-  "dmg": [
-   5,
-   19
-  ],
-  "level": 25,
-  "pause": 1.1,
-  "price": 4714,
-  "relic": false,
-  "req": [
-   4,
-   8,
-   0
-  ],
-  "tier": 28,
-  "type": "weapon"
- },
- "i.w.s.shir": {
-  "class": "sword",
-  "dmg": [
-   5,
-   10
-  ],
-  "level": 13,
-  "pause": 1.1,
-  "price": 1546,
-  "relic": false,
-  "req": [
-   6,
-   0,
-   0
-  ],
-  "tier": 16,
-  "type": "weapon"
- },
- "i.w.s.short": {
-  "class": "sword",
-  "dmg": [
-   3,
-   5
-  ],
-  "level": 5,
-  "pause": 1.1,
-  "price": 394,
-  "relic": false,
-  "req": [
-   0,
-   0,
-   0
-  ],
-  "tier": 8,
-  "type": "weapon"
- },
- "i.w.s.shpaga": {
-  "class": "rapier",
-  "dmg": [
-   3,
-   12
-  ],
-  "level": 15,
-  "pause": 1.0,
-  "price": 1954,
-  "relic": false,
-  "req": [
-   0,
-   6,
-   0
-  ],
-  "tier": 18,
-  "type": "weapon"
- },
- "i.w.s.yatagan": {
-  "class": "sword",
-  "dmg": [
-   8,
-   19
-  ],
-  "level": 29,
-  "pause": 1.1,
-  "price": 6154,
-  "relic": false,
-  "req": [
-   6,
-   6,
-   0
-  ],
-  "tier": 32,
-  "type": "weapon"
- },
- "i.w.spear.long": {
-  "class": "spear",
-  "dmg": [
-   7,
-   25
-  ],
-  "level": 24,
-  "pause": 1.5,
-  "price": 4384,
-  "relic": false,
-  "req": [
-   8,
-   6,
-   0
-  ],
-  "tier": 27,
-  "type": "weapon"
- },
  "i.w.spear.short": {
   "class": "spear",
   "dmg": [
    4,
    12
   ],
-  "level": 16,
+  "level": 17,
   "pause": 1.0,
-  "price": 2176,
+  "price": 2410,
   "relic": false,
   "req": [
    6,
    0,
    0
   ],
-  "tier": 19,
+  "tier": 20,
   "type": "weapon"
  },
  "i.w.t.alebarda": {
   "class": "heavy",
   "dmg": [
-   14,
-   23
+   17,
+   27
   ],
-  "level": 29,
+  "level": 35,
   "pause": 1.5,
-  "price": 6154,
+  "price": 8674,
   "relic": false,
   "req": [
    10,
    6,
    0
   ],
-  "tier": 32,
+  "tier": 38,
   "type": "weapon"
  },
  "i.w.t.battle": {
   "class": "axe",
   "dmg": [
    8,
-   16
+   17
   ],
-  "level": 23,
+  "level": 24,
   "pause": 1.2,
-  "price": 4066,
+  "price": 4384,
   "relic": false,
   "req": [
    8,
    4,
    0
   ],
-  "tier": 26,
+  "tier": 27,
   "type": "weapon"
  },
  "i.w.t.lesnik": {
@@ -4600,72 +4600,72 @@
   "class": "axe",
   "dmg": [
    3,
-   13
+   11
   ],
-  "level": 13,
+  "level": 11,
   "pause": 1.2,
-  "price": 1546,
+  "price": 1186,
   "relic": false,
   "req": [
    4,
    0,
    0
   ],
-  "tier": 16,
+  "tier": 14,
   "type": "weapon"
  },
  "i.w.t.sekira": {
   "class": "heavy",
   "dmg": [
-   11,
-   20
+   12,
+   22
   ],
-  "level": 24,
+  "level": 27,
   "pause": 1.5,
-  "price": 4384,
+  "price": 5410,
   "relic": false,
   "req": [
    8,
    6,
    0
   ],
-  "tier": 27,
+  "tier": 30,
   "type": "weapon"
  },
  "i.w.t.toporik": {
   "class": "axe",
   "dmg": [
-   4,
-   7
+   3,
+   5
   ],
-  "level": 7,
+  "level": 4,
   "pause": 1.2,
-  "price": 610,
+  "price": 304,
   "relic": false,
   "req": [
    0,
    0,
    0
   ],
-  "tier": 10,
+  "tier": 7,
   "type": "weapon"
  },
  "i.w.u.bulava": {
   "class": "staff",
   "dmg": [
    7,
-   12
+   13
   ],
-  "level": 22,
+  "level": 23,
   "pause": 1.3,
-  "price": 3760,
+  "price": 4066,
   "relic": false,
   "req": [
    0,
    0,
    8
   ],
-  "tier": 25,
+  "tier": 26,
   "type": "weapon"
  },
  "i.w.u.dubina": {
@@ -4690,21 +4690,165 @@
   "class": "staff",
   "dmg": [
    6,
-   11
+   12
   ],
-  "level": 19,
+  "level": 21,
   "pause": 1.3,
-  "price": 2914,
+  "price": 3466,
   "relic": false,
   "req": [
    0,
    0,
    6
   ],
-  "tier": 22,
+  "tier": 24,
   "type": "weapon"
  },
  "i.w.u.grom": {
+  "class": "staff",
+  "dmg": [
+   7,
+   14
+  ],
+  "level": 25,
+  "pause": 1.3,
+  "price": 4714,
+  "relic": false,
+  "req": [
+   0,
+   10,
+   10
+  ],
+  "tier": 28,
+  "type": "weapon"
+ },
+ "i.w.u.jezl": {
+  "class": "staff",
+  "dmg": [
+   9,
+   26
+  ],
+  "level": 45,
+  "pause": 1.3,
+  "price": 13834,
+  "relic": false,
+  "req": [
+   4,
+   10,
+   10
+  ],
+  "tier": 48,
+  "type": "weapon"
+ },
+ "i.w.u.jmage": {
+  "class": "staff",
+  "dmg": [
+   7,
+   21
+  ],
+  "level": 34,
+  "pause": 1.3,
+  "price": 8224,
+  "relic": false,
+  "req": [
+   0,
+   6,
+   8
+  ],
+  "tier": 37,
+  "type": "weapon"
+ },
+ "i.w.u.kuvalda": {
+  "class": "staff",
+  "dmg": [
+   9,
+   17
+  ],
+  "level": 31,
+  "pause": 1.3,
+  "price": 6946,
+  "relic": false,
+  "req": [
+   0,
+   6,
+   4
+  ],
+  "tier": 34,
+  "type": "weapon"
+ },
+ "i.w.u.molot": {
+  "class": "staff",
+  "dmg": [
+   11,
+   15
+  ],
+  "level": 33,
+  "pause": 1.3,
+  "price": 7786,
+  "relic": false,
+  "req": [
+   0,
+   8,
+   8
+  ],
+  "tier": 36,
+  "type": "weapon"
+ },
+ "i.w.u.moon": {
+  "class": "staff",
+  "dmg": [
+   10,
+   20
+  ],
+  "level": 38,
+  "pause": 1.3,
+  "price": 10096,
+  "relic": false,
+  "req": [
+   0,
+   6,
+   6
+  ],
+  "tier": 41,
+  "type": "weapon"
+ },
+ "i.w.u.palica": {
+  "class": "staff",
+  "dmg": [
+   5,
+   19
+  ],
+  "level": 28,
+  "pause": 1.3,
+  "price": 5776,
+  "relic": false,
+  "req": [
+   0,
+   4,
+   6
+  ],
+  "tier": 31,
+  "type": "weapon"
+ },
+ "i.w.u.palka": {
+  "class": "staff",
+  "dmg": [
+   2,
+   5
+  ],
+  "level": 5,
+  "pause": 1.3,
+  "price": 394,
+  "relic": false,
+  "req": [
+   0,
+   0,
+   0
+  ],
+  "tier": 8,
+  "type": "weapon"
+ },
+ "i.w.u.pmage": {
   "class": "staff",
   "dmg": [
    7,
@@ -4716,154 +4860,10 @@
   "relic": false,
   "req": [
    0,
-   10,
+   8,
    10
   ],
   "tier": 26,
-  "type": "weapon"
- },
- "i.w.u.jezl": {
-  "class": "staff",
-  "dmg": [
-   9,
-   25
-  ],
-  "level": 43,
-  "pause": 1.3,
-  "price": 12706,
-  "relic": false,
-  "req": [
-   4,
-   10,
-   10
-  ],
-  "tier": 46,
-  "type": "weapon"
- },
- "i.w.u.jmage": {
-  "class": "staff",
-  "dmg": [
-   6,
-   18
-  ],
-  "level": 29,
-  "pause": 1.3,
-  "price": 6154,
-  "relic": false,
-  "req": [
-   0,
-   6,
-   8
-  ],
-  "tier": 32,
-  "type": "weapon"
- },
- "i.w.u.kuvalda": {
-  "class": "staff",
-  "dmg": [
-   8,
-   15
-  ],
-  "level": 27,
-  "pause": 1.3,
-  "price": 5410,
-  "relic": false,
-  "req": [
-   0,
-   6,
-   4
-  ],
-  "tier": 30,
-  "type": "weapon"
- },
- "i.w.u.molot": {
-  "class": "staff",
-  "dmg": [
-   10,
-   13
-  ],
-  "level": 28,
-  "pause": 1.3,
-  "price": 5776,
-  "relic": false,
-  "req": [
-   0,
-   8,
-   8
-  ],
-  "tier": 31,
-  "type": "weapon"
- },
- "i.w.u.moon": {
-  "class": "staff",
-  "dmg": [
-   9,
-   18
-  ],
-  "level": 33,
-  "pause": 1.3,
-  "price": 7786,
-  "relic": false,
-  "req": [
-   0,
-   6,
-   6
-  ],
-  "tier": 36,
-  "type": "weapon"
- },
- "i.w.u.palica": {
-  "class": "staff",
-  "dmg": [
-   4,
-   16
-  ],
-  "level": 24,
-  "pause": 1.3,
-  "price": 4384,
-  "relic": false,
-  "req": [
-   0,
-   4,
-   6
-  ],
-  "tier": 27,
-  "type": "weapon"
- },
- "i.w.u.palka": {
-  "class": "staff",
-  "dmg": [
-   3,
-   6
-  ],
-  "level": 7,
-  "pause": 1.3,
-  "price": 610,
-  "relic": false,
-  "req": [
-   0,
-   0,
-   0
-  ],
-  "tier": 10,
-  "type": "weapon"
- },
- "i.w.u.pmage": {
-  "class": "staff",
-  "dmg": [
-   6,
-   13
-  ],
-  "level": 22,
-  "pause": 1.3,
-  "price": 3760,
-  "relic": false,
-  "req": [
-   0,
-   8,
-   10
-  ],
-  "tier": 25,
   "type": "weapon"
  },
  "i.w.u.pp": {
@@ -4887,19 +4887,19 @@
  "i.w.u.pp1": {
   "class": "staff",
   "dmg": [
-   5,
-   21
+   6,
+   24
   ],
-  "level": 32,
+  "level": 37,
   "pause": 1.3,
-  "price": 7360,
+  "price": 9610,
   "relic": false,
   "req": [
    4,
    10,
    10
   ],
-  "tier": 35,
+  "tier": 40,
   "type": "weapon"
  },
  "i.w.u.shtyk": {
@@ -4923,19 +4923,19 @@
  "i.w.u.smage": {
   "class": "staff",
   "dmg": [
-   4,
-   18
+   5,
+   20
   ],
-  "level": 26,
+  "level": 30,
   "pause": 1.3,
-  "price": 5056,
+  "price": 6544,
   "relic": false,
   "req": [
    0,
    6,
    8
   ],
-  "tier": 29,
+  "tier": 33,
   "type": "weapon"
  },
  "i.w.u.vkd": {

@@ -17,7 +17,7 @@ for f in glob.glob(C+'/items/i.w.*.json'):
     W.append(dict(d=d,r=r,sp=sp,xb=xb,mag=mag,power=power))
 for f in glob.glob(C+'/items/i.a.*.json'):
     d=json.load(open(f)); A.append(dict(d=d,r=req(d),slot=d['id'].split('.')[2],ar=n(d.get('armor'))))
-W_RANK=0.0
+W_RANK=0.7   # tiers by rank as much as by value: the old armour clusters, so pure value left levels 2–18 bare (05.10)
 def tiers(items,key):
     items=sorted(items,key=key); N=len(items); vals=[key(i) for i in items]
     lo,hi=math.log(max(vals[0],.05)),math.log(vals[-1])
@@ -34,7 +34,7 @@ for i in W:
     spread=max(.15,min(.6,spread))
     out.append(dict(id=d['id'],name=d['name'],tier=T,old=f"{d.get('dmg_min')}-{d.get('dmg_max')} sp{d.get('speed')} req{i['r']} {d.get('price')}",
         dmg_min=max(0,round(avg*(1-spread))),dmg_max=max(1,round(avg*(1+spread))),speed=sp,
-        level=max(1,T-3),req=[min(10,x*2) for x in i['r']],price=item_price(T)))
+        level=max(1,T-ITEM_LEVEL_BELOW_TIER),req=[min(10,x*2) for x in i['r']],price=item_price(T)))
 arm=[]
 by={}
 for i in A: by.setdefault(i['slot'],[]).append(i)
@@ -47,7 +47,7 @@ for slot,items in by.items():
         if i['ar']<=0 or slot not in SH:
             arm.append(dict(id=d['id'],name=d['name'],slot=slot,tier=0,armor=0,level=1,req=[min(10,x*2) for x in i['r']],price=d.get('price'),old=f"{i['ar']:.0f} req{i['r']} {d.get('price')}")); continue
         T=i['tier']
-        arm.append(dict(id=d['id'],name=d['name'],slot=slot,tier=T,armor=round(armor_set(T)*SH[slot]),level=max(1,T-3),
+        arm.append(dict(id=d['id'],name=d['name'],slot=slot,tier=T,armor=round(armor_set(T)*SH[slot]),level=max(1,T-ITEM_LEVEL_BELOW_TIER),
             req=[min(10,x*2) for x in i['r']],price=round(item_price(T)*(0.25 if slot!='s' else 0.5)*SH[slot]/0.15*0.6),
             old=f"{i['ar']:.0f} req{i['r']} {d.get('price')}"))
 json.dump(dict(weapons=out,armor=arm),open(outpath('items_new.json'),'w'),ensure_ascii=False,indent=0)

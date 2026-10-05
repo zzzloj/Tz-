@@ -18,7 +18,7 @@ def wclass(k, name):
     n = name.lower()
     if k.startswith('i.w.r.c.'): return 'crossbow'
     if k.startswith('i.w.r.b.'): return 'bow'
-    if any(x in n for x in ('двуручн', 'алебард', 'секир', 'фламберг', 'двухсторонн', 'глеф')): return 'heavy'
+    if any(x in n for x in ('двуручн', 'алебард', 'секир', 'фламберг', 'двухсторонн', 'глеф', 'длинное копь')): return 'heavy'
     if k.startswith('i.w.r.'): return 'thrown'
     if k.startswith('i.w.k.'): return 'knife'
     if k.startswith('i.w.spear'): return 'spear'

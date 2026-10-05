@@ -14,7 +14,7 @@ for f in glob.glob(C+'/npcs/n.*.json'):
     dl=max(1,n(w.get('attack_delay')) or 4); ar=n(w.get('armor')); dg=min(60,n(w.get('dodge')))
     ehp=hp*(1+ar/15)/(1-dg/100); edps=max(0.05,hit/100*a/dl)
     rows.append(dict(id=d['id'],name=c.get('name'),hp=hp,hit=hit,avg=a,delay=dl,armor=ar,dodge=dg,exp=n(w.get('exp_value')),
-        ehp=ehp,edps=edps,threat=math.sqrt(ehp*edps),animal=d['id'].startswith('n.a.'),other=other,
+        ehp=ehp,edps=edps,magic=w.get('verb') in ('магией','молнией'),threat=math.sqrt(ehp*edps),animal=d['id'].startswith('n.a.'),other=other,
         spawn=sp.get(d['id'],{}).get('n',0),dist=sp.get(d['id'],{}).get('dist')))
 lo=min(r['threat'] for r in rows if r['id']=='n.c.rat'); hi=max(r['threat'] for r in rows if not r['other'])
 for r in rows:

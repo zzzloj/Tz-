@@ -56,6 +56,14 @@ def regen_per_5s(maxhp, regen_skill, safe=False):
     return maxhp * (0.015 + 0.003 * regen_skill) * (3 if safe else 1)
 
 # ---------------------------------------------------------------- item curves
+# an item asks for a level 3 below its tier (gen_items.py): a hero of level L wears tier ≤ L + 3
+ITEM_LEVEL_BELOW_TIER = 3
+def tier_worn(L, gear_lag=2):
+    """Tier of the things a hero of level L wears, a little behind the best he may: items of level L − gear_lag.
+    A newcomer starts with the starting knife and buys his things over the first levels: the share of
+    the tier gap grows from 0 at level 1 to all of it at level 10."""
+    ramp = min(1.0, (L - 1) / 9)
+    return max(1, min(MAX_LEVEL, round(L - gear_lag + ITEM_LEVEL_BELOW_TIER * ramp)))
 def weapon_dps(L):
     """Average damage per second of a tier-L weapon in hand of a hero with dex 0, no bonuses."""
     return 1.2 + 0.36 * (L - 1)        # L1 ≈1.2, L50 ≈ 18.8
@@ -82,7 +90,12 @@ def exp_mod(hero_L, mob_L):
 def mob_gold(L): return round(2 + 0.9 * L ** 1.6)
 
 # ---------------------------------------------------------------- calibrated monster curves (calib_all.py)
-def mob_hp(L):  return max(18.0, 7.7 + 4.1 * L + 0.122 * L * L)   # ordinary monster (calibrated 04.10 for 1–1.5 s pauses)
-def mob_dmg(L): return 2.9 + 0.85 * L + 0.0054 * L * L    # average damage per 4 s (blow = this × pause / 4)
+def mob_hp(L):  return max(18.0, 22.12 + 2.631 * L + 0.4136 * L ** 2 - 0.005398 * L ** 3)   # ordinary monster (calib_all.py 05.10: 1–1.5 s pauses, real items, no points in crafts)
+def mob_dmg(L): return 3.166 + 0.3792 * L + 0.06129 * L ** 2 - 0.000994 * L ** 3    # average damage per 4 s (blow = this × pause / 4)
 ELITE = {'mob': (1, 1, 1), 'animal': (1, 1, 1), 'citizen': (1, 1, 1), 'elite': (3.0, 1.3, 3), 'guard': (3.0, 1.3, 3), 'boss': (8.0, 1.6, 8)}  # hp, dmg, exp
+def caster_dmg(L):
+    """Damage factor of a monster that strikes with magic: its blow meets magic evasion and magic defence,
+    which a warrior without magic skills barely has, so it would hit him twice as hard as a fighter of its level.
+    Calibrated 05.10 so a warrior of its level loses ~1.25× the health an ordinary monster costs (sim.py)."""
+    return max(0.45, min(0.75, 0.75 - 0.006 * L))
 def exp_to_next(L): return round(25 * L ** 2.7)
