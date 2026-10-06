@@ -12,7 +12,20 @@ export TEST_ROOT="${TEST_ROOT:-/tmp/tz-tests}"
 mkdir -p "$TEST_ROOT"
 failed=()
 step() { echo; echo "=== $1"; }
-run() { local name="$1"; shift; if "$@"; then echo "--- $name: passed"; else echo "--- $name: FAILED"; failed+=("$name"); fi; }
+# A failed check also goes out as a GitHub annotation with the end of its output: the job logs are not
+# always at hand, annotations are.
+run() {
+    local name="$1"; shift
+    local out="$TEST_ROOT/check-$$.out"
+    if "$@" > "$out" 2>&1; then cat "$out"; echo "--- $name: passed"
+    else
+        cat "$out"; echo "--- $name: FAILED"; failed+=("$name")
+        if [ -n "${GITHUB_ACTIONS:-}" ]; then
+            printf '::error title=%s failed::%s\n' "$name" "$(tail -n 40 "$out" | sed -e 's/%/%25/g' | awk 'BEGIN{ORS="%0A"} {print}')"
+        fi
+    fi
+    rm -f "$out"
+}
 
 step "lint"
 run lint sh tests/lint.sh
