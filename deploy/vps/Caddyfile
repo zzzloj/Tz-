@@ -1,0 +1,7 @@
+# HTTPS for the game server. TZ_HOST is the VPS name from .env: with no domain yet it is
+# <ip-with-dashes>.sslip.io, a name that resolves to the IP itself and gets a Let's Encrypt
+# certificate like any other. With a domain later, set TZ_HOST to it and restart caddy.
+{$TZ_HOST} {
+	encode gzip
+	reverse_proxy server:8080
+}

@@ -1,0 +1,56 @@
+# The game server on our own VPS (owner 06.10): Postgres, tz-engine and Caddy in front
+# of it (HTTPS from Let's Encrypt, WebSocket included). Lives in /opt/tz next to .env,
+# which deploy/vps/setup.sh writes once (DB_PASSWORD, TZ_HOST, TZ_ADMINS).
+# The image tz-engine:<commit> is built and loaded by .github/workflows/engine-deploy.yml.
+name: tz
+
+services:
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: tz
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set in .env}
+      POSTGRES_DB: tz
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tz -d tz"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  server:
+    image: tz-engine:${TZ_IMAGE_TAG:-latest}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://tz:${DB_PASSWORD}@db:5432/tz
+      PORT: "8080"
+      TZ_ADMINS: ${TZ_ADMINS:-}
+      TZ_COMMIT: ${TZ_IMAGE_TAG:-dev}
+      JAVA_TOOL_OPTIONS: ${JAVA_OPTS:--XX:MaxRAMPercentage=50}
+    expose:
+      - "8080"
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - server
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      TZ_HOST: ${TZ_HOST:?set in .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:

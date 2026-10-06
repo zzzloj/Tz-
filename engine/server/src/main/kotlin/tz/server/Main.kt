@@ -140,7 +140,7 @@ fun Application.game(content: Content, accounts: Accounts? = null, game: Game? =
     routing {
         get("/api/health") { call.respondText("ok") }
         // Commit the running server was built from (Railway sets it), so checks can wait for a new deploy.
-        get("/api/version") { call.respondText(System.getenv("RAILWAY_GIT_COMMIT_SHA") ?: "dev") }
+        get("/api/version") { call.respondText(System.getenv("TZ_COMMIT") ?: System.getenv("RAILWAY_GIT_COMMIT_SHA") ?: "dev") }
         get("/api/content/report") { call.respond(content.report()) }
         get("/api/locations/{id}") {
             val loc = content.locations[call.parameters["id"]]

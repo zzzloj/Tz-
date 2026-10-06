@@ -1,0 +1,94 @@
+name: engine-deploy
+
+# The game server on our own VPS (owner 06.10, deploy/vps): after the engine workflow is
+# green on main, build the server image here, load it on the VPS over SSH and restart it
+# with docker compose. Run it by hand with "migrate" to copy the Railway database over
+# (once, at the move; it replaces the VPS database).
+# Needs repository secrets (deploy/vps/setup.sh prints them); without them it only says so:
+#   VPS_HOST, VPS_USER, VPS_SSH_KEY — and DATABASE_PUBLIC_URL (Railway) for "migrate".
+on:
+  workflow_run:
+    workflows: [engine]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      migrate:
+        description: "Copy the Railway database to the VPS (replaces the VPS database)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: engine-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+      VPS_USER: ${{ secrets.VPS_USER }}
+      VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+    steps:
+      - name: Secrets
+        run: |
+          if [ -z "$VPS_HOST" ] || [ -z "$VPS_USER" ] || [ -z "$VPS_SSH_KEY" ]; then
+            echo "::warning title=Deploy skipped::Set VPS_HOST, VPS_USER and VPS_SSH_KEY (deploy/vps/setup.sh prints them)."
+            echo "SKIP=1" >> "$GITHUB_ENV"
+          fi
+
+      - uses: actions/checkout@v4
+        if: env.SKIP != '1'
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: SSH
+        if: env.SKIP != '1'
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -T 20 "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          ssh "$VPS_USER@$VPS_HOST" 'docker compose version && test -f /opt/tz/.env'
+
+      - name: Build the image
+        if: env.SKIP != '1'
+        run: |
+          echo "TAG=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          docker build -f engine/Dockerfile -t "tz-engine:$(git rev-parse HEAD)" .
+
+      - name: Load it on the VPS and restart
+        if: env.SKIP != '1'
+        run: |
+          docker save "tz-engine:$TAG" | gzip -1 | ssh "$VPS_USER@$VPS_HOST" 'gunzip | docker load'
+          scp deploy/vps/docker-compose.yml deploy/vps/Caddyfile "$VPS_USER@$VPS_HOST:/opt/tz/"
+          ssh "$VPS_USER@$VPS_HOST" "set -e; cd /opt/tz
+            grep -q '^TZ_IMAGE_TAG=' .env && sed -i 's/^TZ_IMAGE_TAG=.*/TZ_IMAGE_TAG=$TAG/' .env || echo 'TZ_IMAGE_TAG=$TAG' >> .env
+            docker compose up -d --remove-orphans
+            docker image ls tz-engine --format '{{.Tag}}' | grep -v '^$TAG\$' | sed 's/^/tz-engine:/' | xargs -r docker image rm || true"
+
+      - name: Copy the Railway database
+        if: env.SKIP != '1' && inputs.migrate
+        env:
+          DATABASE_PUBLIC_URL: ${{ secrets.DATABASE_PUBLIC_URL }}
+        run: |
+          [ -n "$DATABASE_PUBLIC_URL" ] || { echo "::error::DATABASE_PUBLIC_URL (Railway) is not set"; exit 1; }
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSo /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt noble-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update -q && sudo apt-get install -yq postgresql-client-17
+          /usr/lib/postgresql/17/bin/pg_dump --format=custom --no-owner --no-privileges "$DATABASE_PUBLIC_URL" -f tz.dump
+          ls -l tz.dump
+          ssh "$VPS_USER@$VPS_HOST" 'cd /opt/tz && docker compose stop server'
+          ssh "$VPS_USER@$VPS_HOST" 'cd /opt/tz && docker compose exec -T db pg_restore --clean --if-exists --no-owner --no-privileges -U tz -d tz' < tz.dump
+          rm tz.dump
+          ssh "$VPS_USER@$VPS_HOST" 'cd /opt/tz && docker compose start server'
+
+      - name: Smoke test
+        if: env.SKIP != '1'
+        run: |
+          HOST=$(echo "$VPS_HOST" | tr . -).sslip.io
+          echo "Server: https://$HOST"
+          EXPECT_SHA=$TAG python3 engine/ci/smoke.py "https://$HOST"

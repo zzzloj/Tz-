@@ -3,11 +3,12 @@ name: engine-backup
 # A nightly pg_dump of the game database, encrypted, kept as a workflow
 # artifact for 30 days. The repository is public, so the dump is encrypted
 # with BACKUP_PASSPHRASE (AES-256, openssl) before it is uploaded.
-# Needs two repository secrets; without them the job only says so:
-#   DATABASE_PUBLIC_URL — Railway → Postgres → Variables → DATABASE_PUBLIC_URL
-#   BACKUP_PASSPHRASE   — any long random string, kept somewhere safe
+# Where from: the VPS (deploy/vps) when VPS_HOST, VPS_USER, VPS_SSH_KEY are set,
+# otherwise Railway (DATABASE_PUBLIC_URL). Without either, or without
+# BACKUP_PASSPHRASE (any long random string, kept somewhere safe), the job only says so.
 # Restore: openssl enc -d -aes-256-cbc -pbkdf2 -in tz.dump.enc -out tz.dump
-#          pg_restore --clean --no-owner -d "$DATABASE_URL" tz.dump
+#          VPS:     docker compose exec -T db pg_restore --clean --if-exists --no-owner -U tz -d tz < tz.dump
+#          Railway: pg_restore --clean --no-owner -d "$DATABASE_URL" tz.dump
 on:
   schedule:
     - cron: "17 1 * * *"
@@ -22,16 +23,28 @@ jobs:
         env:
           DATABASE_PUBLIC_URL: ${{ secrets.DATABASE_PUBLIC_URL }}
           BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
         run: |
-          if [ -z "$DATABASE_PUBLIC_URL" ] || [ -z "$BACKUP_PASSPHRASE" ]; then
-            echo "::warning title=Backup skipped::Set the DATABASE_PUBLIC_URL and BACKUP_PASSPHRASE repository secrets to enable backups."
+          if [ -z "$BACKUP_PASSPHRASE" ] || { [ -z "$VPS_SSH_KEY" ] && [ -z "$DATABASE_PUBLIC_URL" ]; }; then
+            echo "::warning title=Backup skipped::Set BACKUP_PASSPHRASE and the VPS secrets (or DATABASE_PUBLIC_URL) to enable backups."
             exit 0
           fi
-          sudo install -d /usr/share/postgresql-common/pgdg
-          sudo curl -fsSo /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
-          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt noble-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
-          sudo apt-get update -q && sudo apt-get install -yq postgresql-client-17
-          /usr/lib/postgresql/17/bin/pg_dump --format=custom --no-owner "$DATABASE_PUBLIC_URL" -f tz.dump
+          if [ -n "$VPS_SSH_KEY" ] && [ -n "$VPS_HOST" ] && [ -n "$VPS_USER" ]; then
+            install -d -m 700 ~/.ssh
+            printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/id_ed25519
+            chmod 600 ~/.ssh/id_ed25519
+            ssh-keyscan -T 20 "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+            ssh "$VPS_USER@$VPS_HOST" 'cd /opt/tz && docker compose exec -T db pg_dump --format=custom --no-owner -U tz tz' > tz.dump
+          else
+            sudo install -d /usr/share/postgresql-common/pgdg
+            sudo curl -fsSo /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+            echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt noble-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+            sudo apt-get update -q && sudo apt-get install -yq postgresql-client-17
+            /usr/lib/postgresql/17/bin/pg_dump --format=custom --no-owner "$DATABASE_PUBLIC_URL" -f tz.dump
+          fi
+          test -s tz.dump
           openssl enc -aes-256-cbc -pbkdf2 -salt -pass env:BACKUP_PASSPHRASE -in tz.dump -out tz.dump.enc
           rm tz.dump
           ls -l tz.dump.enc
