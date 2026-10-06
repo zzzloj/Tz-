@@ -7,6 +7,7 @@
 /build/
 /UserSettings/
 *.csproj
+!/tools/check/check.csproj
 *.sln
 # Pictures and fonts are copied from content/art and engine/iosApp by tools/prepare.py before a build.
 /Assets/Resources/Art/

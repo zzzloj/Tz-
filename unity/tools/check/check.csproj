@@ -1,0 +1,19 @@
+<!-- Compile check of the Unity client's runtime code without Unity: the scripts against stubs of the
+     Unity and Newtonsoft APIs they use (Stubs.cs). It catches C# mistakes, not wrong Unity API use.
+     Run: dotnet build unity/tools/check -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RestoreSources>none</RestoreSources>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <NoWarn>CS0649;CS0414;CS0169;CS1998</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../Assets/Scripts/Runtime/**/*.cs" />
+    <Compile Include="Stubs.cs" />
+  </ItemGroup>
+</Project>
