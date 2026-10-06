@@ -159,10 +159,26 @@ class Balance(private val o: JsonObject) {
     fun monsterDamagePer4s(l: Int): Double = poly(list(mo, "dmgPer4s"), l)
     fun monsterExp(l: Int): Long { val e = list(mo, "exp"); return (e.getOrElse(0) { 8.0 } * l.toDouble().pow(e.getOrElse(1) { 1.45 })).roundToLong() }
     fun monsterGold(l: Int): Int { val g = list(mo, "gold"); return (g.getOrElse(0) { 2.0 } + g.getOrElse(1) { .9 } * l.toDouble().pow(g.getOrElse(2) { 1.6 })).roundToInt() }
-    /** Kind multipliers: health, damage, experience (and gold). */
-    fun kind(kind: String): Triple<Double, Double, Double> {
-        val k = (obj("monsters", "kinds")[kind] as? JsonArray)?.mapNotNull { (it as? JsonPrimitive)?.doubleOrNull } ?: listOf(1.0, 1.0, 1.0)
-        return Triple(k[0], k[1], k[2])
+
+    // ---- power (owner 06.10, balance.md §6) -------------------------------------------------------
+    private val pw = obj("power")
+    /** Chance to win a duel from the power ratio r: 1 / (1 + e^-(k·ln r + b)). */
+    val powerChance: Pair<Double, Double> get() = list(pw, "chance").let { (it.getOrNull(0) ?: 8.75) to (it.getOrNull(1) ?: 0.05) }
+    /** The win chance (0..1) a warrior of its level should have against an NPC [id] of [kind] (tools/balance/gen_mobs.py); null — ordinary. */
+    fun powerWin(id: String, kind: String): Double? = obj("power", "win").let { w -> map(w)[id] ?: map(w)[kind] }?.div(100)
+    private val ref = obj("power", "reference")
+    private fun lin(key: String, l: Int, a: Double, b: Double) = list(ref, key).let { (it.getOrNull(0) ?: a) + (it.getOrNull(1) ?: b) * l }
+    /** The ordinary monster of level [l] that power is measured against, and its health. */
+    fun referenceMonster(l: Int): Pair<Stats, Int> {
+        val pause = num(ref, "pause", 1.4)
+        val blow = monsterDamagePer4s(l) * pause / 4
+        return Stats(
+            hit = lin("accuracy", l, 4.0, 1.6).roundToInt(), dmgMin = (blow * 0.6).roundToInt(), dmgMax = (blow * 1.4).roundToInt().coerceAtLeast(1),
+            pauseMs = (pause * 1000).roundToLong(), ranged = false, armor = lin("armor", l, 1.0, 1.5).roundToInt(),
+            dodge = lin("evasion", l, 0.0, 1.3).roundToInt(), parry = 0, magicDodge = lin("evasion", l, 0.0, 1.3).roundToInt(),
+            magicResist = lin("magicDefence", l, 0.4, 0.6).roundToInt(), verb = "бьёт", expValue = 0, ammo = "", level = l,
+            critChance = num(ref, "crit", 3.0),
+        ) to monsterHp(l).roundToInt()
     }
 
     /** Experience share for a hero of [heroLevel] killing a monster of [mobLevel]. */

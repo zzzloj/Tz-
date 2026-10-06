@@ -119,21 +119,30 @@ class BalanceFightTest {
         }
     }
 
-    /** Bosses and elites are for one hero, not a group (owner 06.10): a warrior of their level alone has a real chance. */
+    /**
+     * Strong ones by power (owner 06.10, balance.md §6): for every NPC with a win target in content/logic/balance.json
+     * "power" (elites, bosses, guards, the owner's own numbers), the chance Power predicts for a warrior of its level
+     * is that target, and real fights on the server agree with Power.
+     */
     @Test
-    fun noBossNeedsAGroup() {
+    fun strongOnesMatchTheirPower() {
         val random = Random(2)
-        val group = ArrayList<String>()
+        val bad = ArrayList<String>()
         for ((key, o) in content.balanceNpcs.entries.sortedBy { num(it.value, "level") }) {
-            val kind = o["kind"]?.jsonPrimitive?.content
-            if (key.startsWith("_") || kind !in setOf("boss", "elite") || !content.npcs.containsKey(key)) continue
+            val kind = o["kind"]?.jsonPrimitive?.content ?: continue
+            if (key.startsWith("_") || !content.npcs.containsKey(key)) continue
+            val target = b.powerWin(key, kind) ?: continue
             val level = num(o, "level").toInt().coerceIn(1, 50)
             val skills = warrior(level)
             val hero = Formulas.player(b, skills, level, gear(skills, level, level - 2), { content.items[it] }, { content.itemBalance(it) }, content.sets)
-            val r = fights(hero, Formulas.npc(content.npcs[key]?.get("war") as? JsonObject, o), num(o, "hp").toInt(), 200, random)
-            println("$kind $key L$level: warrior alone wins ${(r.win * 100).toInt()}%")
-            if (r.win < 0.15) group += "$key L$level: ${(r.win * 100).toInt()}%"
+            val mob = Formulas.npc(content.npcs[key]?.get("war") as? JsonObject, o)
+            val hp = num(o, "hp").toInt()
+            val predicted = Power.chance(b, hero, hero.hpMax, mob, hp)
+            val r = fights(hero, mob, hp, 300, random)
+            println("$kind $key L$level: target ${(target * 100).toInt()}%, power ${(predicted * 100).toInt()}%, fights ${(r.win * 100).toInt()}%")
+            if (kotlin.math.abs(predicted - target) > 0.12 || kotlin.math.abs(r.win - predicted) > 0.17)
+                bad += "$key L$level: target ${(target * 100).toInt()}%, power ${(predicted * 100).toInt()}%, fights ${(r.win * 100).toInt()}%"
         }
-        assertTrue(group.isEmpty(), "bosses and elites a warrior of their level alone almost never beats: $group")
+        assertTrue(bad.isEmpty(), "power and fights disagree with the targets: $bad")
     }
 }

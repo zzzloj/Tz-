@@ -24,6 +24,7 @@ import tz.shared.Protocol
 import tz.shared.Rules
 import java.sql.Connection
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 /**
@@ -1493,7 +1494,9 @@ class Game(
                 art = pic?.first, undead = pic?.second == true,
                 nextBlow = blowMs?.let { ms -> ((ms + 999) / 1000).toInt() }, nextBlowMs = blowMs,
                 level = if (it.owner == null) it.stats.level else 0,
-                hostile = (it.aggressive || it.criminal) && it.owner == null)
+                hostile = (it.aggressive || it.criminal) && it.owner == null,
+                power = Power.of(balance, it.stats, it.proto.hpMax, it.stats.level),
+                winChance = if (it.owner == null && !p.ghost) (Power.chance(balance, p.stats, p.hp, it.stats, it.hp) * 100).roundToInt() else null)
         }
         val occupied = loc.exits.map { it.target }.distinct().filter { t ->
             t != loc.id && (world.npcsIn(t).isNotEmpty() || players.values.any { it.location == t && now - it.lastSeen < ACTIVE_SECONDS })
@@ -1534,7 +1537,7 @@ class Game(
             ghost = p.ghost,
             exp = (p.exp - balance.expForLevel(p.level)).coerceIn(0, Int.MAX_VALUE.toLong()).toInt(),
             expNext = if (p.level >= balance.maxLevel) 0 else balance.expToNext(p.level).toInt(),
-            level = p.level, expTotal = p.exp,
+            level = p.level, expTotal = p.exp, power = Power.of(balance, p.stats, p.hpMax, p.level),
             hit = s.hit, dmgMin = s.dmgMin, dmgMax = s.dmgMax, armor = s.armor, dodge = s.dodge,
             parry = s.parry, magicDodge = s.magicDodge, magicParry = 0, magicResist = s.magicResist,
             rank = Levels.rank(Levels.percent(p.skills())), title = Levels.title(p.skills()),

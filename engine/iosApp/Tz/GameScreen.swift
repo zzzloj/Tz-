@@ -494,6 +494,7 @@ private struct ListRow<Buttons: View, Extra: View>: View {
     var hp: (Int, Int)? = nil
     var hurt = false
     var undead = false
+    var odds: (String, Int)? = nil
     @ViewBuilder let buttons: () -> Buttons
     @ViewBuilder let extra: () -> Extra
     @State private var open = false
@@ -515,6 +516,7 @@ private struct ListRow<Buttons: View, Extra: View>: View {
                 Button { open.toggle() } label: {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(name).font(TzType.name).foregroundStyle(hurt ? c.danger : c.title).lineLimit(1)
+                        if let o = odds { Text(o.0).font(TzType.small).foregroundStyle(o.1 == 0 ? c.logGain : o.1 == 1 ? c.accent : c.danger).lineLimit(1) }
                         if let s = status { Text(s).font(TzType.small).foregroundStyle(c.textMuted).lineLimit(1) }
                         if let h = hp { TzBar(value: h.0, max: h.1, fill: c.health).frame(height: CGFloat(Design.Size.shared.BAR_THIN)) }
                     }.frame(maxWidth: .infinity, alignment: .leading)
@@ -648,7 +650,8 @@ private struct PlaceTab: View {
         let fight = npc.attackable && !ch.ghost && (npc.fightingYou || npc.attacking != nil || !npc.canTalk)
         let title = npc.name + (npc.level > 0 ? " · ур. \(npc.level)" : "") + (npc.attackable && npc.hpMax > 0 ? "  \(npc.hp)/\(npc.hpMax)" : "")
         return ListRow(name: title, status: status(npc), art: npc.art.map { GameScene.shared.artPath(key: $0) },
-                hp: npc.attackable && npc.hpMax > 0 ? (Int(npc.hp), Int(npc.hpMax)) : nil, hurt: npc.fightingYou, undead: npc.undead) {
+                hp: npc.attackable && npc.hpMax > 0 ? (Int(npc.hp), Int(npc.hpMax)) : nil, hurt: npc.fightingYou, undead: npc.undead,
+                odds: GameScene.shared.oddsLine(npc: npc).map { ($0, Int(GameScene.shared.oddsTone(npc: npc))) }) {
             if fight {
                 ActionButton(label: "удар по \(npc.name)", enabled: !busy && !resting, action: { onAttack(npc) }, icon: "attack", danger: npc.fightingYou)
                 ForEach(0..<slots.count, id: \.self) { i in SlotButton(ability: slots[i], target: npc.id, blocked: busy || resting, layout: layout) }
@@ -896,7 +899,7 @@ private struct HeroTab: View {
                 ActionButton(label: "Аккаунт", enabled: !busy, action: layout.openAccount, icon: "settings")
             }
             Text("сила \(ch.str) · ловкость \(ch.dex) · интеллект \(ch.int_)" + (ch.skillPoints > 0 ? " · свободных очков \(ch.skillPoints)" : ""))
-            Text("уровень \(ch.level) · опыт \(ch.exp)/\(ch.expNext)").font(TzType.small).foregroundStyle(c.textMuted)
+            Text("уровень \(ch.level) · опыт \(ch.exp)/\(ch.expNext) · мощь \(ch.power)").font(TzType.small).foregroundStyle(c.textMuted)
             TzBar(value: Int(ch.exp), max: Int(ch.expNext), fill: c.exp)
             Text("удар \(ch.hit)% · урон \(ch.dmgMin)–\(ch.dmgMax) · броня \(ch.armor) · уклон \(ch.dodge)").font(TzType.small)
             Text("парирование \(ch.parry) · уклон от магии \(ch.magicDodge) · защита от магии \(ch.magicParry) · сопр. магии \(ch.magicResist)").font(TzType.small)

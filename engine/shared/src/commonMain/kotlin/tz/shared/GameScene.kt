@@ -48,6 +48,18 @@ object GameScene {
         return if (t % 10 == 0L) (t / 10).toString() else "${t / 10},${t % 10}"
     }
 
+    /** Power and your chance against an NPC, for its row: «мощь 812 · шанс 74 %»; null — nothing to show. */
+    fun oddsLine(npc: NpcView): String? {
+        if (npc.power <= 0 || npc.mine || npc.owner != null) return null
+        return "мощь ${npc.power}" + (npc.winChance?.let { " · шанс $it %" } ?: "")
+    }
+
+    /** How the chance looks: 0 — good (70 % and more), 1 — even (40–69 %), 2 — bad. */
+    fun oddsTone(npc: NpcView): Int = when (val w = npc.winChance) {
+        null -> 1
+        else -> if (w >= 70) 0 else if (w >= 40) 1 else 2
+    }
+
     /** A craft's progress for the hero screen: «практика 12 из 40», at the top — «предел». */
     fun craftLine(c: CraftSkillView): String = if (c.next <= 0) "предел" else "практика ${c.practice} из ${c.next}"
 

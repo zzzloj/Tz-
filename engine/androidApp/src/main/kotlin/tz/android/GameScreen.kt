@@ -478,6 +478,7 @@ private fun PlaceTab(
         }
         val title = npc.name + (if (npc.level > 0) " · ур. ${npc.level}" else "") + if (npc.attackable && npc.hpMax > 0) "  ${npc.hp}/${npc.hpMax}" else ""
         ListRow(title, status, npc.art?.let(GameScene::artPath), hp = if (npc.attackable && npc.hpMax > 0) npc.hp to npc.hpMax else null, hurt = npc.fightingYou, undead = npc.undead,
+            odds = GameScene.oddsLine(npc)?.let { it to GameScene.oddsTone(npc) },
             extra = {
                 TextButton(onClick = { more.look(npc.id) }, enabled = !busy) { Text("осмотреть") }
                 if (!ch.ghost && !npc.mine && npc.owner == null && npc.id.startsWith("n.a.") && (ch.skills["animaltaming"] ?: 0) > 0)
@@ -577,6 +578,7 @@ private fun PersonRow(p: PersonView, game: GameView, busy: Boolean, thief: Boole
 private fun ListRow(
     name: String, status: String?, art: String?,
     hp: Pair<Int, Int>? = null, hurt: Boolean = false, undead: Boolean = false, medal: String? = null,
+    odds: Pair<String, Int>? = null,
     extra: @Composable () -> Unit = {},
     buttons: @Composable () -> Unit,
 ) {
@@ -593,6 +595,7 @@ private fun ListRow(
             }
             Column(Modifier.weight(1f).padding(horizontal = Design.Space.S.dp).clickable { open = !open }) {
                 Text(name, style = Tz.type.name, color = if (hurt) c.danger else c.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                odds?.let { (t, tone) -> Text(t, style = Tz.type.small, color = when (tone) { 0 -> c.logGain; 1 -> c.accent; else -> c.danger }, maxLines = 1) }
                 status?.let { Text(it, style = Tz.type.small, color = c.textMuted, maxLines = 1, overflow = TextOverflow.Ellipsis) }
                 hp?.let { (v, m) -> TzBar(v, m, c.health, Modifier.padding(top = 2.dp).height(Design.Size.BAR_THIN.dp)) }
             }
@@ -723,7 +726,7 @@ private fun HeroTab(game: GameView, busy: Boolean, sub: Int, more: MoreActions, 
                 ActionButton("Аккаунт", !busy, layout.openAccount, icon = "settings")
             }
             Text("сила ${ch.str} · ловкость ${ch.dex} · интеллект ${ch.int}" + if (ch.skillPoints > 0) " · свободных очков ${ch.skillPoints}" else "", style = Tz.type.body, color = c.text)
-            Text("уровень ${ch.level} · опыт ${ch.exp}/${ch.expNext}", style = Tz.type.small, color = c.textMuted)
+            Text("уровень ${ch.level} · опыт ${ch.exp}/${ch.expNext} · мощь ${ch.power}", style = Tz.type.small, color = c.textMuted)
             TzBar(ch.exp, ch.expNext, c.exp)
             Text("удар ${ch.hit}% · урон ${ch.dmgMin}–${ch.dmgMax} · броня ${ch.armor} · уклон ${ch.dodge}", style = Tz.type.small, color = c.text)
             Text("парирование ${ch.parry} · уклон от магии ${ch.magicDodge} · защита от магии ${ch.magicParry} · сопр. магии ${ch.magicResist}", style = Tz.type.small, color = c.text)

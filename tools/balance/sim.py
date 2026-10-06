@@ -97,11 +97,13 @@ def hero_real(arch, L, s, gear_lag):
     wskill = g({'melee': 'cw', 'ranged': 'rng', 'magic': 'magic'}[kind], 0) if weapon else g('hand', 0)
     flat, mult = dmg_bonus(g('str'), wskill, 'crossbow' if cls == 'crossbow' else 'magic' if kind == 'magic' else 'melee')
     hp = hp_max(g('str'), L)
-    return dict(name=arch, L=L, hp=hp, maxhp=hp, acc=accuracy(g('dex'), wskill, L), eva=evasion(g('dex'), g('dodge', 0), L),
-                meva=evasion(g('dex'), g('mdodge', 0), L),
-                dmin=(wmin + flat * pause / 4) * mult, dmax=(wmax + flat * pause / 4) * mult, delay=delay(pause, g('dex')),
-                crit=crit_chance(cls), pen=pen_factor(cls), magic=kind == 'magic', armor=armor,
-                mres=magic_resist(g('int'), g('mres', 0), armor), block=block(shield, g('parry', 0), g('dex')),
+    # whole points as the server keeps them (Formulas.player: min damage rounded down, max to nearest, the rest down)
+    bc, bs = block(shield, g('parry', 0), g('dex'))
+    return dict(name=arch, L=L, hp=hp, maxhp=hp, acc=int(accuracy(g('dex'), wskill, L)), eva=int(evasion(g('dex'), g('dodge', 0), L)),
+                meva=int(evasion(g('dex'), g('mdodge', 0), L)),
+                dmin=int((wmin + flat * pause / 4) * mult), dmax=max(1, math.floor((wmax + flat * pause / 4) * mult + 0.5)), delay=delay(pause, g('dex')),
+                crit=crit_chance(cls), pen=pen_factor(cls), magic=kind == 'magic', armor=round(armor),
+                mres=int(magic_resist(g('int'), g('mres', 0), armor)), block=(int(bc), bs),
                 regen=g('regen', 0), stats=s,
                 spell=spell_of(L, g('int'), g('magic', 0), g('dex')) if kind == 'magic' else None,
                 mana=mana_max(g('int'), L))

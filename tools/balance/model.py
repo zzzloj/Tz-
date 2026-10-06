@@ -99,3 +99,29 @@ def caster_dmg(L):
     Calibrated 05.10 so a warrior of its level loses ~1.25× the health an ordinary monster costs (sim.py)."""
     return max(0.45, min(0.75, 0.75 - 0.006 * L))
 def exp_to_next(L): return round(25 * L ** 2.7)
+
+# ---------------------------------------------------------------- power (owner 06.10)
+# One number for how strong a fighter is, from the same formulas as the fight (Formulas.attack on the server):
+#   expected damage of a blow = hit chance × mean damage × (1 − shield) × (1 − armour or magic defence) × crit,
+#   ratio r(A, B) = (A's damage per second to B × A's health) / (B's damage per second to A × B's health)
+#                 = how many healths of B A deals while B takes one health of A.
+# The chance A wins a duel is a logistic of ln r, fitted 06.10 on 912 simulated duels (rmse 5 % where it is not 0 or 100):
+import json as _json, os as _os
+POWER_CHANCE = tuple(_json.load(open(_os.path.join(_os.path.dirname(_os.path.abspath(__file__)), '..', '..', 'content', 'logic', 'balance.json')))['power']['chance'])
+def blow_expected(a, d):
+    eva = d.get('meva', d['eva']) if a['magic'] else d['eva']
+    x = hit_chance(a['acc'], eva) / 100 * (a['dmin'] + a['dmax']) / 2
+    if a['magic']: x *= 1 - magic_cut(d['mres'], a['L'])
+    else:
+        x *= 1 - armor_cut(d['armor'], a['L'], a.get('pen', 1.0))
+        bc, bs = d['block']
+        if bc: x *= 1 - bc / 100 * bs
+    return x * (1 + a['crit'] / 100 * (CRIT_MULT - 1))
+def dps_to(a, d): return blow_expected(a, d) / a['delay']
+def power_ratio(a, d): return dps_to(a, d) * a['maxhp'] / max(1e-9, dps_to(d, a) * d['maxhp'])
+def win_chance(r):
+    k, b = POWER_CHANCE
+    return 1 / (1 + math.exp(-(k * math.log(max(r, 1e-9)) + b)))
+def ratio_for_win(p):
+    k, b = POWER_CHANCE
+    return math.exp((math.log(p / (1 - p)) - b) / k)

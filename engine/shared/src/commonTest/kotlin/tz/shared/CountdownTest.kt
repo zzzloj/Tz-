@@ -37,4 +37,15 @@ class CountdownTest {
             GameScene.teachLine(TeachOfferView("k2now", "smith", "Кузнец", 2, 2, 135, 0, note = "дальше только практикой")))
         assertEquals(listOf("Атрибуты", "Бой", "Магия", "Выживание", "Воровство", "Звери"), GameScene.SKILL_GROUPS.map { it.first })
     }
+
+    @Test
+    fun powerAndChance() {
+        val wolf = NpcView("n.c.wolf", "волк", 40, 40, attackable = true, level = 16, power = 180, winChance = 74)
+        assertEquals("мощь 180 · шанс 74 %", GameScene.oddsLine(wolf))
+        assertEquals(0, GameScene.oddsTone(wolf))
+        assertEquals(1, GameScene.oddsTone(wolf.copy(winChance = 45)))
+        assertEquals(2, GameScene.oddsTone(wolf.copy(winChance = 12)))
+        assertEquals(null, GameScene.oddsLine(wolf.copy(mine = true)))
+        assertEquals("мощь 180", GameScene.oddsLine(wolf.copy(winChance = null)))
+    }
 }

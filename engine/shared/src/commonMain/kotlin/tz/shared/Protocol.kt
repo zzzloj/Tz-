@@ -48,6 +48,10 @@ data class NpcView(
     val level: Int = 0,
     /** A monster or an outlaw that attacks whoever it notices. */
     val hostile: Boolean = false,
+    /** Its power (balance.md §6): the same scale as CharacterView.power. */
+    val power: Int = 0,
+    /** Your chance to beat it alone now, percent, from both powers and both healths; null — not shown. */
+    val winChance: Int? = null,
 )
 
 @Serializable
@@ -174,6 +178,8 @@ data class CharacterView(
     /** Level 1–50 and all experience ever gained (it keeps counting past the top level). */
     val level: Int = 1,
     val expTotal: Long = 0,
+    /** Power (balance.md §6): things, skills and attributes in one number; an ordinary monster of your level has about a third to a half of yours. */
+    val power: Int = 0,
     /** Criminal title (бандит, убийца, мародер…) and minutes left; null — innocent. */
     val crime: String? = null,
     val crimeMinutes: Long = 0,
