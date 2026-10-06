@@ -19,7 +19,7 @@
     "objects": {
         "n.w.Veelzevul": {
             "char": {
-                "name": "Веельзевул",
+                "name": "Вельзевул",
                 "hp": 1000,
                 "hp_max": 1000,
                 "mana": 1000,

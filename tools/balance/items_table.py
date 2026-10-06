@@ -43,7 +43,9 @@ def gems(k): return [GEMN.get(g,g) for g in k.split('..')[1:]]
 # ---- special decisions (proposals) ----
 DRAK_W={'i.w.s.dr1..me'}
 # Levels set by the owner, whatever the tiers say.
-LEVEL_SET={'i.w.r.b.short':(8,'Владелец 05.10: короткий лук с 8 уровня — у лучника не было оружия на уровнях 2–10.')}
+LEVEL_SET={'i.w.r.b.short':(8,'Владелец 05.10: короткий лук с 8 уровня — у лучника не было оружия на уровнях 2–10.'),
+    'i.w.u.pp1':(47,'Владелец 06.10: редкий дроп Вельзевула (5 %), ступень 50.'),
+    'i.w.s.fire':(47,'Владелец 06.10: редкий дроп Михаила (5 %), ступень 50.')}
 weapons=[]
 for w in NEW['weapons']:
     if w['id'] not in I: continue

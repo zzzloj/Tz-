@@ -230,7 +230,8 @@ class World(
                 val wander = parseWander(char.str("wander"))
                 val proto = Proto(
                     templateOf(key), name, hpMax, Formulas.npc(war, nb),
-                    counted(value["items"]), emptyList(), counted(value["osvej"]), wander, respawn,
+                    // Random loot comes from the template: placed NPCs roll it on every respawn, as spawned ones do.
+                    counted(value["items"]), randomLoot(content.npcs[templateOf(key)]?.get("itemsrnd")), counted(value["osvej"]), wander, respawn,
                     stockOf((value["bank"] as? JsonPrimitive)?.contentOrNull ?: content.npcs[templateOf(key)]?.str("bank")),
                 )
                 val home = respawn?.location ?: loc

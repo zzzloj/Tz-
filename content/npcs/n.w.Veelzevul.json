@@ -1,7 +1,7 @@
 {
     "id": "n.w.Veelzevul",
     "char": {
-        "name": "Веельзевул",
+        "name": "Вельзевул",
         "hp": 1000,
         "hp_max": 1000,
         "mana": 1000,
@@ -41,5 +41,13 @@
     ],
     "equip": [
         "i.a.b.c"
+    ],
+    "itemsrnd": [
+        {
+            "id": "i.w.u.pp1",
+            "chance": 5,
+            "min": 1,
+            "max": 1
+        }
     ]
 }

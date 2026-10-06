@@ -332,6 +332,14 @@ private suspend fun Game.gatherExtras(p: Game.Player, extra: JsonObject?, now: L
             }
         }
     }
+    // Veins of rare gems in the castle vault rooms (owner 06.10): each room its own gem.
+    val veins = extra?.get("veins") as? JsonObject
+    val veinGem = (veins?.get("locations") as? JsonObject)?.str(p.location)
+    if (veins != null && veinGem != null && Crafting.roll(veins["chance"] as? JsonObject, 0, 0, dice)) {
+        changeItem(p, veinGem, veins.int("count") ?: 1)
+        p.log("Вы нашли " + content.itemName(veinGem) + "!")
+        p.count(veins.int("stat") ?: Stat.GEMS_FOUND)
+    }
     val golem = extra?.get("golem") as? JsonObject
     if (golem != null && p.location in Crafting.strings(golem["locations"]) && Crafting.roll(golem["chance"] as? JsonObject, 0, 0, dice)) {
         val template = golem.str("npc") ?: return

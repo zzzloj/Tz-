@@ -4203,19 +4203,19 @@
  "i.w.s.fire": {
   "class": "sword",
   "dmg": [
-   12,
-   22
+   15,
+   27
   ],
-  "level": 37,
+  "level": 47,
   "pause": 1.1,
-  "price": 9610,
+  "price": 15010,
   "relic": false,
   "req": [
    10,
    6,
    0
   ],
-  "tier": 40,
+  "tier": 50,
   "type": "weapon"
  },
  "i.w.s.flamberg": {
@@ -4887,19 +4887,19 @@
  "i.w.u.pp1": {
   "class": "staff",
   "dmg": [
-   6,
-   24
+   7,
+   30
   ],
-  "level": 37,
+  "level": 47,
   "pause": 1.3,
-  "price": 9610,
+  "price": 15010,
   "relic": false,
   "req": [
    4,
    10,
    10
   ],
-  "tier": 40,
+  "tier": 50,
   "type": "weapon"
  },
  "i.w.u.shtyk": {

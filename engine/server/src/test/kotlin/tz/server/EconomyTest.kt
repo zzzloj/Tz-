@@ -104,6 +104,18 @@ class EconomyTest {
         }
         assertTrue(v.count("i.ruda") in 1..3, "ore from a vein of 3: ${v.count("i.ruda")} ${v.journal.takeLast(4)}")
 
+        // A vein of a rare gem in a castle vault room (owner 06.10): 1 % after a good blow, only its own gem.
+        game.place(account, "c.1.x1087x543")
+        var found = false
+        repeat(3000) {
+            if (found) return@repeat
+            clock[0] += 400
+            v = game.use(account, "i.kirka", null, null)
+            found = v.count("i.i.kr") > 0
+        }
+        assertTrue(found, "no беломорит from its vein")
+        assertEquals(0, v.count("i.i.jd"))
+
         // The smith's hammer at Raks's anvil: a menu first, then a knife (difficulty 0).
         give("i.set.molot", 1)
         give("i.ruda", 10)

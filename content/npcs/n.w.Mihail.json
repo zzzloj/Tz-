@@ -32,5 +32,13 @@
         "exp_value": "",
         "ammo": "",
         "respawn": ""
-    }
+    },
+    "itemsrnd": [
+        {
+            "id": "i.w.s.fire",
+            "chance": 5,
+            "min": 1,
+            "max": 1
+        }
+    ]
 }
