@@ -26,4 +26,5 @@
 
 ## Сборка
 - CI: `.github/workflows/unity.yml`. При каждом изменении C# проверяется на заглушках Unity (`dotnet build unity/tools/check`). Если заданы секреты лицензии Unity (`UNITY_EMAIL`, `UNITY_PASSWORD`, `UNITY_LICENSE`), GameCI собирает APK. Он лежит в артефактах запуска как `amulet-unity-apk`.
+- Лицензия для CI (`UNITY_LICENSE`): содержимое `/Library/Application Support/Unity/Unity_lic.ulf` на Mac (папка в корне диска, не в домашней). Файл появляется после активации Personal в Unity Hub.
 - Локально: Unity 6000.0.58f2. Сначала `python3 unity/tools/prepare.py`, потом открыть папку `unity` в Unity Hub.
