@@ -41,6 +41,10 @@
         {
             "id": "i.f.meat",
             "count": 1
+        },
+        {
+            "id": "i.h.kog.fox",
+            "count": 1
         }
     ]
 }

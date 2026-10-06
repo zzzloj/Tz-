@@ -169,13 +169,19 @@ internal fun Game.spellChance(p: Game.Player, level: Int): Int =
  * of a staff — more with intelligence and magic; mana is what limits it (tools/balance/sim.py).
  */
 internal fun Game.spellDamage(p: Game.Player, pmin: Int, pmax: Int): Pair<Int, Int> {
-    val unit = balance.weaponDps(balance.tierWorn(p.level)) * SPELL_PER_CAST * (1 + 0.04 * p.int + 0.03 * p.skill("magic")) * (1 + p.stats.spellPct / 100.0)
+    val worn = balance.weaponDps(balance.tierWorn(p.level))
+    // Bare hands (owner 06.10): a spell weakens as a warrior's blow does without a weapon — fists 1–3 a second against the weapon of his level.
+    val bare = if (p.stats.weaponClass == "hand") minOf(1.0, FIST_DPS / worn) else 1.0
+    val unit = worn * bare * SPELL_PER_CAST * (1 + 0.04 * p.int + 0.03 * p.skill("magic")) * (1 + p.stats.spellPct / 100.0)
     val k = unit / 15.0
     return Math.round(pmin * k).toInt().coerceAtLeast(0) to Math.round(pmax * k).toInt().coerceAtLeast(1)
 }
 
 /** Seconds of weapon damage in a spell of power 15 (calibrated 06.10: a mage fights like before, now a spell every pause). */
 internal const val SPELL_PER_CAST = 2.6
+
+/** Damage a second of bare fists (1–3 a blow, a blow a second): what a mage without a weapon is cut to. */
+internal const val FIST_DPS = 2.0
 
 /** A spell takes the pause of the staff in hand (with its gems), or of a staff, if the mage holds something else. */
 internal fun Game.castMs(p: Game.Player, @Suppress("UNUSED_PARAMETER") def: JsonObject): Long =

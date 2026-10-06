@@ -93,6 +93,16 @@ class MagicTest {
         clock[0] += 2
         v = retry(61, { view -> view.journal.any { it.contains("по ${rat.name} ") && it.contains("магией") } }) { game.cast(a, "m.w.arrow", rat.key) }
         assertTrue(me(a).id in rat.enemies, "the struck animal turns on the caster")
+        // Bare hands cut a spell as fists cut a warrior's blow (owner 06.10).
+        val held = me(a).stats
+        me(a).level = 20   // at the first levels fists and a weapon of the level are alike
+        me(a).stats = held.copy(weaponClass = "staff")
+        val armed = game.spellDamage(me(a), 15, 15).first
+        me(a).stats = held.copy(weaponClass = "hand")
+        val bare = game.spellDamage(me(a), 15, 15).first
+        me(a).stats = held
+        me(a).level = 1
+        assertTrue(bare in 1 until armed, "bare $bare, with a staff $armed")
 
         // Healing yourself.
         me(a).hp = 3

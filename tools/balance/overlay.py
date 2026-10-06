@@ -16,6 +16,10 @@ dst = os.path.join(CONTENT, 'balance'); os.makedirs(dst, exist_ok=True)
 
 def wclass(k, name):
     n = name.lower()
+    # A weapon that strikes with magic is a staff whatever its id says (жезл фараона is i.w.s.*).
+    try: verb = json.load(open(os.path.join(CONTENT, 'items', k + '.json'))).get('verb')
+    except Exception: verb = None
+    if verb in ('магией', 'молнией'): return 'staff'
     if k.startswith('i.w.r.c.'): return 'crossbow'
     if k.startswith('i.w.r.b.'): return 'bow'
     if any(x in n for x in ('двуручн', 'алебард', 'секир', 'фламберг', 'двухсторонн', 'глеф', 'длинное копь')): return 'heavy'

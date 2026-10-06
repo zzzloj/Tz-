@@ -80,6 +80,7 @@ for w in NEW['weapons']:
         P=1.5 if two or t=='Арбалеты' else {'Ножи и кинжалы':1.0,'Метательное':1.0,'Копья':1.0,'Мечи':1.1,'Топоры':1.2,'Луки':1.3,'Посохи и жезлы':1.3}.get(t,1.2)
         if 'шпага' in nm: P=1.0
         mag=d.get('verb') in ('магией','молнией'); xb=k.startswith('i.w.r.c.')
+        if mag: P=1.3   # strikes with magic: a staff, whatever its id (жезл фараона)
         T=nw['tier']; avg=weapon_dps(T)*(0.75 if mag else 1)*(1.15 if xb else 1)*P
         od=(n(d.get('dmg_min'))+n(d.get('dmg_max')))/2 or 1
         sp=max(.15,min(.6,(n(d.get('dmg_max'))-n(d.get('dmg_min')))/2/od))
