@@ -1,9 +1,9 @@
 name: engine-smoke
 
-# After a push to main, wait until Railway serves the new server and walk the
-# live API once (engine/ci/smoke.py). Railway redeploys tz-engine only for
-# changes in engine/ or content/, so the expected version is the last commit
-# that touched them (GET /api/version reports the running commit).
+# After a push to main, wait until the VPS serves the new server (engine-deploy
+# loads it after the engine workflow is green) and walk the live API once
+# (engine/ci/smoke.py). The expected version is the last commit that touched
+# engine/ or content/ (GET /api/version reports the running commit).
 on:
   push:
     branches: [main]
@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 50
-      - name: Smoke test of tz-engine-production.up.railway.app
+      - name: Smoke test of 217-177-74-66.sslip.io (VPS)
         run: |
           export EXPECT_SHA=$(git log -1 --first-parent --format=%H -- engine content)
-          python3 engine/ci/smoke.py https://tz-engine-production.up.railway.app
+          python3 engine/ci/smoke.py https://217-177-74-66.sslip.io

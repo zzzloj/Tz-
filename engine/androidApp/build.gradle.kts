@@ -25,7 +25,7 @@ android {
         versionName = "0.1"
         // Server address. Default: the test server on Railway. A server on the
         // developer's machine from the emulator: -Ptz.serverUrl=http://10.0.2.2:8080
-        val serverUrl = (project.findProperty("tz.serverUrl") as String?) ?: "https://tz-engine-production.up.railway.app"
+        val serverUrl = (project.findProperty("tz.serverUrl") as String?) ?: "https://217-177-74-66.sslip.io"
         buildConfigField("String", "SERVER_URL", "\"$serverUrl\"")
     }
     sourceSets["main"].assets.srcDir(artAssets)

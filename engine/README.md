@@ -22,7 +22,8 @@ Kotlin Multiplatform: сервер на Ktor, общий модуль и нат�
 - Страницы из `content/pages/*.md`: об игре, как начать, правила, вопросы, флаг лидерства, история. Доска объявлений в городе (`i.s.book.news`) показывает последние новости форума, книжная полка (`i.s.book.story`) — страницы.
 - Сайт на том же сервере (`/`): новости, кто в игре, замки и кланы, страницы, форум для чтения.
 - Мир переживает перезапуск: раз в 2 минуты и при остановке сервера (SIGTERM при деплое) в `world_snapshot` пишутся NPC с их местом, здоровьем, товаром и хозяевами (питомцы, лошади, наёмники), вещи на земле, трупы, таймеры возрождения убитых, рудные жилы. При старте снимок накладывается на мир из `content/`: NPC из контента берут параметры из контента, убитые ждут своего возрождения, новые NPC контента появляются.
-- Бэкапы: `.github/workflows/engine-backup.yml` каждую ночь делает `pg_dump`, шифрует его (репозиторий открытый) и хранит 30 дней; нужны секреты `DATABASE_PUBLIC_URL` и `BACKUP_PASSPHRASE`. Второй вариант — расписание бэкапов тома Postgres в Railway (вкладка Backups).
+- Сервер с 06.10 работает на своём VPS: `https://217-177-74-66.sslip.io` (`deploy/vps/README.md`). Его выкладывает `.github/workflows/engine-deploy.yml` после зелёного `engine` на `main`.
+- Бэкапы: `.github/workflows/engine-backup.yml` каждую ночь снимает `pg_dump` с VPS, шифрует его (репозиторий открытый) и хранит 30 дней. Нужны секреты VPS и `BACKUP_PASSPHRASE`.
 - Смоук после деплоя проверяет сайт, форум, код восстановления и удаляет свой аккаунт.
 - Не перенесено: платные аккаунты, SMS-дублоны, фотогалерея.
 
@@ -177,7 +178,7 @@ API: `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/logout`,
 ```sh
 cd engine
 DATABASE_URL=postgres://user:pass@localhost:5432/tz ./gradlew :server:run   # сервер на :8080, читает ../content
-./gradlew :androidApp:installDebug                                            # приложение ходит на сервер Railway
+./gradlew :androidApp:installDebug                                            # приложение ходит на сервер на VPS
 ./gradlew :androidApp:installDebug -Ptz.serverUrl=http://10.0.2.2:8080        # …или на локальный сервер из эмулятора
 ./gradlew :shared:assembleSharedDebugXCFramework && (cd iosApp && xcodegen && open Tz.xcodeproj)   # iOS, нужен macOS
 ```
