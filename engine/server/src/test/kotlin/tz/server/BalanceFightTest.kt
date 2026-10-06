@@ -16,6 +16,7 @@ import kotlin.test.assertTrue
  * walkover, so a change of the formulas or of content/balance shows at once.
  */
 class BalanceFightTest {
+    private companion object { val UNOBTAINABLE = Regex("""^i\.[a-z]\.[a-z]\.dr1?(\.|$)""") }
     private val content by lazy { Content.load(contentDir()) }
     private val b by lazy { content.balance }
 
@@ -48,7 +49,8 @@ class BalanceFightTest {
             val r = Formulas.requirement(content.itemBalance(id))
             return r[0] <= minOf(tier, level) && s[Skills.STR] >= r[1] && s[Skills.DEX] >= r[2] && s[Skills.INT] >= r[3]
         }
-        val all = content.balanceItems.filterKeys { !it.startsWith("_") && it in content.items }
+        // Drakkar and «волшебные» things have no source yet (owner 06.10: put off), so nobody wears them.
+        val all = content.balanceItems.filterKeys { !it.startsWith("_") && it in content.items && !UNOBTAINABLE.containsMatchIn(it) }
         // The best melee weapon by damage per second of its class's pause (tools/balance/sim.py real_gear).
         val melee = setOf("knife", "sword", "axe", "spear", "rapier", "heavy")
         val sword = all.filter { (id, o) -> o["type"]?.jsonPrimitive?.content == "weapon" && o["class"]?.jsonPrimitive?.content in melee && fits(id) }
@@ -115,5 +117,23 @@ class BalanceFightTest {
             assertTrue(seconds in 6.0..35.0, "levels ${band * 10 + 1}-${band * 10 + 10}: a fight lasts $seconds s")
             assertTrue(lost in 0.10..0.65, "levels ${band * 10 + 1}-${band * 10 + 10}: a fight costs ${lost * 100} % of health")
         }
+    }
+
+    /** Bosses and elites are for one hero, not a group (owner 06.10): a warrior of their level alone has a real chance. */
+    @Test
+    fun noBossNeedsAGroup() {
+        val random = Random(2)
+        val group = ArrayList<String>()
+        for ((key, o) in content.balanceNpcs.entries.sortedBy { num(it.value, "level") }) {
+            val kind = o["kind"]?.jsonPrimitive?.content
+            if (key.startsWith("_") || kind !in setOf("boss", "elite") || !content.npcs.containsKey(key)) continue
+            val level = num(o, "level").toInt().coerceIn(1, 50)
+            val skills = warrior(level)
+            val hero = Formulas.player(b, skills, level, gear(skills, level, level - 2), { content.items[it] }, { content.itemBalance(it) }, content.sets)
+            val r = fights(hero, Formulas.npc(content.npcs[key]?.get("war") as? JsonObject, o), num(o, "hp").toInt(), 200, random)
+            println("$kind $key L$level: warrior alone wins ${(r.win * 100).toInt()}%")
+            if (r.win < 0.15) group += "$key L$level: ${(r.win * 100).toInt()}%"
+        }
+        assertTrue(group.isEmpty(), "bosses and elites a warrior of their level alone almost never beats: $group")
     }
 }

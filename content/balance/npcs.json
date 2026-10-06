@@ -1329,19 +1329,19 @@
   "pause": 1.0
  },
  "n.a.b.jarpt": {
-  "accuracy": 18.4,
-  "armor": 7,
+  "accuracy": 34.4,
+  "armor": 15,
   "dmg": [
-   3,
-   8
+   6,
+   14
   ],
-  "evasion": 19.7,
-  "exp": 1552,
-  "gold": 256,
-  "hp": 653,
+  "evasion": 32.7,
+  "exp": 1716,
+  "gold": 306,
+  "hp": 448,
   "kind": "boss",
-  "level": 9,
-  "magicDefence": 5.8,
+  "level": 19,
+  "magicDefence": 11.8,
   "pause": 1.4
  },
  "n.a.b.kor": {
@@ -1892,13 +1892,13 @@
   "accuracy": 44.4,
   "armor": 15,
   "dmg": [
-   5,
-   11
+   4,
+   10
   ],
   "evasion": 24.7,
-  "exp": 1716,
-  "gold": 306,
-  "hp": 508,
+  "exp": 1144,
+  "gold": 204,
+  "hp": 314,
   "kind": "elite",
   "level": 19,
   "magicDefence": 11.8,
@@ -1908,13 +1908,13 @@
   "accuracy": 51.5,
   "armor": 69,
   "dmg": [
-   7,
-   16
+   6,
+   14
   ],
   "evasion": 34.5,
-  "exp": 2553,
-  "gold": 471,
-  "hp": 1080,
+  "exp": 1702,
+  "gold": 314,
+  "hp": 655,
   "kind": "elite",
   "level": 25,
   "magicDefence": 15.4,
@@ -1924,13 +1924,13 @@
   "accuracy": 29.6,
   "armor": 12,
   "dmg": [
-   7,
-   15
+   6,
+   14
   ],
   "evasion": 20.8,
-  "exp": 1338,
-  "gold": 234,
-  "hp": 387,
+  "exp": 892,
+  "gold": 156,
+  "hp": 259,
   "kind": "elite",
   "level": 16,
   "magicDefence": 10.0,
@@ -1940,13 +1940,13 @@
   "accuracy": 20.7,
   "armor": 10,
   "dmg": [
-   4,
+   3,
    8
   ],
   "evasion": 17.6,
   "exp": 882,
   "gold": 150,
-  "hp": 282,
+  "hp": 206,
   "kind": "elite",
   "level": 12,
   "magicDefence": 7.6,
@@ -1957,12 +1957,12 @@
   "armor": 30,
   "dmg": [
    4,
-   10
+   8
   ],
   "evasion": 26.7,
-  "exp": 1716,
-  "gold": 306,
-  "hp": 580,
+  "exp": 1144,
+  "gold": 204,
+  "hp": 322,
   "kind": "elite",
   "level": 19,
   "magicDefence": 11.8,
@@ -1972,13 +1972,13 @@
   "accuracy": 51.5,
   "armor": 67,
   "dmg": [
-   5,
-   12
+   4,
+   10
   ],
   "evasion": 32.5,
-  "exp": 2553,
-  "gold": 471,
-  "hp": 653,
+  "exp": 1702,
+  "gold": 314,
+  "hp": 343,
   "kind": "elite",
   "level": 25,
   "magicDefence": 15.4,
@@ -1988,13 +1988,13 @@
   "accuracy": 31.4,
   "armor": 11,
   "dmg": [
-   7,
-   15
+   6,
+   13
   ],
   "evasion": 18.2,
-  "exp": 1101,
-  "gold": 189,
-  "hp": 339,
+  "exp": 734,
+  "gold": 126,
+  "hp": 207,
   "kind": "elite",
   "level": 14,
   "magicDefence": 8.8,
@@ -2004,13 +2004,13 @@
   "accuracy": 41.9,
   "armor": 30,
   "dmg": [
-   5,
-   11
+   4,
+   10
   ],
   "evasion": 26.7,
-  "exp": 1716,
-  "gold": 306,
-  "hp": 515,
+  "exp": 1144,
+  "gold": 204,
+  "hp": 299,
   "kind": "elite",
   "level": 19,
   "magicDefence": 11.8,
@@ -2020,13 +2020,13 @@
   "accuracy": 31.4,
   "armor": 11,
   "dmg": [
-   7,
-   15
+   6,
+   13
   ],
   "evasion": 18.2,
-  "exp": 1101,
-  "gold": 189,
-  "hp": 339,
+  "exp": 734,
+  "gold": 126,
+  "hp": 207,
   "kind": "elite",
   "level": 14,
   "magicDefence": 8.8,
@@ -2036,13 +2036,13 @@
   "accuracy": 51.5,
   "armor": 69,
   "dmg": [
-   7,
-   16
+   6,
+   14
   ],
   "evasion": 34.5,
-  "exp": 2553,
-  "gold": 471,
-  "hp": 1080,
+  "exp": 1702,
+  "gold": 314,
+  "hp": 655,
   "kind": "elite",
   "level": 25,
   "magicDefence": 15.4,
@@ -2053,12 +2053,12 @@
   "armor": 15,
   "dmg": [
    6,
-   15
+   13
   ],
   "evasion": 24.7,
   "exp": 1716,
   "gold": 306,
-  "hp": 622,
+  "hp": 450,
   "kind": "elite",
   "level": 19,
   "magicDefence": 11.8,
@@ -2068,13 +2068,13 @@
   "accuracy": 23.9,
   "armor": 11,
   "dmg": [
-   4,
-   9
+   3,
+   8
   ],
   "evasion": 20.2,
-  "exp": 1101,
-  "gold": 189,
-  "hp": 368,
+  "exp": 734,
+  "gold": 126,
+  "hp": 248,
   "kind": "elite",
   "level": 14,
   "magicDefence": 8.8,
@@ -2084,13 +2084,13 @@
   "accuracy": 38.7,
   "armor": 13,
   "dmg": [
-   6,
-   13
+   5,
+   12
   ],
   "evasion": 24.1,
-  "exp": 1461,
-  "gold": 258,
-  "hp": 406,
+  "exp": 974,
+  "gold": 172,
+  "hp": 240,
   "kind": "elite",
   "level": 17,
   "magicDefence": 10.6,
@@ -2100,13 +2100,13 @@
   "accuracy": 51.5,
   "armor": 69,
   "dmg": [
-   7,
-   16
+   6,
+   14
   ],
   "evasion": 34.5,
-  "exp": 2553,
-  "gold": 471,
-  "hp": 1080,
+  "exp": 1702,
+  "gold": 314,
+  "hp": 655,
   "kind": "elite",
   "level": 25,
   "magicDefence": 15.4,
@@ -2116,13 +2116,13 @@
   "accuracy": 23.9,
   "armor": 11,
   "dmg": [
-   4,
-   9
+   3,
+   8
   ],
   "evasion": 20.2,
-  "exp": 1101,
-  "gold": 189,
-  "hp": 368,
+  "exp": 734,
+  "gold": 126,
+  "hp": 248,
   "kind": "elite",
   "level": 14,
   "magicDefence": 8.8,
@@ -2133,12 +2133,12 @@
   "armor": 58,
   "dmg": [
    4,
-   10
+   9
   ],
   "evasion": 34.5,
-  "exp": 2553,
-  "gold": 471,
-  "hp": 814,
+  "exp": 1702,
+  "gold": 314,
+  "hp": 430,
   "kind": "elite",
   "level": 25,
   "magicDefence": 15.4,
@@ -2148,13 +2148,13 @@
   "accuracy": 61.1,
   "armor": 86,
   "dmg": [
-   8,
-   18
+   7,
+   16
   ],
   "evasion": 42.3,
-  "exp": 3489,
-  "gold": 663,
-  "hp": 1636,
+  "exp": 2326,
+  "gold": 442,
+  "hp": 1031,
   "kind": "elite",
   "level": 31,
   "magicDefence": 19.0,
@@ -2164,13 +2164,13 @@
   "accuracy": 31.2,
   "armor": 16,
   "dmg": [
-   7,
-   16
+   6,
+   14
   ],
   "evasion": 22.1,
-  "exp": 1461,
-  "gold": 258,
-  "hp": 437,
+  "exp": 974,
+  "gold": 172,
+  "hp": 294,
   "kind": "elite",
   "level": 17,
   "magicDefence": 10.6,
@@ -2181,12 +2181,12 @@
   "armor": 9,
   "dmg": [
    4,
-   10
+   9
   ],
   "evasion": 14.3,
   "exp": 777,
   "gold": 132,
-  "hp": 292,
+  "hp": 232,
   "kind": "elite",
   "level": 11,
   "magicDefence": 7.0,
@@ -2196,13 +2196,13 @@
   "accuracy": 23.9,
   "armor": 11,
   "dmg": [
-   4,
-   9
+   3,
+   8
   ],
   "evasion": 20.2,
-  "exp": 1101,
-  "gold": 189,
-  "hp": 368,
+  "exp": 734,
+  "gold": 126,
+  "hp": 248,
   "kind": "elite",
   "level": 14,
   "magicDefence": 8.8,
@@ -2218,7 +2218,7 @@
   "evasion": 22.1,
   "exp": 1461,
   "gold": 258,
-  "hp": 579,
+  "hp": 489,
   "kind": "elite",
   "level": 17,
   "magicDefence": 10.6,
@@ -2228,13 +2228,13 @@
   "accuracy": 61.1,
   "armor": 86,
   "dmg": [
-   8,
-   18
+   7,
+   16
   ],
   "evasion": 42.3,
-  "exp": 3489,
-  "gold": 663,
-  "hp": 1636,
+  "exp": 2326,
+  "gold": 442,
+  "hp": 1031,
   "kind": "elite",
   "level": 31,
   "magicDefence": 19.0,
@@ -2244,13 +2244,13 @@
   "accuracy": 23.9,
   "armor": 11,
   "dmg": [
-   4,
-   9
+   3,
+   8
   ],
   "evasion": 20.2,
-  "exp": 1101,
-  "gold": 189,
-  "hp": 368,
+  "exp": 734,
+  "gold": 126,
+  "hp": 248,
   "kind": "elite",
   "level": 14,
   "magicDefence": 8.8,
@@ -2261,12 +2261,12 @@
   "armor": 8,
   "dmg": [
    3,
-   7
+   6
   ],
   "evasion": 13.0,
-  "exp": 675,
-  "gold": 114,
-  "hp": 273,
+  "exp": 450,
+  "gold": 76,
+  "hp": 171,
   "kind": "elite",
   "level": 10,
   "magicDefence": 6.4,
@@ -2276,13 +2276,13 @@
   "accuracy": 23.9,
   "armor": 11,
   "dmg": [
-   4,
-   9
+   3,
+   8
   ],
   "evasion": 20.2,
-  "exp": 1101,
-  "gold": 189,
-  "hp": 368,
+  "exp": 734,
+  "gold": 126,
+  "hp": 248,
   "kind": "elite",
   "level": 14,
   "magicDefence": 8.8,
@@ -2292,13 +2292,13 @@
   "accuracy": 44.4,
   "armor": 15,
   "dmg": [
-   5,
-   11
+   4,
+   10
   ],
   "evasion": 24.7,
-  "exp": 1716,
-  "gold": 306,
-  "hp": 508,
+  "exp": 1144,
+  "gold": 204,
+  "hp": 314,
   "kind": "elite",
   "level": 19,
   "magicDefence": 11.8,
@@ -2308,13 +2308,13 @@
   "accuracy": 31.2,
   "armor": 16,
   "dmg": [
-   7,
-   17
+   6,
+   15
   ],
   "evasion": 22.1,
-  "exp": 1461,
-  "gold": 258,
-  "hp": 415,
+  "exp": 974,
+  "gold": 172,
+  "hp": 278,
   "kind": "elite",
   "level": 17,
   "magicDefence": 10.6,
@@ -2325,12 +2325,12 @@
   "armor": 13,
   "dmg": [
    7,
-   17
+   16
   ],
   "evasion": 22.1,
-  "exp": 1461,
-  "gold": 258,
-  "hp": 393,
+  "exp": 974,
+  "gold": 172,
+  "hp": 260,
   "kind": "elite",
   "level": 17,
   "magicDefence": 10.6,
@@ -2340,13 +2340,13 @@
   "accuracy": 28.0,
   "armor": 12,
   "dmg": [
-   6,
-   14
+   5,
+   12
   ],
   "evasion": 19.5,
-  "exp": 1218,
-  "gold": 213,
-  "hp": 361,
+  "exp": 812,
+  "gold": 142,
+  "hp": 240,
   "kind": "elite",
   "level": 15,
   "magicDefence": 9.4,
@@ -2357,12 +2357,12 @@
   "armor": 56,
   "dmg": [
    6,
-   15
+   13
   ],
   "evasion": 33.2,
-  "exp": 2406,
-  "gold": 441,
-  "hp": 838,
+  "exp": 1604,
+  "gold": 294,
+  "hp": 472,
   "kind": "elite",
   "level": 24,
   "magicDefence": 14.8,
@@ -2372,13 +2372,13 @@
   "accuracy": 29.6,
   "armor": 12,
   "dmg": [
-   7,
-   15
+   6,
+   14
   ],
   "evasion": 20.8,
-  "exp": 1338,
-  "gold": 234,
-  "hp": 383,
+  "exp": 892,
+  "gold": 156,
+  "hp": 267,
   "kind": "elite",
   "level": 16,
   "magicDefence": 10.0,
@@ -2394,7 +2394,7 @@
   "evasion": 11.7,
   "exp": 582,
   "gold": 96,
-  "hp": 254,
+  "hp": 215,
   "kind": "elite",
   "level": 9,
   "magicDefence": 5.8,
@@ -2405,12 +2405,12 @@
   "armor": 13,
   "dmg": [
    7,
-   17
+   15
   ],
   "evasion": 22.1,
-  "exp": 1461,
-  "gold": 258,
-  "hp": 401,
+  "exp": 974,
+  "gold": 172,
+  "hp": 265,
   "kind": "elite",
   "level": 17,
   "magicDefence": 10.6,
@@ -2424,9 +2424,9 @@
    6
   ],
   "evasion": 11.7,
-  "exp": 582,
-  "gold": 96,
-  "hp": 261,
+  "exp": 776,
+  "gold": 128,
+  "hp": 247,
   "kind": "elite",
   "level": 9,
   "magicDefence": 5.8,
@@ -2436,13 +2436,13 @@
   "accuracy": 21.4,
   "armor": 11,
   "dmg": [
-   5,
-   11
+   4,
+   10
   ],
   "evasion": 18.2,
   "exp": 1101,
   "gold": 189,
-  "hp": 270,
+  "hp": 204,
   "kind": "elite",
   "level": 14,
   "magicDefence": 8.8,
@@ -2453,12 +2453,12 @@
   "armor": 13,
   "dmg": [
    7,
-   17
+   15
   ],
   "evasion": 22.1,
-  "exp": 1461,
-  "gold": 258,
-  "hp": 401,
+  "exp": 974,
+  "gold": 172,
+  "hp": 265,
   "kind": "elite",
   "level": 17,
   "magicDefence": 10.6,
@@ -2468,13 +2468,13 @@
   "accuracy": 34.4,
   "armor": 15,
   "dmg": [
-   10,
-   24
+   9,
+   22
   ],
   "evasion": 24.7,
   "exp": 1716,
   "gold": 306,
-  "hp": 377,
+  "hp": 270,
   "kind": "elite",
   "level": 19,
   "magicDefence": 11.8,
@@ -2484,13 +2484,13 @@
   "accuracy": 24.8,
   "armor": 10,
   "dmg": [
-   5,
-   11
+   4,
+   10
   ],
   "evasion": 16.9,
   "exp": 990,
   "gold": 171,
-  "hp": 327,
+  "hp": 241,
   "kind": "elite",
   "level": 13,
   "magicDefence": 8.2,
@@ -2500,13 +2500,13 @@
   "accuracy": 23.9,
   "armor": 11,
   "dmg": [
-   4,
-   9
+   3,
+   8
   ],
   "evasion": 20.2,
-  "exp": 1101,
-  "gold": 189,
-  "hp": 368,
+  "exp": 734,
+  "gold": 126,
+  "hp": 248,
   "kind": "elite",
   "level": 14,
   "magicDefence": 8.8,
@@ -2517,12 +2517,12 @@
   "armor": 13,
   "dmg": [
    7,
-   17
+   15
   ],
   "evasion": 22.1,
-  "exp": 1461,
-  "gold": 258,
-  "hp": 401,
+  "exp": 974,
+  "gold": 172,
+  "hp": 265,
   "kind": "elite",
   "level": 17,
   "magicDefence": 10.6,
@@ -2533,12 +2533,12 @@
   "armor": 13,
   "dmg": [
    7,
-   17
+   15
   ],
   "evasion": 22.1,
-  "exp": 1461,
-  "gold": 258,
-  "hp": 401,
+  "exp": 974,
+  "gold": 172,
+  "hp": 265,
   "kind": "elite",
   "level": 17,
   "magicDefence": 10.6,
@@ -2548,13 +2548,13 @@
   "accuracy": 41.9,
   "armor": 30,
   "dmg": [
-   7,
-   16
+   6,
+   14
   ],
   "evasion": 26.7,
-  "exp": 1716,
-  "gold": 306,
-  "hp": 580,
+  "exp": 1144,
+  "gold": 204,
+  "hp": 343,
   "kind": "elite",
   "level": 19,
   "magicDefence": 11.8,
@@ -2564,13 +2564,13 @@
   "accuracy": 51.5,
   "armor": 69,
   "dmg": [
-   7,
-   16
+   6,
+   14
   ],
   "evasion": 34.5,
-  "exp": 2553,
-  "gold": 471,
-  "hp": 1080,
+  "exp": 1702,
+  "gold": 314,
+  "hp": 655,
   "kind": "elite",
   "level": 25,
   "magicDefence": 15.4,
@@ -2612,13 +2612,13 @@
   "accuracy": 38.7,
   "armor": 48,
   "dmg": [
-   5,
-   11
+   3,
+   8
   ],
   "evasion": 24.1,
-  "exp": 3896,
-  "gold": 688,
-  "hp": 2074,
+  "exp": 974,
+  "gold": 172,
+  "hp": 460,
   "kind": "boss",
   "level": 17,
   "magicDefence": 10.6,
@@ -2641,35 +2641,35 @@
   "pause": 2.0
  },
  "n.c.darkinkv": {
-  "accuracy": 41.9,
-  "armor": 37,
+  "accuracy": 80.3,
+  "armor": 82,
   "dmg": [
    4,
-   8
+   9
   ],
-  "evasion": 31.7,
-  "exp": 4576,
-  "gold": 816,
-  "hp": 2291,
+  "evasion": 62.9,
+  "exp": 3738,
+  "gold": 744,
+  "hp": 1211,
   "kind": "boss",
-  "level": 19,
-  "magicDefence": 11.8,
+  "level": 43,
+  "magicDefence": 26.2,
   "pause": 1.4
  },
  "n.c.darklord": {
-  "accuracy": 41.9,
-  "armor": 53,
+  "accuracy": 89.9,
+  "armor": 134,
   "dmg": [
-   5,
-   13
+   8,
+   18
   ],
-  "evasion": 26.7,
-  "exp": 4576,
-  "gold": 816,
-  "hp": 2364,
+  "evasion": 65.7,
+  "exp": 4518,
+  "gold": 916,
+  "hp": 1619,
   "kind": "boss",
-  "level": 19,
-  "magicDefence": 11.8,
+  "level": 49,
+  "magicDefence": 29.8,
   "pause": 1.4
  },
  "n.c.darkmage": {
@@ -2724,13 +2724,13 @@
   "accuracy": 84.4,
   "armor": 168,
   "dmg": [
-   10,
-   23
+   7,
+   16
   ],
   "evasion": 70.2,
-  "exp": 15456,
-  "gold": 3088,
-  "hp": 6895,
+  "exp": 3864,
+  "gold": 772,
+  "hp": 1286,
   "kind": "boss",
   "level": 44,
   "magicDefence": 26.8,
@@ -2852,13 +2852,13 @@
   "accuracy": 62.0,
   "armor": 115,
   "dmg": [
-   6,
-   15
+   5,
+   13
   ],
   "evasion": 52.0,
-  "exp": 3327,
-  "gold": 630,
-  "hp": 1769,
+  "exp": 2218,
+  "gold": 420,
+  "hp": 976,
   "kind": "elite",
   "level": 30,
   "magicDefence": 18.4,
@@ -2868,13 +2868,13 @@
   "accuracy": 62.0,
   "armor": 115,
   "dmg": [
-   6,
-   15
+   5,
+   13
   ],
   "evasion": 52.0,
-  "exp": 3327,
-  "gold": 630,
-  "hp": 1769,
+  "exp": 2218,
+  "gold": 420,
+  "hp": 976,
   "kind": "elite",
   "level": 30,
   "magicDefence": 18.4,
@@ -2884,13 +2884,13 @@
   "accuracy": 62.0,
   "armor": 115,
   "dmg": [
-   6,
-   15
+   5,
+   13
   ],
   "evasion": 52.0,
-  "exp": 3327,
-  "gold": 630,
-  "hp": 1769,
+  "exp": 2218,
+  "gold": 420,
+  "hp": 976,
   "kind": "elite",
   "level": 30,
   "magicDefence": 18.4,
@@ -2964,32 +2964,32 @@
   "accuracy": 49.9,
   "armor": 67,
   "dmg": [
-   7,
-   17
+   5,
+   12
   ],
   "evasion": 33.2,
-  "exp": 6416,
-  "gold": 1176,
-  "hp": 3108,
+  "exp": 1604,
+  "gold": 294,
+  "hp": 730,
   "kind": "boss",
   "level": 24,
   "magicDefence": 14.8,
   "pause": 1.4
  },
  "n.c.ksfinks": {
-  "accuracy": 49.9,
-  "armor": 92,
+  "accuracy": 83.5,
+  "armor": 171,
   "dmg": [
    7,
-   16
+   17
   ],
-  "evasion": 33.2,
-  "exp": 6416,
-  "gold": 1176,
-  "hp": 2675,
+  "evasion": 60.5,
+  "exp": 3992,
+  "gold": 800,
+  "hp": 1174,
   "kind": "boss",
-  "level": 24,
-  "magicDefence": 14.8,
+  "level": 45,
+  "magicDefence": 27.4,
   "pause": 1.1
  },
  "n.c.lich": {
@@ -3041,19 +3041,19 @@
   "pause": 1.1
  },
  "n.c.mumyfar": {
-  "accuracy": 51.5,
-  "armor": 73,
+  "accuracy": 83.5,
+  "armor": 130,
   "dmg": [
    8,
-   18
+   19
   ],
-  "evasion": 37.5,
-  "exp": 6808,
-  "gold": 1256,
-  "hp": 2362,
+  "evasion": 63.5,
+  "exp": 3992,
+  "gold": 800,
+  "hp": 990,
   "kind": "boss",
-  "level": 25,
-  "magicDefence": 15.4,
+  "level": 45,
+  "magicDefence": 27.4,
   "pause": 1.0
  },
  "n.c.mumyl": {
@@ -3108,13 +3108,13 @@
   "accuracy": 62.0,
   "armor": 115,
   "dmg": [
-   8,
-   19
+   6,
+   14
   ],
   "evasion": 49.0,
-  "exp": 8872,
-  "gold": 1680,
-  "hp": 3243,
+  "exp": 2218,
+  "gold": 420,
+  "hp": 728,
   "kind": "boss",
   "level": 30,
   "magicDefence": 18.4,
@@ -3217,19 +3217,19 @@
   "pause": 1.1
  },
  "n.c.orckap": {
-  "accuracy": 33.9,
-  "armor": 44,
+  "accuracy": 89.9,
+  "armor": 149,
   "dmg": [
-   6,
-   14
+   12,
+   29
   ],
-  "evasion": 20.2,
-  "exp": 2936,
-  "gold": 504,
-  "hp": 1245,
+  "evasion": 65.7,
+  "exp": 4518,
+  "gold": 916,
+  "hp": 1248,
   "kind": "boss",
-  "level": 14,
-  "magicDefence": 8.8,
+  "level": 49,
+  "magicDefence": 29.8,
   "pause": 1.7
  },
  "n.c.orcle": {
@@ -3249,19 +3249,19 @@
   "pause": 1.1
  },
  "n.c.orcma": {
-  "accuracy": 44.4,
-  "armor": 59,
+  "accuracy": 92.4,
+  "armor": 149,
   "dmg": [
-   7,
-   17
+   11,
+   25
   ],
-  "evasion": 26.7,
-  "exp": 4576,
-  "gold": 816,
-  "hp": 2106,
+  "evasion": 65.7,
+  "exp": 4518,
+  "gold": 916,
+  "hp": 1366,
   "kind": "boss",
-  "level": 19,
-  "magicDefence": 11.8,
+  "level": 49,
+  "magicDefence": 29.8,
   "pause": 1.7
  },
  "n.c.orcsh": {
@@ -3297,35 +3297,35 @@
   "pause": 1.1
  },
  "n.c.osfinks": {
-  "accuracy": 51.5,
-  "armor": 87,
+  "accuracy": 70.7,
+  "armor": 127,
   "dmg": [
    4,
-   10
+   8
   ],
-  "evasion": 39.5,
-  "exp": 6808,
-  "gold": 1256,
-  "hp": 2603,
+  "evasion": 55.1,
+  "exp": 3006,
+  "gold": 586,
+  "hp": 782,
   "kind": "boss",
-  "level": 25,
-  "magicDefence": 15.4,
+  "level": 37,
+  "magicDefence": 22.6,
   "pause": 1.0
  },
  "n.c.palset": {
-  "accuracy": 41.9,
-  "armor": 59,
+  "accuracy": 70.7,
+  "armor": 113,
   "dmg": [
-   6,
-   14
+   8,
+   19
   ],
-  "evasion": 26.7,
-  "exp": 4576,
-  "gold": 816,
-  "hp": 1568,
+  "evasion": 50.1,
+  "exp": 3006,
+  "gold": 586,
+  "hp": 875,
   "kind": "boss",
-  "level": 19,
-  "magicDefence": 11.8,
+  "level": 37,
+  "magicDefence": 22.6,
   "pause": 1.0
  },
  "n.c.pauk": {
@@ -3665,51 +3665,51 @@
   "pause": 1.1
  },
  "n.c.wolfsvita": {
-  "accuracy": 57.9,
-  "armor": 89,
+  "accuracy": 91.5,
+  "armor": 152,
   "dmg": [
-   7,
-   15
+   6,
+   13
   ],
-  "evasion": 47.7,
-  "exp": 8448,
-  "gold": 1592,
-  "hp": 4174,
+  "evasion": 75.0,
+  "exp": 4652,
+  "gold": 946,
+  "hp": 1548,
   "kind": "boss",
-  "level": 29,
-  "magicDefence": 17.8,
+  "level": 50,
+  "magicDefence": 30.4,
   "pause": 1.1
  },
  "n.c.wolfwar": {
-  "accuracy": 49.9,
-  "armor": 65,
+  "accuracy": 91.5,
+  "armor": 133,
   "dmg": [
-   6,
-   15
+   7,
+   16
   ],
-  "evasion": 41.2,
-  "exp": 6416,
-  "gold": 1176,
-  "hp": 2816,
+  "evasion": 75.0,
+  "exp": 4652,
+  "gold": 946,
+  "hp": 1329,
   "kind": "boss",
-  "level": 24,
-  "magicDefence": 14.8,
+  "level": 50,
+  "magicDefence": 30.4,
   "pause": 1.1
  },
  "n.c.zemkor": {
-  "accuracy": 44.4,
-  "armor": 59,
+  "accuracy": 94.0,
+  "armor": 152,
   "dmg": [
-   8,
-   18
+   11,
+   26
   ],
-  "evasion": 26.7,
-  "exp": 4576,
-  "gold": 816,
-  "hp": 1979,
+  "evasion": 67.0,
+  "exp": 4652,
+  "gold": 946,
+  "hp": 1333,
   "kind": "boss",
-  "level": 19,
-  "magicDefence": 11.8,
+  "level": 50,
+  "magicDefence": 30.4,
   "pause": 1.7
  },
  "n.c.zemlerojka": {
@@ -3761,19 +3761,19 @@
   "pause": 1.1
  },
  "n.c.zsfinks": {
-  "accuracy": 44.4,
-  "armor": 15,
+  "accuracy": 76.4,
+  "armor": 30,
   "dmg": [
-   6,
-   13
+   7,
+   15
   ],
-  "evasion": 24.7,
-  "exp": 4576,
-  "gold": 816,
-  "hp": 1032,
+  "evasion": 50.7,
+  "exp": 3244,
+  "gold": 636,
+  "hp": 531,
   "kind": "boss",
-  "level": 19,
-  "magicDefence": 11.8,
+  "level": 39,
+  "magicDefence": 23.8,
   "pause": 1.0
  },
  "n.capp1": {
@@ -4890,7 +4890,7 @@
   "evasion": 65.0,
   "exp": 6978,
   "gold": 1419,
-  "hp": 1818,
+  "hp": 1804,
   "kind": "boss",
   "level": 50,
   "magicDefence": 30.4,
@@ -4901,12 +4901,12 @@
   "armor": 38,
   "dmg": [
    7,
-   17
+   16
   ],
   "evasion": 65.0,
   "exp": 6978,
   "gold": 1419,
-  "hp": 679,
+  "hp": 685,
   "kind": "boss",
   "level": 50,
   "magicDefence": 30.4,

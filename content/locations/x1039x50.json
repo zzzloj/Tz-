@@ -49,7 +49,7 @@
                 "verb": "магией",
                 "exp_value": "",
                 "ammo": "",
-                "respawn": "x1039x50:1:2"
+                "respawn": "x1039x50:259200:259200"
             },
             "items": [
                 {

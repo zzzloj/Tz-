@@ -31,6 +31,31 @@ for r in rows:
     if r['kind']=='guard': r['lvl']=max(r['lvl'],30)   # guards outclass the criminals they chase
     if r['id'].startswith('n.w.'): r['lvl']=50          # the angels
     if r['id'].startswith('n.c.gol.'): r['lvl']=30      # golems in the mines: elite of level 30 (06.10)
+# Bosses (owner 06.10): the strongest ordinary monster within three steps of where the boss appears, plus 2, at most 50;
+# a boss with no monsters around keeps its level from threat.
+import glob, os
+from paths import CONTENT, here
+exits={}
+for f in glob.glob(os.path.join(CONTENT,'locations','*.json')):
+    d=json.load(open(f)); exits[d['id']]=[e['target'] for e in d.get('exits',[]) if 'target' in e]
+spawns=json.load(open(here('spawns.json')))
+by_id={r['id']:r for r in rows}
+mobs_at={}
+for k,v in spawns.items():
+    if k in by_id and by_id[k]['kind'] in ('mob','animal'):
+        for l in v['locs']: mobs_at.setdefault(l,[]).append(by_id[k]['lvl'])
+def around(start,steps=3):
+    seen={start:0}; queue=[start]
+    while queue:
+        x=queue.pop(0)
+        if seen[x]<steps:
+            for y in exits.get(x,[]):
+                if y not in seen: seen[y]=seen[x]+1; queue.append(y)
+    return seen
+for r in rows:
+    if r['kind']!='boss' or r['id'].startswith('n.w.'): continue
+    near=[lv for l in spawns.get(r['id'],{}).get('locs',[]) for x in around(l) for lv in mobs_at.get(x,[])]
+    if near: r['lvl']=min(50,max(near)+2)
 json.dump(rows,open(out('mobs_lvl.json'),'w'),ensure_ascii=False)
 if __name__=='__main__':
     print('ordinary',N)

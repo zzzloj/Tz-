@@ -32,7 +32,7 @@ def build(arch, L, spend=True):
     return s
 
 # ---------------------------------------------------------------- the things really there (content/balance/items.json)
-import json as _json, os as _os
+import json as _json, os as _os, re as _re
 from paths import CONTENT as _C
 _ITEMS = None
 CLASSES = {'warrior': ('knife', 'sword', 'axe', 'spear', 'rapier', 'heavy'), 'archer': ('bow', 'crossbow'), 'mage': ('staff',)}
@@ -40,7 +40,8 @@ def items():
     global _ITEMS
     if _ITEMS is None:
         p = _os.path.join(_C, 'balance', 'items.json')
-        _ITEMS = {k: v for k, v in _json.load(open(p)).items() if not k.startswith('_')} if _os.path.exists(p) else {}
+        # Drakkar and «волшебные» things have no source yet (owner 06.10: put off), so nobody wears them (as BalanceFightTest).
+        _ITEMS = {k: v for k, v in _json.load(open(p)).items() if not k.startswith('_') and not _re.match(r'i\.[a-z]\.[a-z]\.dr1?(\.|$)', k)} if _os.path.exists(p) else {}
     return _ITEMS
 
 def real_gear(arch, L, s, gear_lag=2):
