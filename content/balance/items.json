@@ -1314,16 +1314,16 @@
   "type": "armor"
  },
  "i.a.h.rog": {
-  "armor": 41,
-  "level": 42,
-  "price": 1824,
+  "armor": 45,
+  "level": 46,
+  "price": 2162,
   "relic": false,
   "req": [
    10,
    10,
    0
   ],
-  "tier": 45,
+  "tier": 49,
   "type": "armor"
  },
  "i.a.h.rycarsk": {
@@ -2471,16 +2471,16 @@
   "type": "armor"
  },
  "i.a.s.ship": {
-  "armor": 39,
-  "level": 40,
-  "price": 3331,
+  "armor": 44,
+  "level": 46,
+  "price": 4325,
   "relic": false,
   "req": [
    10,
    10,
    0
   ],
-  "tier": 43,
+  "tier": 49,
   "type": "armor"
  },
  "i.a.s.wood": {
@@ -4185,19 +4185,19 @@
  "i.w.s.farmech": {
   "class": "sword",
   "dmg": [
-   12,
-   22
+   14,
+   26
   ],
-  "level": 37,
+  "level": 44,
   "pause": 1.1,
-  "price": 9610,
+  "price": 13264,
   "relic": false,
   "req": [
    10,
    6,
    0
   ],
-  "tier": 40,
+  "tier": 47,
   "type": "weapon"
  },
  "i.w.s.fire": {
@@ -4239,19 +4239,19 @@
  "i.w.s.glefa": {
   "class": "heavy",
   "dmg": [
-   12,
-   34
+   14,
+   41
   ],
-  "level": 38,
+  "level": 47,
   "pause": 1.5,
-  "price": 10096,
+  "price": 15010,
   "relic": false,
   "req": [
    6,
    10,
    0
   ],
-  "tier": 41,
+  "tier": 50,
   "type": "weapon"
  },
  "i.w.s.jezl": {
@@ -4545,19 +4545,19 @@
  "i.w.t.alebarda": {
   "class": "heavy",
   "dmg": [
-   17,
-   27
+   22,
+   35
   ],
-  "level": 35,
+  "level": 47,
   "pause": 1.5,
-  "price": 8674,
+  "price": 15010,
   "relic": false,
   "req": [
    10,
    6,
    0
   ],
-  "tier": 38,
+  "tier": 50,
   "type": "weapon"
  },
  "i.w.t.battle": {

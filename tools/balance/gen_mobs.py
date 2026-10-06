@@ -6,11 +6,12 @@ rows=json.load(open(outpath('mobs_lvl.json')))
 def clamp(x,a,b): return max(a,min(b,x))
 from sim import hero, stats
 # Bosses and elites are for one hero, not a group (owner 06.10): hp ×(1+1.5t) and blow ×(1+0.25t) of an ordinary
-# monster of the level, t chosen with sim.py so the better of a warrior and an archer of the monster's level wins
+# monster of the level, t chosen with sim.py so a warrior of the monster's level (as BalanceFightTest) wins
 # about 75 % of fights with a boss or an elite (owner 06.10: «50 % — мало»), and only 45 % with the angels Вельзевул and
 # Михаил (owner 06.10: one hero may kill them, with poor odds). The mage alone, without potions, rarely wins.
 SOLO_TARGET={'boss':0.75,'elite':0.75}
 ANGELS=0.45
+OWN_TARGET={'n.c.orckap':0.90,'n.c.orcma':0.90,'n.c.darklord':0.80}   # owner 06.10: orcs ~90 %, the dark lord 80 %
 def make(r,L,eh,ed):
     s=r['shape']
     hpf=clamp(math.exp(0.35*s),0.55,1.8); dmgf=clamp(math.exp(-0.35*s),0.55,1.8)
@@ -28,9 +29,8 @@ def as_sim(r,L,m):
 _heroes={}
 def solo_odds(r,L,t):
     m=as_sim(r,L,make(r,L,1+1.5*t,1+0.25*t))
-    for a in ('warrior','archer'):
-        if (a,L) not in _heroes: _heroes[a,L]=hero(a,L)
-    return max(stats(_heroes[a,L],m,n=200)[0] for a in ('warrior','archer'))
+    if L not in _heroes: _heroes[L]=hero('warrior',L)
+    return stats(_heroes[L],m,n=200)[0]
 def solo_t(r,L,target):
     if solo_odds(r,L,0)<target: return 0.0
     lo,hi=0.0,4.0
@@ -44,7 +44,7 @@ for r in rows:
     L=r['lvl']
     eh,ed,ex=ELITE[r['kind']]
     if r['kind'] in SOLO_TARGET:
-        t=solo_t(r,L,ANGELS if r['id'].startswith('n.w.') else SOLO_TARGET[r['kind']]); eh,ed=1+1.5*t,1+0.25*t; ex=max(1,round(eh*ed))
+        t=solo_t(r,L,OWN_TARGET.get(r['id'],ANGELS if r['id'].startswith('n.w.') else SOLO_TARGET[r['kind']])); eh,ed=1+1.5*t,1+0.25*t; ex=max(1,round(eh*ed))
     m=make(r,L,eh,ed); arch=m['arch']; delay=m['delay']
     out.append(dict(id=r['id'],name=r['name'],kind=r['kind'],lvl=L,hp=m['hp'],dmin=m['dmin'],dmax=m['dmax'],
         delay=delay,magic=bool(r.get('magic')),acc_bonus=arch['acc'],eva_bonus=round(arch['eva']),armor=m['armor'],

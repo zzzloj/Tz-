@@ -33,12 +33,6 @@
         "ammo": "",
         "respawn": ""
     },
-    "items": [
-        {
-            "id": "i.w.s.shir",
-            "count": 1
-        }
-    ],
     "equip": [
         "i.w.s.shir"
     ],
@@ -64,6 +58,12 @@
         {
             "id": "i.w.s.jezl",
             "chance": 5,
+            "min": 1,
+            "max": 1
+        },
+        {
+            "id": "i.a.b.obsnagrud",
+            "chance": 10,
             "min": 1,
             "max": 1
         }

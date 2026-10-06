@@ -45,7 +45,13 @@ DRAK_W={'i.w.s.dr1..me'}
 # Levels set by the owner, whatever the tiers say.
 LEVEL_SET={'i.w.r.b.short':(8,'Владелец 05.10: короткий лук с 8 уровня — у лучника не было оружия на уровнях 2–10.'),
     'i.w.u.pp1':(47,'Владелец 06.10: редкий дроп Вельзевула (5 %), ступень 50.'),
-    'i.w.s.fire':(47,'Владелец 06.10: редкий дроп Михаила (5 %), ступень 50.')}
+    'i.w.s.fire':(47,'Владелец 06.10: редкий дроп Михаила (5 %), ступень 50.'),
+    # Owner 06.10: things that drop from a boss are about the boss's level.
+    'i.w.s.farmech':(44,'Владелец 06.10: дроп мумии фараона (45 ур.), вещи с босса — по его уровню.'),
+    'i.w.t.alebarda':(47,'Владелец 06.10: дроп волка [свита] (50 ур.), вещи с босса — по его уровню.'),
+    'i.w.s.glefa':(47,'Владелец 06.10: дроп волка [воин] (50 ур.), вещи с босса — по его уровню.'),
+    'i.a.h.rog':(46,'Владелец 06.10: дроп орка-капитана (49 ур.), вещи с босса — по его уровню.'),
+    'i.a.s.ship':(46,'Владелец 06.10: дроп орка-майора (49 ур.), вещи с босса — по его уровню.')}
 weapons=[]
 for w in NEW['weapons']:
     if w['id'] not in I: continue
@@ -113,6 +119,11 @@ for a in NEW['armor']:
     nw=o['new']
     if a['tier']==0:
         o['flag']='cosm'; nw.update(tier=None,level=None,armor=0,price=d.get('price'))
+    if k in LEVEL_SET and nw['tier']:
+        # The owner's level for a thing: its tier follows (level + 3), armour and price by the tier.
+        L,why=LEVEL_SET[k]; T=L+ITEM_LEVEL_BELOW_TIER
+        nw.update(tier=T,level=L,armor=max(1,round(nw['armor']*armor_set(T)/armor_set(nw['tier']))),price=round(nw['price']*item_price(T)/item_price(nw['tier'])) if nw['price'] else nw['price'])
+        o['note']=why
     if k in DRAK:
         nw.update(tier=50,level=45,armor=round(armor_set(50)*SH[slot]*1.1),req=[0,0,0],price=None)
         o['flag']='relic'; o['note']='Реликвия Драккара: броня ступени 50 +10 %, без требований к атрибутам, уровень 45, не продаётся.'

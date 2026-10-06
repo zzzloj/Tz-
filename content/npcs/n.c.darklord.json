@@ -35,10 +35,6 @@
     },
     "items": [
         {
-            "id": "i.w.s.dvuruchn",
-            "count": 1
-        },
-        {
             "id": "i.a.e.c",
             "count": 1
         },
@@ -53,12 +49,6 @@
     ],
     "itemsrnd": [
         {
-            "id": "i.a.h.zakr",
-            "chance": 80,
-            "min": 1,
-            "max": 1
-        },
-        {
             "id": "i.m.s.demon",
             "chance": 90,
             "min": 1,
@@ -67,6 +57,18 @@
         {
             "id": "i.m.w.vamp",
             "chance": 70,
+            "min": 1,
+            "max": 1
+        },
+        {
+            "id": "i.a.l.ship",
+            "chance": 20,
+            "min": 1,
+            "max": 1
+        },
+        {
+            "id": "i.a.p.ship",
+            "chance": 20,
             "min": 1,
             "max": 1
         }

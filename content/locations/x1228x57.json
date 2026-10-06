@@ -75,10 +75,6 @@
             ],
             "items": [
                 {
-                    "id": "i.w.s.glefa",
-                    "count": 1
-                },
-                {
                     "id": "i.f.b.heal",
                     "count": 1
                 }
@@ -260,10 +256,6 @@
             ],
             "items": [
                 {
-                    "id": "i.w.s.glefa",
-                    "count": 1
-                },
-                {
                     "id": "i.f.b.heal",
                     "count": 1
                 }
@@ -318,12 +310,6 @@
                 },
                 {
                     "id": "i.f.meat",
-                    "count": 1
-                }
-            ],
-            "items": [
-                {
-                    "id": "i.w.s.glefa",
                     "count": 1
                 }
             ]
@@ -664,12 +650,6 @@
                     "id": "i.f.meat",
                     "count": 1
                 }
-            ],
-            "items": [
-                {
-                    "id": "i.w.s.glefa",
-                    "count": 1
-                }
             ]
         },
         "n.c.wolfwar.c11": {
@@ -726,10 +706,6 @@
             ],
             "items": [
                 {
-                    "id": "i.w.s.glefa",
-                    "count": 1
-                },
-                {
                     "id": "i.f.b.heal",
                     "count": 1
                 }
@@ -784,12 +760,6 @@
                 },
                 {
                     "id": "i.f.meat",
-                    "count": 1
-                }
-            ],
-            "items": [
-                {
-                    "id": "i.w.t.alebarda",
                     "count": 1
                 }
             ]
@@ -848,10 +818,6 @@
             ],
             "items": [
                 {
-                    "id": "i.w.t.alebarda",
-                    "count": 1
-                },
-                {
                     "id": "i.money",
                     "count": 146
                 }
@@ -906,12 +872,6 @@
                 },
                 {
                     "id": "i.f.meat",
-                    "count": 1
-                }
-            ],
-            "items": [
-                {
-                    "id": "i.w.t.alebarda",
                     "count": 1
                 }
             ]
