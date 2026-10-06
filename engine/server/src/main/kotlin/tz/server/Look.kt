@@ -257,6 +257,6 @@ private fun Game.lookAbility(p: Game.Player, id: String): LookView? {
     if (id.startsWith("m.w.") && (pmin != 0 || pmax != 0)) spellDamage(p, pmin, pmax).let { (a, b) -> lines += "Урон: $a - $b" }
     if (id.startsWith("m.heal") && (pmin != 0 || pmax != 0)) lines += "Лечение: ${pmin * 2}–${pmax * 2} % здоровья цели"
     lines += "Скорость: " + String.format("%.1f", castMs(p, o) / 1000.0) + " сек"
-    lines += "Период: " + time(spellCooldown(id, o).toInt())
+    if (id.startsWith("m.w.")) lines += "Период: пауза посоха" else lines += "Период: " + time(spellCooldown(id, o).toInt())
     return LookView(name, lines.joinToString("\n"))
 }

@@ -106,11 +106,11 @@ def hero_real(arch, L, s, gear_lag):
                 mana=mana_max(g('int'), L))
 
 def spell_of(L, int_, magic, dex):
-    """The mage's best single-target spell: damage ≈ 1.6 weapon blows of tier L, boosted by int and magic."""
+    """The mage's spell (owner 06.10): one every staff pause, no cooldown of its own; a power-15 spell is
+    ≈2,6 s of the weapon of his level (SPELL_PER_CAST in Magic.kt), boosted by int and magic; mana limits it."""
     if magic < 1: return None
-    unit = weapon_dps(tier_worn(L)) * 4
-    avg = 1.8 * unit * (1 + 0.04 * int_ + 0.03 * magic)
-    return dict(dmin=avg * .7, dmax=avg * 1.3, delay=delay(1.3, dex), cd=10.0, cost=4 + 0.6 * L)
+    avg = 2.6 * weapon_dps(tier_worn(L)) * (1 + 0.04 * int_ + 0.03 * magic)
+    return dict(dmin=avg * .7, dmax=avg * 1.3, delay=delay(1.3, dex), cd=0.0, cost=4 + 0.6 * L)
 
 # ---------------------------------------------------------------- monsters
 def mob(L, hp, dmg, arch=None, elite=False):

@@ -163,21 +163,27 @@ internal fun Game.spellChance(p: Game.Player, level: Int): Int =
     ((p.skill("magic") * 0.25 + p.int * 0.75) * 10 - level * 10 + 10 - (p.str - 4).coerceAtLeast(0) * 2 -
         (if (p.mount != null) 10 else 0) + (if (p.hasFlag) 20 else 0)).coerceAtMost(95.0).toInt()
 
-/** Damage of a battle spell: ≈1.8 of 4 s of the weapon a mage of this level wears, by its old power (15 = a fire bolt), more with intelligence and magic. */
+/**
+ * Damage of a battle spell (owner 06.10: spells go at the pace of the staff): a spell of the old
+ * power 15 (a fire bolt) hits for ≈2,6 s of the weapon a mage of this level wears — about 2,6 blows
+ * of a staff — more with intelligence and magic; mana is what limits it (tools/balance/sim.py).
+ */
 internal fun Game.spellDamage(p: Game.Player, pmin: Int, pmax: Int): Pair<Int, Int> {
-    val unit = balance.weaponDps(balance.tierWorn(p.level)) * 4 * 1.8 * (1 + 0.04 * p.int + 0.03 * p.skill("magic")) * (1 + p.stats.spellPct / 100.0)
+    val unit = balance.weaponDps(balance.tierWorn(p.level)) * SPELL_PER_CAST * (1 + 0.04 * p.int + 0.03 * p.skill("magic")) * (1 + p.stats.spellPct / 100.0)
     val k = unit / 15.0
     return Math.round(pmin * k).toInt().coerceAtLeast(0) to Math.round(pmax * k).toInt().coerceAtLeast(1)
 }
 
-/** Casting takes a staff's pause plus a tenth of the old cast time. */
-internal fun Game.castMs(p: Game.Player, def: JsonObject): Long = balance.pauseMillis("staff", p.dex) + 100L * (def.int("cast_time") ?: 0)
+/** Seconds of weapon damage in a spell of power 15 (calibrated 06.10: a mage fights like before, now a spell every pause). */
+internal const val SPELL_PER_CAST = 2.6
 
-/** Cooldowns of battle spells: 10–60 s instead of 1–20 min, so a mage plays with spells. */
-internal fun spellCooldown(spell: String, def: JsonObject): Long {
-    val base = (def.int("cooldown") ?: 0).toLong()
-    return if (spell.startsWith("m.w.")) (base / 10).coerceIn(10, 60) else base
-}
+/** A spell takes the pause of the staff in hand (with its gems), or of a staff, if the mage holds something else. */
+internal fun Game.castMs(p: Game.Player, @Suppress("UNUSED_PARAMETER") def: JsonObject): Long =
+    if (p.stats.weaponClass == "staff") p.stats.pauseMs else balance.pauseMillis("staff", p.dex)
+
+/** Battle spells have no cooldown of their own: the next one goes after the staff's pause (owner 06.10). */
+internal fun spellCooldown(spell: String, def: JsonObject): Long =
+    if (spell.startsWith("m.w.")) 0 else (def.int("cooldown") ?: 0).toLong()
 
 // ---- what the character can use --------------------------------------------------------
 

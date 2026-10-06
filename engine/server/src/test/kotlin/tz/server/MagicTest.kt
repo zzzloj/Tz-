@@ -86,10 +86,11 @@ class MagicTest {
         v = game.cast(a, "m.w.arrow", rat.key)
         assertEquals(manaBefore - 5, v.character.mana)
         assertTrue(v.journal.any { it.endsWith(": In Ost") }, v.journal.toString())
-        assertTrue(v.abilities.single { it.id == "m.w.arrow" }.readyIn > 0)
-        clock[0] += 5   // battle spells: at least 10 s between casts
-        v = game.cast(a, "m.w.arrow", rat.key)
-        assertTrue(v.journal.last().startsWith("Период «Магическая стрела» не истек"), v.journal.last())
+        // No cooldown of its own (owner 06.10): the next spell goes after the staff's pause.
+        assertEquals(0L, v.abilities.single { it.id == "m.w.arrow" }.readyIn)
+        assertTrue(v.restMs in 1..1300, v.restMs.toString())
+        assertEquals(Errors.RESTING, assertFailsWith<ApiException> { game.cast(a, "m.w.arrow", rat.key) }.code)
+        clock[0] += 2
         v = retry(61, { view -> view.journal.any { it.contains("по ${rat.name} ") && it.contains("магией") } }) { game.cast(a, "m.w.arrow", rat.key) }
         assertTrue(me(a).id in rat.enemies, "the struck animal turns on the caster")
 
