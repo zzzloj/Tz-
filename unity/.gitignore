@@ -1,0 +1,20 @@
+# Unity makes these on every open and build.
+/Library/
+/Temp/
+/Logs/
+/obj/
+/Build/
+/build/
+/UserSettings/
+*.csproj
+*.sln
+# Pictures and fonts are copied from content/art and engine/iosApp by tools/prepare.py before a build.
+/Assets/Resources/Art/
+/Assets/Resources/Fonts/
+/Assets/Resources/Art.meta
+/Assets/Resources/Fonts.meta
+/Assets/Scenes/
+/Assets/Scenes.meta
+# The compile check against stubs (tools/check) keeps its own build output.
+/tools/check/bin/
+/tools/check/obj/

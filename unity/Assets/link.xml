@@ -1,0 +1,4 @@
+<!-- Keep the game's own code whole under IL2CPP stripping: Newtonsoft fills the protocol classes by reflection. -->
+<linker>
+  <assembly fullname="Assembly-CSharp" preserve="all"/>
+</linker>
