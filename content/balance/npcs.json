@@ -1333,12 +1333,12 @@
   "armor": 15,
   "dmg": [
    6,
-   14
+   13
   ],
   "evasion": 32.7,
-  "exp": 1716,
-  "gold": 306,
-  "hp": 448,
+  "exp": 1144,
+  "gold": 204,
+  "hp": 391,
   "kind": "boss",
   "level": 19,
   "magicDefence": 11.8,
@@ -2613,12 +2613,12 @@
   "armor": 48,
   "dmg": [
    3,
-   8
+   7
   ],
   "evasion": 24.1,
   "exp": 974,
   "gold": 172,
-  "hp": 460,
+  "hp": 423,
   "kind": "boss",
   "level": 17,
   "magicDefence": 10.6,
@@ -2650,7 +2650,7 @@
   "evasion": 62.9,
   "exp": 3738,
   "gold": 744,
-  "hp": 1211,
+  "hp": 1125,
   "kind": "boss",
   "level": 43,
   "magicDefence": 26.2,
@@ -2666,7 +2666,7 @@
   "evasion": 65.7,
   "exp": 4518,
   "gold": 916,
-  "hp": 1619,
+  "hp": 1504,
   "kind": "boss",
   "level": 49,
   "magicDefence": 29.8,
@@ -2725,12 +2725,12 @@
   "armor": 168,
   "dmg": [
    7,
-   16
+   15
   ],
   "evasion": 70.2,
-  "exp": 3864,
-  "gold": 772,
-  "hp": 1286,
+  "exp": 1932,
+  "gold": 386,
+  "hp": 1195,
   "kind": "boss",
   "level": 44,
   "magicDefence": 26.8,
@@ -2970,7 +2970,7 @@
   "evasion": 33.2,
   "exp": 1604,
   "gold": 294,
-  "hp": 730,
+  "hp": 648,
   "kind": "boss",
   "level": 24,
   "magicDefence": 14.8,
@@ -2986,7 +2986,7 @@
   "evasion": 60.5,
   "exp": 3992,
   "gold": 800,
-  "hp": 1174,
+  "hp": 1059,
   "kind": "boss",
   "level": 45,
   "magicDefence": 27.4,
@@ -3045,12 +3045,12 @@
   "armor": 130,
   "dmg": [
    8,
-   19
+   18
   ],
   "evasion": 63.5,
   "exp": 3992,
   "gold": 800,
-  "hp": 990,
+  "hp": 901,
   "kind": "boss",
   "level": 45,
   "magicDefence": 27.4,
@@ -3109,12 +3109,12 @@
   "armor": 115,
   "dmg": [
    6,
-   14
+   13
   ],
   "evasion": 49.0,
   "exp": 2218,
   "gold": 420,
-  "hp": 728,
+  "hp": 681,
   "kind": "boss",
   "level": 30,
   "magicDefence": 18.4,
@@ -3221,12 +3221,12 @@
   "armor": 149,
   "dmg": [
    12,
-   29
+   28
   ],
   "evasion": 65.7,
   "exp": 4518,
   "gold": 916,
-  "hp": 1248,
+  "hp": 1122,
   "kind": "boss",
   "level": 49,
   "magicDefence": 29.8,
@@ -3252,13 +3252,13 @@
   "accuracy": 92.4,
   "armor": 149,
   "dmg": [
-   11,
-   25
+   10,
+   24
   ],
   "evasion": 65.7,
   "exp": 4518,
   "gold": 916,
-  "hp": 1366,
+  "hp": 1289,
   "kind": "boss",
   "level": 49,
   "magicDefence": 29.8,
@@ -3300,13 +3300,13 @@
   "accuracy": 70.7,
   "armor": 127,
   "dmg": [
-   4,
+   3,
    8
   ],
   "evasion": 55.1,
   "exp": 3006,
   "gold": 586,
-  "hp": 782,
+  "hp": 758,
   "kind": "boss",
   "level": 37,
   "magicDefence": 22.6,
@@ -3322,7 +3322,7 @@
   "evasion": 50.1,
   "exp": 3006,
   "gold": 586,
-  "hp": 875,
+  "hp": 762,
   "kind": "boss",
   "level": 37,
   "magicDefence": 22.6,
@@ -3674,7 +3674,7 @@
   "evasion": 75.0,
   "exp": 4652,
   "gold": 946,
-  "hp": 1548,
+  "hp": 1439,
   "kind": "boss",
   "level": 50,
   "magicDefence": 30.4,
@@ -3685,12 +3685,12 @@
   "armor": 133,
   "dmg": [
    7,
-   16
+   15
   ],
   "evasion": 75.0,
   "exp": 4652,
   "gold": 946,
-  "hp": 1329,
+  "hp": 1219,
   "kind": "boss",
   "level": 50,
   "magicDefence": 30.4,
@@ -3701,12 +3701,12 @@
   "armor": 152,
   "dmg": [
    11,
-   26
+   25
   ],
   "evasion": 67.0,
   "exp": 4652,
   "gold": 946,
-  "hp": 1333,
+  "hp": 1180,
   "kind": "boss",
   "level": 50,
   "magicDefence": 30.4,
@@ -3764,13 +3764,13 @@
   "accuracy": 76.4,
   "armor": 30,
   "dmg": [
-   7,
+   6,
    15
   ],
   "evasion": 50.7,
   "exp": 3244,
   "gold": 636,
-  "hp": 531,
+  "hp": 499,
   "kind": "boss",
   "level": 39,
   "magicDefence": 23.8,
