@@ -12,7 +12,7 @@ for r in rows:
         g=r['id'].startswith(('n.g.','n.o.')) or r['id']=='n.m.gnomcastle' or __import__('re').match(r'n\.[tp]\.\d',r['id'])
         r['kind']='boss' if r['id'].startswith('n.w.') else ('guard' if g else 'citizen')
     else:
-        r['kind']='boss' if r['id'] in BOSS else ('elite' if named else ('animal' if r['animal'] else 'mob'))
+        r['kind']='boss' if r['id'] in BOSS else ('elite' if named or r['id'].startswith('n.c.gol.') else ('animal' if r['animal'] else 'mob'))   # golems wake in mines (06.10)
 ords=sorted([r for r in rows if r['kind']=='mob'],key=lambda r:r['threat'])
 N=len(ords); lo=math.log(ords[0]['threat']); hi=math.log(ords[-1]['threat'])
 for i,r in enumerate(ords):
@@ -30,6 +30,7 @@ for r in rows:
     elif r['kind']=='citizen': r['lvl']=level_of(r['threat'])
     if r['kind']=='guard': r['lvl']=max(r['lvl'],30)   # guards outclass the criminals they chase
     if r['id'].startswith('n.w.'): r['lvl']=50          # the angels
+    if r['id'].startswith('n.c.gol.'): r['lvl']=30      # golems in the mines: elite of level 30 (06.10)
 json.dump(rows,open(out('mobs_lvl.json'),'w'),ensure_ascii=False)
 if __name__=='__main__':
     print('ordinary',N)

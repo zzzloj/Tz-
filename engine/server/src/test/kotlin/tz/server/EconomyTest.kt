@@ -116,6 +116,20 @@ class EconomyTest {
         assertTrue(found, "no беломорит from its vein")
         assertEquals(0, v.count("i.i.jd"))
 
+        // A golem wakes in the old mines (1 %): fire, ice or stone, elite of level 30, its heart in the carcass.
+        game.place(account, "x1482x185")
+        var golem: World.Npc? = null
+        repeat(3000) {
+            if (golem != null) return@repeat
+            clock[0] += 400
+            game.use(account, "i.kirka", null, null)
+            golem = game.world.npcsIn("x1482x185").firstOrNull { it.key.startsWith("n.c.gol.") }
+        }
+        val g = assertNotNull(golem, "no golem woke")
+        assertTrue(g.name in setOf("Огненный голем", "Ледяной голем", "Каменный голем"), g.name)
+        assertEquals(30, g.proto.stats.level)
+        assertTrue(g.proto.butcher.keys.single().startsWith("i.q."), g.proto.butcher.toString())
+
         // The smith's hammer at Raks's anvil: a menu first, then a knife (difficulty 0).
         give("i.set.molot", 1)
         give("i.ruda", 10)

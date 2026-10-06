@@ -16,12 +16,13 @@ for f in glob.glob(C+'/npcs/n.*.json'):
     rows.append(dict(id=d['id'],name=c.get('name'),hp=hp,hit=hit,avg=a,delay=dl,armor=ar,dodge=dg,exp=n(w.get('exp_value')),
         ehp=ehp,edps=edps,magic=w.get('verb') in ('магией','молнией'),threat=math.sqrt(ehp*edps),animal=d['id'].startswith('n.a.'),other=other,
         spawn=sp.get(d['id'],{}).get('n',0),dist=sp.get(d['id'],{}).get('dist')))
-lo=min(r['threat'] for r in rows if r['id']=='n.c.rat'); hi=max(r['threat'] for r in rows if not r['other'])
+GOLEM=lambda r: r['id'].startswith('n.c.gol.')   # added 06.10: kept out of the scale so it stays as calibrated
+lo=min(r['threat'] for r in rows if r['id']=='n.c.rat'); hi=max(r['threat'] for r in rows if not r['other'] and not GOLEM(r))
 for r in rows:
     x=(math.log(r['threat'])-math.log(lo))/(math.log(hi)-math.log(lo))
     r['lvl']=max(1,min(50,round(1+49*x)))
     r['shape']=math.log(r['ehp']/r['edps'])   # >0 tanky, <0 glass cannon
-med=sorted(r['shape'] for r in rows)[len(rows)//2]
+base=[r for r in rows if not GOLEM(r)]; med=sorted(r['shape'] for r in base)[len(base)//2]
 for r in rows: r['shape']-=med
 rows.sort(key=lambda r:r['threat'])
 json.dump(rows,open(out('mobs_old.json'),'w'),ensure_ascii=False)

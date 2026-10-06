@@ -342,9 +342,11 @@ private suspend fun Game.gatherExtras(p: Game.Player, extra: JsonObject?, now: L
     }
     val golem = extra?.get("golem") as? JsonObject
     if (golem != null && p.location in Crafting.strings(golem["locations"]) && Crafting.roll(golem["chance"] as? JsonObject, 0, 0, dice)) {
-        val template = golem.str("npc") ?: return
+        // One of the three golems (owner 06.10: fire, ice or stone, as the old template chose).
+        val kinds = Crafting.strings(golem["npcs"])
+        val template = (if (kinds.isNotEmpty()) kinds[rnd.nextInt(kinds.size)] else golem.str("npc")) ?: return
         world.spawn(template, "$template.${rnd.nextInt(99, 10000)}", p.location, now)
-        p.log("Голем: ${p.name}, как ты посмел потревожить меня?! За это ты умрешь!")
+        p.log((content.npcs[template]?.get("char") as? JsonObject)?.str("name").orEmpty().ifEmpty { "Голем" } + ": ${p.name}, как ты посмел потревожить меня?! За это ты умрешь!")
     }
 }
 

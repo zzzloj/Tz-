@@ -2848,6 +2848,54 @@
   "magicDefence": 24.4,
   "pause": 2.0
  },
+ "n.c.gol.h": {
+  "accuracy": 62.0,
+  "armor": 115,
+  "dmg": [
+   6,
+   15
+  ],
+  "evasion": 52.0,
+  "exp": 3327,
+  "gold": 630,
+  "hp": 1769,
+  "kind": "elite",
+  "level": 30,
+  "magicDefence": 18.4,
+  "pause": 1.4
+ },
+ "n.c.gol.k": {
+  "accuracy": 62.0,
+  "armor": 115,
+  "dmg": [
+   6,
+   15
+  ],
+  "evasion": 52.0,
+  "exp": 3327,
+  "gold": 630,
+  "hp": 1769,
+  "kind": "elite",
+  "level": 30,
+  "magicDefence": 18.4,
+  "pause": 1.4
+ },
+ "n.c.gol.o": {
+  "accuracy": 62.0,
+  "armor": 115,
+  "dmg": [
+   6,
+   15
+  ],
+  "evasion": 52.0,
+  "exp": 3327,
+  "gold": 630,
+  "hp": 1769,
+  "kind": "elite",
+  "level": 30,
+  "magicDefence": 18.4,
+  "pause": 1.4
+ },
  "n.c.gorg.g": {
   "accuracy": 72.3,
   "armor": 58,
