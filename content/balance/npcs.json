@@ -4884,13 +4884,13 @@
   "accuracy": 94.0,
   "armor": 38,
   "dmg": [
-   7,
-   16
+   5,
+   12
   ],
   "evasion": 65.0,
-  "exp": 18608,
-  "gold": 3784,
-  "hp": 6611,
+  "exp": 6978,
+  "gold": 1419,
+  "hp": 1818,
   "kind": "boss",
   "level": 50,
   "magicDefence": 30.4,
@@ -4900,13 +4900,13 @@
   "accuracy": 94.0,
   "armor": 38,
   "dmg": [
-   9,
-   21
+   7,
+   17
   ],
   "evasion": 65.0,
-  "exp": 18608,
-  "gold": 3784,
-  "hp": 2469,
+  "exp": 6978,
+  "gold": 1419,
+  "hp": 679,
   "kind": "boss",
   "level": 50,
   "magicDefence": 30.4,

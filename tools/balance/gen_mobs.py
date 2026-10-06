@@ -4,11 +4,15 @@ from sim import mob
 from paths import out as outpath
 rows=json.load(open(outpath('mobs_lvl.json')))
 def clamp(x,a,b): return max(a,min(b,x))
+# Angels that one hero should be able to beat, rarely (owner 06.10): hp, dmg, exp factors chosen with sim.py so a
+# warrior or an archer of level 50 wins about 40–55 % of fights alone.
+SOLO_BOSS={'n.w.Veelzevul':(2.2,1.25,3),'n.w.Mihail':(2.2,1.2,3)}
 out=[]
 for r in rows:
     L=r['lvl']; s=r['shape']
     hpf=clamp(math.exp(0.35*s),0.55,1.8); dmgf=clamp(math.exp(-0.35*s),0.55,1.8)
     eh,ed,ex=ELITE[r['kind']]
+    if r['id'] in SOLO_BOSS: eh,ed,ex=SOLO_BOSS[r['id']]   # owner 06.10: one hero of level 50 may kill them, with poor odds
     if r.get('magic'): ed*=caster_dmg(L)   # magic blows go past armour and evasion (see model.caster_dmg)
     delay=round(clamp(clamp(r['delay'],3,8)/3.5,1.0,2.0),1)   # owner 04.10: monsters strike every 1–2 s
     hp=round(mob_hp(L)*hpf*eh); per_blow=mob_dmg(L)*dmgf*ed*delay/4
