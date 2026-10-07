@@ -67,7 +67,7 @@ jobs:
           grep -nE "MmoBuild|executeMethod|[Ss]witch|BuildPlayer|Exiting|Aborting|abort|Android SDK|AndroidPlayer|returned|exit code" unity.log | grep -v Licensing | tail -25 \
             | while IFS= read -r line; do echo "::warning title=steps ${{ matrix.out }}::$(echo "$line" | cut -c1-600)"; done
           # the 40 lines before the build's stack trace, as one annotation (GitHub keeps only 10 per kind and step)
-          n=$(grep -n "start building target" unity.log | head -1 | cut -d: -f1)
+          n=$(grep -n "start building target\|Validating game data" unity.log | tail -1 | cut -d: -f1)
           if [ -n "$n" ]; then
             text=$(tail -n +"$n" unity.log | grep -vE "^\s*$|Start importing|Licensing|^Unity|^UnityEditor|^System\.|ExtractStackTrace|DebugLogHandler|Logger:Log|Debug:Log" | head -70 | cut -c1-260 | sed ':a;N;$!ba;s/\n/%0A/g')
             echo "::notice title=building ${{ matrix.out }}::$text"
