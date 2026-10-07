@@ -56,9 +56,74 @@ public static class MmoBuild
     static void EnsureTextMeshPro()
     {
         if (AssetDatabase.IsValidFolder("Assets/TextMesh Pro")) return;
-        AssetDatabase.ImportPackage("Packages/com.unity.ugui/Package Resources/TMP Essential Resources.unitypackage", false);
-        AssetDatabase.Refresh();
-        Debug.Log("Imported TMP Essential Resources: " + AssetDatabase.IsValidFolder("Assets/TextMesh Pro"));
+        // AssetDatabase.ImportPackage finishes only after this method returns in batch mode, so the
+        // package (a tar.gz of <guid>/asset, asset.meta, pathname) is unpacked here by hand.
+        var ugui = UnityEditor.PackageManager.PackageInfo.FindForAssetPath("Packages/com.unity.ugui");
+        var package = Path.Combine(ugui != null ? ugui.resolvedPath : Path.GetFullPath("Packages/com.unity.ugui"),
+            "Package Resources", "TMP Essential Resources.unitypackage");
+        int files = Unpack(package, Root());
+        AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+        Debug.Log($"Unpacked TMP Essential Resources ({files} files): " + AssetDatabase.IsValidFolder("Assets/TextMesh Pro"));
+    }
+
+    /// <summary>Writes the assets of a .unitypackage under [projectRoot]; returns how many.</summary>
+    static int Unpack(string package, string projectRoot)
+    {
+        var entries = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, byte[]>>();
+        using (var gz = new System.IO.Compression.GZipStream(File.OpenRead(package), System.IO.Compression.CompressionMode.Decompress))
+        {
+            var header = new byte[512];
+            while (true)
+            {
+                if (ReadFull(gz, header, 512) < 512) break;
+                string name = Field(header, 0, 100);
+                if (name.Length == 0) break;
+                string prefix = Field(header, 345, 155);
+                if (prefix.Length > 0) name = prefix + "/" + name;
+                string octal = Field(header, 124, 12).Trim();
+                long size = octal.Length == 0 ? 0 : Convert.ToInt64(octal, 8);
+                var data = new byte[size];
+                ReadFull(gz, data, (int)size);
+                int pad = (int)((512 - size % 512) % 512);
+                if (pad > 0) ReadFull(gz, new byte[pad], pad);
+                if (name.StartsWith("./")) name = name.Substring(2);
+                int slash = name.IndexOf('/');
+                if (slash <= 0 || header[156] == (byte)'5') continue;
+                string guid = name.Substring(0, slash), part = name.Substring(slash + 1);
+                if (!entries.TryGetValue(guid, out var e)) entries[guid] = e = new System.Collections.Generic.Dictionary<string, byte[]>();
+                e[part] = data;
+            }
+        }
+        int count = 0;
+        foreach (var e in entries.Values)
+        {
+            if (!e.TryGetValue("pathname", out var pn)) continue;
+            string path = System.Text.Encoding.UTF8.GetString(pn).Split('\n')[0].Trim();
+            string full = Path.Combine(projectRoot, path);
+            if (e.TryGetValue("asset", out var asset))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(full));
+                File.WriteAllBytes(full, asset);
+                count++;
+            }
+            else Directory.CreateDirectory(full);
+            if (e.TryGetValue("asset.meta", out var meta)) File.WriteAllBytes(full + ".meta", meta);
+        }
+        return count;
+    }
+
+    /// <summary>A NUL-terminated text field of a tar header.</summary>
+    static string Field(byte[] header, int at, int length)
+    {
+        int end = Array.IndexOf(header, (byte)0, at, length);
+        return System.Text.Encoding.UTF8.GetString(header, at, (end < 0 ? at + length : end) - at);
+    }
+
+    static int ReadFull(Stream s, byte[] buffer, int count)
+    {
+        int read = 0;
+        while (read < count) { int n = s.Read(buffer, read, count - read); if (n <= 0) break; read += n; }
+        return read;
     }
 
     /// <summary>Points the demo's server entry at our VPS.</summary>

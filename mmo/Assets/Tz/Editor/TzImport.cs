@@ -43,7 +43,8 @@ public static class TzImport
         DefaultWeapon();
         var monsters = Monsters(repoRoot, balance);
         Spawns(monsters);
-        CyrillicFont();
+        try { CyrillicFont(); }
+        catch (Exception e) { problems++; Debug.LogError("[TzImport] Cyrillic font: " + e); }
         AssetDatabase.SaveAssets();
         Debug.Log($"[TzImport] done: {monsters.Count} monsters, {problems} problems");
     }
@@ -57,7 +58,12 @@ public static class TzImport
     }
 
     static void F(SerializedObject so, string path, float v) { var p = P(so, path); if (p != null) p.floatValue = v; }
-    static void I(SerializedObject so, string path, int v) { var p = P(so, path); if (p != null) p.intValue = v; }
+    static void I(SerializedObject so, string path, int v)
+    {
+        var p = P(so, path);
+        if (p == null) return;
+        if (p.propertyType == SerializedPropertyType.Float) p.floatValue = v; else p.intValue = v;
+    }
     static void S(SerializedObject so, string path, string v) { var p = P(so, path); if (p != null) p.stringValue = v; }
 
     /// <summary>Zeroes every number under a stats block (baseStats, statsIncreaseEachLevel, …).</summary>
@@ -263,6 +269,7 @@ public static class TzImport
         if (ttf == null) { problems++; Debug.LogError("[TzImport] no font at " + FontPath); return; }
         AssetDatabase.DeleteAsset(path);
         var fa = TMP_FontAsset.CreateFontAsset(ttf, 64, 6, UnityEngine.TextCore.LowLevel.GlyphRenderMode.SDFAA, 1024, 1024, AtlasPopulationMode.Dynamic, true);
+        if (fa == null) { problems++; Debug.LogError("[TzImport] TextMesh Pro could not make a font of " + FontPath); return; }
         fa.name = "AlegreyaSans-Dynamic";
         AssetDatabase.CreateAsset(fa, path);
         foreach (var tex in fa.atlasTextures) { tex.name = fa.name + " Atlas"; AssetDatabase.AddObjectToAsset(tex, fa); }
@@ -271,7 +278,7 @@ public static class TzImport
         EditorUtility.SetDirty(fa);
         AssetDatabase.SaveAssets();
 
-        var settings = TMP_Settings.instance;
+        var settings = AssetDatabase.LoadAssetAtPath<TMP_Settings>("Assets/TextMesh Pro/Resources/TMP Settings.asset");
         if (settings == null) { problems++; Debug.LogError("[TzImport] no TMP Settings"); return; }
         var so = new SerializedObject(settings);
         var list = P(so, "m_fallbackFontAssets");
