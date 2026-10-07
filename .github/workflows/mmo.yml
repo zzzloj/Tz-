@@ -73,6 +73,8 @@ jobs:
           unityVersion: auto
           buildMethod: ${{ matrix.method }}
           customParameters: -logFile /github/workspace/unity.log
+          allowDirtyBuild: true   # the kit is patched in place (mmo/tools/patch_kit.py)
+          versioning: None
 
       - name: Errors of the Unity log as annotations
         if: always()
