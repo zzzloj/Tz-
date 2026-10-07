@@ -1,0 +1,14 @@
+# Made by Unity on every open and build.
+/Library/
+/Temp/
+/Logs/
+/obj/
+/Build/
+/build/
+/UserSettings/
+/MemoryCaptures/
+*.csproj
+*.sln
+/Packages/packages-lock.json
+/Assets/Scenes/
+/Assets/Scenes.meta

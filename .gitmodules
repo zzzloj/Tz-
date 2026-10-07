@@ -1,0 +1,3 @@
+[submodule "mmo/Assets/OpenMMORPG"]
+	path = mmo/Assets/OpenMMORPG
+	url = https://github.com/open-mmorpg/OpenMMORPG.git

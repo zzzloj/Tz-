@@ -1,0 +1,59 @@
+name: mmo
+
+# The MMO on Open MMORPG / MMORPG KIT (owner 07.10, mmo/README.md): builds the Linux server and the
+# Android client with GameCI. Same Unity licence secrets as unity.yml.
+on:
+  push:
+    paths: ["mmo/**", ".gitmodules", ".github/workflows/mmo.yml"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: StandaloneLinux64
+            method: MmoBuild.BuildServer
+            out: Server
+          - target: Android
+            method: MmoBuild.BuildAndroid
+            out: Android
+    env:
+      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          android: false
+          tool-cache: false
+          large-packages: false
+
+      - uses: actions/cache@v4
+        with:
+          path: mmo/Library
+          key: mmo-library-${{ matrix.target }}-${{ hashFiles('mmo/Packages/manifest.json', 'mmo/ProjectSettings/ProjectVersion.txt', '.gitmodules') }}
+          restore-keys: mmo-library-${{ matrix.target }}-
+
+      - name: Build
+        uses: game-ci/unity-builder@v4
+        with:
+          projectPath: mmo
+          targetPlatform: ${{ matrix.target }}
+          unityVersion: auto
+          buildMethod: ${{ matrix.method }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tz-mmo-${{ matrix.out }}
+          path: mmo/build/${{ matrix.out }}
+          if-no-files-found: error
+          retention-days: 14
