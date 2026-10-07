@@ -14,7 +14,7 @@
 
 ## Правила для всех картинок (иначе детали не сложатся вместе)
 
-1. **Один ракурс.** Обстановка и фигуры — «сверху под углом около 50°, камера смотрит на север». Земля — строго сверху, без перспективы.
+1. **Один ракурс.** Обстановка и фигуры — изометрия, как у пробного дома (07.10): угол предмета смотрит на зрителя, видны две стены и крыша. Земля — строго сверху, без перспективы.
 2. **Один свет** — сверху слева. Этот кусок есть в каждом промпте, не удаляйте его.
 3. **Без тени на земле.** Тени движок рисует сам. Если генератор их всё-таки рисует, ничего страшного, вырежу.
 4. **Фон.** Обстановке и фигурам нужен ровный светло-серый фон (#B0B0B0), его я вырежу. Если генератор умеет прозрачный фон (ChatGPT / gpt-image умеет), просите прозрачный, так ещё лучше.
@@ -38,12 +38,12 @@ seamless tileable texture, viewed perfectly straight down from directly above, o
 
 **[OBJECT]** — для обстановки:
 ```
-single isolated game object, high-angle three-quarter view from above, camera tilted about 50 degrees down and looking north, the whole object visible with empty margin around it, centered, light from the upper left, no cast shadow, no ground under it, plain flat light grey background #B0B0B0, no text, no frame, square 1:1
+single isolated game object, classic isometric view from above, one corner of the object pointing toward the viewer so two sides and the top are visible, the whole object visible with empty margin around it, centered, light from the upper left, no cast shadow, no ground under it, plain flat light grey background #B0B0B0, no text, no frame, square 1:1
 ```
 
 **[FIGURE]** — для героя, монстров и жителей:
 ```
-single character, full body, high-angle three-quarter view from above, camera tilted about 50 degrees down, standing in a calm idle pose, body turned three-quarters to the lower right, the whole figure visible with empty margin around it, centered, light from the upper left, no cast shadow, no ground under it, plain flat light grey background #B0B0B0, no text, no frame, square 1:1
+single character, full body, classic isometric view from above (same camera as an isometric RPG), standing in a calm idle pose, body turned three-quarters to the lower right, the whole figure visible with empty margin around it, centered, light from the upper left, no cast shadow, no ground under it, plain flat light grey background #B0B0B0, no text, no frame, square 1:1
 ```
 
 **Чего избегать** (если у генератора есть поле negative prompt):
@@ -55,12 +55,12 @@ horizon, sky, landscape, scene, multiple objects, cropped, cut off, cast shadow,
 
 Полный промпт собирается так: **описание из таблицы + [GROUND], [OBJECT] или [FIGURE] + [STYLE]**. Например, бочка:
 ```
-an old oak barrel with rusty iron hoops, slightly battered, single isolated game object, high-angle three-quarter view from above, camera tilted about 50 degrees down and looking north, the whole object visible with empty margin around it, centered, light from the upper left, no cast shadow, no ground under it, plain flat light grey background #B0B0B0, no text, no frame, square 1:1, dark fantasy video game asset, hand-painted digital painting, muted earthy palette with warm torchlight accents, rich surface texture detail, soft moody light from the upper left, Grim Soul and Diablo II art style, for a top-down action RPG
+an old oak barrel with rusty iron hoops, slightly battered, single isolated game object, classic isometric view from above, one corner of the object pointing toward the viewer so two sides and the top are visible, the whole object visible with empty margin around it, centered, light from the upper left, no cast shadow, no ground under it, plain flat light grey background #B0B0B0, no text, no frame, square 1:1, dark fantasy video game asset, hand-painted digital painting, muted earthy palette with warm torchlight accents, rich surface texture detail, soft moody light from the upper left, Grim Soul and Diablo II art style, for a top-down action RPG
 ```
 
 ## Порядок
 
-1. **Сначала проба из трёх картинок:** `ground-cobble`, `obj-house-a`, `fig-hero-m`. Пришлите их, я соберу из них площадку на телефоне. Так станет понятно, работают ли ракурс и масштаб, прежде чем тратить время на остальное.
+1. **Сначала проба из трёх картинок:** `ground-cobble`, `obj-house-a`, `fig-hero-m`. Пришлите их, я соберу из них площадку на телефоне. Земля и дом пришли 07.10: подошли, дом вышел в изометрии, и её взяли за образец ракурса. Так станет понятно, работают ли ракурс и масштаб, прежде чем тратить время на остальное.
 2. Если проба удалась, делаете остальную партию.
 3. **Куда класть.** Можно присылать сюда в чат или класть в `content/art/topdown/` с именами из таблиц (`ground/…`, `objects/…`, `figures/…`), в png. Фон вырежу, размеры подгоню, швы уберу сам.
 4. **Если из нескольких вариантов не ясно, какой брать:**
