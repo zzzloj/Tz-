@@ -13,7 +13,8 @@ using UnityEngine;
 ///   both stop a share a / (a + 50 + 10·attacker level), heavy weapons meet 25 % less armour, light ones 15 % more;
 /// - criRate, criDmgRate — crit chance (a share, no floor: crit only from items) and its multiplier;
 ///   a crit never turns a miss into a hit;
-/// - blockRate — shield block chance (0 without a shield), a blocked blow loses BlockCut (half);
+/// - block only with a shield: 5 % + 0.5 % a point of dexterity (≤ 30 %) + items' blockRate; a blocked blow loses BlockCut (half);
+/// - strength adds str/2 per 4 s of pause to a physical blow (not crossbows, not skills);
 /// - experience: monsters' experience by the level gap, two training points a level (+2 every tenth) as stat points.
 /// Weapon classes (pause, crit, penetration) are the ids of the framework's WeaponType assets: knife, sword, axe, …
 /// </summary>
@@ -72,9 +73,29 @@ public class TzGameplayRule : DefaultGameplayRule
 
     public override float RandomAttackDamage(Vector3 fromPosition, BaseCharacterEntity attacker, BaseCharacterEntity damageReceiver, DamageElement damageElement, MinMaxFloat damageAmount, CharacterItem weapon, BaseSkill skill, int skillLevel, int randomSeed)
     {
+        string cls = WeaponClass(weapon);
         strikingLevel = attacker != null ? attacker.Level : 1;
-        strikingPen = Balance.Penetration(WeaponClass(weapon));
-        return base.RandomAttackDamage(fromPosition, attacker, damageReceiver, damageElement, damageAmount, weapon, skill, skillLevel, randomSeed);
+        strikingPen = Balance.Penetration(cls);
+        float damage = base.RandomAttackDamage(fromPosition, attacker, damageReceiver, damageElement, damageAmount, weapon, skill, skillLevel, randomSeed);
+        bool physical = damageElement == null || damageElement == GameInstance.Singleton.DefaultDamageElement;
+        if (attacker != null && physical && skill == null && cls != "crossbow")
+        {
+            // Strength adds str/2 per 4 s of pause to every blow, so damage per second stays fair (balance.md §5).
+            var w = weapon.IsEmptySlot() ? null : weapon.GetWeaponItem();
+            double pause = w != null && w.RateOfFire > 0 ? 60.0 / w.RateOfFire : Balance.Pause(cls, 0);
+            damage += (float)Balance.StrengthBonus(Mathf.RoundToInt(AttributeAmount(attacker, "str")), pause);
+        }
+        return damage;
+    }
+
+    /// <summary>A character's amount of the attribute with this id (str, dex, int); 0 if none.</summary>
+    public static float AttributeAmount(BaseCharacterEntity character, string id)
+    {
+        var attributes = character.GetCaches().Attributes;
+        if (attributes == null) return 0;
+        foreach (var kv in attributes)
+            if (kv.Key != null && kv.Key.Id == id) return kv.Value;
+        return 0;
     }
 
     public override float GetDamageReducedByResistance(Dictionary<DamageElement, float> damageReceiverResistances, Dictionary<DamageElement, float> damageReceiverArmors, float damageAmount, DamageElement damageElement)
@@ -110,7 +131,13 @@ public class TzGameplayRule : DefaultGameplayRule
 
     public override float GetBlockChance(BaseCharacterEntity attacker, BaseCharacterEntity damageReceiver)
     {
-        return Mathf.Clamp01(damageReceiver.GetCaches().Stats.blockRate);
+        // Only with a shield: 5 % + 0.5 % a point of dexterity (+2 % a point of parrying, later), at most 30 %,
+        // plus what items add to blockRate.
+        var left = damageReceiver.GetCaches().LeftHandItem;
+        if (left.IsEmptySlot() || left.GetShieldItem() == null)
+            return 0f;
+        int dex = Mathf.RoundToInt(AttributeAmount(damageReceiver, "dex"));
+        return Mathf.Clamp01((float)(Balance.BlockChance(0, dex) / 100.0) + damageReceiver.GetCaches().Stats.blockRate);
     }
 
     public override float GetBlockDamage(BaseCharacterEntity attacker, BaseCharacterEntity damageReceiver, float damage)

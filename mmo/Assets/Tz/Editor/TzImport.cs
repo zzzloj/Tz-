@@ -23,6 +23,8 @@ public static class TzImport
     const string DemoMonsterPrefab = "Assets/Tz/BaseDemo/Prefabs/GamePlay/CharacterEntities/BaseEnemy-CE.prefab";
     const string DemoPlayer = "Assets/Tz/BaseDemo/GameData/Resources/PlayerCharacters/BaseCharacter-CE.asset";
     const string DemoWeapon = "Assets/Tz/BaseDemo/GameData/Resources/Items/DefaultWeaponItem-CE.asset";
+    const string DemoUnarmed = "Assets/Tz/BaseDemo/GameData/Resources/WeaponTypes/Unarmed-CE.asset";
+    const string DemoDatabase = "Assets/Tz/BaseDemo/GameData/GameDatabase-CE.asset";
     const string DemoGameInstance = "Assets/Tz/BaseDemo/Prefabs/GameInstance-CE.prefab";
     const string DemoMap = "Assets/Tz/BaseDemo/Scenes/BaseMap-CE.unity";
     const string FontPath = "Assets/Tz/Fonts/alegreya_sans_regular.ttf";
@@ -36,17 +38,23 @@ public static class TzImport
     {
         problems = 0;
         var balance = TzBalance.Parse(File.ReadAllText(Path.Combine(repoRoot, "content", "logic", "balance.json")));
-        Directory.CreateDirectory(Path.Combine(repoRoot, "mmo", Generated, "Monsters"));
+        foreach (var dir in new[] { "Monsters", "Items", "Types" })
+            Directory.CreateDirectory(Path.Combine(repoRoot, "mmo", Generated, dir));
         AssetDatabase.Refresh();
         ExpTable(balance);
-        Player(balance);
+        var attributes = Attributes(balance);
+        var weaponTypes = WeaponTypes();
+        var armorTypes = ArmorTypes();
+        var items = Items(repoRoot, balance, attributes, weaponTypes, armorTypes);
+        Player(balance, attributes, items);
         DefaultWeapon();
         var monsters = Monsters(repoRoot, balance);
         Spawns(monsters);
+        Database(attributes.Values, weaponTypes.Values, armorTypes.Values, items.Values);
         try { CyrillicFont(); }
         catch (Exception e) { problems++; Debug.LogError("[TzImport] Cyrillic font: " + e); }
         AssetDatabase.SaveAssets();
-        Debug.Log($"[TzImport] done: {monsters.Count} monsters, {problems} problems");
+        Debug.Log($"[TzImport] done: {attributes.Count} attributes, {weaponTypes.Count} weapon types, {armorTypes.Count} armour slots, {items.Count} items, {monsters.Count} monsters, {problems} problems");
     }
 
     // ---- helpers ---------------------------------------------------------------------------------
@@ -97,31 +105,259 @@ public static class TzImport
     }
 
     /// <summary>
-    /// A new character's stats with every attribute at its start value (balance.md §5): health, mana,
-    /// accuracy and evasion by level, the base crit. Attributes and skills as stat sources come later.
+    /// A new character (balance.md §5): attributes at their start value through the attributes,
+    /// the rest by level — accuracy and evasion +1, health +3, mana +2 a level; the base crit (fists);
+    /// the starting knife in hand.
     /// </summary>
-    static void Player(TzBalance b)
+    static void Player(TzBalance b, Dictionary<string, MultiplayerARPG.Attribute> attributes, Dictionary<string, Item> items)
     {
         var asset = AssetDatabase.LoadMainAssetAtPath(DemoPlayer);
         var so = new SerializedObject(asset);
-        int a = b.AttrStart;
         Zero(so, "stats.statsIncreaseEachLevel");
         Zero(so, "stats.rateIncreaseEachLevel");
-        F(so, "stats.baseStats.hp", b.HpMax(a, 1));
+        F(so, "stats.baseStats.hp", b.HpMax(0, 1));
         F(so, "stats.statsIncreaseEachLevel.hp", (float)b.HpPerLevel);
-        F(so, "stats.baseStats.mp", b.ManaMax(a, 1));
+        F(so, "stats.baseStats.mp", b.ManaMax(0, 1));
         F(so, "stats.statsIncreaseEachLevel.mp", (float)b.ManaPerLevel);
-        F(so, "stats.baseStats.accuracy", (float)b.Accuracy(a, 0, 1));
+        F(so, "stats.baseStats.accuracy", (float)b.Accuracy(0, 0, 1));
         F(so, "stats.statsIncreaseEachLevel.accuracy", 1);
-        F(so, "stats.baseStats.evasion", (float)b.Evasion(a, 0, 1));
+        F(so, "stats.baseStats.evasion", (float)b.Evasion(0, 0, 1));
         F(so, "stats.statsIncreaseEachLevel.evasion", 1);
         F(so, "stats.baseStats.criRate", (float)(b.CritBase("hand") / 100));
         F(so, "stats.baseStats.criDmgRate", (float)b.CritMultiplier);
         F(so, "stats.baseStats.blockRate", 0);
         F(so, "stats.baseStats.blockDmgRate", 0);
         F(so, "stats.baseStats.atkSpeed", 1);
+        var list = P(so, "attributes");
+        if (list != null)
+        {
+            var order = new[] { "str", "dex", "int" };
+            list.arraySize = order.Length;
+            for (int i = 0; i < order.Length; i++)
+            {
+                var e = list.GetArrayElementAtIndex(i);
+                e.FindPropertyRelative("attribute").objectReferenceValue = attributes[order[i]];
+                e.FindPropertyRelative("amount.baseAmount").floatValue = b.AttrStart;
+                e.FindPropertyRelative("amount.amountIncreaseEachLevel").floatValue = 0;
+                e.FindPropertyRelative("amount.rateIncreaseEachLevel").floatValue = 0;
+            }
+        }
+        if (items.TryGetValue(StartWeapon, out var knife))
+            P(so, "rightHandEquipItem").objectReferenceValue = knife;
+        else { problems++; Debug.LogError("[TzImport] no starting weapon " + StartWeapon); }
         so.ApplyModifiedPropertiesWithoutUndo();
         EditorUtility.SetDirty(asset);
+    }
+
+    // ---- attributes, weapon classes, armour slots ------------------------------------------------------
+    const string StartWeapon = "i.w.k.begin";
+
+    static T Make<T>(string path) where T : ScriptableObject
+    {
+        AssetDatabase.DeleteAsset(path);
+        var o = ScriptableObject.CreateInstance<T>();
+        o.name = Path.GetFileNameWithoutExtension(path);
+        AssetDatabase.CreateAsset(o, path);
+        return o;
+    }
+
+    /// <summary>
+    /// Strength, dexterity, intelligence (balance.md §5), 1–10 each. A point of strength: +5 health
+    /// (and str/2 damage per 4 s of pause, in TzGameplayRule); of dexterity: +2 accuracy, +1 evasion,
+    /// a pause about 2 % shorter (rate of fire +2.22 %: 1 / (1 + 0.0222·dex) ≈ 1 − 0.02·dex up to 10),
+    /// +0.5 % block with a shield (TzGameplayRule); of intelligence: +5 mana.
+    /// </summary>
+    static Dictionary<string, MultiplayerARPG.Attribute> Attributes(TzBalance b)
+    {
+        var result = new Dictionary<string, MultiplayerARPG.Attribute>();
+        foreach (var (id, title) in new[] { ("str", "Сила"), ("dex", "Ловкость"), ("int", "Интеллект") })
+        {
+            var a = Make<MultiplayerARPG.Attribute>($"{Generated}/Types/attr-{id}.asset");
+            var so = new SerializedObject(a);
+            S(so, "id", id);
+            S(so, "defaultTitle", title);
+            I(so, "maxAmount", b.AttrMax);
+            if (id == "str") F(so, "statsIncreaseEachLevel.hp", (float)b.HpPerStr);
+            if (id == "dex")
+            {
+                F(so, "statsIncreaseEachLevel.accuracy", (float)b.AccPerDex);
+                F(so, "statsIncreaseEachLevel.evasion", (float)b.EvaPerDex);
+                F(so, "statsIncreaseEachLevel.rateOfFireRate", 0.0222f);
+            }
+            if (id == "int") F(so, "statsIncreaseEachLevel.mp", (float)b.ManaPerInt);
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(a);
+            result[id] = a;
+        }
+        return result;
+    }
+
+    static readonly (string id, string title, int equip, float distance)[] Classes =
+    {
+        // equip: 0 one hand, 2 two hands (WeaponItemEquipType); distance — how far a blow reaches, m.
+        ("knife", "Нож", 0, 1.5f), ("sword", "Меч", 0, 1.8f), ("axe", "Топор", 0, 1.8f), ("spear", "Копьё", 0, 2.4f),
+        ("rapier", "Шпага", 0, 1.8f), ("staff", "Посох", 2, 2.0f), ("heavy", "Двуручное оружие", 2, 2.2f),
+        ("bow", "Лук", 2, 12f), ("crossbow", "Арбалет", 2, 12f), ("thrown", "Метательное оружие", 0, 8f),
+    };
+
+    /// <summary>Weapon classes (balance.md §13) as WeaponType assets with the class as id; fists are the demo's Unarmed, id "hand".</summary>
+    static Dictionary<string, WeaponType> WeaponTypes()
+    {
+        var result = new Dictionary<string, WeaponType>();
+        var unarmed = AssetDatabase.LoadAssetAtPath<WeaponType>(DemoUnarmed);
+        var uso = new SerializedObject(unarmed);
+        S(uso, "id", "hand");
+        S(uso, "defaultTitle", "Кулаки");
+        uso.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(unarmed);
+        result["hand"] = unarmed;
+        foreach (var c in Classes)
+        {
+            string path = $"{Generated}/Types/weapon-{c.id}.asset";
+            AssetDatabase.DeleteAsset(path);
+            AssetDatabase.CopyAsset(DemoUnarmed, path);
+            var t = AssetDatabase.LoadAssetAtPath<WeaponType>(path);
+            var so = new SerializedObject(t);
+            S(so, "id", c.id);
+            S(so, "defaultTitle", c.title);
+            P(so, "equipType").enumValueIndex = c.equip;
+            F(so, "damageInfo.hitDistance", c.distance);
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(t);
+            result[c.id] = t;
+        }
+        return result;
+    }
+
+    static readonly (string slot, string title)[] Slots =
+    {
+        // i.a.<slot>.… — one thing a slot (data-fields.md §0); i.a.s is the shield, in the left hand.
+        ("b", "Доспех"), ("h", "Шлем"), ("r", "Рубашка"), ("p", "Поручи"), ("l", "Поножи"), ("e", "Плащ"),
+        ("w", "Штаны"), ("c", "Обувь"), ("a", "Украшение"), ("o", "Очки"), ("d", "Знак"), ("m", "Ожерелье"),
+    };
+
+    static Dictionary<string, ArmorType> ArmorTypes()
+    {
+        var result = new Dictionary<string, ArmorType>();
+        foreach (var (slot, title) in Slots)
+        {
+            var t = Make<ArmorType>($"{Generated}/Types/armor-{slot}.asset");
+            var so = new SerializedObject(t);
+            S(so, "id", "armor-" + slot);
+            S(so, "defaultTitle", title);
+            S(so, "equipPosition", "TZ_" + slot.ToUpperInvariant());
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(t);
+            result[slot] = t;
+        }
+        return result;
+    }
+
+    // ---- items -------------------------------------------------------------------------------------------
+    /// <summary>
+    /// Weapons, armour and shields of content/balance/items.json with their names from content/items:
+    /// damage, pause (rate of fire 60 / pause), class crit over the fists' one, armour, the price,
+    /// required level and attributes (req = [str, dex, int]).
+    /// </summary>
+    static Dictionary<string, Item> Items(string root, TzBalance b, Dictionary<string, MultiplayerARPG.Attribute> attributes,
+        Dictionary<string, WeaponType> weaponTypes, Dictionary<string, ArmorType> armorTypes)
+    {
+        var result = new Dictionary<string, Item>();
+        var all = Json(Path.Combine(root, "content", "balance", "items.json"));
+        foreach (var kv in all.OrderBy(k => k.Key))
+        {
+            if (!(kv.Value is Dictionary<string, object> o)) continue;
+            string type = o.TryGetValue("type", out var tv) ? tv as string : null;
+            string id = kv.Key;
+            bool weapon = type == "weapon" && id.StartsWith("i.w.");
+            bool shield = type == "armor" && id.StartsWith("i.a.s.");
+            string slot = type == "armor" && id.StartsWith("i.a.") && id.Length > 5 ? id.Substring(4, 1) : null;
+            if (!weapon && !shield && (slot == null || !armorTypes.ContainsKey(slot))) continue;
+
+            string name = id;
+            var file = Path.Combine(root, "content", "items", id + ".json");
+            if (File.Exists(file) && Json(file).TryGetValue("name", out var nm) && nm is string s && s.Length > 0)
+                name = char.ToUpper(s[0]) + s.Substring(1);
+
+            string path = $"{Generated}/Items/{id}.asset";
+            AssetDatabase.DeleteAsset(path);
+            if (!AssetDatabase.CopyAsset(DemoWeapon, path)) { problems++; Debug.LogError("[TzImport] cannot copy an item for " + id); continue; }
+            var item = AssetDatabase.LoadAssetAtPath<Item>(path);
+            var so = new SerializedObject(item);
+            S(so, "id", id);
+            S(so, "defaultTitle", name);
+            I(so, "sellPrice", (int)N(o, "price"));
+            Zero(so, "increaseStats");
+            F(so, "rateOfFire", 0);
+            P(so, "weaponType").objectReferenceValue = null;
+            P(so, "armorType").objectReferenceValue = null;
+            F(so, "damageAmount.amount.baseAmount.min", 0);
+            F(so, "damageAmount.amount.baseAmount.max", 0);
+            F(so, "armorAmount.amount.baseAmount", 0);
+            F(so, "armorAmount.amount.amountIncreaseEachLevel", 0);
+            if (weapon)
+            {
+                string cls = o.TryGetValue("class", out var cv) && cv is string c && weaponTypes.ContainsKey(c) ? c : "sword";
+                P(so, "itemType").enumValueIndex = 2;
+                P(so, "weaponType").objectReferenceValue = weaponTypes[cls];
+                var dmg = o.TryGetValue("dmg", out var dv) && dv is List<object> dl && dl.Count == 2 ? dl.Select(x => (float)(double)x).ToArray() : new[] { 1f, 2f };
+                F(so, "damageAmount.amount.baseAmount.min", dmg[0]);
+                F(so, "damageAmount.amount.baseAmount.max", dmg[1]);
+                F(so, "damageAmount.amount.amountIncreaseEachLevel.min", 0);
+                F(so, "damageAmount.amount.amountIncreaseEachLevel.max", 0);
+                double pause = Math.Max(0.5, N(o, "pause", b.Pause(cls, 0)));
+                F(so, "rateOfFire", (float)(60 / pause));
+                F(so, "increaseStats.baseStats.criRate", (float)((b.CritBase(cls) - b.CritBase("hand")) / 100));
+            }
+            else
+            {
+                P(so, "itemType").enumValueIndex = shield ? 3 : 1;
+                if (!shield) P(so, "armorType").objectReferenceValue = armorTypes[slot];
+                F(so, "armorAmount.amount.baseAmount", (float)N(o, "armor"));
+            }
+            I(so, "requirement.level", (int)N(o, "level", 1));
+            var req = P(so, "requirement.attributeAmounts");
+            if (req != null)
+            {
+                req.arraySize = 0;
+                var r = o.TryGetValue("req", out var rv) && rv is List<object> rl ? rl.Select(x => (int)(double)x).ToArray() : new int[0];
+                var ids = new[] { "str", "dex", "int" };
+                for (int i = 0; i < Math.Min(3, r.Length); i++)
+                {
+                    if (r[i] <= 0) continue;
+                    req.arraySize++;
+                    var e = req.GetArrayElementAtIndex(req.arraySize - 1);
+                    e.FindPropertyRelative("attribute").objectReferenceValue = attributes[ids[i]];
+                    e.FindPropertyRelative("amount").floatValue = r[i];
+                }
+            }
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(item);
+            result[id] = item;
+        }
+        Debug.Log($"[TzImport] items: {result.Count} — {result.Values.Count(i => i.IsWeapon())} weapons, {result.Values.Count(i => i.IsShield())} shields, {result.Values.Count(i => i.IsArmor())} armour");
+        return result;
+    }
+
+    /// <summary>Registers what was made in the demo's game database, so saved characters find their things.</summary>
+    static void Database(IEnumerable<MultiplayerARPG.Attribute> attributes, IEnumerable<WeaponType> weaponTypes, IEnumerable<ArmorType> armorTypes, IEnumerable<Item> items)
+    {
+        var db = AssetDatabase.LoadMainAssetAtPath(DemoDatabase);
+        var so = new SerializedObject(db);
+        void Fill(string field, IEnumerable<UnityEngine.Object> objects)
+        {
+            var list = P(so, field);
+            if (list == null) return;
+            var arr = objects.ToArray();
+            list.arraySize = arr.Length;
+            for (int i = 0; i < arr.Length; i++) list.GetArrayElementAtIndex(i).objectReferenceValue = arr[i];
+        }
+        Fill("attributes", attributes.Cast<UnityEngine.Object>());
+        Fill("weaponTypes", weaponTypes.Cast<UnityEngine.Object>());
+        Fill("armorTypes", armorTypes.Cast<UnityEngine.Object>());
+        Fill("items", items.Cast<UnityEngine.Object>());
+        so.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(db);
     }
 
     /// <summary>
