@@ -25,8 +25,10 @@ public static class MmoBuild
 
     static string[] Scenes()
     {
+        Capture();
         EnsureTextMeshPro();
         CopyContent();
+        TzImport.Run(Path.GetFullPath(Path.Combine(Root(), "..")));
         EditorBuildSettings.scenes = Array.ConvertAll(SceneList, s => new EditorBuildSettingsScene(s, true));
         PlayerSettings.companyName = "Amulet";
         PlayerSettings.productName = "Амулет дракона MMO";
@@ -77,8 +79,12 @@ public static class MmoBuild
     }
 
     /// <summary>Copies everything the editor logs during the build to build/editor-log.txt (CI turns its errors into annotations).</summary>
+    static bool capturing;
+
     static void Capture()
     {
+        if (capturing) return;
+        capturing = true;
         var file = Path.Combine(Root(), "build", "editor-log.txt");
         Directory.CreateDirectory(Path.GetDirectoryName(file));
         Application.logMessageReceived += (text, stack, type) =>

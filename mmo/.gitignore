@@ -21,3 +21,6 @@
 # Copied from content/ by MmoBuild.CopyContent before a build.
 /Assets/Tz/Resources/
 /Assets/Tz/Resources.meta
+# Made from content/ by TzImport before a build.
+/Assets/Tz/Generated/
+/Assets/Tz/Generated.meta
