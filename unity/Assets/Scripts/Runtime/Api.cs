@@ -94,7 +94,6 @@ namespace Amulet
 
         public Task<MeView> Me() => Get<MeView>("/api/me");
         public Task<CharacterView> CreateCharacter(string name, string sex) => Post<CharacterView>("/api/characters", new NewCharacter { name = name, sex = sex });
-        public Task<MapView> Map() => Get<MapView>("/api/map");
         public Task<GameView> Game() => Get<GameView>("/api/game");
         public Task<GameView> Move(string target) => Post<GameView>("/api/game/move", new MoveRequest { target = target });
         public Task<GameView> Attack(string npc) => Post<GameView>("/api/game/attack", new TargetRequest { target = npc });

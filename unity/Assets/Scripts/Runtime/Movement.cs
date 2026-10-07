@@ -3,8 +3,8 @@
 //   - the joystick: pull the knob towards an exit and let go to walk there; keep holding to walk on
 //     in that direction place after place. Notches around the ring light up where there are exits,
 //     the name of the chosen exit shows above it;
-//   - the minimap: the streets around you as dots, you in gold, the places you can walk to lit and
-//     tappable.
+//   - the minimap: the places around you as a little graph by the directions of their exits, you in
+//     gold, the places you can walk to lit and tappable.
 // The world is still a graph of places: the joystick picks one of up to eight exits by direction.
 using System;
 using System.Collections.Generic;
@@ -167,73 +167,127 @@ namespace Amulet
         }
     }
 
-    /// <summary>The minimap: the streets around the hero.</summary>
+    /// <summary>
+    /// The minimap: the places around the hero as a little graph, laid out by the directions of the
+    /// exits (Data/world.json from content/locations, so it works in houses and dungeons too). You are
+    /// the gold ring, the places you can walk to are lit and tappable.
+    /// (The first try placed dots by the street coordinates of /api/map; those are map pixels about
+    /// 25 apart, so the neighbours fell outside the frame and the map stood empty — owner 07.10.)
+    /// </summary>
     public class Minimap
     {
-        const float Cell = 26;
-        const int SpanX = 9, SpanY = 6;
+        public class Place { public string n; public List<List<string>> e = new List<List<string>>(); }
 
-        readonly RectTransform dots;
+        const float Cell = 64;
+        const int SpanX = 3, SpanY = 2, Depth = 4;
+
+        static Dictionary<string, Place> world;
+        readonly RectTransform lines, dots;
         readonly Text caption;
-        Dictionary<string, MapPoint> points;
-        Vector2? last;
 
         public Minimap(RectTransform parent)
         {
-            var frame = UI.Panel(parent, new Color(0.23f, 0.18f, 0.12f, 0.92f), "minimap");
-            frame.rectTransform.Place(1, 1, 1, 1, -(SpanX * 2 + 1) * Cell - 60, -(SpanY * 2 + 1) * Cell - 70, 30, 30);
-            var border = UI.Panel(frame.transform, new Color(Palette.Accent.r, Palette.Accent.g, Palette.Accent.b, 0.5f), "border");
+            var frame = UI.Panel(parent, new Color(0.13f, 0.1f, 0.07f, 0.82f), "minimap");
+            frame.rectTransform.Place(1, 1, 1, 1, -((SpanX * 2 + 1) * Cell + 70), -((SpanY * 2 + 1) * Cell + 80), 30, 30);
+            var border = UI.Panel(frame.transform, new Color(Palette.Accent.r, Palette.Accent.g, Palette.Accent.b, 0.55f), "border");
             border.rectTransform.Place(0, 0, 1, 1, -4, -4, -4, -4);
             border.transform.SetAsFirstSibling();
-            var view = UI.Node("view", frame.transform).Place(0, 0, 1, 1, 6, 6, 6, 6);
+            var view = UI.Node("view", frame.transform).Place(0, 0, 1, 1, 6, 40, 6, 6);
             view.gameObject.AddComponent<RectMask2D>();
+            lines = UI.Node("lines", view).Place(0, 0, 1, 1);
             dots = UI.Node("dots", view).Place(0, 0, 1, 1);
-            caption = UI.Label(frame.transform, "", 26, Palette.Muted, TextAnchor.LowerCenter);
-            caption.rectTransform.Place(0, 0, 1, 0, 0, 6, 0, -40);
+            caption = UI.Label(frame.transform, "", 26, Palette.Title, TextAnchor.MiddleCenter, Art.Bold);
+            caption.rectTransform.Place(0, 0, 1, 0, 8, 4, 8, -40);
+            if (world == null)
+            {
+                var json = Resources.Load<TextAsset>("Data/world");
+                world = json != null ? Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, Place>>(json.text) : new Dictionary<string, Place>();
+            }
         }
 
-        public void SetPoints(MapView map)
+        static ExitView Exit(List<string> e) => new ExitView { label = e[0], target = e[1] };
+
+        static (int, int) Step(int dir)
         {
-            points = new Dictionary<string, MapPoint>();
-            foreach (var p in map.points) points[p.id] = p;
+            var v = Compass.Vector(dir);
+            return ((int)Mathf.Round(v.x), (int)Mathf.Round(v.y));
         }
 
-        /// <summary>Redraws around [here]; exits to street places become tappable dots.</summary>
+        /// <summary>Redraws around [here]; [go] walks through one of its exits.</summary>
         public void Show(LocationView here, Action<ExitView> go)
         {
+            UI.Clear(lines);
             UI.Clear(dots);
-            var at = Compass.Point(here.id);
-            if (at != null) last = at;
-            caption.text = at == null ? "вы не на улице" : "";
-            if (points == null || last == null) return;
-            var c = last.Value;
-            foreach (var p in points.Values)
+            caption.text = here.name;
+            // Lay the places out on a grid, breadth first: each exit one cell away in its direction;
+            // a place whose cell is taken (or has no direction) is left off.
+            var at = new Dictionary<string, (int x, int y)> { [here.id] = (0, 0) };
+            var taken = new HashSet<(int, int)> { (0, 0) };
+            var queue = new Queue<(string id, int depth)>();
+            queue.Enqueue((here.id, 0));
+            while (queue.Count > 0)
             {
-                float dx = p.mapX - c.x, dy = p.mapY - c.y;
-                if (Mathf.Abs(dx) > SpanX + 1 || Mathf.Abs(dy) > SpanY + 1) continue;
-                Dot(dx, dy, 12, p.zone == 1 ? new Color(0.45f, 0.62f, 0.85f, 0.8f) : new Color(0.75f, 0.68f, 0.55f, 0.55f));
-            }
-            if (at != null)
-                foreach (var e in here.exits)
+                var (id, depth) = queue.Dequeue();
+                if (depth >= Depth) continue;
+                var exits = id == here.id ? here.exits : world.TryGetValue(id, out var p) ? p.e.ConvertAll(Exit) : new List<ExitView>();
+                var (x, y) = at[id];
+                foreach (var e in exits)
                 {
-                    if (!points.TryGetValue(e.target, out var p)) continue;
-                    var d = Dot(p.mapX - c.x, p.mapY - c.y, 30, e.occupied ? Palette.Danger : Palette.Accent);
-                    var exit = e;
-                    d.Tap(() => go(exit));
+                    if (at.ContainsKey(e.target)) continue;
+                    var d = Compass.Of(id, e);
+                    if (d < 0) continue;
+                    var (dx, dy) = Step(d);
+                    var cell = (x + dx, y + dy);
+                    if (Math.Abs(cell.Item1) > SpanX + 1 || Math.Abs(cell.Item2) > SpanY + 1 || taken.Contains(cell)) continue;
+                    taken.Add(cell);
+                    at[e.target] = cell;
+                    queue.Enqueue((e.target, depth + 1));
                 }
-            var me = Dot(0, 0, 34, Palette.Title);
-            if (at == null) me.color = new Color(1, 1, 1, 0.35f);
+            }
+            // Roads between the places that are both on the map.
+            var drawn = new HashSet<string>();
+            foreach (var kv in at)
+            {
+                var exits = kv.Key == here.id ? here.exits : world.TryGetValue(kv.Key, out var p) ? p.e.ConvertAll(Exit) : new List<ExitView>();
+                foreach (var e in exits)
+                {
+                    if (!at.TryGetValue(e.target, out var to)) continue;
+                    var pair = string.CompareOrdinal(kv.Key, e.target) < 0 ? kv.Key + "|" + e.target : e.target + "|" + kv.Key;
+                    if (!drawn.Add(pair)) continue;
+                    bool mine = kv.Key == here.id || e.target == here.id;
+                    Road(kv.Value, to, mine ? 0.7f : 0.3f);
+                }
+            }
+            foreach (var kv in at)
+                if (kv.Key != here.id) Dot(kv.Value, 16, new Color(0.85f, 0.75f, 0.55f, 0.6f));
+            foreach (var e in here.exits)
+            {
+                if (!at.TryGetValue(e.target, out var cell)) continue;
+                var d = Dot(cell, 34, e.occupied ? Palette.Danger : Palette.Accent);
+                var exit = e;
+                d.Tap(() => go(exit));
+            }
+            var me = Dot((0, 0), 40, Palette.Title);
             var hole = UI.Panel(me.transform, new Color(0.1f, 0.07f, 0.04f, 1), "hole");
             hole.sprite = Art.Circle; hole.type = Image.Type.Simple; hole.raycastTarget = false;
-            hole.rectTransform.Place(0, 0, 1, 1, 10, 10, 10, 10);
+            hole.rectTransform.Place(0, 0, 1, 1, 12, 12, 12, 12);
         }
 
-        Image Dot(float dx, float dy, float size, Color color)
+        Image Dot((int x, int y) cell, float size, Color color)
         {
             var d = UI.Panel(dots, color, "dot");
             d.sprite = Art.Circle; d.type = Image.Type.Simple; d.raycastTarget = false;
-            d.rectTransform.At(0.5f, 0.5f, size, size, dx * Cell, -dy * Cell);
+            d.rectTransform.At(0.5f, 0.5f, size, size, cell.x * Cell, cell.y * Cell);
             return d;
+        }
+
+        void Road((int x, int y) a, (int x, int y) b, float alpha)
+        {
+            var line = UI.Panel(lines, new Color(0.9f, 0.8f, 0.6f, alpha), "road", false);
+            line.raycastTarget = false;
+            float dx = (b.x - a.x) * Cell, dy = (b.y - a.y) * Cell;
+            var rt = line.rectTransform.At(0.5f, 0.5f, Mathf.Sqrt(dx * dx + dy * dy), 5, (a.x * Cell + b.x * Cell) / 2, (a.y * Cell + b.y * Cell) / 2);
+            rt.localRotation = Quaternion.Euler(0, 0, Mathf.Atan2(dy, dx) * Mathf.Rad2Deg);
         }
     }
 }

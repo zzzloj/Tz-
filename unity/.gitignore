@@ -14,6 +14,10 @@
 /Assets/Resources/Fonts/
 /Assets/Resources/Art.meta
 /Assets/Resources/Fonts.meta
+/Assets/Resources/Data/
+/Assets/Resources/Data.meta
+/Assets/Icons/
+/Assets/Icons.meta
 /Assets/Scenes/
 /Assets/Scenes.meta
 # The compile check against stubs (tools/check) keeps its own build output.

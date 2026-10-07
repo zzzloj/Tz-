@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using UnityEditor;
+using UnityEditor.Android;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
@@ -38,6 +39,7 @@ public static class BuildScript
         PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
         var icon = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Resources/Art/brand/icon.png");
         if (icon != null) PlayerSettings.SetIcons(NamedBuildTarget.Unknown, new[] { icon }, IconKind.Any);
+        AndroidIcons();
         // The old Input Manager: the screens use StandaloneInputModule and the project has no Input System package.
         var settings = AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/ProjectSettings.asset");
         if (settings.Length > 0)
@@ -47,6 +49,27 @@ public static class BuildScript
             if (input != null) { input.intValue = 0; so.ApplyModifiedProperties(); }
         }
         AssetDatabase.SaveAssets();
+    }
+
+    /// <summary>
+    /// Android's adaptive icon (layers from tools/prepare.py in Assets/Icons): with only a square
+    /// picture the launcher put it on a white circle (owner 07.10).
+    /// </summary>
+    static void AndroidIcons()
+    {
+        var bg = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Icons/adaptive-bg.png");
+        var fg = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Icons/adaptive-fg.png");
+        var full = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Icons/icon.png");
+        if (bg == null || fg == null || full == null) { Debug.LogWarning("No Assets/Icons: run unity/tools/prepare.py"); return; }
+        var adaptive = PlayerSettings.GetPlatformIcons(NamedBuildTarget.Android, AndroidPlatformIconKind.Adaptive);
+        foreach (var i in adaptive) i.SetTextures(bg, fg);
+        PlayerSettings.SetPlatformIcons(NamedBuildTarget.Android, AndroidPlatformIconKind.Adaptive, adaptive);
+        foreach (var kind in new[] { AndroidPlatformIconKind.Round, AndroidPlatformIconKind.Legacy })
+        {
+            var icons = PlayerSettings.GetPlatformIcons(NamedBuildTarget.Android, kind);
+            foreach (var i in icons) i.SetTextures(full);
+            PlayerSettings.SetPlatformIcons(NamedBuildTarget.Android, kind, icons);
+        }
     }
 
     public static void BuildAndroid()

@@ -133,17 +133,6 @@ namespace Amulet
 
             hurtFlash = UI.Panel(screen, new Color(0.8f, 0, 0, 0), "hurt", false).rectTransform.Place(0, 0, 1, 1);
             hurtFlash.GetComponent<Image>().raycastTarget = false;
-            LoadMap();
-        }
-
-        async void LoadMap()
-        {
-            try
-            {
-                minimap.SetPoints(await app.Api.Map());
-                if (view != null) minimap.Show(view.location, Go);
-            }
-            catch (System.Exception) { }    // the minimap stays empty; the joystick still works
         }
 
         // ---- data ----------------------------------------------------------------------------------

@@ -45,6 +45,7 @@ namespace Amulet
     {
         public readonly Api Api = new Api();
         RectTransform root;
+        Canvas canvas;
         GameScreen game;
         CancellationTokenSource events;
 
@@ -56,7 +57,33 @@ namespace Amulet
             root.anchorMin = new Vector2(safe.xMin / Screen.width, safe.yMin / Screen.height);
             root.anchorMax = new Vector2(safe.xMax / Screen.width, safe.yMax / Screen.height);
             root.offsetMin = root.offsetMax = Vector2.zero;
+            canvas = GetComponent<Canvas>();
             Open();
+        }
+
+        readonly Vector3[] corners = new Vector3[4];
+
+        /// <summary>
+        /// The phone's keyboard covers two thirds of a landscape screen (owner 07.10), so while a field
+        /// is being typed into, the whole screen slides up until the field sits just above the keyboard.
+        /// </summary>
+        void Update()
+        {
+            if (root == null) return;
+            float scale = canvas != null && canvas.scaleFactor > 0 ? canvas.scaleFactor : 1;
+            float now = root.anchoredPosition.y, want = 0;
+            var selected = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
+            var field = selected != null ? selected.GetComponent<InputField>() : null;
+            if (field != null && field.isFocused && TouchScreenKeyboard.visible)
+            {
+                float keyboard = TouchScreenKeyboard.area.height;
+                if (keyboard <= 0) keyboard = Screen.height * 0.62f;
+                ((RectTransform)field.transform).GetWorldCorners(corners);   // overlay canvas: screen pixels
+                float bottom = corners[0].y - now * scale;                    // where the field is when not shifted
+                want = Mathf.Max(0, (keyboard + 24 * scale - bottom) / scale);
+            }
+            if (Mathf.Abs(want - now) > 0.5f)
+                root.anchoredPosition = new Vector2(0, Mathf.Lerp(now, want, Mathf.Min(1, Time.deltaTime * 14)));
         }
 
         async void Open()

@@ -53,6 +53,7 @@ namespace UnityEngine
         public Vector2 sizeDelta { get; set; }
         public Vector2 anchoredPosition { get; set; }
         public Rect rect => default;
+        public void GetWorldCorners(Vector3[] corners) { }
     }
     public struct Rect
     {
@@ -74,7 +75,8 @@ namespace UnityEngine
     }
     public struct Vector3
     {
-        public Vector3(float x, float y, float z) { }
+        public float x, y, z;
+        public Vector3(float x, float y, float z) { this.x = x; this.y = y; this.z = z; }
         public static Vector3 one => default;
         public static Vector3 operator *(Vector3 a, float b) => default;
     }
@@ -116,7 +118,9 @@ namespace UnityEngine
     public enum CameraClearFlags { SolidColor }
     public class Camera : Behaviour { public CameraClearFlags clearFlags; public Color backgroundColor; public bool orthographic; }
     public enum RenderMode { ScreenSpaceOverlay }
-    public class Canvas : Behaviour { public RenderMode renderMode; }
+    public class Canvas : Behaviour { public RenderMode renderMode; public float scaleFactor => 1; }
+    public class TextAsset : Object { public string text => ""; }
+    public static class TouchScreenKeyboard { public static bool visible => false; public static Rect area => default; }
     public class CanvasGroup : Behaviour { public float alpha; public bool blocksRaycasts; }
     public enum SpriteMeshType { FullRect, Tight }
     public class Sprite : Object
@@ -161,7 +165,7 @@ namespace UnityEngine.Events
 
 namespace UnityEngine.EventSystems
 {
-    public class EventSystem : MonoBehaviour { }
+    public class EventSystem : MonoBehaviour { public static EventSystem current => null; public GameObject currentSelectedGameObject => null; }
     public class StandaloneInputModule : MonoBehaviour { }
     public class PointerEventData { public Vector2 position; }
     public interface IPointerDownHandler { void OnPointerDown(PointerEventData e); }
@@ -242,6 +246,7 @@ namespace UnityEngine.UI
         public enum LineType { SingleLine, MultiLineSubmit }
         public enum ContentType { Standard, Password }
         public string text { get; set; }
+        public bool isFocused => false;
         public Text textComponent { get; set; }
         public Graphic placeholder { get; set; }
         public LineType lineType { get; set; }
@@ -298,6 +303,7 @@ namespace Newtonsoft.Json
     {
         public static string SerializeObject(object o, JsonSerializerSettings s) => "";
         public static T DeserializeObject<T>(string s, JsonSerializerSettings settings) => default;
+        public static T DeserializeObject<T>(string s) => default;
     }
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)] public class JsonPropertyAttribute : Attribute { public JsonPropertyAttribute(string name) { } }
 }

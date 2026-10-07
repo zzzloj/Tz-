@@ -7,9 +7,12 @@ Unity does not read .webp, so pictures become PNG/JPG:
   - places (content/art/locations) → Art/locations/<key>.jpg, 1280×720;
   - items (content/art/items) → Art/items/<id with '.' → '_'>.jpg, 128×128 (Resources names keep no dots).
 Fonts come from the iOS app (engine/iosApp/Tz/Fonts).
+The map of places (content/locations: name and exits of each) goes to Data/world.json for the minimap.
+The Android adaptive icon (owner 07.10: no white rim from the launcher) is made of two layers in
+unity/Assets/Icons: the background is the icon's own dark tone, the foreground the icon in the safe zone.
 Run from anywhere: python3 unity/tools/prepare.py
 """
-import os, shutil, sys
+import json, os, shutil, sys
 from PIL import Image, ImageDraw, ImageFilter
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -58,10 +61,25 @@ def main():
             .save(os.path.join(out, f[:-5].replace('.', '_') + '.jpg'), quality=85); count += 1
     out = os.path.join(OUT, 'Art', 'brand'); fresh(out)
     Image.open(os.path.join(ART, 'brand', 'icon-1024.png')).convert('RGBA').resize((512, 512), Image.LANCZOS).save(os.path.join(out, 'icon.png'))
+    icons = os.path.join(ROOT, 'unity', 'Assets', 'Icons'); fresh(icons)
+    src = Image.open(os.path.join(ART, 'brand', 'icon-1024.png')).convert('RGBA')
+    Image.new('RGBA', (432, 432), src.getpixel((6, 6))).save(os.path.join(icons, 'adaptive-bg.png'))
+    fg = Image.new('RGBA', (432, 432), (0, 0, 0, 0))
+    fg.paste(src.resize((288, 288), Image.LANCZOS), (72, 72))   # the 72 dp of 108 every launcher shows
+    fg.save(os.path.join(icons, 'adaptive-fg.png'))
+    src.resize((432, 432), Image.LANCZOS).save(os.path.join(icons, 'icon.png'))
+    data = os.path.join(OUT, 'Data'); fresh(data)
+    world = {}
+    locs = os.path.join(ROOT, 'content', 'locations')
+    for f in sorted(os.listdir(locs)):
+        if not f.endswith('.json'): continue
+        with open(os.path.join(locs, f), encoding='utf-8') as fh: loc = json.load(fh)
+        world[loc['id']] = {'n': loc.get('name', ''), 'e': [[e.get('label', ''), e['target']] for e in loc.get('exits', []) if e.get('target')]}
+    with open(os.path.join(data, 'world.json'), 'w', encoding='utf-8') as fh: json.dump(world, fh, ensure_ascii=False, separators=(',', ':'))
     fonts = os.path.join(OUT, 'Fonts'); fresh(fonts)
     for f in ('alegreya_sans_regular.ttf', 'alegreya_sans_bold.ttf', 'cormorant_sc_bold.ttf'):
         shutil.copy(os.path.join(ROOT, 'engine', 'iosApp', 'Tz', 'Fonts', f), fonts)
-    print(f'{count} pictures and 3 fonts → {OUT}')
+    print(f'{count} pictures, {len(world)} places and 3 fonts → {OUT}')
 
 if __name__ == '__main__':
     sys.exit(main())
