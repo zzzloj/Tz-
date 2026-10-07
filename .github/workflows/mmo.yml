@@ -50,6 +50,17 @@ jobs:
           targetPlatform: ${{ matrix.target }}
           unityVersion: auto
           buildMethod: ${{ matrix.method }}
+          # the editor log also goes to a file, so that its errors can be raised as annotations below
+          customParameters: -logFile /github/workspace/unity-${{ matrix.out }}.log
+
+      - name: Errors of the Unity log as annotations
+        if: always()
+        run: |
+          f=unity-${{ matrix.out }}.log
+          [ -f "$f" ] || { echo "::warning::no $f"; exit 0; }
+          grep -E "error CS|Error|Exception|Failed|failed|Unable|Cannot|not found" "$f" | grep -vE "^\s*$" | sort | uniq -c | sort -rn | head -40 \
+            | while IFS= read -r line; do echo "::error title=unity ${{ matrix.out }}::$(echo "$line" | cut -c1-900)"; done
+          tail -5 "$f" | while IFS= read -r line; do echo "::notice title=tail::$(echo "$line" | cut -c1-500)"; done
 
       - uses: actions/upload-artifact@v4
         with:
