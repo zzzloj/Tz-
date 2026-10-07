@@ -41,6 +41,8 @@ namespace UnityEngine
         public void SetAsFirstSibling() { }
         public Vector3 localScale { get; set; }
         public Quaternion localRotation { get; set; }
+        public Vector3 position { get; set; }
+        public Vector3 localPosition { get; set; }
         public IEnumerator GetEnumerator() => null;
     }
     public class RectTransform : Transform
@@ -61,6 +63,9 @@ namespace UnityEngine
         public float xMin, yMin, xMax, yMax;
         public float width => xMax - xMin;
         public float height => yMax - yMin;
+        public float x => xMin; public float y => yMin;
+        public Vector2 center => default; public Vector2 min => default; public Vector2 max => default;
+        public bool Contains(Vector2 p) => false; public bool Overlaps(Rect r) => false;
     }
     public struct Vector2
     {
@@ -72,6 +77,15 @@ namespace UnityEngine
         public static Vector2 Lerp(Vector2 a, Vector2 b, float t) => default;
         public float magnitude => 0;
         public static Vector2 ClampMagnitude(Vector2 v, float max) => v;
+        public Vector2 normalized => this;
+        public static float Dot(Vector2 a, Vector2 b) => 0;
+        public static Vector2 operator -(Vector2 a, Vector2 b) => default;
+        public static Vector2 operator -(Vector2 a) => default;
+        public static bool operator ==(Vector2 a, Vector2 b) => true;
+        public static bool operator !=(Vector2 a, Vector2 b) => false;
+        public override bool Equals(object o) => false;
+        public override int GetHashCode() => 0;
+        public static Vector2 operator *(float b, Vector2 a) => default;
     }
     public struct Vector3
     {
@@ -79,6 +93,7 @@ namespace UnityEngine
         public Vector3(float x, float y, float z) { this.x = x; this.y = y; this.z = z; }
         public static Vector3 one => default;
         public static Vector3 operator *(Vector3 a, float b) => default;
+        public static Vector3 Lerp(Vector3 a, Vector3 b, float t) => default;
     }
     public struct Quaternion { public static Quaternion Euler(float x, float y, float z) => default; }
     public struct Vector4 { public Vector4(float x, float y, float z, float w) { } public static Vector4 zero => default; }
@@ -88,6 +103,9 @@ namespace UnityEngine
         public Color(float r, float g, float b, float a = 1) { this.r = r; this.g = g; this.b = b; this.a = a; }
         public static Color white => default;
         public static Color Lerp(Color a, Color b, float t) => default;
+        public static Color operator *(Color a, float b) => default;
+        public static implicit operator Color(Color32 c) => default;
+        public static implicit operator Color32(Color c) => default;
     }
     public struct Color32 { public Color32(byte r, byte g, byte b, byte a) { } }
     public static class Mathf
@@ -105,6 +123,11 @@ namespace UnityEngine
         public static float Cos(float v) => v;
         public static float Round(float v) => v;
         public static float DeltaAngle(float a, float b) => 0;
+        public static float Floor(float v) => v;
+        public static int Clamp(int v, int a, int b) => v;
+        public static float Clamp(float v, float a, float b) => v;
+        public static int RoundToInt(float v) => 0;
+        public static float PerlinNoise(float x, float y) => 0;
     }
     public static class RectTransformUtility
     {
@@ -116,16 +139,19 @@ namespace UnityEngine
     public static class SleepTimeout { public const int NeverSleep = -1; }
     public static class Application { public static int targetFrameRate { get; set; } }
     public enum CameraClearFlags { SolidColor }
-    public class Camera : Behaviour { public CameraClearFlags clearFlags; public Color backgroundColor; public bool orthographic; }
+    public class Camera : Behaviour { public CameraClearFlags clearFlags; public Color backgroundColor; public bool orthographic; public float orthographicSize; public Vector3 WorldToScreenPoint(Vector3 p) => p; }
+    public class Renderer : Component { public int sortingOrder { get; set; } }
+    public class SpriteRenderer : Renderer { public Sprite sprite { get; set; } public bool flipX { get; set; } public Color color { get; set; } }
     public enum RenderMode { ScreenSpaceOverlay }
     public class Canvas : Behaviour { public RenderMode renderMode; public float scaleFactor => 1; }
-    public class TextAsset : Object { public string text => ""; }
+    public class TextAsset : Object { public string text => ""; public byte[] bytes => null; }
     public static class TouchScreenKeyboard { public static bool visible => false; public static Rect area => default; }
     public class CanvasGroup : Behaviour { public float alpha; public bool blocksRaycasts; }
     public enum SpriteMeshType { FullRect, Tight }
     public class Sprite : Object
     {
         public static Sprite Create(Texture2D t, Rect r, Vector2 pivot, float ppu) => null;
+        public Texture2D texture => null;
         public static Sprite Create(Texture2D t, Rect r, Vector2 pivot, float ppu, uint extrude, SpriteMeshType mesh, Vector4 border) => null;
     }
     public enum TextureFormat { RGBA32 }
@@ -138,6 +164,10 @@ namespace UnityEngine
         public FilterMode filterMode { get; set; }
         public TextureWrapMode wrapMode { get; set; }
         public void SetPixels32(Color32[] px) { }
+        public Texture2D(int w, int h) { }
+        public bool LoadImage(byte[] data) => true;
+        public Color32[] GetPixels32() => null;
+        public void Apply(bool mips, bool noLongerReadable) { }
         public void Apply() { }
     }
     public class Font : Object { public static Font CreateDynamicFontFromOSFont(string name, int size) => null; }

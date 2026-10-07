@@ -12,6 +12,9 @@ namespace Amulet
 {
     public static class Boot
     {
+        /// <summary>The camera that looks at the place from above (World.cs); the interface is drawn over it.</summary>
+        public static Camera Camera;
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Start()
         {
@@ -22,6 +25,7 @@ namespace Amulet
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = Palette.Background;
             cam.orthographic = true;
+            Camera = cam;
 
             var es = new GameObject("events");
             es.AddComponent<EventSystem>();
@@ -100,13 +104,14 @@ namespace Amulet
             catch (Exception e) { ShowLogin("Нет связи с сервером: " + e.Message); }
         }
 
-        void Show(Action<RectTransform> build)
+        void Show(Action<RectTransform> build, bool opaque = true)
         {
             StopEvents();
             if (game != null) { Destroy(game); game = null; }
             UI.Clear(root);
             var screen = UI.Node("screen", root).Place(0, 0, 1, 1);
-            UI.Panel(screen, Palette.Background, "bg", false).rectTransform.Place(0, 0, 1, 1);
+            // The game screen lets the place seen from above (the camera behind the canvas) show through.
+            if (opaque) UI.Panel(screen, Palette.Background, "bg", false).rectTransform.Place(0, 0, 1, 1);
             build(screen);
         }
 
@@ -168,7 +173,7 @@ namespace Amulet
             game = gameObject.AddComponent<GameScreen>();
             game.Init(this, s);
             StartEvents();
-        });
+        }, false);
 
         public async void SignOut()
         {

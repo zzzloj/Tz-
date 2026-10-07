@@ -32,6 +32,52 @@ def figure_mask(size):
     d.ellipse((pad, pad, size - pad, size - pad), fill=255)
     return m.filter(ImageFilter.GaussianBlur(size * 0.06))
 
+def topdown(count):
+    """The top-down view (owner 07.10, unity/PROMPTS-TOPDOWN.md) → Resources/TopDown:
+    ground textures as PNG bytes (World.cs reads their pixels to bake the ground of a place),
+    objects and figures as pictures, and meta.json with where the wall bases, the front corner
+    and the feet are in each picture."""
+    td = os.path.join(ART, 'topdown')
+    out = os.path.join(OUT, 'TopDown'); fresh(out)
+    meta = {'objects': {}, 'figures': {}}
+    with open(os.path.join(td, 'objects.json'), encoding='utf-8') as fh: sizes = json.load(fh)
+    os.makedirs(os.path.join(out, 'ground'))
+    for f in sorted(os.listdir(os.path.join(td, 'ground'))):
+        if not f.endswith('.webp'): continue
+        Image.open(os.path.join(td, 'ground', f)).convert('RGB').resize((512, 512), Image.LANCZOS) \
+            .save(os.path.join(out, 'ground', f[:-5] + '.bytes'), format='PNG')
+    for kind in ('objects', 'figures'):
+        os.makedirs(os.path.join(out, kind))
+        src = os.path.join(td, kind)
+        if not os.path.isdir(src): continue
+        for f in sorted(os.listdir(src)):
+            if not f.endswith('.webp'): continue
+            im = Image.open(os.path.join(src, f)).convert('RGBA')
+            im = im.crop(im.getbbox())
+            im.thumbnail((1024, 1024), Image.LANCZOS)
+            # A square power-of-two canvas, the picture standing on its bottom edge: Unity scales
+            # other sizes to a power of two and the picture would be stretched.
+            side = 1 << (max(im.size) - 1).bit_length()
+            canvas = Image.new('RGBA', (side, side), (0, 0, 0, 0))
+            canvas.paste(im, ((side - im.width) // 2, side - im.height))
+            im = canvas
+            a = im.split()[3].point(lambda v: 255 if v > 128 else 0)
+            w, h = im.size
+            px = a.load()
+            low = max(y for y in range(h) for x in range(0, w, 2) if px[x, y])
+            foot = [x for x in range(w) if px[x, low]] or [w // 2]
+            key = f[:-5]
+            if kind == 'objects':
+                band = [x for y in range(int(h * 0.6), h, 3) for x in range(w) if px[x, y]]
+                m = {'corner': sum(foot) / len(foot) / w, 'baseL': min(band) / w, 'baseR': max(band) / w}
+                m.update({k: v for k, v in sizes.get(key, {}).items()})
+            else:
+                m = {'foot': sum(foot) / len(foot) / w}
+            meta[kind][key] = m
+            im.save(os.path.join(out, kind, key + '.png'), optimize=True)
+    with open(os.path.join(out, 'meta.json'), 'w', encoding='utf-8') as fh: json.dump(meta, fh, indent=1)
+
+
 def main():
     figure = 384
     mask = figure_mask(figure)
@@ -76,6 +122,7 @@ def main():
         with open(os.path.join(locs, f), encoding='utf-8') as fh: loc = json.load(fh)
         world[loc['id']] = {'n': loc.get('name', ''), 'e': [[e.get('label', ''), e['target']] for e in loc.get('exits', []) if e.get('target')]}
     with open(os.path.join(data, 'world.json'), 'w', encoding='utf-8') as fh: json.dump(world, fh, ensure_ascii=False, separators=(',', ':'))
+    topdown(count)
     fonts = os.path.join(OUT, 'Fonts'); fresh(fonts)
     for f in ('alegreya_sans_regular.ttf', 'alegreya_sans_bold.ttf', 'cormorant_sc_bold.ttf'):
         shutil.copy(os.path.join(ROOT, 'engine', 'iosApp', 'Tz', 'Fonts', f), fonts)

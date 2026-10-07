@@ -1,9 +1,10 @@
 // The place as a scene (prototype, owner 06.10): the picture of the place, monsters and people
 // standing on it as figures with health, power and your chance; a tap strikes; damage flies up
 // as numbers, figures shake and flash, the killed fade out; things and corpses lie on the ground
-// as icons. Landscape, like the owner's reference screenshot (07.10): the picture fills the screen,
-// the hero in the upper left, the minimap in the upper right, the joystick of exits in the lower
-// left (Movement.cs). Text is kept to names and short notes.
+// as icons. Landscape, like the owner's reference screenshot (07.10). The place is seen from above
+// (World.cs): the hero walks over it with the joystick and leaves by walking into an exit's ring;
+// the place's painting shows for a moment when you arrive. The hero's bars in the upper left, the
+// minimap in the upper right (Movement.cs). Text is kept to names and short notes.
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,10 @@ namespace Amulet
         Stick stick;
         Minimap minimap;
         UI.Bar hp, mana, exp;
-        CanvasGroup sceneGroup, ghostGroup;
+        CanvasGroup sceneGroup, ghostGroup, splash;
+        World world;
+        int came = -1;
+        readonly List<Text> exitNames = new List<Text>();
         Button resurrect;
         Paperdoll doll;
         GameView view;
@@ -60,21 +64,23 @@ namespace Amulet
             scene.gameObject.AddComponent<RectMask2D>();
             sceneGroup = scene.gameObject.AddComponent<CanvasGroup>();
             background = UI.Picture(scene, null, "place");
+            splash = background.gameObject.AddComponent<CanvasGroup>();
+            splash.blocksRaycasts = false;
             background.preserveAspect = false;
             background.rectTransform.Place(0, 0, 1, 1);
             var fit = background.gameObject.AddComponent<AspectRatioFitter>();
             fit.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
             fit.aspectRatio = 16f / 9f;
-            var top = UI.Panel(scene, new Color(0, 0, 0, 0.4f), "shade top", false);
+            var top = UI.Panel(scene, new Color(0, 0, 0, 0.3f), "shade top", false);
             top.rectTransform.Place(0, 0.8f, 1, 1);
             top.raycastTarget = false;
-            var low = UI.Panel(scene, new Color(0, 0, 0, 0.35f), "shade bottom", false);
+            var low = UI.Panel(scene, new Color(0, 0, 0, 0.2f), "shade bottom", false);
             low.rectTransform.Place(0, 0, 1, 0.22f);
             low.raycastTarget = false;
             placeName = UI.Label(scene, "", 44, Palette.Title, TextAnchor.UpperCenter, Art.TitleFont);
             placeName.rectTransform.Place(0.3f, 1, 0.7f, 1, 0, -80, 0, 22);
             others = UI.Node("others", scene).Place(0.3f, 1, 0.7f, 1, 0, -126, 0, 80);
-            figures = UI.Node("figures", scene).Place(0.18f, 0, 0.8f, 1);
+            figures = UI.Node("figures", scene).Place(0, 0, 1, 1);
             ground = UI.Node("ground", scene).Place(0, 0, 1, 0, 520, 24, 230, -144);
             var row = ground.gameObject.AddComponent<HorizontalLayoutGroup>();
             row.spacing = 16; row.childAlignment = TextAnchor.LowerCenter;
@@ -126,6 +132,10 @@ namespace Amulet
             // the joystick of exits in the lower left, exits without a direction as doors above it
             stick = Stick.Make(screen);
             stick.Release = Go;
+            stick.SetFree(true);
+            world = gameObject.AddComponent<World>();
+            world.Init(Boot.Camera, "m");
+            world.Leave = Go;
             doors = UI.Node("doors", screen).Place(0, 0, 0, 0, 50, 450, -470, -700);
             var stack = doors.gameObject.AddComponent<VerticalLayoutGroup>();
             stack.spacing = 12; stack.childAlignment = TextAnchor.LowerLeft;
@@ -143,7 +153,7 @@ namespace Amulet
             if (Dirty || Time.time > nextPoll) { Dirty = false; Refresh(); }
             if (view == null) return;
             // Holding the joystick on an exit walks on, place after place, until a fight starts.
-            if (stick.Held && stick.Chosen != null && Time.time - stick.ChosenAt > 0.45f && Time.time > nextStep
+            if (!stick.Free && stick.Held && stick.Chosen != null && Time.time - stick.ChosenAt > 0.45f && Time.time > nextStep
                 && !view.location.npcs.Any(n => n.fightingYou))
             {
                 stick.Walked = true;
@@ -158,6 +168,25 @@ namespace Amulet
                 f.Blow.fillAmount = f.Npc.fightingYou ? Mathf.Clamp01(left / 2000f) : 0;
             }
         }
+
+        /// <summary>Monsters, people and exit names follow their spots on the ground as the camera moves.</summary>
+        void LateUpdate()
+        {
+            if (view == null || world == null) return;
+            world.Pull = stick.Free ? stick.Pull : Vector2.zero;
+            foreach (var f in shown.Values)
+            {
+                if (!Local(world.ToScreen(world.Spot(f.Npc.id)), out var at)) continue;
+                f.Root.anchorMin = f.Root.anchorMax = new Vector2(0.5f, 0.5f);
+                f.Root.pivot = new Vector2(0.5f, 0);
+                f.Root.anchoredPosition = at + new Vector2(0, -120);
+            }
+            for (int i = 0; i < exitNames.Count && i < world.Exits.Count; i++)
+                if (Local(world.ToScreen(world.Exits[i].at, 0.9f), out var at)) exitNames[i].rectTransform.anchoredPosition = at;
+        }
+
+        bool Local(Vector2 screenPoint, out Vector2 local) =>
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(figures, screenPoint, null, out local);
 
         async void Refresh()
         {
@@ -174,8 +203,8 @@ namespace Amulet
             if (busy) return;
             busy = true;
             try { Apply(await call()); }
-            catch (ApiError e) { Toast(e.Message, Palette.Danger); }
-            catch (System.Exception e) { Toast("Нет связи: " + e.Message, Palette.Danger); }
+            catch (ApiError e) { Toast(e.Message, Palette.Danger); world?.Stay(); }
+            catch (System.Exception e) { Toast("Нет связи: " + e.Message, Palette.Danger); world?.Stay(); }
             finally { busy = false; }
         }
 
@@ -185,7 +214,26 @@ namespace Amulet
             view = next;
             fetchedAt = Time.time;
             var moved = before == null || before.location.id != next.location.id;
-            if (moved) { foreach (var f in shown.Values) Destroy(f.Root.gameObject); shown.Clear(); StartCoroutine(Fx.Fade(sceneGroup, 0, 1, 0.35f)); }
+            if (moved)
+            {
+                foreach (var f in shown.Values) Destroy(f.Root.gameObject);
+                shown.Clear();
+                StartCoroutine(Fx.Fade(sceneGroup, 0, 1, 0.35f));
+                world.Init(Boot.Camera, next.character.sex);
+                world.Show(next.location, came);
+                came = -1;
+                StartCoroutine(Splash());
+                foreach (var t in exitNames) Destroy(t.gameObject);
+                exitNames.Clear();
+                foreach (var (e, _) in world.Exits)
+                {
+                    var t = UI.Label(figures, e.label, 28, e.occupied ? Palette.Danger : Palette.Title, TextAnchor.LowerCenter, Art.Bold);
+                    t.rectTransform.anchorMin = t.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                    t.rectTransform.sizeDelta = new Vector2(420, 60);
+                    exitNames.Add(t);
+                }
+            }
+            else world.Stay();
 
             var ch = next.character;
             heroName.text = ch.name;
@@ -250,7 +298,7 @@ namespace Amulet
                 var n = npcs[i];
                 bool back = i >= 3;
                 int inRow = back ? npcs.Count - 3 : front, k = back ? i - 3 : i;
-                float x = (k + 1f) / (inRow + 1f), y = back ? 0.5f : 0.3f, size = back ? 240 : 300;
+                float x = (k + 1f) / (inRow + 1f), y = back ? 0.5f : 0.3f, size = world != null ? 220 : back ? 240 : 300;
                 if (!shown.TryGetValue(n.id, out var f))
                 {
                     f = MakeFigure(n, size);
@@ -268,7 +316,7 @@ namespace Amulet
                         StartCoroutine(Fx.Flash(f.Picture, new Color(1, 0.35f, 0.3f), 0.3f));
                     }
                     f.Root.sizeDelta = new Vector2(size, size * 1.3f + 120);
-                    StartCoroutine(MoveTo(f.Root, new Vector2(x, y)));
+                    if (world == null) StartCoroutine(MoveTo(f.Root, new Vector2(x, y)));
                 }
                 f.Npc = n;
                 f.Name.text = n.name + (n.level > 0 ? $" · {n.level}" : "");
@@ -427,7 +475,20 @@ namespace Amulet
             }
         }
 
-        void Go(ExitView exit) => Act(() => app.Api.Move(exit.target));
+        void Go(ExitView exit)
+        {
+            if (busy || view == null) { world?.Stay(); return; }
+            came = Compass.Of(view.location.id, exit);
+            Act(() => app.Api.Move(exit.target));
+        }
+
+        /// <summary>The painting of the place shows for a moment on arrival, then the view from above opens.</summary>
+        IEnumerator Splash()
+        {
+            splash.alpha = background.sprite != null ? 1 : 0;
+            yield return new WaitForSeconds(0.7f);
+            yield return Fx.Fade(splash, splash.alpha, 0, 0.9f);
+        }
 
         // ---- notes ---------------------------------------------------------------------------------
 
@@ -469,6 +530,8 @@ namespace Amulet
             doll = new Paperdoll(screen, this, () => doll = null);
             doll.Show(view);
         }
+
+        void OnDestroy() { if (world != null) Destroy(world); }
 
         public void Equip(string id) => Act(() => app.Api.Equip(id));
         public void Unequip(string id) => Act(() => app.Api.Unequip(id));

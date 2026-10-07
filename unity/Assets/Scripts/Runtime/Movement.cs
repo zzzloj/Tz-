@@ -67,6 +67,17 @@ namespace Amulet
         /// <summary>Set by the screen once it walked while the stick was held, so letting go does not walk again.</summary>
         public bool Walked;
         public Action<ExitView> Release;
+        /// <summary>The view from above: the knob is the way to walk, not a choice of exit.</summary>
+        public bool Free { get; private set; }
+        /// <summary>How far and where the knob is pulled, −1..1 (free mode).</summary>
+        public Vector2 Pull => Held ? knob.anchoredPosition * (1f / Reach) : Vector2.zero;
+
+        public void SetFree(bool free)
+        {
+            Free = free;
+            foreach (var n in notches) n.gameObject.SetActive(!free);
+            hint.text = "";
+        }
 
         RectTransform area, knob;
         Text hint;
@@ -118,6 +129,7 @@ namespace Amulet
         /// <summary>The exits of the place by direction (index as in <see cref="Compass"/>).</summary>
         public void SetExits(ExitView[] byDir)
         {
+            if (Free) return;
             for (int i = 0; i < 8; i++)
             {
                 exits[i] = byDir[i];
@@ -134,6 +146,7 @@ namespace Amulet
             if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(area, e.position, null, out var local)) return;
             var pull = Vector2.ClampMagnitude(local, Reach);
             knob.anchoredPosition = pull;
+            if (Free) return;
             if (local.magnitude < Dead) { Choose(-1); return; }
             // The nearest direction that has an exit, within 60° of the pull.
             var deg = Mathf.Atan2(local.y, local.x) * Mathf.Rad2Deg;
@@ -150,8 +163,9 @@ namespace Amulet
         public void OnPointerUp(PointerEventData e)
         {
             Held = false;
-            var go = Chosen;
             knob.anchoredPosition = Vector2.zero;
+            if (Free) return;
+            var go = Chosen;
             Choose(-1);
             if (go != null && !Walked) Release?.Invoke(go);
         }
@@ -238,7 +252,7 @@ namespace Amulet
                     if (d < 0) continue;
                     var (dx, dy) = Step(d);
                     var cell = (x + dx, y + dy);
-                    if (Math.Abs(cell.Item1) > SpanX + 1 || Math.Abs(cell.Item2) > SpanY + 1 || taken.Contains(cell)) continue;
+                    if (Math.Abs(cell.Item1 + cell.Item2) > 4 || Math.Abs(cell.Item2 - cell.Item1) > 5 || taken.Contains(cell)) continue;   // what fits the frame, turned like the world
                     taken.Add(cell);
                     at[e.target] = cell;
                     queue.Enqueue((e.target, depth + 1));
@@ -273,11 +287,15 @@ namespace Amulet
             hole.rectTransform.Place(0, 0, 1, 1, 12, 12, 12, 12);
         }
 
+        /// <summary>A cell of the scheme on the minimap, turned like the world (north up-right).</summary>
+        static Vector2 P((int x, int y) cell) => World.Iso(new Vector2(cell.x, cell.y)) * (Cell * 1.3f);
+
         Image Dot((int x, int y) cell, float size, Color color)
         {
             var d = UI.Panel(dots, color, "dot");
             d.sprite = Art.Circle; d.type = Image.Type.Simple; d.raycastTarget = false;
-            d.rectTransform.At(0.5f, 0.5f, size, size, cell.x * Cell, cell.y * Cell);
+            var at = P(cell);
+            d.rectTransform.At(0.5f, 0.5f, size, size, at.x, at.y);
             return d;
         }
 
@@ -285,8 +303,9 @@ namespace Amulet
         {
             var line = UI.Panel(lines, new Color(0.9f, 0.8f, 0.6f, alpha), "road", false);
             line.raycastTarget = false;
-            float dx = (b.x - a.x) * Cell, dy = (b.y - a.y) * Cell;
-            var rt = line.rectTransform.At(0.5f, 0.5f, Mathf.Sqrt(dx * dx + dy * dy), 5, (a.x * Cell + b.x * Cell) / 2, (a.y * Cell + b.y * Cell) / 2);
+            Vector2 pa = P(a), pb = P(b);
+            float dx = pb.x - pa.x, dy = pb.y - pa.y;
+            var rt = line.rectTransform.At(0.5f, 0.5f, Mathf.Sqrt(dx * dx + dy * dy), 5, (pa.x + pb.x) / 2, (pa.y + pb.y) / 2);
             rt.localRotation = Quaternion.Euler(0, 0, Mathf.Atan2(dy, dx) * Mathf.Rad2Deg);
         }
     }

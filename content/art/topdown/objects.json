@@ -1,0 +1,4 @@
+{
+  "_doc": "Sizes of the top-down objects for the Unity client (unity/Assets/Scripts/Runtime/World.cs): along — the length in metres of the wall that runs west–east (the south front, the left wall in the picture). The other wall's length comes from the picture itself: unity/tools/prepare.py measures where the wall bases and the front corner are.",
+  "obj-house-a": {"along": 8}
+}

@@ -89,6 +89,9 @@ namespace Amulet
         /// <summary>A rounded rectangle for 9-slicing.</summary>
         public static Sprite Rounded => rounded ? rounded : rounded = MakeRounded(48, 14);
         public static Sprite Circle => circle ? circle : circle = MakeRounded(128, 64);
+        static Sprite circleSprite;
+        /// <summary>The same circle one unit across, for the world seen from above.</summary>
+        public static Sprite CircleSprite => circleSprite ? circleSprite : circleSprite = Sprite.Create(Circle.texture, new Rect(0, 0, 128, 128), new Vector2(0.5f, 0.5f), 128);
 
         static Sprite MakeRounded(int size, int radius)
         {
