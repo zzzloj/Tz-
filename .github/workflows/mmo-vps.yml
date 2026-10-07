@@ -1,0 +1,41 @@
+name: mmo-vps
+
+# The MMO server on the VPS without rebuilding it (the build stays in ~/tz-mmo/server from the last
+# mmo.yml deploy): on a change of deploy/vps/mmo, copies the compose files, restarts, and reports the
+# server's state and log as annotations — crashes included.
+on:
+  push:
+    branches: [main]
+    paths: ["deploy/vps/mmo/**", ".github/workflows/mmo-vps.yml"]
+  workflow_dispatch:
+
+jobs:
+  restart:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+      VPS_USER: ${{ secrets.VPS_USER }}
+      VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: SSH
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -T 20 "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+      - name: Restart
+        run: |
+          scp deploy/vps/mmo/* "$VPS_USER@$VPS_HOST:~/tz-mmo/"
+          ssh "$VPS_USER@$VPS_HOST" 'cd ~/tz-mmo; docker compose down; [ -x ./diag.sh ] && ./diag.sh > diag.txt 2>&1; docker compose up -d --build'
+      - name: State and log as annotations
+        if: always()
+        run: |
+          sleep 60
+          ssh "$VPS_USER@$VPS_HOST" 'cd ~/tz-mmo; docker compose ps; docker stats --no-stream --format "{{.Name}} {{.MemUsage}} {{.CPUPerc}}"; free -m; ls data data/Config 2>/dev/null; cat diag.txt 2>/dev/null | tail -40' > state.txt 2>&1 || true
+          ssh "$VPS_USER@$VPS_HOST" 'cd ~/tz-mmo; docker compose logs --no-color --tail 600' > log.txt 2>&1 || true
+          echo "::notice title=state::$(cut -c1-300 state.txt | sed ':a;N;$!ba;s/\n/%0A/g')"
+          echo "::notice title=crash::$(grep -n -B4 -A26 -E "Caught fatal signal|Received signal|SIGSEGV|Crash!!!|#0 " log.txt | head -70 | cut -c1-250 | sed ':a;N;$!ba;s/\n/%0A/g')"
+          echo "::notice title=before crash::$(grep -n -B40 -E "Caught fatal signal|Received signal|SIGSEGV|Crash!!!" log.txt | head -45 | cut -c1-250 | sed ':a;N;$!ba;s/\n/%0A/g')"
+          echo "::notice title=last lines::$(tail -50 log.txt | cut -c1-250 | sed ':a;N;$!ba;s/\n/%0A/g')"
