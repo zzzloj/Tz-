@@ -41,6 +41,9 @@ jobs:
           key: mmo-library-${{ matrix.out }}-${{ hashFiles('mmo/Packages/manifest.json', 'mmo/ProjectSettings/ProjectVersion.txt', '.gitmodules') }}
           restore-keys: mmo-library-${{ matrix.out }}-
 
+      - name: Make the kit compile on our Unity version
+        run: python3 mmo/tools/patch_kit.py
+
       - name: Build
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
