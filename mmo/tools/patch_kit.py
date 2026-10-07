@@ -28,6 +28,15 @@ def main():
             d['defineConstraints'] = d.get('defineConstraints', []) + ['UNITY_6000_3_OR_NEWER']
         return json.dumps(d, indent=4)
     edit('ThirdParty/LiteNetLibManager/Plugins/UniTask/Editor/UniTask.Editor.asmdef', no_tracker)
+    drop_urp()
+
+def drop_urp():
+    """The graphic settings for URP need the URP package; we stay on the built-in pipeline for now."""
+    folder = os.path.join(KIT, 'ThirdParty', 'GraphicSettings', 'Scripts')
+    for f in sorted(os.listdir(folder)):
+        if 'Urp' in f:
+            os.remove(os.path.join(folder, f)); print('removed', f)
+
 
 if __name__ == '__main__':
     sys.exit(main())
