@@ -40,7 +40,9 @@ namespace Amulet
         class Figure
         {
             public RectTransform Root;
-            public Image Picture, Ring, Badge, Blow;
+            public Image Picture, Ring, Badge, Blow, Shadow;
+            /// <summary>Stands in the world as a drawn figure (World.Figure); the portrait here is hidden.</summary>
+            public bool Drawn;
             public Text Name, Chance;
             public UI.Bar Health;
             public NpcView Npc;
@@ -291,6 +293,7 @@ namespace Amulet
                 var group = Group(f.Root);
                 f.Root.GetComponent<Button>().interactable = false;
                 StartCoroutine(Fx.Fade(group, 1, 0, 0.8f, true));
+                world?.Drop(id);
             }
             var front = Mathf.Min(npcs.Count, 3);
             for (int i = 0; i < npcs.Count; i++)
@@ -302,6 +305,8 @@ namespace Amulet
                 if (!shown.TryGetValue(n.id, out var f))
                 {
                     f = MakeFigure(n, size);
+                    f.Drawn = world != null && world.Figure(n.id, n.art, n.undead);
+                    if (f.Drawn) { f.Picture.enabled = false; f.Shadow.enabled = false; f.Ring.enabled = false; }
                     shown[n.id] = f;
                     f.Root.At(x, y, size, size * 1.3f + 120);
                     if (!moved) StartCoroutine(Fx.Fade(Group(f.Root), 0, 1, 0.4f));
@@ -313,6 +318,7 @@ namespace Amulet
                     {
                         StartCoroutine(Fx.FloatText(f.Root, "−" + (old.hp - n.hp), Palette.Danger, new Vector2(0, 40)));
                         StartCoroutine(Fx.Shake(f.Picture.rectTransform));
+                        if (f.Drawn) world.Hurt(n.id);
                         StartCoroutine(Fx.Flash(f.Picture, new Color(1, 0.35f, 0.3f), 0.3f));
                     }
                     f.Root.sizeDelta = new Vector2(size, size * 1.3f + 120);
@@ -351,7 +357,7 @@ namespace Amulet
             var hit = f.Root.gameObject.AddComponent<Image>();
             hit.color = new Color(0, 0, 0, 0);
             hit.Tap(() => OnFigure(f));
-            var shadow = UI.Panel(f.Root, new Color(0, 0, 0, 0.55f), "shadow");
+            var shadow = f.Shadow = UI.Panel(f.Root, new Color(0, 0, 0, 0.55f), "shadow");
             shadow.sprite = Art.Circle;
             shadow.rectTransform.Place(0.12f, 0, 0.88f, 0, 0, 96, 0, -150);
             shadow.raycastTarget = false;

@@ -72,6 +72,7 @@ namespace UnityEngine
         public float x, y;
         public Vector2(float x, float y) { this.x = x; this.y = y; }
         public static Vector2 zero => default;
+        public static Vector2 up => default;
         public static Vector2 operator +(Vector2 a, Vector2 b) => default;
         public static Vector2 operator *(Vector2 a, float b) => default;
         public static Vector2 Lerp(Vector2 a, Vector2 b, float t) => default;
@@ -94,6 +95,7 @@ namespace UnityEngine
         public static Vector3 one => default;
         public static Vector3 operator *(Vector3 a, float b) => default;
         public static Vector3 Lerp(Vector3 a, Vector3 b, float t) => default;
+        public static Vector3 operator +(Vector3 a, Vector3 b) => default;
     }
     public struct Quaternion { public static Quaternion Euler(float x, float y, float z) => default; }
     public struct Vector4 { public Vector4(float x, float y, float z, float w) { } public static Vector4 zero => default; }

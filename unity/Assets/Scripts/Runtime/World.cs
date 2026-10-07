@@ -8,9 +8,11 @@
 // the same way every time for the same place (seeded by its id):
 //   - the ground: grass, dirt, a street or a road to every exit that has a direction, water on a
 //     free side by the shore, a pier in the harbour — baked into one texture when you arrive;
-//   - houses along the streets in towns;
+//   - houses along the streets in towns; barrels, crates, carts and stalls by the streets, trees,
+//     bushes and rocks in the wild, moorings along the pier and a boat by it (content/art/topdown/objects.json);
 //   - exits: a lit ring where a road leaves the square; walk into it to go on;
-//   - where the monsters and people of the place stand.
+//   - where the monsters and people of the place stand; those that have a figure drawn
+//     (content/art/topdown/figures/fig-<portrait key>) stand there as figures, turned to the hero.
 // The hero walks freely with the joystick; houses and water stop him.
 using System;
 using System.Collections.Generic;
@@ -42,6 +44,8 @@ namespace Amulet
         string sex = "m";
         Biome biome;
         readonly List<Rect> blocks = new List<Rect>();
+        readonly List<(Vector2 at, float r)> rounds = new List<(Vector2, float)>();
+        readonly Dictionary<string, SpriteRenderer> people = new Dictionary<string, SpriteRenderer>();
         readonly List<(Vector2 a, Vector2 b)> roads = new List<(Vector2, Vector2)>();
         int waterSide = -1;
         float shoreAt;
@@ -93,7 +97,7 @@ namespace Amulet
 
             rnd = new System.Random(Seed(loc.id));
             biome = BiomeOf(loc.art);
-            blocks.Clear(); roads.Clear(); Exits.Clear(); spots.Clear();
+            blocks.Clear(); rounds.Clear(); roads.Clear(); Exits.Clear(); spots.Clear(); people.Clear();
             leaving = false;
 
             // Exits with a direction leave by a road to the edge; the rest wait at doors or in a ring.
@@ -126,6 +130,7 @@ namespace Amulet
 
             BakeGround();
             if (biome == Biome.Town || biome == Biome.Harbour) PlaceHouses();
+            PlaceThings();
             // Doors: exits without a direction at the doors of the houses, or in a ring round the middle.
             for (int i = 0; i < loose.Count; i++)
             {
@@ -298,8 +303,8 @@ namespace Amulet
 
         // ---- houses ---------------------------------------------------------------------------------
 
-        class ObjMeta { public float corner, baseL, baseR, along; }
-        class FigMeta { public float foot; }
+        class ObjMeta { public float corner, baseL, baseR, left, right, along, size, solid; public List<string> where = new List<string>(); public string near; }
+        class FigMeta { public float foot, height = 2.4f, fill = 1; }
         class Meta { public Dictionary<string, ObjMeta> objects = new Dictionary<string, ObjMeta>(); public Dictionary<string, FigMeta> figures = new Dictionary<string, FigMeta>(); }
         static Meta meta;
         static Meta TheMeta()
@@ -332,7 +337,7 @@ namespace Amulet
                 var name = kinds[rnd.Next(kinds.Count)];
                 var m = TheMeta().objects[name];
                 float along = m.along > 0 ? m.along : 7;
-                float across = along * (m.baseR - m.corner) / Mathf.Max(0.01f, m.corner - m.baseL);
+                float across = Mathf.Clamp(along * (m.baseR - m.corner) / Mathf.Max(0.01f, m.corner - m.baseL), along * 0.45f, along * 1.2f);
                 bool mirror = rnd.Next(2) == 1;           // mirrored, the front faces east instead of south
                 float w = mirror ? across : along, d = mirror ? along : across;
                 var c = new Vector2((float)rnd.NextDouble() * (Area - 8) - Half + 4, (float)rnd.NextDouble() * (Area - 8) - Half + 4);
@@ -373,6 +378,161 @@ namespace Amulet
                 if (Wet(corner, 0.5f) > -1.5f) return false;
             foreach (var (_, at) in Exits) if ((at - c).magnitude < 4) return false;
             return true;
+        }
+
+        // ---- things ---------------------------------------------------------------------------------
+
+        static string BiomeName(Biome b) => b == Biome.Town ? "town" : b == Biome.Harbour ? "harbour" : b == Biome.Shore ? "shore"
+            : b == Biome.Desert ? "desert" : b == Biome.Under ? "under" : "wild";
+
+        void PlaceThings()
+        {
+            var here = BiomeName(biome);
+            var kinds = new List<string>();
+            foreach (var kv in TheMeta().objects) if (kv.Value.size > 0 && kv.Value.where != null && kv.Value.where.Contains(here)) kinds.Add(kv.Key);
+            if (kinds.Count == 0) return;
+            int want = biome == Biome.Wild ? 16 : biome == Biome.Desert || biome == Biome.Under ? 7 : 11;
+            int placed = 0;
+            float roadHalf = biome == Biome.Town || biome == Biome.Harbour ? 2.2f : 1.5f;
+            // Moorings along both edges of the pier first.
+            if (pierA != pierB && kinds.Contains("obj-mooring"))
+            {
+                var d = (pierB - pierA).normalized; var n = new Vector2(-d.y, d.x);
+                float len = (pierB - pierA).magnitude;
+                for (float t = 1.5f; t < len - 3; t += 4.5f)
+                    foreach (var side in new[] { -1.15f, 1.15f }) Thing("obj-mooring", pierA + d * t + n * side);
+                // and a boat tied beside it
+                if (TheMeta().objects.ContainsKey("obj-boat")) Thing("obj-boat", pierA + d * Mathf.Min(6, len / 2) + n * 3.2f);
+            }
+            for (int attempt = 0; attempt < 200 && placed < want; attempt++)
+            {
+                var name = kinds[rnd.Next(kinds.Count)];
+                var m = TheMeta().objects[name];
+                if (name == "obj-mooring" || name == "obj-boat" && pierA != pierB) continue;
+                Vector2 p;
+                switch (m.near)
+                {
+                    case "road":
+                        if (roads.Count == 0) continue;
+                        var (a, b) = roads[rnd.Next(roads.Count)];
+                        var dir = (b - a).normalized; var nrm = new Vector2(-dir.y, dir.x);
+                        p = a + dir * (3 + (float)rnd.NextDouble() * (Half - 5)) + nrm * ((rnd.Next(2) * 2 - 1) * (roadHalf + 0.6f + m.solid + (float)rnd.NextDouble()));
+                        break;
+                    case "water":
+                        if (waterSide < 0) continue;
+                        var v = Compass.Vector(waterSide);
+                        p = v * (shoreAt + 1.5f + (float)rnd.NextDouble() * 2) + new Vector2(-v.y, v.x) * ((float)rnd.NextDouble() * 20 - 10);
+                        break;
+                    default:
+                        p = new Vector2((float)rnd.NextDouble() * (Area - 4) - Half + 2, (float)rnd.NextDouble() * (Area - 4) - Half + 2);
+                        if (RoadDistance(p) < roadHalf + 0.6f + m.solid) continue;
+                        break;
+                }
+                if (m.near != "water" && !Room(p, Mathf.Max(m.solid, 0.5f))) continue;
+                if (m.near == "water" && (Wet(p, 0.5f) < 0.8f || OnPier(p, out _, out _))) continue;
+                Thing(name, p);
+                placed++;
+            }
+        }
+
+        bool Room(Vector2 p, float r)
+        {
+            if (Mathf.Abs(p.x) > Half - 1 || Mathf.Abs(p.y) > Half - 1) return false;
+            if (p.magnitude < r + 2.5f) return false;
+            if (Wet(p, 0.5f) > -0.8f && !OnPier(p, out _, out _)) return false;
+            foreach (var bl in blocks) if (new Rect(bl.x - r - 0.6f, bl.y - r - 0.6f, bl.width + 2 * r + 1.2f, bl.height + 2 * r + 1.2f).Contains(p)) return false;
+            foreach (var (at, rr) in rounds) if ((p - at).magnitude < r + rr + 0.9f) return false;
+            foreach (var (_, at) in Exits) if ((at - p).magnitude < Reach + r + 1) return false;
+            return true;
+        }
+
+        void Thing(string name, Vector2 p)
+        {
+            var m = TheMeta().objects[name];
+            var tex = Resources.Load<Texture2D>("TopDown/objects/" + name);
+            if (tex == null) return;
+            var go = new GameObject(name);
+            go.transform.SetParent(root, false);
+            var at = Iso(p);
+            go.transform.localPosition = new Vector3(at.x, at.y, 0);
+            var sr = go.AddComponent<SpriteRenderer>();
+            bool mirror = rnd.Next(2) == 1 && name != "obj-boat";
+            sr.sprite = Picture("objects/" + name, mirror ? 1 - m.corner : m.corner, tex.width * Mathf.Max(0.05f, m.right - m.left) / m.size);
+            sr.flipX = mirror;
+            sr.sortingOrder = Order(p);
+            if (m.solid > 0) rounds.Add((p, m.solid));
+            float s = m.size * 0.55f;
+            if (name != "obj-boat") Shadow(new Rect(p.x + s * 0.15f, p.y - s * 0.35f, s, s * 0.8f), 0.45f);
+        }
+
+        // ---- people and monsters ----------------------------------------------------------------------
+
+        /// <summary>Stands the figure of a monster or a person at their spot; false if it has no figure drawn yet.</summary>
+        public bool Figure(string id, string art, bool undead)
+        {
+            if (people.TryGetValue(id, out var have)) return have != null;
+            var key = "fig-" + (art ?? "").Substring((art ?? "").LastIndexOf('/') + 1);
+            TheMeta().figures.TryGetValue(key, out var m);
+            var tex = m != null ? Resources.Load<Texture2D>("TopDown/figures/" + key) : null;
+            if (tex == null) { people[id] = null; return false; }
+            var go = new GameObject("figure " + id);
+            go.transform.SetParent(root, false);
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sprite = Picture("figures/" + key, m.foot, tex.height * m.fill / m.height);
+            if (undead) sr.color = new Color(0.7f, 0.85f, 0.7f);
+            var spot = Spot(id);
+            var at = Iso(spot);
+            go.transform.localPosition = new Vector3(at.x, at.y, 0);
+            sr.sortingOrder = Order(spot);
+            var shade = new GameObject("shadow");
+            shade.transform.SetParent(go.transform, false);
+            float w = Mathf.Min(2.2f, m.height * 0.45f);
+            shade.transform.localScale = new Vector3(w, w * 0.42f, 1);
+            shade.transform.localPosition = new Vector3(0.1f, 0, 0);
+            var ss = shade.AddComponent<SpriteRenderer>();
+            ss.sprite = Art.CircleSprite;
+            ss.color = new Color(0, 0, 0, 0.45f);
+            ss.sortingOrder = -30000;
+            people[id] = sr;
+            return true;
+        }
+
+        /// <summary>A monster or a person is gone (killed, left): their figure fades away.</summary>
+        public void Drop(string id)
+        {
+            if (!people.TryGetValue(id, out var sr)) return;
+            people.Remove(id);
+            if (sr != null) StartCoroutine(FadeOut(sr));
+        }
+
+        System.Collections.IEnumerator FadeOut(SpriteRenderer sr)
+        {
+            for (float t = 0; t < 0.8f && sr != null; t += Time.deltaTime)
+            {
+                var c = sr.color; c.a = 1 - t / 0.8f; sr.color = c;
+                yield return null;
+            }
+            if (sr != null) Destroy(sr.gameObject);
+        }
+
+        /// <summary>A blow landed: the figure flashes red and shakes.</summary>
+        public void Hurt(string id)
+        {
+            if (people.TryGetValue(id, out var sr) && sr != null) StartCoroutine(Flash(sr));
+        }
+
+        System.Collections.IEnumerator Flash(SpriteRenderer sr)
+        {
+            var home = sr.transform.localPosition;
+            var color = sr.color;
+            for (float t = 0; t < 0.3f && sr != null; t += Time.deltaTime)
+            {
+                float k = 1 - t / 0.3f;
+                sr.color = Color.Lerp(color, new Color(1, 0.3f, 0.25f), k);
+                sr.transform.localPosition = home + new Vector3(UnityEngine.Random.Range(-1f, 1f), 0, 0) * 0.08f * k;
+                yield return null;
+            }
+            if (sr != null) { sr.color = color; sr.transform.localPosition = home; }
         }
 
         // ---- marks on the ground --------------------------------------------------------------------
@@ -431,7 +591,7 @@ namespace Amulet
             TheMeta().figures.TryGetValue(name, out var m);
             if (m == null) { name = "fig-hero-m"; TheMeta().figures.TryGetValue(name, out m); }
             var tex = Resources.Load<Texture2D>("TopDown/figures/" + name);
-            if (tex != null) heroPicture.sprite = Picture("figures/" + name, m != null ? m.foot : 0.5f, tex.height / HeroHeight);
+            if (tex != null) heroPicture.sprite = Picture("figures/" + name, m != null ? m.foot : 0.5f, tex.height * (m != null ? m.fill : 1) / (m != null ? m.height : HeroHeight));
             var shade = new GameObject("shadow");
             shade.transform.SetParent(go.transform, false);
             shade.transform.localScale = new Vector3(1.0f, 0.42f, 1);
@@ -471,6 +631,8 @@ namespace Amulet
             }
             else walk = 0;
             Place();
+            foreach (var kv in people)
+                if (kv.Value != null && spots.TryGetValue(kv.Key, out var sp)) kv.Value.flipX = Iso(hero).x < Iso(sp).x;
             var c = Iso(hero);
             var at3 = cam.transform.position;
             var want = new Vector3(c.x, c.y, -10);
@@ -492,6 +654,11 @@ namespace Amulet
                 float min = Mathf.Min(Mathf.Min(l, r), Mathf.Min(d, u));
                 if (min == l) p.x = g.xMin; else if (min == r) p.x = g.xMax; else if (min == d) p.y = g.yMin; else p.y = g.yMax;
             }
+            foreach (var (at, r) in rounds)
+            {
+                var d = p - at; float need = r + HeroRadius;
+                if (d.magnitude < need) p = at + (d.magnitude > 0.001f ? d.normalized : Vector2.up) * need;
+            }
             if (Wet(p, 0.5f) > 0.3f && !OnPier(p, out _, out _)) return hero;
             return p;
         }
@@ -503,6 +670,7 @@ namespace Amulet
             {
                 bool ok = Wet(p, 0.5f) < -0.5f || OnPier(p, out _, out _);
                 foreach (var b in blocks) if (new Rect(b.x - 0.8f, b.y - 0.8f, b.width + 1.6f, b.height + 1.6f).Contains(p)) ok = false;
+                foreach (var (at, r) in rounds) if ((p - at).magnitude < r + 0.8f) ok = false;
                 if (ok) return p;
                 p = p * 0.85f + new Vector2((float)rnd.NextDouble() - 0.5f, (float)rnd.NextDouble() - 0.5f);
             }

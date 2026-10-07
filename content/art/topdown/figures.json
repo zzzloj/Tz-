@@ -1,0 +1,8 @@
+{
+  "_doc": "Top-down figures for the Unity client: height — how tall the picture is on the screen in metres (figures are drawn larger than life, as in Grim Soul: a man is 2.4). The file name is fig-<the key of the portrait> (content/art/mobs.json, npcs.json), so a monster or a person gets their figure as soon as it is drawn; fig-hero-m and fig-hero-f are the hero.",
+  "default": 2.4,
+  "fig-npc-boy": 2.0,
+  "fig-ani-hen": 0.9,
+  "fig-mob-rat": 1.2,
+  "fig-mob-spider": 1.8
+}

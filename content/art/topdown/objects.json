@@ -1,4 +1,20 @@
 {
-  "_doc": "Sizes of the top-down objects for the Unity client (unity/Assets/Scripts/Runtime/World.cs): along — the length in metres of the wall that runs west–east (the south front, the left wall in the picture). The other wall's length comes from the picture itself: unity/tools/prepare.py measures where the wall bases and the front corner are.",
-  "obj-house-a": {"along": 8}
+  "_doc": "Top-down objects for the Unity client (unity/Assets/Scripts/Runtime/World.cs). Buildings: along — the length in metres of the wall that runs west–east (the south front, the left wall in the picture); the other wall's length comes from the picture (unity/tools/prepare.py measures the wall bases and the front corner). Everything else: size — the picture's width on the screen in metres; solid — the radius in metres that cannot be walked through (0 — walk through); where — the kinds of places it stands in (town, harbour, shore, wild, desert, under); near — road (by the streets), water (on the shore or by the pier), any.",
+  "obj-house-a": {"along": 8},
+  "obj-house-b": {"along": 5.5},
+  "obj-house-c": {"along": 8},
+  "obj-barrel": {"size": 0.8, "solid": 0.35, "where": ["town", "harbour"], "near": "road"},
+  "obj-crates": {"size": 1.7, "solid": 0.7, "where": ["town", "harbour"], "near": "road"},
+  "obj-cart": {"size": 2.8, "solid": 0.9, "where": ["town", "wild"], "near": "road"},
+  "obj-stall": {"size": 3.0, "solid": 1.1, "where": ["town"], "near": "road"},
+  "obj-well": {"size": 2.0, "solid": 0.8, "where": ["town"], "near": "any"},
+  "obj-brazier": {"size": 0.9, "solid": 0.35, "where": ["town", "harbour", "under"], "near": "road"},
+  "obj-bush": {"size": 1.7, "solid": 0, "where": ["wild", "shore", "harbour", "town"], "near": "any"},
+  "obj-rocks": {"size": 2.3, "solid": 0.9, "where": ["wild", "shore", "desert", "under"], "near": "any"},
+  "obj-tree": {"size": 5.2, "solid": 0.6, "where": ["wild", "shore"], "near": "any"},
+  "obj-tree-dead": {"size": 4.2, "solid": 0.5, "where": ["wild", "desert", "under", "shore"], "near": "any"},
+  "obj-mooring": {"size": 0.55, "solid": 0.25, "where": ["harbour"], "near": "pier"},
+  "obj-boat": {"size": 4.0, "solid": 0, "where": ["harbour", "shore"], "near": "water"},
+  "obj-gate": {"size": 10, "solid": 0, "where": [], "near": "any"},
+  "obj-wall": {"size": 6, "solid": 0, "where": [], "near": "any"}
 }

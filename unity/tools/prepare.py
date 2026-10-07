@@ -41,6 +41,7 @@ def topdown(count):
     out = os.path.join(OUT, 'TopDown'); fresh(out)
     meta = {'objects': {}, 'figures': {}}
     with open(os.path.join(td, 'objects.json'), encoding='utf-8') as fh: sizes = json.load(fh)
+    with open(os.path.join(td, 'figures.json'), encoding='utf-8') as fh: heights = json.load(fh)
     os.makedirs(os.path.join(out, 'ground'))
     for f in sorted(os.listdir(os.path.join(td, 'ground'))):
         if not f.endswith('.webp'): continue
@@ -69,10 +70,14 @@ def topdown(count):
             key = f[:-5]
             if kind == 'objects':
                 band = [x for y in range(int(h * 0.6), h, 3) for x in range(w) if px[x, y]]
-                m = {'corner': sum(foot) / len(foot) / w, 'baseL': min(band) / w, 'baseR': max(band) / w}
+                # The picture stands on the bottom of a square canvas: how much of the canvas it fills across.
+                filled = [x for x in range(w) if any(px[x, y] for y in range(0, h, 4))]
+                m = {'corner': sum(foot) / len(foot) / w, 'baseL': min(band) / w, 'baseR': max(band) / w,
+                     'left': min(filled) / w, 'right': max(filled) / w}
                 m.update({k: v for k, v in sizes.get(key, {}).items()})
             else:
-                m = {'foot': sum(foot) / len(foot) / w}
+                m = {'foot': sum(foot) / len(foot) / w, 'height': heights.get(key, heights['default']),
+                     'fill': (h - min(y for y in range(h) for x in range(0, w, 2) if px[x, y])) / h}
             meta[kind][key] = m
             im.save(os.path.join(out, kind, key + '.png'), optimize=True)
     with open(os.path.join(out, 'meta.json'), 'w', encoding='utf-8') as fh: json.dump(meta, fh, indent=1)
