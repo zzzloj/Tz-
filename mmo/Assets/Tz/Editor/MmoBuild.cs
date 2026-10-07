@@ -84,12 +84,15 @@ public static class MmoBuild
     {
         var scenes = Scenes();
         PlayerSettings.SetScriptingBackend(NamedBuildTarget.Standalone, ScriptingImplementation.Mono2x);
+        // A stack trace under every log line buries the server log; keep them for errors only.
+        PlayerSettings.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
+        PlayerSettings.SetStackTraceLogType(LogType.Warning, StackTraceLogType.None);
         Run(new BuildPlayerOptions
         {
             scenes = scenes,
             locationPathName = Path.Combine(Root(), "build", "Server", "tz-mmo-server.x86_64"),
             target = BuildTarget.StandaloneLinux64,
-            // Development: the server crashed natively at start (07.10) and a release player has no symbols to say where.
+            // Development: the release player crashed natively at start (SIGSEGV, 07.10); the development one runs.
             options = BuildOptions.Development,
         });
     }
