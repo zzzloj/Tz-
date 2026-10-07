@@ -1,5 +1,5 @@
 # The MMO server on the VPS (mmo/README.md), next to the game server in /opt/tz but in its own
-# folder /opt/tz-mmo: server/ is the Unity build (replaced on every deploy), data/ keeps the config
+# folder ~/tz-mmo of the deploy user (it may not write to /opt): server/ is the Unity build (replaced on every deploy), data/ keeps the config
 # (Config/serverConfig.json, written on first start), the SQLite database and logs.
 # One process starts the database, login, central and map spawn servers; map spawn starts a map
 # server per map from the same build. Players reach login (7500), central (7000) and maps (8000+), UDP.
