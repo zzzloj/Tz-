@@ -79,6 +79,10 @@ jobs:
       - name: Errors of the Unity log as annotations
         if: always()
         run: |
+          if [ -f mmo/build/editor-log.txt ]; then
+            text=$(grep -vE "^\s*$" mmo/build/editor-log.txt | grep -B2 -A8 -E "^\[(Error|Exception|Assert)\]" | head -80 | cut -c1-260 | sed ':a;N;$!ba;s/\n/%0A/g')
+            [ -n "$text" ] && echo "::notice title=editor errors ${{ matrix.out }}::$text"
+          fi
           [ -f unity.log ] || { echo "::warning::no unity.log"; exit 0; }
           grep -E "error CS|[Ee]rror:|Exception|Failed|FAILURE|What went wrong|Unable|Cannot|not found|Build (Android|StandaloneLinux64):|Gradle|SDK|NDK|JDK" unity.log | grep -v Licensing | sort | uniq -c | sort -rn | head -45 \
             | while IFS= read -r line; do echo "::error title=unity ${{ matrix.out }}::$(echo "$line" | cut -c1-900)"; done

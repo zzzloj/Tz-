@@ -30,8 +30,20 @@ public static class MmoBuild
         return new[] { Bootstrap };
     }
 
+    /// <summary>Copies everything the editor logs during the build to build/editor-log.txt (CI turns its errors into annotations).</summary>
+    static void Capture()
+    {
+        var file = Path.Combine(Root(), "build", "editor-log.txt");
+        Directory.CreateDirectory(Path.GetDirectoryName(file));
+        Application.logMessageReceived += (text, stack, type) =>
+        {
+            try { File.AppendAllText(file, $"[{type}] {text}\n" + (type == LogType.Log ? "" : stack + "\n")); } catch (Exception) { }
+        };
+    }
+
     static void Run(BuildPlayerOptions options)
     {
+        Capture();
         Directory.CreateDirectory(Path.GetDirectoryName(options.locationPathName));
         var report = BuildPipeline.BuildPlayer(options);
         Debug.Log($"Build {options.target}: {report.summary.result}, {report.summary.totalSize} bytes, {report.summary.totalErrors} errors → {options.locationPathName}");
