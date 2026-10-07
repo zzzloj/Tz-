@@ -77,6 +77,7 @@ public static class MmoBuild
         PlayerSettings.allowedAutorotateToPortraitUpsideDown = false;
         PlayerSettings.allowedAutorotateToLandscapeLeft = true;
         PlayerSettings.allowedAutorotateToLandscapeRight = true;
+        PlayerSettings.Android.useCustomKeystore = false;   // the kit's settings name a keystore we do not have; debug-signed for now
         EditorUserBuildSettings.buildAppBundle = false;
         Run(new BuildPlayerOptions
         {
