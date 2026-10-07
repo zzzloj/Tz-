@@ -1,0 +1,19 @@
+# Which Unity editor images GameCI has (the container cannot reach Docker Hub): lists the 6000.3/6000.4
+# tags with Android and Linux-server modules as annotations of the run. Runs when this file changes.
+name: unity-versions
+on:
+  push:
+    paths: [.github/workflows/unity-versions.yml]
+  workflow_dispatch:
+jobs:
+  list:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          for v in 6000.3 6000.4; do
+            for mod in android-3 linux-il2cpp-3; do
+              tags=$(curl -s "https://hub.docker.com/v2/repositories/unityci/editor/tags?page_size=100&name=ubuntu-$v" \
+                | jq -r '.results[].name' | grep -- "-$mod$" | sed "s/ubuntu-//;s/-$mod//" | sort -V | tr '\n' ' ')
+              echo "::notice title=$v $mod::$tags"
+            done
+          done
