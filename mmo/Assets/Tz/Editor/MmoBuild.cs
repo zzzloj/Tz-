@@ -1,6 +1,6 @@
 // Builds the MMO client and server without anyone opening the editor (CI: .github/workflows/mmo.yml).
-// Step 1: an empty bootstrap scene, to prove the framework (Assets/OpenMMORPG) compiles and builds
-// for both targets on our CI. The real scenes come in step 2.
+// Step 2: the demo scenes of MmoKitCE (Assets/Tz/BaseDemo, MIT) — init, home (login, characters)
+// and one map — with the client pointed at our VPS.
 #if UNITY_EDITOR
 using System;
 using System.IO;
@@ -12,22 +12,51 @@ using UnityEngine;
 
 public static class MmoBuild
 {
-    const string Bootstrap = "Assets/Scenes/Bootstrap.unity";
+    static readonly string[] SceneList =
+    {
+        "Assets/Tz/BaseDemo/Scenes/BaseInit-CE.unity",
+        "Assets/Tz/BaseDemo/Scenes/BaseHome-CE.unity",
+        "Assets/Tz/BaseDemo/Scenes/BaseMap-CE.unity",
+    };
+
+    /// <summary>The address players connect to (the login server, UDP 7500); TZ_MMO_HOST overrides it.</summary>
+    static string Host => Environment.GetEnvironmentVariable("TZ_MMO_HOST") is string h && h.Length > 0 ? h : "217.177.74.66";
 
     static string[] Scenes()
     {
-        Directory.CreateDirectory("Assets/Scenes");
-        if (!File.Exists(Bootstrap))
-        {
-            var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
-            EditorSceneManager.SaveScene(scene, Bootstrap);
-        }
-        EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(Bootstrap, true) };
+        EnsureTextMeshPro();
+        EditorBuildSettings.scenes = Array.ConvertAll(SceneList, s => new EditorBuildSettingsScene(s, true));
         PlayerSettings.companyName = "Amulet";
         PlayerSettings.productName = "Амулет дракона MMO";
-        PlayerSettings.bundleVersion = "0.0.1";
+        PlayerSettings.bundleVersion = "0.0.2";
         AssetDatabase.SaveAssets();
-        return new[] { Bootstrap };
+        return SceneList;
+    }
+
+    /// <summary>The demo's text uses TextMesh Pro's default font, which comes from its essential resources.</summary>
+    static void EnsureTextMeshPro()
+    {
+        if (AssetDatabase.IsValidFolder("Assets/TextMesh Pro")) return;
+        AssetDatabase.ImportPackage("Packages/com.unity.ugui/Package Resources/TMP Essential Resources.unitypackage", false);
+        AssetDatabase.Refresh();
+        Debug.Log("Imported TMP Essential Resources: " + AssetDatabase.IsValidFolder("Assets/TextMesh Pro"));
+    }
+
+    /// <summary>Points the demo's server entry at our VPS.</summary>
+    static void PointAtServer()
+    {
+        foreach (var guid in AssetDatabase.FindAssets("t:MmoNetworkSetting"))
+        {
+            var asset = AssetDatabase.LoadMainAssetAtPath(AssetDatabase.GUIDToAssetPath(guid));
+            var so = new SerializedObject(asset);
+            so.FindProperty("networkAddress").stringValue = Host;
+            var title = so.FindProperty("defaultTitle");
+            if (title != null) title.stringValue = "Амулет дракона";
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(asset);
+            Debug.Log($"Server entry {AssetDatabase.GUIDToAssetPath(guid)} → {Host}");
+        }
+        AssetDatabase.SaveAssets();
     }
 
     /// <summary>Copies everything the editor logs during the build to build/editor-log.txt (CI turns its errors into annotations).</summary>
@@ -67,6 +96,7 @@ public static class MmoBuild
     public static void BuildAndroid()
     {
         var scenes = Scenes();
+        PointAtServer();
         PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android, "ru.amulet.reborn.mmo");
         PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android, ScriptingImplementation.IL2CPP);
         PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;

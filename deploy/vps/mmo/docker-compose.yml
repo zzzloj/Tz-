@@ -1,0 +1,33 @@
+# The MMO server on the VPS (mmo/README.md), next to the game server in /opt/tz but in its own
+# folder /opt/tz-mmo: server/ is the Unity build (replaced on every deploy), data/ keeps the config
+# (Config/serverConfig.json, written on first start), the SQLite database and logs.
+# One process starts the database, login, central and map spawn servers; map spawn starts a map
+# server per map from the same build. Players reach login (7500), central (7000) and maps (8000+), UDP.
+name: tz-mmo
+services:
+  mmo:
+    build: .
+    image: tz-mmo-runtime
+    restart: unless-stopped
+    working_dir: /data
+    volumes:
+      - ./server:/srv/server:ro
+      - ./data:/data
+    ports:
+      - "7000:7000/udp"
+      - "7500:7500/udp"
+      - "8000-8010:8000-8010/udp"
+    command:
+      - /srv/server/tz-mmo-server.x86_64
+      - -batchmode
+      - -nographics
+      - -logFile
+      - /dev/stdout
+      - -startDatabaseServer
+      - -startLoginServer
+      - -startCentralServer
+      - -startMapSpawnServer
+      - -spawnExePath
+      - /srv/server/tz-mmo-server.x86_64
+      - -publicAddress
+      - ${TZ_MMO_PUBLIC_ADDRESS:-217.177.74.66}
