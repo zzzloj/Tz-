@@ -90,6 +90,10 @@ namespace Amulet
         public bool usable;
     }
 
+    /// <summary>GET /api/map: every street location with its coordinates (x grows east, y grows south) and zone (1 — guarded).</summary>
+    public class MapView { public List<MapPoint> points = new List<MapPoint>(); }
+    public class MapPoint { public string id; public int mapX, mapY, zone; }
+
     public class GameView
     {
         public CharacterView character;

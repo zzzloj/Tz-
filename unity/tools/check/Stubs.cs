@@ -69,6 +69,8 @@ namespace UnityEngine
         public static Vector2 operator +(Vector2 a, Vector2 b) => default;
         public static Vector2 operator *(Vector2 a, float b) => default;
         public static Vector2 Lerp(Vector2 a, Vector2 b, float t) => default;
+        public float magnitude => 0;
+        public static Vector2 ClampMagnitude(Vector2 v, float max) => v;
     }
     public struct Vector3
     {
@@ -96,6 +98,15 @@ namespace UnityEngine
         public static float Lerp(float a, float b, float t) => a;
         public static float Sin(float v) => v;
         public static float Sqrt(float v) => v;
+        public const float Rad2Deg = 57.29578f, Deg2Rad = 0.01745329f;
+        public static float Atan2(float y, float x) => 0;
+        public static float Cos(float v) => v;
+        public static float Round(float v) => v;
+        public static float DeltaAngle(float a, float b) => 0;
+    }
+    public static class RectTransformUtility
+    {
+        public static bool ScreenPointToLocalPointInRectangle(RectTransform rt, Vector2 screen, Camera cam, out Vector2 local) { local = default; return true; }
     }
     public static class Time { public static float deltaTime => 0; public static float time => 0; }
     public static class Random { public static float Range(float a, float b) => a; public static float value => 0; }
@@ -152,6 +163,10 @@ namespace UnityEngine.EventSystems
 {
     public class EventSystem : MonoBehaviour { }
     public class StandaloneInputModule : MonoBehaviour { }
+    public class PointerEventData { public Vector2 position; }
+    public interface IPointerDownHandler { void OnPointerDown(PointerEventData e); }
+    public interface IDragHandler { void OnDrag(PointerEventData e); }
+    public interface IPointerUpHandler { void OnPointerUp(PointerEventData e); }
 }
 
 namespace UnityEngine.Networking

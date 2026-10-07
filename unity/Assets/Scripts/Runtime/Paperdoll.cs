@@ -36,10 +36,11 @@ namespace Amulet
             title.rectTransform.Place(0, 1, 1, 1, 32, -100, 260, 24);
             UI.Button(root, "Закрыть", Close, Palette.Raised, 34).GetComponent<RectTransform>().Place(1, 1, 1, 1, -240, -100, 24, 20);
             stats = UI.Label(root, "", 32, Palette.Text, TextAnchor.UpperLeft);
-            stats.rectTransform.Place(0, 1, 1, 1, 32, -230, 32, 110);
-            slots = UI.Node("slots", root).Place(0, 0.42f, 1, 1, 24, 0, 24, 250);
-            UI.Label(root, "Рюкзак", 40, Palette.Accent, TextAnchor.UpperLeft, Art.TitleFont).rectTransform.Place(0, 0.42f, 1, 0.42f, 32, -60, 32, -10);
-            var scroll = UI.Node("scroll", root).Place(0, 0, 1, 0.42f, 24, 140, 24, 70);
+            stats.rectTransform.Place(0, 1, 0.55f, 1, 32, -230, 0, 110);
+            // landscape: the doll on the left, the backpack on the right
+            slots = UI.Node("slots", root).Place(0, 0, 0.55f, 1, 24, 130, 0, 240);
+            UI.Label(root, "Рюкзак", 40, Palette.Accent, TextAnchor.UpperLeft, Art.TitleFont).rectTransform.Place(0.58f, 1, 1, 1, 0, -170, 24, 110);
+            var scroll = UI.Node("scroll", root).Place(0.58f, 0, 1, 1, 0, 30, 24, 180);
             scroll.gameObject.AddComponent<RectMask2D>();
             var sr = scroll.gameObject.AddComponent<ScrollRect>();
             sr.horizontal = false;
@@ -47,14 +48,14 @@ namespace Amulet
             grid.anchorMin = new Vector2(0, 1); grid.anchorMax = new Vector2(1, 1); grid.pivot = new Vector2(0.5f, 1);
             grid.offsetMin = grid.offsetMax = Vector2.zero;
             var layout = grid.gameObject.AddComponent<GridLayoutGroup>();
-            layout.cellSize = new Vector2(150, 150);
+            layout.cellSize = new Vector2(140, 140);
             layout.spacing = new Vector2(16, 16);
             var fit = grid.gameObject.AddComponent<ContentSizeFitter>();
             fit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             sr.content = grid;
             sr.viewport = scroll;
             UI.Button(root, "Выйти из аккаунта", () => { Close(); game.SignOut(); }, Palette.DangerFill, 32)
-                .GetComponent<RectTransform>().Place(0, 0, 1, 0, 24, 24, 24, -120);
+                .GetComponent<RectTransform>().Place(0, 0, 0, 0, 24, 24, -520, -110);
         }
 
         void Close()

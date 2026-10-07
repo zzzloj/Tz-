@@ -1,7 +1,9 @@
 // The place as a scene (prototype, owner 06.10): the picture of the place, monsters and people
 // standing on it as figures with health, power and your chance; a tap strikes; damage flies up
-// as numbers, figures shake and flash, the killed fade out; exits are arrows of a compass;
-// things and corpses lie on the ground as icons. Text is kept to names and short notes.
+// as numbers, figures shake and flash, the killed fade out; things and corpses lie on the ground
+// as icons. Landscape, like the owner's reference screenshot (07.10): the picture fills the screen,
+// the hero in the upper left, the minimap in the upper right, the joystick of exits in the lower
+// left (Movement.cs). Text is kept to names and short notes.
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,15 +19,17 @@ namespace Amulet
         public bool Dirty;
 
         App app;
-        RectTransform screen, scene, figures, ground, toasts, compass, others, hurtFlash;
-        Image background;
-        Text placeName, heroName, heroPower;
+        RectTransform screen, scene, figures, ground, toasts, doors, others, hurtFlash;
+        Image background, heroIcon;
+        Text placeName, heroName, heroPower, heroLetter;
+        Stick stick;
+        Minimap minimap;
         UI.Bar hp, mana, exp;
         CanvasGroup sceneGroup, ghostGroup;
         Button resurrect;
         Paperdoll doll;
         GameView view;
-        float fetchedAt, nextPoll;
+        float fetchedAt, nextPoll, nextStep;
         bool busy;
         readonly Dictionary<string, Figure> shown = new Dictionary<string, Figure>();
 
@@ -49,12 +53,10 @@ namespace Amulet
 
         // ---- layout --------------------------------------------------------------------------------
 
-        const float Hud = 250, Bottom = 520;
-
         void Build()
         {
-            // the scene
-            scene = UI.Node("scene", screen).Place(0, 0, 1, 1, 0, Bottom, 0, Hud);
+            // the scene: the picture of the place over the whole screen (it is 16:9 like the phone)
+            scene = UI.Node("scene", screen).Place(0, 0, 1, 1);
             scene.gameObject.AddComponent<RectMask2D>();
             sceneGroup = scene.gameObject.AddComponent<CanvasGroup>();
             background = UI.Picture(scene, null, "place");
@@ -63,16 +65,19 @@ namespace Amulet
             var fit = background.gameObject.AddComponent<AspectRatioFitter>();
             fit.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
             fit.aspectRatio = 16f / 9f;
-            var shade = UI.Panel(scene, new Color(0, 0, 0, 0.45f), "shade", false);
-            shade.rectTransform.Place(0, 0, 1, 0.42f);
-            shade.raycastTarget = false;
-            placeName = UI.Label(scene, "", 44, Palette.Title, TextAnchor.UpperLeft, Art.TitleFont);
-            placeName.rectTransform.Place(0, 1, 1, 1, 28, -110, 28, 16);
-            others = UI.Node("others", scene).Place(0, 1, 1, 1, 28, -160, 28, 104);
-            figures = UI.Node("figures", scene).Place(0, 0, 1, 1);
-            ground = UI.Node("ground", scene).Place(0, 0, 1, 0, 20, 16, 20, -136);
+            var top = UI.Panel(scene, new Color(0, 0, 0, 0.4f), "shade top", false);
+            top.rectTransform.Place(0, 0.8f, 1, 1);
+            top.raycastTarget = false;
+            var low = UI.Panel(scene, new Color(0, 0, 0, 0.35f), "shade bottom", false);
+            low.rectTransform.Place(0, 0, 1, 0.22f);
+            low.raycastTarget = false;
+            placeName = UI.Label(scene, "", 44, Palette.Title, TextAnchor.UpperCenter, Art.TitleFont);
+            placeName.rectTransform.Place(0.3f, 1, 0.7f, 1, 0, -80, 0, 22);
+            others = UI.Node("others", scene).Place(0.3f, 1, 0.7f, 1, 0, -126, 0, 80);
+            figures = UI.Node("figures", scene).Place(0.18f, 0, 0.8f, 1);
+            ground = UI.Node("ground", scene).Place(0, 0, 1, 0, 520, 24, 230, -144);
             var row = ground.gameObject.AddComponent<HorizontalLayoutGroup>();
-            row.spacing = 16; row.childAlignment = TextAnchor.LowerLeft;
+            row.spacing = 16; row.childAlignment = TextAnchor.LowerCenter;
             row.childControlWidth = row.childControlHeight = false; row.childForceExpandWidth = row.childForceExpandHeight = false;
 
             // the ghost veil over the scene
@@ -84,31 +89,61 @@ namespace Amulet
             resurrect.GetComponent<RectTransform>().At(0.5f, 0.45f, 600, 130);
             ghostGroup.alpha = 0; ghostGroup.blocksRaycasts = false;
 
-            // the hero on top
-            var hud = UI.Panel(screen, Palette.Surface, "hud", false);
-            hud.rectTransform.Place(0, 1, 1, 1, 0, -Hud, 0, 0);
-            heroName = UI.Label(hud.transform, "", 46, Palette.Title, TextAnchor.UpperLeft, Art.TitleFont);
-            heroName.rectTransform.Place(0, 1, 0.7f, 1, 28, -80, 0, 18);
-            heroPower = UI.Label(hud.transform, "", 34, Palette.Accent, TextAnchor.UpperRight, Art.Bold);
-            heroPower.rectTransform.Place(0.5f, 1, 1, 1, 0, -70, 220, 24);
-            UI.Button(hud.transform, "Герой", () => OpenDoll(), Palette.Primary, 36).GetComponent<RectTransform>().Place(1, 1, 1, 1, -200, -96, 20, 16);
-            hp = UI.MakeBar(hud.transform, Palette.Health);
-            ((RectTransform)hp.Fill.transform.parent).Place(0, 0, 1, 0, 28, 104, 28, -158);
-            mana = UI.MakeBar(hud.transform, Palette.Mana);
-            ((RectTransform)mana.Fill.transform.parent).Place(0, 0, 1, 0, 28, 44, 28, -96);
-            exp = UI.MakeBar(hud.transform, Palette.Exp, false);
-            ((RectTransform)exp.Fill.transform.parent).Place(0, 0, 1, 0, 28, 16, 28, -32);
+            // the hero in the upper left: health line, name, level and power; experience along the left edge
+            hp = UI.MakeBar(screen, Palette.Health, true, 24);
+            ((RectTransform)hp.Fill.transform.parent).Place(0, 1, 0, 1, 50, -58, -600, 26);
+            mana = UI.MakeBar(screen, Palette.Mana, false);
+            ((RectTransform)mana.Fill.transform.parent).Place(0, 1, 0, 1, 50, -76, -600, 62);
+            heroName = UI.Label(screen, "", 46, Palette.Title, TextAnchor.UpperLeft, Art.TitleFont);
+            heroName.rectTransform.Place(0, 1, 0, 1, 50, -146, -700, 86);
+            heroPower = UI.Label(screen, "", 34, Palette.Accent, TextAnchor.UpperLeft, Art.Bold);
+            heroPower.rectTransform.Place(0, 1, 0, 1, 50, -196, -700, 146);
+            exp = UI.MakeBar(screen, Palette.Exp, false);
+            exp.Fill.fillMethod = Image.FillMethod.Vertical;
+            ((RectTransform)exp.Fill.transform.parent).Place(0, 0, 0, 1, 14, 120, -28, 30);
 
-            // the bottom: notes of the fight and the compass of exits
-            var bottom = UI.Panel(screen, Palette.Surface, "bottom", false);
-            bottom.rectTransform.Place(0, 0, 1, 0, 0, 0, 0, -Bottom);
-            toasts = UI.Node("toasts", bottom.transform).Place(0, 1, 1, 1, 24, -140, 24, 8);
+            // notes of the fight under the hero
+            toasts = UI.Node("toasts", screen).Place(0, 1, 0, 1, 50, -380, -720, 216);
             var col = toasts.gameObject.AddComponent<VerticalLayoutGroup>();
             col.childAlignment = TextAnchor.UpperLeft; col.childControlHeight = true; col.childControlWidth = true; col.childForceExpandHeight = false;
-            compass = UI.Node("compass", bottom.transform).Place(0, 0, 1, 1, 16, 16, 16, 150);
+
+            // the minimap in the upper right, the hero's button under it
+            minimap = new Minimap(screen);
+            var hero = UI.Panel(screen, new Color(0.12f, 0.09f, 0.06f, 0.85f), "hero");
+            hero.sprite = Art.Circle; hero.type = Image.Type.Simple;
+            hero.rectTransform.Place(1, 1, 1, 1, -200, -630, 50, 480);
+            var heroRing = UI.Panel(hero.transform, new Color(Palette.Accent.r, Palette.Accent.g, Palette.Accent.b, 0.6f), "ring");
+            heroRing.sprite = Art.Circle; heroRing.type = Image.Type.Simple; heroRing.raycastTarget = false;
+            heroRing.rectTransform.Place(0, 0, 1, 1, -5, -5, -5, -5);
+            heroRing.transform.SetAsFirstSibling();
+            heroIcon = UI.Picture(hero.transform, null, "icon");
+            heroIcon.rectTransform.Place(0, 0, 1, 1, 26, 26, 26, 26);
+            heroLetter = UI.Label(hero.transform, "", 64, Palette.Title, TextAnchor.MiddleCenter, Art.TitleFont);
+            heroLetter.rectTransform.Place(0, 0, 1, 1);
+            UI.Label(hero.transform, "Герой", 28, Palette.Text, TextAnchor.UpperCenter, Art.Bold).rectTransform.Place(0, 0, 1, 0, -30, -44, -30, 2);
+            hero.Tap(OpenDoll);
+
+            // the joystick of exits in the lower left, exits without a direction as doors above it
+            stick = Stick.Make(screen);
+            stick.Release = Go;
+            doors = UI.Node("doors", screen).Place(0, 0, 0, 0, 50, 450, -470, -700);
+            var stack = doors.gameObject.AddComponent<VerticalLayoutGroup>();
+            stack.spacing = 12; stack.childAlignment = TextAnchor.LowerLeft;
+            stack.childControlHeight = false; stack.childControlWidth = true; stack.childForceExpandHeight = false;
 
             hurtFlash = UI.Panel(screen, new Color(0.8f, 0, 0, 0), "hurt", false).rectTransform.Place(0, 0, 1, 1);
             hurtFlash.GetComponent<Image>().raycastTarget = false;
+            LoadMap();
+        }
+
+        async void LoadMap()
+        {
+            try
+            {
+                minimap.SetPoints(await app.Api.Map());
+                if (view != null) minimap.Show(view.location, Go);
+            }
+            catch (System.Exception) { }    // the minimap stays empty; the joystick still works
         }
 
         // ---- data ----------------------------------------------------------------------------------
@@ -118,6 +153,15 @@ namespace Amulet
             if (busy) return;
             if (Dirty || Time.time > nextPoll) { Dirty = false; Refresh(); }
             if (view == null) return;
+            // Holding the joystick on an exit walks on, place after place, until a fight starts.
+            if (stick.Held && stick.Chosen != null && Time.time - stick.ChosenAt > 0.45f && Time.time > nextStep
+                && !view.location.npcs.Any(n => n.fightingYou))
+            {
+                stick.Walked = true;
+                nextStep = Time.time + 0.7f;
+                Go(stick.Chosen);
+                return;
+            }
             var since = (Time.time - fetchedAt) * 1000;
             foreach (var f in shown.Values)
             {
@@ -155,8 +199,12 @@ namespace Amulet
             if (moved) { foreach (var f in shown.Values) Destroy(f.Root.gameObject); shown.Clear(); StartCoroutine(Fx.Fade(sceneGroup, 0, 1, 0.35f)); }
 
             var ch = next.character;
-            heroName.text = $"{ch.name}  ·  ур. {ch.level}";
-            heroPower.text = $"мощь {ch.power}";
+            heroName.text = ch.name;
+            heroPower.text = $"{ch.level} уровень · мощь {ch.power}";
+            var worn = next.inventory.FirstOrDefault(i => i.equipped && i.id.StartsWith("i.w.")) ?? next.inventory.FirstOrDefault(i => i.equipped && i.id.StartsWith("i.a.b."));
+            heroIcon.sprite = worn != null ? Art.Item(worn.id) : null;
+            heroIcon.color = heroIcon.sprite != null ? Color.white : new Color(0, 0, 0, 0);
+            heroLetter.text = heroIcon.sprite != null ? "" : ch.name.Substring(0, 1);
             hp.Set(ch.hp, ch.hpMax);
             mana.Set(ch.mana, ch.manaMax);
             exp.Set(ch.exp, ch.expNext);
@@ -164,11 +212,11 @@ namespace Amulet
             {
                 if (ch.hp < before.character.hp)
                 {
-                    StartCoroutine(Fx.FloatText(screen, "−" + (before.character.hp - ch.hp), Palette.Danger, new Vector2(-300, screen.rect.height / 2 - 200)));
+                    StartCoroutine(Fx.FloatText(screen, "−" + (before.character.hp - ch.hp), Palette.Danger, new Vector2(-screen.rect.width / 2 + 420, screen.rect.height / 2 - 120)));
                     StartCoroutine(Fx.Flash(hurtFlash.GetComponent<Image>(), new Color(0.8f, 0, 0, 0.35f), 0.4f));
                 }
                 if (ch.exp > before.character.exp && ch.level == before.character.level)
-                    StartCoroutine(Fx.FloatText(screen, $"+{ch.exp - before.character.exp} опыта", Palette.Exp, new Vector2(200, screen.rect.height / 2 - 220), 44));
+                    StartCoroutine(Fx.FloatText(screen, $"+{ch.exp - before.character.exp} опыта", Palette.Exp, new Vector2(-screen.rect.width / 2 + 420, screen.rect.height / 2 - 260), 44));
                 if (ch.level > before.character.level)
                     StartCoroutine(Fx.FloatText(screen, $"Уровень {ch.level}!", Palette.Title, Vector2.zero, 96));
             }
@@ -187,7 +235,8 @@ namespace Amulet
 
             ShowFigures(before, moved);
             ShowGround();
-            ShowCompass();
+            ShowExits();
+            if (moved) minimap.Show(loc, Go);
             ShowJournal(before, moved);
             if (doll != null) doll.Show(next);
         }
@@ -212,7 +261,7 @@ namespace Amulet
                 var n = npcs[i];
                 bool back = i >= 3;
                 int inRow = back ? npcs.Count - 3 : front, k = back ? i - 3 : i;
-                float x = (k + 1f) / (inRow + 1f), y = back ? 0.58f : 0.33f, size = back ? 250 : 320;
+                float x = (k + 1f) / (inRow + 1f), y = back ? 0.5f : 0.3f, size = back ? 240 : 300;
                 if (!shown.TryGetValue(n.id, out var f))
                 {
                     f = MakeFigure(n, size);
@@ -370,42 +419,26 @@ namespace Amulet
 
         // ---- exits ---------------------------------------------------------------------------------
 
-        static readonly (string word, int x, int y, float angle)[] Directions =
+        void ShowExits()
         {
-            ("северо-запад", 0, 2, 45), ("северо-восток", 2, 2, -45), ("юго-запад", 0, 0, 135), ("юго-восток", 2, 0, -135),
-            ("север", 1, 2, 0), ("юг", 1, 0, 180), ("запад", 0, 1, 90), ("восток", 2, 1, -90),
-        };
-
-        void ShowCompass()
-        {
-            UI.Clear(compass);
-            var used = new HashSet<(int, int)>();
+            var byDir = new ExitView[8];
             var rest = new List<ExitView>();
-            var pad = UI.Node("pad", compass).Place(0, 0, 0.5f, 1);
             foreach (var e in view.location.exits)
             {
-                var label = e.label.ToLowerInvariant();
-                var d = Directions.FirstOrDefault(x => label.Contains(x.word));
-                if (d.word == null || used.Contains((d.x, d.y))) { rest.Add(e); continue; }
-                used.Add((d.x, d.y));
-                var exit = e;
-                var b = UI.Button(pad, null, () => Act(() => app.Api.Move(exit.target)), e.occupied ? Palette.DangerFill : Palette.Primary);
-                b.GetComponent<RectTransform>().Place(d.x / 3f, d.y / 3f, (d.x + 1) / 3f, (d.y + 1) / 3f, 6, 6, 6, 6);
-                var arrow = UI.Picture(b.transform, Art.Arrow, "arrow");
-                arrow.color = Palette.OnPrimary;
-                arrow.rectTransform.Place(0.2f, 0.2f, 0.8f, 0.8f);
-                arrow.rectTransform.localRotation = Quaternion.Euler(0, 0, d.angle);
+                var d = Compass.Of(view.location.id, e);
+                if (d < 0 || byDir[d] != null) rest.Add(e); else byDir[d] = e;
             }
-            var list = UI.Node("list", compass).Place(0.5f, 0, 1, 1, 16, 0, 0, 0);
-            var col = list.gameObject.AddComponent<VerticalLayoutGroup>();
-            col.spacing = 10; col.childControlHeight = false; col.childControlWidth = true; col.childForceExpandHeight = false;
-            foreach (var e in rest.Take(4))
+            stick.SetExits(byDir);
+            UI.Clear(doors);
+            foreach (var e in rest.Take(3))
             {
                 var exit = e;
-                var b = UI.Button(list, e.label, () => Act(() => app.Api.Move(exit.target)), e.occupied ? Palette.DangerFill : Palette.Raised, 30);
-                b.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 76);
+                var b = UI.Button(doors, e.label, () => Go(exit), e.occupied ? Palette.DangerFill : new Color(0.16f, 0.12f, 0.08f, 0.85f), 30);
+                b.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 80);
             }
         }
+
+        void Go(ExitView exit) => Act(() => app.Api.Move(exit.target));
 
         // ---- notes ---------------------------------------------------------------------------------
 

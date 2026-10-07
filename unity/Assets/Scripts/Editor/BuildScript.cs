@@ -24,7 +24,12 @@ public static class BuildScript
         PlayerSettings.companyName = "Amulet";
         PlayerSettings.productName = "Амулет дракона";
         PlayerSettings.bundleVersion = "0.1.0";
-        PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
+        // Landscape either way round (owner 07.10, like his reference screenshot).
+        PlayerSettings.defaultInterfaceOrientation = UIOrientation.AutoRotation;
+        PlayerSettings.allowedAutorotateToPortrait = false;
+        PlayerSettings.allowedAutorotateToPortraitUpsideDown = false;
+        PlayerSettings.allowedAutorotateToLandscapeLeft = true;
+        PlayerSettings.allowedAutorotateToLandscapeRight = true;
         PlayerSettings.SplashScreen.show = false;
         PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android, "ru.amulet.reborn.unity");
         PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android, ScriptingImplementation.IL2CPP);
