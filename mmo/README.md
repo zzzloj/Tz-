@@ -7,7 +7,7 @@
 ## Устройство
 - `Assets/OpenMMORPG` — сам фреймворк, git-подмодуль на конкретный коммит. Свой код фреймворка не правим:
   наше лежит в `Assets/Tz` (наследники, partial-классы, аддоны).
-- Unity 6000.3.25f1 (фреймворку нужна 6000.3+). Пакеты — `Packages/manifest.json` по списку фреймворка.
+- Unity 6000.0.58f2, как у нынешнего клиента: лицензия Personal из CI (Unity_lic.ulf) у 6000.3 не проходит («com.unity.editor.headless was not found»). Фреймворк заявлен под 6000.3+, совместимость проверяет сборка. Пакеты — `Packages/manifest.json` по списку фреймворка.
 - `ProjectSettings` — базовые настройки из фреймворка (`Tools~/ProjectSettings`).
 - Сборка: `.github/workflows/mmo.yml`, метод `MmoBuild.BuildServer` (Linux, запускается без графики, роли — ключами командной строки) и `MmoBuild.BuildAndroid`.
 
