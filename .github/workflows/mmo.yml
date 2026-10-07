@@ -1,7 +1,9 @@
 name: mmo
 
 # The MMO on Open MMORPG / MMORPG KIT (owner 07.10, mmo/README.md): builds the Linux server and the
-# Android client with GameCI. Same Unity licence secrets as unity.yml.
+# Android client in GameCI's Unity images, run directly so that the editor log can be read: its
+# errors become annotations of the run (the log itself cannot be fetched from the session).
+# Same Unity licence secrets as unity.yml.
 on:
   push:
     paths: ["mmo/**", ".gitmodules", ".github/workflows/mmo.yml"]
@@ -15,16 +17,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - target: StandaloneLinux64
+          - image: linux-il2cpp-3
             method: MmoBuild.BuildServer
             out: Server
-          - target: Android
+          - image: android-3
             method: MmoBuild.BuildAndroid
             out: Android
-    env:
-      UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-      UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-      UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -40,27 +38,30 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: mmo/Library
-          key: mmo-library-${{ matrix.target }}-${{ hashFiles('mmo/Packages/manifest.json', 'mmo/ProjectSettings/ProjectVersion.txt', '.gitmodules') }}
-          restore-keys: mmo-library-${{ matrix.target }}-
+          key: mmo-library-${{ matrix.out }}-${{ hashFiles('mmo/Packages/manifest.json', 'mmo/ProjectSettings/ProjectVersion.txt', '.gitmodules') }}
+          restore-keys: mmo-library-${{ matrix.out }}-
 
       - name: Build
-        uses: game-ci/unity-builder@v4
-        with:
-          projectPath: mmo
-          targetPlatform: ${{ matrix.target }}
-          unityVersion: auto
-          buildMethod: ${{ matrix.method }}
-          # the editor log also goes to a file, so that its errors can be raised as annotations below
-          customParameters: -logFile /github/workspace/unity-${{ matrix.out }}.log
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        run: |
+          version=$(sed -n 's/^m_EditorVersion: //p' mmo/ProjectSettings/ProjectVersion.txt)
+          docker run --rm -v "$PWD":/w -w /w -e UNITY_LICENSE "unityci/editor:ubuntu-$version-${{ matrix.image }}" bash -c '
+            mkdir -p /root/.local/share/unity3d/Unity
+            printf "%s" "$UNITY_LICENSE" > /root/.local/share/unity3d/Unity/Unity_lic.ulf
+            unity-editor -batchmode -nographics -quit -projectPath /w/mmo \
+              -buildTarget ${{ matrix.out == 'Android' && 'Android' || 'Linux64' }} \
+              -executeMethod ${{ matrix.method }} -logFile /w/unity.log
+            echo "exit $?" >> /w/unity.log'
+          tail -1 unity.log | grep -q "exit 0"
 
       - name: Errors of the Unity log as annotations
         if: always()
         run: |
-          f=unity-${{ matrix.out }}.log
-          [ -f "$f" ] || { echo "::warning::no $f"; exit 0; }
-          grep -E "error CS|Error|Exception|Failed|failed|Unable|Cannot|not found" "$f" | grep -vE "^\s*$" | sort | uniq -c | sort -rn | head -40 \
+          [ -f unity.log ] || { echo "::warning::no unity.log"; exit 0; }
+          grep -E "error CS|[Ee]rror:|Exception|Failed|Unable|Cannot|not found|License|licen" unity.log | sort | uniq -c | sort -rn | head -45 \
             | while IFS= read -r line; do echo "::error title=unity ${{ matrix.out }}::$(echo "$line" | cut -c1-900)"; done
-          tail -5 "$f" | while IFS= read -r line; do echo "::notice title=tail::$(echo "$line" | cut -c1-500)"; done
+          tail -8 unity.log | while IFS= read -r line; do echo "::notice title=tail ${{ matrix.out }}::$(echo "$line" | cut -c1-500)"; done
 
       - uses: actions/upload-artifact@v4
         with:
