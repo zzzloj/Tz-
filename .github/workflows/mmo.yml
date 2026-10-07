@@ -3,7 +3,7 @@ name: mmo
 # The MMO on Open MMORPG / MMORPG KIT (owner 07.10, mmo/README.md): builds the Linux server and the
 # Android client in GameCI's Unity images, run directly so that the editor log can be read: its
 # errors become annotations of the run (the log itself cannot be fetched from the session).
-# Same Unity licence secrets as unity.yml.
+# Same Unity licence secrets as unity.yml (UNITY_LICENSE).
 on:
   push:
     paths: ["mmo/**", ".gitmodules", ".github/workflows/mmo.yml"]
