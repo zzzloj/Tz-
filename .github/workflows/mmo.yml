@@ -64,6 +64,8 @@ jobs:
           [ -f unity.log ] || { echo "::warning::no unity.log"; exit 0; }
           grep -E "error CS|[Ee]rror:|Exception|Failed|FAILURE|What went wrong|Unable|Cannot|not found|Build (Android|StandaloneLinux64):|Gradle|SDK|NDK|JDK" unity.log | grep -v Licensing | sort | uniq -c | sort -rn | head -45 \
             | while IFS= read -r line; do echo "::error title=unity ${{ matrix.out }}::$(echo "$line" | cut -c1-900)"; done
+          grep -nE "MmoBuild|executeMethod|[Ss]witch|BuildPlayer|Exiting|Aborting|abort|Android SDK|AndroidPlayer|returned|exit code" unity.log | grep -v Licensing | tail -25 \
+            | while IFS= read -r line; do echo "::warning title=steps ${{ matrix.out }}::$(echo "$line" | cut -c1-600)"; done
           tail -8 unity.log | while IFS= read -r line; do echo "::notice title=tail ${{ matrix.out }}::$(echo "$line" | cut -c1-500)"; done
 
       - uses: actions/upload-artifact@v4
