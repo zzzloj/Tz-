@@ -38,12 +38,12 @@ seamless tileable texture, viewed perfectly straight down from directly above, o
 
 **[OBJECT]** — для обстановки:
 ```
-single isolated game object, classic isometric view from above, one corner of the object pointing toward the viewer so two sides and the top are visible, the whole object visible with empty margin around it, centered, light from the upper left, no cast shadow, no ground under it, plain flat light grey background #B0B0B0, no text, no frame, square 1:1
+single isolated game object, classic isometric view from above, one corner of the object pointing toward the viewer so two sides and the top are visible, true 2:1 isometric orthographic projection with no vanishing points, all vertical edges perfectly vertical, parallel edges stay parallel, both visible walls at the same 30 degree angle, simple rectangular footprint sitting flat on the ground, the whole object visible with empty margin around it, centered, light from the upper left, no cast shadow, no ground under it, plain flat light grey background #B0B0B0, no text, no frame, square 1:1
 ```
 
 **[FIGURE]** — для героя, монстров и жителей:
 ```
-single character, full body, classic isometric view from above (same camera as an isometric RPG), standing in a calm idle pose, body turned three-quarters to the lower right, the whole figure visible with empty margin around it, centered, light from the upper left, no cast shadow, no ground under it, plain flat light grey background #B0B0B0, no text, no frame, square 1:1
+single character, full body, classic isometric view from above (same camera as an isometric RPG, true 2:1 isometric orthographic projection, no perspective distortion), standing in a calm idle pose, body turned three-quarters to the lower right, the whole figure visible with empty margin around it, centered, light from the upper left, no cast shadow, no ground under it, plain flat light grey background #B0B0B0, no text, no frame, square 1:1
 ```
 
 **Чего избегать** (если у генератора есть поле negative prompt):
@@ -55,12 +55,12 @@ horizon, sky, landscape, scene, multiple objects, cropped, cut off, cast shadow,
 
 Полный промпт собирается так: **описание из таблицы + [GROUND], [OBJECT] или [FIGURE] + [STYLE]**. Например, бочка:
 ```
-an old oak barrel with rusty iron hoops, slightly battered, single isolated game object, classic isometric view from above, one corner of the object pointing toward the viewer so two sides and the top are visible, the whole object visible with empty margin around it, centered, light from the upper left, no cast shadow, no ground under it, plain flat light grey background #B0B0B0, no text, no frame, square 1:1, dark fantasy video game asset, hand-painted digital painting, muted earthy palette with warm torchlight accents, rich surface texture detail, soft moody light from the upper left, Grim Soul and Diablo II art style, for a top-down action RPG
+an old oak barrel with rusty iron hoops, slightly battered, single isolated game object, classic isometric view from above, one corner of the object pointing toward the viewer so two sides and the top are visible, true 2:1 isometric orthographic projection with no vanishing points, all vertical edges perfectly vertical, parallel edges stay parallel, both visible walls at the same 30 degree angle, simple rectangular footprint sitting flat on the ground, the whole object visible with empty margin around it, centered, light from the upper left, no cast shadow, no ground under it, plain flat light grey background #B0B0B0, no text, no frame, square 1:1, dark fantasy video game asset, hand-painted digital painting, muted earthy palette with warm torchlight accents, rich surface texture detail, soft moody light from the upper left, Grim Soul and Diablo II art style, for a top-down action RPG
 ```
 
 ## Порядок
 
-1. **Сначала проба из трёх картинок:** `ground-cobble`, `obj-house-a`, `fig-hero-m`. Пришлите их, я соберу из них площадку на телефоне. Земля и дом пришли 07.10: подошли, дом вышел в изометрии, и её взяли за образец ракурса. Так станет понятно, работают ли ракурс и масштаб, прежде чем тратить время на остальное.
+1. **Сначала проба из трёх картинок:** `ground-cobble`, `obj-house-a`, `fig-hero-m`. Пришлите их, я соберу из них площадку на телефоне. Земля и дом пришли 07.10. Земля легла хорошо. Дом вышел в изометрии, её взяли за образец ракурса, но сам дом «кривоват»: левая и правая стены нарисованы под разными углами, будто с двух точек зрения. Поэтому в промпт добавлена строгая изометрия: без точек схода, вертикали строго вертикальны, обе стены под 30°. Землю движок теперь кладёт тоже в изометрии, под 45° со сжатием 2:1, чтобы подошва дома лежала по ней. Так станет понятно, работают ли ракурс и масштаб, прежде чем тратить время на остальное.
 2. Если проба удалась, делаете остальную партию.
 3. **Куда класть.** Можно присылать сюда в чат или класть в `content/art/topdown/` с именами из таблиц (`ground/…`, `objects/…`, `figures/…`), в png. Фон вырежу, размеры подгоню, швы уберу сам.
 4. **Если из нескольких вариантов не ясно, какой брать:**
