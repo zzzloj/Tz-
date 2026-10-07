@@ -4,7 +4,7 @@ The kit targets Unity 6000.3, whose Personal licence our CI cannot use (mmo/READ
 editor-only files use 6000.3 APIs. This rewrites them in the checked-out copy; run it before Unity
 (CI does, .github/workflows/mmo.yml; locally: python3 mmo/tools/patch_kit.py). Safe to run again.
 """
-import json, os, sys
+import json, os, re, sys
 
 KIT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'Assets', 'OpenMMORPG')
 
@@ -29,6 +29,12 @@ def main():
         return json.dumps(d, indent=4)
     edit('ThirdParty/LiteNetLibManager/Plugins/UniTask/Editor/UniTask.Editor.asmdef', no_tracker)
     drop_urp()
+    edit('ThirdParty/GraphicSettings/Scripts/GraphicSettingInitializer.cs',
+         lambda s: re.sub(r'Urp\w+Setting\.Load\(\);', ';', s))
+    # RaycastHit.colliderEntityId / EntityId (6000.3) is colliderInstanceID / 0 before it.
+    edit('Core/Scripts/Gameplay/PhysicFunctions/JobifiedPhysicFunctions.cs',
+         lambda s: s.replace('.colliderEntityId != EntityId.None', '.colliderInstanceID != 0')
+                    .replace('.colliderEntityId == EntityId.None', '.colliderInstanceID == 0'))
 
 def drop_urp():
     """The graphic settings for URP need the URP package; we stay on the built-in pipeline for now."""
