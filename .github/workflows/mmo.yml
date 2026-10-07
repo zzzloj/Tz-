@@ -53,7 +53,7 @@ jobs:
           docker run --rm -v "$PWD":/w -w /w -e UNITY_LICENSE "unityci/editor:ubuntu-$version-${{ matrix.image }}" bash -c '
             mkdir -p /root/.local/share/unity3d/Unity
             printf "%s" "$UNITY_LICENSE" > /root/.local/share/unity3d/Unity/Unity_lic.ulf
-            unity-editor -batchmode -nographics -quit -projectPath /w/mmo -buildTarget Linux64 \
+            unity-editor -batchmode -nographics -quit -projectPath /w/mmo -buildTarget Linux64 -standaloneBuildSubtarget Server \
               -executeMethod ${{ matrix.method }} -logFile /w/unity.log
             echo "exit $?" >> /w/unity.log'
           tail -1 unity.log | grep -q "exit 0"

@@ -103,7 +103,9 @@ public static class MmoBuild
         // The ordinary player crashed every first frame on the VPS (07.10: SIGSEGV in
         // sdl::IsX11VideoDriver ← InputReadMousePosition — it polls the mouse with no display).
         // The Dedicated Server player has no window, input or rendering; it needs the
-        // "Linux Dedicated Server Build Support" module in the image.
+        // "Linux Dedicated Server Build Support" module in the image, and the editor started with
+        // -standaloneBuildSubtarget Server (mmo.yml): the kit's types differ under UNITY_SERVER, and
+        // a server build from a player-compiled editor fails on the serialized layouts.
         var playbackEngines = BuildPipeline.GetPlaybackEngineDirectory(BuildTargetGroup.Standalone, BuildTarget.StandaloneLinux64, BuildOptions.None);
         var variations = Path.Combine(playbackEngines, "Variations");
         Debug.Log("Linux variations: " + (Directory.Exists(variations) ? string.Join(", ", Directory.GetDirectories(variations).Select(Path.GetFileName)) : "none at " + variations));
