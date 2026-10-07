@@ -10,6 +10,8 @@ services:
     image: tz-mmo-runtime
     restart: unless-stopped
     working_dir: /data
+    environment:
+      sqliteDbPath: /data/tz-mmo.sqlite3
     volumes:
       - ./server:/srv/server:ro
       - ./data:/data
@@ -24,6 +26,9 @@ services:
       - -logFile
       - /dev/stdout
       - -startDatabaseServer
+      # The demo's database options: 0 MySQL, 1 SQLite (no Postgres in the prefab yet).
+      - -databaseOptionIndex
+      - "1"
       - -startLoginServer
       - -startCentralServer
       - -startMapSpawnServer
