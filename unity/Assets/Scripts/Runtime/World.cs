@@ -23,7 +23,8 @@ namespace Amulet
     public class World : MonoBehaviour
     {
         public const float Area = 30f;
-        const float Speed = 4.2f, HeroRadius = 0.35f, Reach = 1.7f, Half = Area / 2;
+        const float Speed = 4.2f, HeroRadius = 0.45f, Reach = 1.7f, Half = Area / 2;
+        const float HouseGap = 0.75f;       // how close one comes to a house wall (porches and eaves stick out of the picture's walls)
         const int Px = 32;                  // ground texture pixels per metre
         const float Margin = 8;             // ground drawn beyond the square on every side, fading into the dark (owner 07.10: no void at the edge)
         const float HeroHeight = 2.4f;      // figures are drawn larger than life, as in Grim Soul
@@ -46,6 +47,7 @@ namespace Amulet
         Biome biome;
         readonly List<Rect> blocks = new List<Rect>();
         readonly List<(Vector2 at, float r)> rounds = new List<(Vector2, float)>();
+        readonly List<(Vector2 at, int order)> things = new List<(Vector2, int)>();
         readonly Dictionary<string, SpriteRenderer> people = new Dictionary<string, SpriteRenderer>();
         readonly List<(Vector2 a, Vector2 b)> roads = new List<(Vector2, Vector2)>();
         int waterSide = -1;
@@ -81,6 +83,26 @@ namespace Amulet
         /// the screen alone put the hero behind a house he stood in front of, and hid people at its door
         /// (owner 07.10).
         /// </summary>
+        /// <summary>
+        /// The order of someone who walks about: among the houses as above, then in front of every barrel,
+        /// cart or tree nearby that stands farther from the camera and behind every one that stands nearer.
+        /// The things' own orders were raised past the houses, so the height on the screen alone put a
+        /// barrel over the hero standing in front of it (owner 07.10).
+        /// </summary>
+        int OrderAmongThings(Vector2 p)
+        {
+            int o = OrderAmongHouses(p);
+            float y = Iso(p).y;
+            foreach (var (at, order) in things)
+            {
+                if ((at - p).magnitude > 4) continue;
+                bool front = y < Iso(at).y;
+                if (front && o <= order) o = order + 1;
+                else if (!front && o >= order) o = order - 1;
+            }
+            return o;
+        }
+
         int OrderAmongHouses(Vector2 p)
         {
             int o = Order(p);
@@ -118,7 +140,7 @@ namespace Amulet
 
             rnd = new System.Random(Seed(loc.id));
             biome = BiomeOf(loc.art);
-            blocks.Clear(); rounds.Clear(); roads.Clear(); Exits.Clear(); spots.Clear(); people.Clear();
+            blocks.Clear(); rounds.Clear(); things.Clear(); roads.Clear(); Exits.Clear(); spots.Clear(); people.Clear();
             leaving = false;
 
             // Exits with a direction leave by a road to the edge; the rest wait at doors or in a ring.
@@ -328,7 +350,7 @@ namespace Amulet
         // ---- houses ---------------------------------------------------------------------------------
 
         class ObjMeta { public float corner, baseL, baseR, left, right, along, size, solid; public List<string> where = new List<string>(); public string near; }
-        class FigMeta { public float foot, height = 2.4f, fill = 1; }
+        class FigMeta { public float foot, feet = 0.3f, rise, lift, height = 2.4f, fill = 1; }
         class Meta { public Dictionary<string, ObjMeta> objects = new Dictionary<string, ObjMeta>(); public Dictionary<string, FigMeta> figures = new Dictionary<string, FigMeta>(); }
         static Meta meta;
         static Meta TheMeta()
@@ -340,12 +362,12 @@ namespace Amulet
         }
 
         static readonly Dictionary<string, Sprite> sprites = new Dictionary<string, Sprite>();
-        static Sprite Picture(string path, float pivotX, float ppu)
+        static Sprite Picture(string path, float pivotX, float ppu, float pivotY = 0)
         {
-            var key = path + "|" + pivotX + "|" + ppu;
+            var key = path + "|" + pivotX + "|" + ppu + "|" + pivotY;
             if (sprites.TryGetValue(key, out var s)) return s;
             var tex = Resources.Load<Texture2D>("TopDown/" + path);
-            s = tex == null ? null : Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(pivotX, 0), ppu);
+            s = tex == null ? null : Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(pivotX, pivotY), ppu);
             sprites[key] = s;
             return s;
         }
@@ -484,6 +506,7 @@ namespace Amulet
             sr.sprite = Picture("objects/" + name, mirror ? 1 - m.corner : m.corner, tex.width * Mathf.Max(0.05f, m.right - m.left) / m.size);
             sr.flipX = mirror;
             sr.sortingOrder = OrderAmongHouses(p);
+            things.Add((p, sr.sortingOrder));
             if (m.solid > 0) rounds.Add((p, m.solid));
             float s = m.size * 0.55f;
             if (name != "obj-boat") Shadow(new Rect(p.x + s * 0.15f, p.y - s * 0.35f, s, s * 0.8f), 0.45f);
@@ -502,17 +525,18 @@ namespace Amulet
             var go = new GameObject("figure " + id);
             go.transform.SetParent(root, false);
             var sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite = Picture("figures/" + key, m.foot, tex.height * m.fill / m.height);
+            float ppu = tex.height * m.fill / m.height;
+            sr.sprite = Picture("figures/" + key, m.foot, ppu, m.lift);
             if (undead) sr.color = new Color(0.7f, 0.85f, 0.7f);
             var spot = Spot(id);
             var at = Iso(spot);
             go.transform.localPosition = new Vector3(at.x, at.y, 0);
-            sr.sortingOrder = OrderAmongHouses(spot);
+            sr.sortingOrder = OrderAmongThings(spot);
             var shade = new GameObject("shadow");
             shade.transform.SetParent(go.transform, false);
-            float w = Mathf.Min(2.2f, m.height * 0.45f);
-            shade.transform.localScale = new Vector3(w, w * 0.42f, 1);
-            shade.transform.localPosition = new Vector3(0.1f, 0, 0);
+            float w = Mathf.Clamp(m.feet * tex.width / ppu + 0.5f, 0.6f, 2.6f);
+            shade.transform.localScale = new Vector3(w, Mathf.Max(w * 0.4f, m.rise * tex.height / ppu + 0.25f), 1);
+            shade.transform.localPosition = new Vector3(0.08f, 0, 0);
             var ss = shade.AddComponent<SpriteRenderer>();
             ss.sprite = Art.CircleSprite;
             ss.color = new Color(0, 0, 0, 0.45f);
@@ -625,11 +649,14 @@ namespace Amulet
             TheMeta().figures.TryGetValue(name, out var m);
             if (m == null) { name = "fig-hero-m"; TheMeta().figures.TryGetValue(name, out m); }
             var tex = Resources.Load<Texture2D>("TopDown/figures/" + name);
-            if (tex != null) heroPicture.sprite = Picture("figures/" + name, m != null ? m.foot : 0.5f, tex.height * (m != null ? m.fill : 1) / (m != null ? m.height : HeroHeight));
+            float heroPpu = tex != null ? tex.height * (m != null ? m.fill : 1) / (m != null ? m.height : HeroHeight) : 100;
+            if (tex != null) heroPicture.sprite = Picture("figures/" + name, m != null ? m.foot : 0.5f, heroPpu, m != null ? m.lift : 0);
             var shade = new GameObject("shadow");
             shade.transform.SetParent(go.transform, false);
-            shade.transform.localScale = new Vector3(1.0f, 0.42f, 1);
-            shade.transform.localPosition = new Vector3(0.12f, 0, 0);
+            float feet = tex != null && m != null ? Mathf.Clamp(m.feet * tex.width / heroPpu + 0.5f, 0.8f, 1.6f) : 1;
+            float deep = tex != null && m != null ? m.rise * tex.height / heroPpu + 0.25f : 0.4f;
+            shade.transform.localScale = new Vector3(feet, Mathf.Max(feet * 0.4f, deep), 1);
+            shade.transform.localPosition = new Vector3(0.08f, 0, 0);
             var ss = shade.AddComponent<SpriteRenderer>();
             ss.sprite = Art.CircleSprite;
             ss.color = new Color(0, 0, 0, 0.45f);
@@ -643,7 +670,7 @@ namespace Amulet
             var p = Iso(hero);
             var t = heroPicture.transform;
             t.localPosition = new Vector3(p.x, p.y, 0);
-            heroPicture.sortingOrder = OrderAmongHouses(hero);
+            heroPicture.sortingOrder = OrderAmongThings(hero);
             float bob = Mathf.Abs(Mathf.Sin(walk * 9)) * 0.05f;
             t.localScale = new Vector3(1, 1 + bob, 1);
         }
@@ -682,7 +709,7 @@ namespace Amulet
             p.y = Mathf.Clamp(p.y, -Half + 0.5f, Half - 0.5f);
             foreach (var b in blocks)
             {
-                var g = new Rect(b.x - HeroRadius, b.y - HeroRadius, b.width + 2 * HeroRadius, b.height + 2 * HeroRadius);
+                var g = new Rect(b.x - HouseGap, b.y - HouseGap, b.width + 2 * HouseGap, b.height + 2 * HouseGap);
                 if (!g.Contains(p)) continue;
                 float l = p.x - g.xMin, r = g.xMax - p.x, d = p.y - g.yMin, u = g.yMax - p.y;
                 float min = Mathf.Min(Mathf.Min(l, r), Mathf.Min(d, u));

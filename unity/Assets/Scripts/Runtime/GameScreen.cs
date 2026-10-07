@@ -308,7 +308,14 @@ namespace Amulet
                 {
                     f = MakeFigure(n, size);
                     f.Drawn = world != null && world.Figure(n.id, n.art, n.undead);
-                    if (f.Drawn) { f.Picture.enabled = false; f.Shadow.enabled = false; f.Ring.enabled = false; }
+                    if (f.Drawn)
+                    {
+                        f.Picture.enabled = false; f.Shadow.enabled = false; f.Ring.enabled = false;
+                        // the name and the health go above the head, not under the feet where they covered whoever stood below
+                        f.Name.rectTransform.Place(0, 1, 1, 1, -60, 34, -60, -96);
+                        ((RectTransform)f.Health.Fill.transform.parent).Place(0.15f, 1, 0.85f, 1, 0, 8, 0, -26);
+                        f.Badge.rectTransform.Place(1, 1, 1, 1, -40, 0, -56, -96);
+                    }
                     shown[n.id] = f;
                     f.Root.At(x, y, size, size * 1.3f + 120);
                     if (!moved) StartCoroutine(Fx.Fade(Group(f.Root), 0, 1, 0.4f));

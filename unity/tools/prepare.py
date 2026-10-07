@@ -76,7 +76,20 @@ def topdown(count):
                      'left': min(filled) / w, 'right': max(filled) / w}
                 m.update({k: v for k, v in sizes.get(key, {}).items()})
             else:
-                m = {'foot': sum(foot) / len(foot) / w, 'height': heights.get(key, heights['default']),
+                # Feet. Seen from above, the near foot is lower in the picture than the far one, so the
+                # figure stands on the point between the lowest point of its left and of its right half
+                # (owner 07.10: standing on the lowest pixel left the far foot hanging in the air).
+                top = min(y for y in range(h) for x in range(0, w, 2) if px[x, y])
+                bottom = {x: max(y for y in range(int(low - (low - top) * 0.3), low + 1) if px[x, y])
+                          for x in range(w) if any(px[x, y] for y in range(int(low - (low - top) * 0.3), low + 1))}
+                xs = sorted(bottom)
+                mid = (xs[0] + xs[-1]) / 2
+                left = max((x for x in xs if x <= mid), key=lambda x: bottom[x])
+                right = max((x for x in xs if x > mid), key=lambda x: bottom[x], default=left)
+                gx, gy = (left + right) / 2, (bottom[left] + bottom[right]) / 2
+                m = {'foot': gx / w, 'feet': abs(right - left) / w, 'rise': abs(bottom[right] - bottom[left]) / h,
+                     'lift': (low - gy) / h,
+                     'height': heights.get(key, heights['default']),
                      'fill': (h - min(y for y in range(h) for x in range(0, w, 2) if px[x, y])) / h}
             meta[kind][key] = m
             im.save(os.path.join(out, kind, key + '.png'), optimize=True)
