@@ -62,7 +62,7 @@ jobs:
         if: always()
         run: |
           [ -f unity.log ] || { echo "::warning::no unity.log"; exit 0; }
-          grep -E "error CS|[Ee]rror:|Exception|Failed|Unable|Cannot|not found|License|licen" unity.log | sort | uniq -c | sort -rn | head -45 \
+          grep -E "error CS|[Ee]rror:|Exception|Failed|FAILURE|What went wrong|Unable|Cannot|not found|Build (Android|StandaloneLinux64):|Gradle|SDK|NDK|JDK" unity.log | grep -v Licensing | sort | uniq -c | sort -rn | head -45 \
             | while IFS= read -r line; do echo "::error title=unity ${{ matrix.out }}::$(echo "$line" | cut -c1-900)"; done
           tail -8 unity.log | while IFS= read -r line; do echo "::notice title=tail ${{ matrix.out }}::$(echo "$line" | cut -c1-500)"; done
 
