@@ -6,11 +6,22 @@ name: mmo
 # Same Unity licence secrets as unity.yml (UNITY_LICENSE).
 on:
   push:
-    paths: ["mmo/**", ".gitmodules", ".github/workflows/mmo.yml", "deploy/vps/mmo/**"]
+    paths: ["mmo/**", ".gitmodules", ".github/workflows/mmo.yml", "deploy/vps/mmo/**", "content/logic/balance.json", "tools/balance/model.py"]
   workflow_dispatch:
 
 jobs:
+  # Our balance formulas in C# (mmo/Assets/Tz/Scripts/Rules) against the balance model the game server
+  # follows (tools/balance/model.py), in a minute and without Unity.
+  rules:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 mmo/tools/check/reference.py
+      - run: dotnet run --project mmo/tools/check
+
   build:
+    needs: rules
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     strategy:

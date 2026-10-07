@@ -14,3 +14,10 @@
 /Assets/Scenes.meta
 /Assets/TextMesh Pro/
 /Assets/TextMesh Pro.meta
+!/tools/check/check.csproj
+/tools/check/bin/
+/tools/check/obj/
+/tools/check/reference.json
+# Copied from content/ by MmoBuild.CopyContent before a build.
+/Assets/Tz/Resources/
+/Assets/Tz/Resources.meta

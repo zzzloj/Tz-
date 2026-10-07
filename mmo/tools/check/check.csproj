@@ -1,0 +1,19 @@
+<!-- Check of the MMO's balance formulas without Unity: TzBalance.cs and TzJson.cs against the balance
+     model tools/balance/model.py (reference.json from reference.py).
+     Run: python3 mmo/tools/check/reference.py && dotnet run, project mmo/tools/check -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RestoreSources>none</RestoreSources>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../Assets/Tz/Scripts/Rules/TzJson.cs" />
+    <Compile Include="../../Assets/Tz/Scripts/Rules/TzBalance.cs" />
+    <Compile Include="Program.cs" />
+  </ItemGroup>
+</Project>

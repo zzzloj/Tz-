@@ -26,12 +26,28 @@ public static class MmoBuild
     static string[] Scenes()
     {
         EnsureTextMeshPro();
+        CopyContent();
         EditorBuildSettings.scenes = Array.ConvertAll(SceneList, s => new EditorBuildSettingsScene(s, true));
         PlayerSettings.companyName = "Amulet";
         PlayerSettings.productName = "Амулет дракона MMO";
         PlayerSettings.bundleVersion = "0.0.2";
         AssetDatabase.SaveAssets();
         return SceneList;
+    }
+
+    /// <summary>
+    /// The game's data the rules read at run time, copied from content/ (the one source of it) into
+    /// Resources/Tz before every build: content/logic/balance.json → Resources/Tz/balance.json.
+    /// </summary>
+    static void CopyContent()
+    {
+        var from = Path.Combine(Root(), "..", "content", "logic", "balance.json");
+        var to = Path.Combine(Application.dataPath, "Tz", "Resources", "Tz", "balance.json");
+        if (!File.Exists(from)) throw new FileNotFoundException("No balance to build with", from);
+        Directory.CreateDirectory(Path.GetDirectoryName(to));
+        File.Copy(from, to, true);
+        AssetDatabase.Refresh();
+        Debug.Log("Balance copied: " + to);
     }
 
     /// <summary>The demo's text uses TextMesh Pro's default font, which comes from its essential resources.</summary>
