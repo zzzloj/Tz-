@@ -89,7 +89,8 @@ public static class MmoBuild
             scenes = scenes,
             locationPathName = Path.Combine(Root(), "build", "Server", "tz-mmo-server.x86_64"),
             target = BuildTarget.StandaloneLinux64,
-            options = BuildOptions.None,
+            // Development: the server crashed natively at start (07.10) and a release player has no symbols to say where.
+            options = BuildOptions.Development,
         });
     }
 
