@@ -4,6 +4,7 @@
 #if UNITY_EDITOR
 using System;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -72,29 +73,51 @@ public static class MmoBuild
 
     static void Run(BuildPlayerOptions options)
     {
+        if (!TryRun(options)) EditorApplication.Exit(1);
+    }
+
+    static bool TryRun(BuildPlayerOptions options)
+    {
         Capture();
         Directory.CreateDirectory(Path.GetDirectoryName(options.locationPathName));
         var report = BuildPipeline.BuildPlayer(options);
-        Debug.Log($"Build {options.target}: {report.summary.result}, {report.summary.totalSize} bytes, {report.summary.totalErrors} errors → {options.locationPathName}");
-        if (report.summary.result != BuildResult.Succeeded) EditorApplication.Exit(1);
+        Debug.Log($"Build {options.target}/{options.subtarget}: {report.summary.result}, {report.summary.totalSize} bytes, {report.summary.totalErrors} errors → {options.locationPathName}");
+        return report.summary.result == BuildResult.Succeeded;
     }
 
     /// <summary>The Linux server: one build for every role (central, map spawn, map, database), chosen by command-line flags; runs with -batchmode -nographics.</summary>
     public static void BuildServer()
     {
         var scenes = Scenes();
-        PlayerSettings.SetScriptingBackend(NamedBuildTarget.Standalone, ScriptingImplementation.Mono2x);
         // A stack trace under every log line buries the server log; keep them for errors only.
         PlayerSettings.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
         PlayerSettings.SetStackTraceLogType(LogType.Warning, StackTraceLogType.None);
-        Run(new BuildPlayerOptions
+        var options = new BuildPlayerOptions
         {
             scenes = scenes,
             locationPathName = Path.Combine(Root(), "build", "Server", "tz-mmo-server.x86_64"),
             target = BuildTarget.StandaloneLinux64,
-            // Development: the release player crashed natively at start (SIGSEGV, 07.10); the development one runs.
+            // Development: symbols in the native stack if it crashes again.
             options = BuildOptions.Development,
-        });
+        };
+        // The ordinary player crashed every first frame on the VPS (07.10: SIGSEGV in
+        // sdl::IsX11VideoDriver ← InputReadMousePosition — it polls the mouse with no display).
+        // The Dedicated Server player has no window, input or rendering; it needs the
+        // "Linux Dedicated Server Build Support" module in the image.
+        var playbackEngines = BuildPipeline.GetPlaybackEngineDirectory(BuildTargetGroup.Standalone, BuildTarget.StandaloneLinux64, BuildOptions.None);
+        var variations = Path.Combine(playbackEngines, "Variations");
+        Debug.Log("Linux variations: " + (Directory.Exists(variations) ? string.Join(", ", Directory.GetDirectories(variations).Select(Path.GetFileName)) : "none at " + variations));
+        PlayerSettings.SetScriptingBackend(NamedBuildTarget.Server, ScriptingImplementation.Mono2x);
+        options.subtarget = (int)StandaloneBuildSubtarget.Server;
+        if (TryRun(options)) return;
+        // No server module: the ordinary player, with the old input manager switched off so nothing polls the mouse.
+        Debug.LogWarning("Dedicated Server build failed; falling back to the player with the Input System only.");
+        var settings = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/ProjectSettings.asset")[0]);
+        settings.FindProperty("activeInputHandler").intValue = 1;
+        settings.ApplyModifiedPropertiesWithoutUndo();
+        PlayerSettings.SetScriptingBackend(NamedBuildTarget.Standalone, ScriptingImplementation.Mono2x);
+        options.subtarget = (int)StandaloneBuildSubtarget.Player;
+        Run(options);
     }
 
     public static void BuildAndroid()
