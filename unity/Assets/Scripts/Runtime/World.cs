@@ -24,7 +24,8 @@ namespace Amulet
     {
         public const float Area = 30f;
         const float Speed = 4.2f, HeroRadius = 0.35f, Reach = 1.7f, Half = Area / 2;
-        const int Px = 40;                  // ground texture pixels per metre
+        const int Px = 32;                  // ground texture pixels per metre
+        const float Margin = 8;             // ground drawn beyond the square on every side, fading into the dark (owner 07.10: no void at the edge)
         const float HeroHeight = 2.4f;      // figures are drawn larger than life, as in Grim Soul
 
         /// <summary>A direction pulled on the joystick, in screen terms (−1..1); set every frame.</summary>
@@ -74,6 +75,26 @@ namespace Amulet
         }
         static int Order(Vector2 w) => Mathf.RoundToInt(-Iso(w).y * 100);
 
+        /// <summary>
+        /// The drawing order of something standing at [p] among the houses: in front of a house when it
+        /// stands south or east of it (the walls we see), behind it otherwise. Ordering by the height on
+        /// the screen alone put the hero behind a house he stood in front of, and hid people at its door
+        /// (owner 07.10).
+        /// </summary>
+        int OrderAmongHouses(Vector2 p)
+        {
+            int o = Order(p);
+            foreach (var b in blocks)
+            {
+                if ((b.center - p).magnitude > 14) continue;
+                int house = Order(new Vector2(b.xMax, b.yMin));
+                bool front = p.y < b.yMin || p.x > b.xMax;
+                if (front && o <= house) o = house + 1;
+                else if (!front && o >= house) o = house - 1;
+            }
+            return o;
+        }
+
         // ---- making a place -------------------------------------------------------------------------
 
         public void Init(Camera camera, string heroSex)
@@ -109,9 +130,9 @@ namespace Amulet
                 if (d < 0 || used[d]) { loose.Add(e); continue; }
                 used[d] = true;
                 var v = Compass.Vector(d);
-                var edge = v * (Half - 2);
+                var edge = v * (Half - 2.5f);
                 Exits.Add((e, edge));
-                roads.Add((Vector2.zero, v * (Half + 2)));
+                roads.Add((Vector2.zero, v * (Half + Margin)));
             }
             // Water on a side no exit uses (the shore, the harbour).
             waterSide = -1;
@@ -124,7 +145,7 @@ namespace Amulet
                 var v = Compass.Vector(waterSide);
                 var side = new Vector2(-v.y, v.x) * ((float)rnd.NextDouble() * 6 - 3);
                 pierA = v * (shoreAt - 1.5f) + side;
-                pierB = v * (Half + 2) + side;
+                pierB = v * (Half + Margin) + side;
             }
             else pierA = pierB = Vector2.zero;
 
@@ -242,7 +263,8 @@ namespace Amulet
                 default: baseTex = "ground-grass"; patchTex = "ground-dirt"; roadTex = "ground-road"; break;
             }
             Tex tb = Load(baseTex), tp = Load(patchTex), tr = Load(roadTex), tw = Load("ground-water"), tk = Load("ground-planks");
-            int n = (int)(Area * Px);
+            float size = Area + 2 * Margin, from = Half + Margin;
+            int n = (int)(size * Px);
             const int Cell = 4;                 // masks are worked out every 4 pixels and blended between
             int m = n / Cell + 2;
             var patch = new float[m * m]; var road = new float[m * m]; var water = new float[m * m];
@@ -251,7 +273,7 @@ namespace Amulet
             for (int j = 0; j < m; j++)
                 for (int i = 0; i < m; i++)
                 {
-                    var p = new Vector2((i * Cell + 0.5f) / Px - Half, (j * Cell + 0.5f) / Px - Half);
+                    var p = new Vector2((i * Cell + 0.5f) / Px - from, (j * Cell + 0.5f) / Px - from);
                     float big = Mathf.PerlinNoise(ox + p.x * 0.09f, oy + p.y * 0.09f);
                     float fine = Mathf.PerlinNoise(ox + 40 + p.x * 0.6f, oy + 40 + p.y * 0.6f);
                     patch[j * m + i] = Mathf.Clamp01((big - 0.58f) * 3.5f) * 0.85f;
@@ -267,7 +289,7 @@ namespace Amulet
                     float fx = (float)x / Cell; int i0 = (int)fx; float tx = fx - i0;
                     int k = j0 * m + i0;
                     float pa = Lerp2(patch, k, m, tx, ty), ro = Lerp2(road, k, m, tx, ty), we = Lerp2(water, k, m, tx, ty);
-                    float wx = (x + 0.5f) / Px - Half, wy = (y + 0.5f) / Px - Half;
+                    float wx = (x + 0.5f) / Px - from, wy = (y + 0.5f) / Px - from;
                     var c = (Color)Sample(tb, wx, wy, 4.5f);
                     if (pa > 0) c = Color.Lerp(c, Sample(tp, wx, wy, 3.6f), pa);
                     if (ro > 0) c = Color.Lerp(c, Sample(tr, wx, wy, 3.2f), ro);
@@ -280,7 +302,9 @@ namespace Amulet
                     }
                     if (OnPier(new Vector2(wx, wy), out var along, out var across))
                         c = Sample(tk, across + 1.3f, along, 2.6f);
-                    c *= dark;
+                    // beyond the square the ground darkens into the night
+                    float outside = Mathf.Max(Mathf.Abs(wx), Mathf.Abs(wy)) - Half;
+                    c *= dark * (outside > 0 ? Mathf.Lerp(1, 0.15f, Mathf.Clamp01(outside / Margin)) : 1);
                     c.a = 1;
                     px[y * n + x] = c;
                 }
@@ -459,7 +483,7 @@ namespace Amulet
             bool mirror = rnd.Next(2) == 1 && name != "obj-boat";
             sr.sprite = Picture("objects/" + name, mirror ? 1 - m.corner : m.corner, tex.width * Mathf.Max(0.05f, m.right - m.left) / m.size);
             sr.flipX = mirror;
-            sr.sortingOrder = Order(p);
+            sr.sortingOrder = OrderAmongHouses(p);
             if (m.solid > 0) rounds.Add((p, m.solid));
             float s = m.size * 0.55f;
             if (name != "obj-boat") Shadow(new Rect(p.x + s * 0.15f, p.y - s * 0.35f, s, s * 0.8f), 0.45f);
@@ -483,7 +507,7 @@ namespace Amulet
             var spot = Spot(id);
             var at = Iso(spot);
             go.transform.localPosition = new Vector3(at.x, at.y, 0);
-            sr.sortingOrder = Order(spot);
+            sr.sortingOrder = OrderAmongHouses(spot);
             var shade = new GameObject("shadow");
             shade.transform.SetParent(go.transform, false);
             float w = Mathf.Min(2.2f, m.height * 0.45f);
@@ -496,6 +520,16 @@ namespace Amulet
             people[id] = sr;
             return true;
         }
+
+        /// <summary>How tall a monster's or a person's drawn figure is, in metres (0 — none).</summary>
+        public float FigureHeight(string art)
+        {
+            var key = "fig-" + (art ?? "").Substring((art ?? "").LastIndexOf('/') + 1);
+            return TheMeta().figures.TryGetValue(key, out var m) ? m.height : 0;
+        }
+
+        /// <summary>Canvas pixels in a metre on the screen (the canvas is 1080 tall, the camera shows 2 × its size).</summary>
+        public float PixelsPerMetre => 1080f / (2 * cam.orthographicSize);
 
         /// <summary>A monster or a person is gone (killed, left): their figure fades away.</summary>
         public void Drop(string id)
@@ -609,7 +643,7 @@ namespace Amulet
             var p = Iso(hero);
             var t = heroPicture.transform;
             t.localPosition = new Vector3(p.x, p.y, 0);
-            heroPicture.sortingOrder = Order(hero);
+            heroPicture.sortingOrder = OrderAmongHouses(hero);
             float bob = Mathf.Abs(Mathf.Sin(walk * 9)) * 0.05f;
             t.localScale = new Vector3(1, 1 + bob, 1);
         }

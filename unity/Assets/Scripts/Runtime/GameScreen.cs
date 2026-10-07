@@ -182,6 +182,8 @@ namespace Amulet
                 f.Root.anchorMin = f.Root.anchorMax = new Vector2(0.5f, 0.5f);
                 f.Root.pivot = new Vector2(0.5f, 0);
                 f.Root.anchoredPosition = at + new Vector2(0, -120);
+                // A drawn figure: the hit area and the chance badge cover the figure up to its head.
+                if (f.Drawn) f.Root.sizeDelta = new Vector2(220, world.FigureHeight(f.Npc.art) * world.PixelsPerMetre + 120);
             }
             for (int i = 0; i < exitNames.Count && i < world.Exits.Count; i++)
                 if (Local(world.ToScreen(world.Exits[i].at, 0.9f), out var at)) exitNames[i].rectTransform.anchoredPosition = at;

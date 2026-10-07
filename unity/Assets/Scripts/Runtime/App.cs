@@ -78,10 +78,13 @@ namespace Amulet
             float now = root.anchoredPosition.y, want = 0;
             var selected = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
             var field = selected != null ? selected.GetComponent<InputField>() : null;
-            if (field != null && field.isFocused && TouchScreenKeyboard.visible)
+            // Whether the keyboard is up is not reliable on Android (TouchScreenKeyboard.visible stayed false and
+            // the screen never moved — owner 07.10), so a selected field is enough. Without the keyboard's own
+            // height the field goes to the top quarter: a landscape keyboard covers about 70 % of the screen.
+            if (field != null && (field.isFocused || TouchScreenKeyboard.visible || Application.isMobilePlatform))
             {
                 float keyboard = TouchScreenKeyboard.area.height;
-                if (keyboard <= 0) keyboard = Screen.height * 0.62f;
+                if (keyboard <= Screen.height * 0.2f) keyboard = Screen.height * 0.72f;
                 ((RectTransform)field.transform).GetWorldCorners(corners);   // overlay canvas: screen pixels
                 float bottom = corners[0].y - now * scale;                    // where the field is when not shifted
                 want = Mathf.Max(0, (keyboard + 24 * scale - bottom) / scale);

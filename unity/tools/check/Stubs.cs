@@ -139,7 +139,7 @@ namespace UnityEngine
     public static class Random { public static float Range(float a, float b) => a; public static float value => 0; }
     public static class Screen { public static Rect safeArea => default; public static int width => 0; public static int height => 0; public static int sleepTimeout { get; set; } }
     public static class SleepTimeout { public const int NeverSleep = -1; }
-    public static class Application { public static int targetFrameRate { get; set; } }
+    public static class Application { public static int targetFrameRate { get; set; } public static bool isMobilePlatform => true; }
     public enum CameraClearFlags { SolidColor }
     public class Camera : Behaviour { public CameraClearFlags clearFlags; public Color backgroundColor; public bool orthographic; public float orthographicSize; public Vector3 WorldToScreenPoint(Vector3 p) => p; }
     public class Renderer : Component { public int sortingOrder { get; set; } }
