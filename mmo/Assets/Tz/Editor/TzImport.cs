@@ -38,7 +38,7 @@ public static class TzImport
     {
         problems = 0;
         var balance = TzBalance.Parse(File.ReadAllText(Path.Combine(repoRoot, "content", "logic", "balance.json")));
-        foreach (var dir in new[] { "Monsters", "Items", "Types" })
+        foreach (var dir in new[] { "Monsters", "Items", "Types", "Npcs" })
             Directory.CreateDirectory(Path.Combine(repoRoot, "mmo", Generated, dir));
         AssetDatabase.Refresh();
         ExpTable(balance);
@@ -48,8 +48,9 @@ public static class TzImport
         var items = Items(repoRoot, balance, attributes, weaponTypes, armorTypes);
         Player(balance, attributes, items);
         DefaultWeapon();
-        var monsters = Monsters(repoRoot, balance);
+        var monsters = Monsters(repoRoot, balance, items);
         Spawns(monsters);
+        Shops(repoRoot, items);
         Database(attributes.Values, weaponTypes.Values, armorTypes.Values, items.Values);
         try { CyrillicFont(); }
         catch (Exception e) { problems++; Debug.LogError("[TzImport] Cyrillic font: " + e); }
@@ -255,29 +256,34 @@ public static class TzImport
 
     // ---- items -------------------------------------------------------------------------------------------
     /// <summary>
-    /// Weapons, armour and shields of content/balance/items.json with their names from content/items:
-    /// damage, pause (rate of fire 60 / pause), class crit over the fists' one, armour, the price,
-    /// required level and attributes (req = [str, dex, int]).
+    /// Every thing of content/items with its name and price; weapons, armour and shields take the new
+    /// balance of content/balance/items.json: damage, pause (rate of fire 60 / pause), class crit over
+    /// the fists' one, armour, required level and attributes (req = [str, dex, int]). Other things
+    /// (trophies, food, gems, books, materials) are plain things in stacks for now.
+    /// The price a trader pays (the framework has one per thing) is the price × the multiplier of the
+    /// trader who buys such things in the old game (docs/mechanics-world.md §4.3).
     /// </summary>
     static Dictionary<string, Item> Items(string root, TzBalance b, Dictionary<string, MultiplayerARPG.Attribute> attributes,
         Dictionary<string, WeaponType> weaponTypes, Dictionary<string, ArmorType> armorTypes)
     {
         var result = new Dictionary<string, Item>();
-        var all = Json(Path.Combine(root, "content", "balance", "items.json"));
-        foreach (var kv in all.OrderBy(k => k.Key))
+        var balance = Json(Path.Combine(root, "content", "balance", "items.json"));
+        var kinds = new HashSet<string> { "weapon", "armor", "item", "food", "gem", "book" };
+        foreach (var file in Directory.GetFiles(Path.Combine(root, "content", "items"), "*.json").OrderBy(f => f))
         {
-            if (!(kv.Value is Dictionary<string, object> o)) continue;
-            string type = o.TryGetValue("type", out var tv) ? tv as string : null;
-            string id = kv.Key;
-            bool weapon = type == "weapon" && id.StartsWith("i.w.");
-            bool shield = type == "armor" && id.StartsWith("i.a.s.");
-            string slot = type == "armor" && id.StartsWith("i.a.") && id.Length > 5 ? id.Substring(4, 1) : null;
-            if (!weapon && !shield && (slot == null || !armorTypes.ContainsKey(slot))) continue;
+            var src = Json(file);
+            if (src == null || !(src.TryGetValue("id", out var iv) && iv is string id) || !(src.TryGetValue("kind", out var kv2) && kv2 is string kind) || !kinds.Contains(kind))
+                continue;
+            var o = balance.TryGetValue(id, out var ov) && ov is Dictionary<string, object> od ? od : src;
+            bool weapon = kind == "weapon" && id.StartsWith("i.w.") && o != src;
+            bool shield = kind == "armor" && id.StartsWith("i.a.s.") && o != src;
+            string slot = kind == "armor" && id.StartsWith("i.a.") && id.Length > 5 && o != src ? id.Substring(4, 1) : null;
+            bool equipment = weapon || shield || (slot != null && armorTypes.ContainsKey(slot));
+            if ((kind == "weapon" || kind == "armor") && !equipment) continue;
 
-            string name = id;
-            var file = Path.Combine(root, "content", "items", id + ".json");
-            if (File.Exists(file) && Json(file).TryGetValue("name", out var nm) && nm is string s && s.Length > 0)
-                name = char.ToUpper(s[0]) + s.Substring(1);
+            string name = src.TryGetValue("name", out var nm) && nm is string s && s.Length > 0 ? char.ToUpper(s[0]) + s.Substring(1) : id;
+            double price = N(o, "price", N(src, "price"));
+            Prices[id] = price;
 
             string path = $"{Generated}/Items/{id}.asset";
             AssetDatabase.DeleteAsset(path);
@@ -286,7 +292,7 @@ public static class TzImport
             var so = new SerializedObject(item);
             S(so, "id", id);
             S(so, "defaultTitle", name);
-            I(so, "sellPrice", (int)N(o, "price"));
+            I(so, "sellPrice", (int)Math.Round(price * SellMultiplier(id)));
             Zero(so, "increaseStats");
             F(so, "rateOfFire", 0);
             P(so, "weaponType").objectReferenceValue = null;
@@ -309,15 +315,21 @@ public static class TzImport
                 F(so, "rateOfFire", (float)(60 / pause));
                 F(so, "increaseStats.baseStats.criRate", (float)((b.CritBase(cls) - b.CritBase("hand")) / 100));
             }
+            else if (!equipment)
+            {
+                P(so, "itemType").enumValueIndex = 0;   // Junk: a thing in a stack
+                I(so, "maxStack", 999);
+            }
             else
             {
                 P(so, "itemType").enumValueIndex = shield ? 3 : 1;
                 if (!shield) P(so, "armorType").objectReferenceValue = armorTypes[slot];
                 F(so, "armorAmount.amount.baseAmount", (float)N(o, "armor"));
             }
-            I(so, "requirement.level", (int)N(o, "level", 1));
+            I(so, "requirement.level", equipment ? (int)N(o, "level", 1) : 0);
             var req = P(so, "requirement.attributeAmounts");
-            if (req != null)
+            if (req != null) req.arraySize = 0;
+            if (req != null && equipment)
             {
                 req.arraySize = 0;
                 var r = o.TryGetValue("req", out var rv) && rv is List<object> rl ? rl.Select(x => (int)(double)x).ToArray() : new int[0];
@@ -335,8 +347,23 @@ public static class TzImport
             EditorUtility.SetDirty(item);
             result[id] = item;
         }
-        Debug.Log($"[TzImport] items: {result.Count} — {result.Values.Count(i => i.IsWeapon())} weapons, {result.Values.Count(i => i.IsShield())} shields, {result.Values.Count(i => i.IsArmor())} armour");
+        Debug.Log($"[TzImport] items: {result.Count} — {result.Values.Count(i => i.IsWeapon())} weapons, {result.Values.Count(i => i.IsShield())} shields, {result.Values.Count(i => i.IsArmor())} armour, {result.Values.Count(i => i.IsJunk())} other");
         return result;
+    }
+
+    /// <summary>The base price of every thing made (content), for the traders' prices.</summary>
+    static readonly Dictionary<string, double> Prices = new Dictionary<string, double>();
+
+    /// <summary>What share of the price a trader pays for a thing (the old traders' sell multipliers).</summary>
+    static double SellMultiplier(string id)
+    {
+        if (id.StartsWith("i.w.") || id.StartsWith("i.a.")) return 0.6;      // Плант, Силт
+        if (id.StartsWith("i.f.b.")) return 0.5;                              // Витуан, Борн
+        if (id.StartsWith("i.h.")) return 0.8;                                // Лексли: шкуры, клыки
+        if (id.StartsWith("i.c.") || id.StartsWith("i.ring.") || id.StartsWith("i.oj.") || id.StartsWith("i.med.")) return 0.5;   // Махмет
+        if (id.StartsWith("i.bc")) return 1.0;                                // Катрина
+        if (id.StartsWith("i.log") || id.StartsWith("i.ruda")) return 0.8;   // Сарант, Ракс
+        return 0.7;                                                           // Гостон: всё
     }
 
     /// <summary>Registers what was made in the demo's game database, so saved characters find their things.</summary>
@@ -380,7 +407,7 @@ public static class TzImport
     static Dictionary<string, object> Json(string path) => TzJson.Parse(File.ReadAllText(path)) as Dictionary<string, object>;
     static double N(Dictionary<string, object> o, string k, double def = 0) => o.TryGetValue(k, out var v) && v is double d ? d : def;
 
-    static List<Monster> Monsters(string root, TzBalance b)
+    static List<Monster> Monsters(string root, TzBalance b, Dictionary<string, Item> items)
     {
         var npcs = Json(Path.Combine(root, "content", "balance", "npcs.json"));
         var chosen = npcs
@@ -402,11 +429,20 @@ public static class TzImport
             string prefabPath = $"{Generated}/Monsters/{id}.prefab";
             AssetDatabase.DeleteAsset(dataPath);
             AssetDatabase.DeleteAsset(prefabPath);
-            if (!AssetDatabase.CopyAsset(DemoMonster, dataPath) || !AssetDatabase.CopyAsset(DemoMonsterPrefab, prefabPath))
+            if (!AssetDatabase.CopyAsset(DemoMonsterPrefab, prefabPath))
             { problems++; Debug.LogError("[TzImport] cannot copy the demo monster for " + id); continue; }
 
-            var data = AssetDatabase.LoadMainAssetAtPath(dataPath);
+            // Our monster class (its own drop), with everything else the demo monster has.
+            var data = ScriptableObject.CreateInstance<TzMonsterCharacter>();
+            data.name = id;
+            AssetDatabase.CreateAsset(data, dataPath);
             var so = new SerializedObject(data);
+            var demo = new SerializedObject(AssetDatabase.LoadMainAssetAtPath(DemoMonster));
+            var it = demo.GetIterator();
+            for (bool more = it.NextVisible(true); more; more = it.NextVisible(false))
+                if (it.name != "m_Script" && so.FindProperty(it.propertyPath) != null)
+                    so.CopyFromSerializedProperty(it);
+            Drops(so, file, items);
             S(so, "id", id);
             S(so, "defaultTitle", name);
             I(so, "defaultLevel", m.Level);
@@ -474,6 +510,40 @@ public static class TzImport
         return result;
     }
 
+    /// <summary>
+    /// The old drop of a monster (content/npcs/&lt;id&gt;.json): "itemsrnd" — chance %, amount min..max;
+    /// "osvej" — trophies of the carcass, always (in the old game they were cut off with a knife).
+    /// Money comes from the balance's gold, not from here.
+    /// </summary>
+    static void Drops(SerializedObject so, string npcFile, Dictionary<string, Item> items)
+    {
+        var list = P(so, "tzDrops");
+        if (list == null) return;
+        list.arraySize = 0;
+        if (!File.Exists(npcFile)) return;
+        var npc = Json(npcFile);
+        void Add(string itemId, double chance, int min, int max)
+        {
+            if (itemId == "i.money") return;
+            if (!items.TryGetValue(itemId, out var item)) { Debug.Log($"[TzImport] drop {itemId} skipped: no such thing"); return; }
+            list.arraySize++;
+            var e = list.GetArrayElementAtIndex(list.arraySize - 1);
+            e.FindPropertyRelative("item").objectReferenceValue = item;
+            e.FindPropertyRelative("chance").floatValue = (float)chance;
+            e.FindPropertyRelative("min").intValue = min;
+            e.FindPropertyRelative("max").intValue = max;
+        }
+        if (npc.TryGetValue("itemsrnd", out var r) && r is List<object> rnd)
+            foreach (var x in rnd.OfType<Dictionary<string, object>>())
+                Add(x.TryGetValue("id", out var v) ? v as string : "", N(x, "chance", 100), (int)N(x, "min"), (int)N(x, "max", 1));
+        if (npc.TryGetValue("osvej", out var t) && t is List<object> trophies)
+            foreach (var x in trophies.OfType<Dictionary<string, object>>())
+            {
+                int count = (int)N(x, "count", 1);
+                Add(x.TryGetValue("id", out var v) ? v as string : "", 100, count, count);
+            }
+    }
+
     /// <summary>The demo map's spawn areas get our monsters in turn, each at its own level, four at a time.</summary>
     static void Spawns(List<Monster> monsters)
     {
@@ -495,6 +565,130 @@ public static class TzImport
         }
         EditorSceneManager.SaveScene(scene);
         Debug.Log($"[TzImport] {areas.Length} spawn areas on {DemoMap}");
+    }
+
+    // ---- traders ------------------------------------------------------------------------------------------
+    /// <summary>The town's traders on the demo map for now (docs/mechanics-world.md §4.3).</summary>
+    static readonly string[] Traders = { "n.Goston", "n.Plant", "n.Silt", "n.Silvia", "n.Leksli" };
+    const string DemoMapInfo = "Assets/Tz/BaseDemo/GameData/Resources/MapInfos/BaseMap-CE.asset";
+    const string DemoNpcDatabase = "Assets/Tz/BaseDemo/GameData/NpcDatabase-CE.asset";
+
+    /// <summary>
+    /// Traders with the old stock and prices: what is in their "bank" (content/npcs), each thing for
+    /// round(price · the multiplier of their "buy" topic) (1 for things of price ≤ 1), their greeting.
+    /// The framework's shop has no stock counts and no restocking: everything is always there.
+    /// They stand in a half circle around the map's start point.
+    /// </summary>
+    static void Shops(string root, Dictionary<string, Item> items)
+    {
+        var prefab = NpcPrefab();
+        var mapInfo = AssetDatabase.LoadMainAssetAtPath(DemoMapInfo);
+        var start = new SerializedObject(mapInfo).FindProperty("startPosition")?.vector3Value ?? Vector3.zero;
+        EditorSceneManager.OpenScene(DemoMap, OpenSceneMode.Single);
+        Physics.SyncTransforms();
+
+        var db = AssetDatabase.LoadMainAssetAtPath(DemoNpcDatabase);
+        var so = new SerializedObject(db);
+        var maps = P(so, "maps");
+        if (maps == null) return;
+        maps.arraySize = 1;
+        var map = maps.GetArrayElementAtIndex(0);
+        map.FindPropertyRelative("mapInfo").objectReferenceValue = mapInfo;
+        var npcs = map.FindPropertyRelative("npcs");
+        npcs.arraySize = 0;
+        for (int n = 0; n < Traders.Length; n++)
+        {
+            string id = Traders[n];
+            var npcFile = Path.Combine(root, "content", "npcs", id + ".json");
+            var dialogFile = Path.Combine(root, "content", "dialogs", id + ".json");
+            if (!File.Exists(npcFile) || !File.Exists(dialogFile)) { problems++; Debug.LogError("[TzImport] no trader " + id); continue; }
+            var npc = Json(npcFile);
+            string name = npc.TryGetValue("char", out var ch) && ch is Dictionary<string, object> c && c.TryGetValue("name", out var nm) ? nm as string : id;
+            var topics = Json(dialogFile).TryGetValue("topics", out var tp) ? tp as Dictionary<string, object> : null;
+            string greeting = topics != null && topics.TryGetValue("begin", out var bg) && bg is Dictionary<string, object> begin && begin.TryGetValue("text", out var tx) ? tx as string : "";
+            greeting = (greeting ?? "").Replace("<imja>", "путник").Replace("  ", " ");
+            double mult = 1;
+            if (topics != null && topics.TryGetValue("buy", out var buy) && buy is string bs
+                && double.TryParse(bs.Split('|')[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var m) && m > 0)
+                mult = m;
+
+            // bank: "chance:min:max=item:…|…"
+            var stock = new List<string>();
+            if (npc.TryGetValue("bank", out var bk) && bk is string bank)
+                foreach (var part in bank.Split('|'))
+                {
+                    int eq = part.IndexOf('=');
+                    if (eq < 0) continue;
+                    string itemId = part.Substring(eq + 1).Split(':')[0];
+                    if (items.ContainsKey(itemId) && !stock.Contains(itemId)) stock.Add(itemId);
+                }
+
+            var dialog = Make<NpcDialog>($"{Generated}/Npcs/{id}-shop.asset");
+            var dso = new SerializedObject(dialog);
+            S(dso, "title", name);
+            S(dso, "description", greeting);
+            P(dso, "type").enumValueIndex = 2;   // NpcDialogType.Shop
+            var sell = P(dso, "sellItems");
+            sell.arraySize = stock.Count;
+            for (int i = 0; i < stock.Count; i++)
+            {
+                double price = Prices.TryGetValue(stock[i], out var pr) ? pr : 1;
+                var e = sell.GetArrayElementAtIndex(i);
+                e.FindPropertyRelative("item").objectReferenceValue = items[stock[i]];
+                e.FindPropertyRelative("level").intValue = 1;
+                e.FindPropertyRelative("amount").intValue = 1;
+                e.FindPropertyRelative("sellPrice").intValue = (int)Math.Max(1, Math.Round(price <= 1 ? price : price * mult));
+            }
+            dso.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(dialog);
+
+            float angle = (n - (Traders.Length - 1) / 2f) * 30f;
+            var pos = start + Quaternion.Euler(0, angle, 0) * new Vector3(0, 0, 6);
+            pos.y = Physics.Raycast(new Vector3(pos.x, start.y + 300, pos.z), Vector3.down, out var hit, 1000f) ? hit.point.y : start.y;
+            npcs.arraySize++;
+            var entry = npcs.GetArrayElementAtIndex(npcs.arraySize - 1);
+            entry.FindPropertyRelative("entityPrefab").objectReferenceValue = prefab;
+            entry.FindPropertyRelative("position").vector3Value = pos;
+            entry.FindPropertyRelative("rotation").vector3Value = new Vector3(0, angle + 180, 0);
+            entry.FindPropertyRelative("title").stringValue = name;
+            entry.FindPropertyRelative("startDialog").objectReferenceValue = dialog;
+            Debug.Log($"[TzImport] trader {id} «{name}» at {pos}: {stock.Count} things, ×{mult}");
+        }
+        so.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(db);
+    }
+
+    /// <summary>A trader on the map: a capsule with the framework's NpcEntity and its own network asset id.</summary>
+    static NpcEntity NpcPrefab()
+    {
+        string path = $"{Generated}/Npcs/TzNpc.prefab";
+        AssetDatabase.DeleteAsset(path);
+        var go = new GameObject("TzNpc");
+        go.AddComponent<NpcEntity>();
+        var collider = go.AddComponent<CapsuleCollider>();
+        collider.height = 2;
+        collider.radius = 0.5f;
+        collider.center = new Vector3(0, 1, 0);
+        var body = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        UnityEngine.Object.DestroyImmediate(body.GetComponent<Collider>());
+        body.name = "Model";
+        body.transform.SetParent(go.transform, false);
+        body.transform.localPosition = new Vector3(0, 1, 0);
+        PrefabUtility.SaveAsPrefabAsset(go, path);
+        UnityEngine.Object.DestroyImmediate(go);
+
+        var contents = PrefabUtility.LoadPrefabContents(path);
+        var identity = contents.GetComponent<LiteNetLibManager.LiteNetLibIdentity>();
+        if (identity != null)
+        {
+            var iso = new SerializedObject(identity);
+            P(iso, "assetId").stringValue = AssetDatabase.AssetPathToGUID(path);
+            iso.ApplyModifiedPropertiesWithoutUndo();
+        }
+        else { problems++; Debug.LogError("[TzImport] the trader prefab has no LiteNetLibIdentity"); }
+        PrefabUtility.SaveAsPrefabAsset(contents, path);
+        PrefabUtility.UnloadPrefabContents(contents);
+        return AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<NpcEntity>();
     }
 
     // ---- font --------------------------------------------------------------------------------------
