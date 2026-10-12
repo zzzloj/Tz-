@@ -31,10 +31,10 @@ public static class TzModels
         public string[] For = new string[0];
     }
 
-    /// <summary>The models by what they replace (a building kind or a prop kind of TzWorld).</summary>
-    public static Dictionary<string, Model> Load(string repoRoot)
+    /// <summary>The models by what they replace (a building kind or a prop kind of TzWorld); several for one kind take turns.</summary>
+    public static Dictionary<string, List<Model>> Load(string repoRoot)
     {
-        var byUse = new Dictionary<string, Model>();
+        var byUse = new Dictionary<string, List<Model>>();
         string folder = Path.Combine(repoRoot, "content", "art", "models");
         string index = Path.Combine(folder, "models.json");
         if (!File.Exists(index)) return byUse;
@@ -44,6 +44,8 @@ public static class TzModels
         foreach (var kv in list)
         {
             if (kv.Key.StartsWith("_") || !(kv.Value is Dictionary<string, object> o)) continue;
+            // Rigged creatures (monsters) come later: they need the skin and the animations.
+            if (o.ContainsKey("rig")) { Debug.Log($"[TzImport] model {kv.Key}: rigged, not used yet"); continue; }
             string file = Path.Combine(folder, kv.Key + ".glb");
             if (!File.Exists(file)) { Debug.LogWarning("[TzImport] models: no " + file); continue; }
             try
@@ -51,7 +53,7 @@ public static class TzModels
                 var m = Read(file, kv.Key);
                 m.Front = o.TryGetValue("front", out var f) && f is double fd ? (float)fd : 0f;
                 m.For = o.TryGetValue("for", out var u) && u is List<object> ul ? ul.OfType<string>().ToArray() : new string[0];
-                foreach (var use in m.For) byUse[use] = m;
+                foreach (var use in m.For) { if (!byUse.TryGetValue(use, out var l)) byUse[use] = l = new List<Model>(); l.Add(m); }
                 Debug.Log($"[TzImport] model {kv.Key}: {m.Mesh.triangles.Length / 3} triangles, size {m.Size}, for {string.Join(", ", m.For)}");
             }
             catch (Exception e) { Debug.LogError($"[TzImport] model {kv.Key}: {e}"); }

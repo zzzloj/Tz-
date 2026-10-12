@@ -1,0 +1,51 @@
+name: models
+
+# 3D models from Tripo's API (tools/models/tripo.py): when content/art/models/orders.json changes on main,
+# orders the models that are not there yet with the owner's key (secret TRIPO_API_KEY), makes them light and
+# commits them into content/art/models. The raw downloads stay as the run's artifact for 14 days.
+on:
+  push:
+    branches: [main]
+    paths: ["content/art/models/orders.json"]
+  workflow_dispatch:   # by hand too: Actions, models, Run workflow
+
+concurrency:
+  group: tripo-models
+  cancel-in-progress: false
+
+jobs:
+  order:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tools
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq libopengl0 libglu1-mesa > /dev/null
+          python3 -m pip install --quiet --break-system-packages pillow numpy pymeshlab
+
+      - name: Order the models
+        env:
+          TRIPO_API_KEY: ${{ secrets.TRIPO_API_KEY }}
+        run: |
+          set -o pipefail
+          python3 tools/models/tripo.py 2>&1 | grep -v "Qt Plugin\|Cannot load library\|plugins:\|^$" | tee tripo.log
+          echo "::notice title=tripo::$(cut -c1-300 tripo.log | tail -60 | sed ':a;N;$!ba;s/\n/%0A/g')"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tripo-raw
+          path: tools/models/raw
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Commit the models
+        run: |
+          git add content/art/models
+          if git diff --cached --quiet; then echo "nothing new"; exit 0; fi
+          git -c user.name="tripo ci" -c user.email="ci@localhost" commit -qm "Модели из Tripo: $(git diff --cached --name-only | sed -n 's#content/art/models/\(.*\)\.glb#\1#p' | tr '\n' ' ')"
+          git push -q origin HEAD:main

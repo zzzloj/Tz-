@@ -123,12 +123,51 @@ def write_glb(path, P, N, UV, I, color, normal):
     open(path, "wb").write(out)
 
 
+def shrink_textures(j, bin_, out):
+    """Rewrites a .glb with its images made small (colour 1024 px JPEG, the rest 512 px), all else as it was."""
+    colour = set()
+    for m in j.get("materials", []):
+        t = m.get("pbrMetallicRoughness", {}).get("baseColorTexture")
+        if t: colour.add(j["textures"][t["index"]]["source"])
+    replace = {}
+    for k, im in enumerate(j.get("images", [])):
+        if "bufferView" not in im: continue
+        bv = j["bufferViews"][im["bufferView"]]
+        o = bv.get("byteOffset", 0)
+        img = Image.open(io.BytesIO(bin_[o:o + bv["byteLength"]]))
+        if k in colour:
+            replace[im["bufferView"]] = jpeg(img, 1024); im["mimeType"] = "image/jpeg"
+        elif im.get("mimeType") == "image/png":
+            replace[im["bufferView"]] = png(img, 512)
+        else:
+            replace[im["bufferView"]] = jpeg(img, 512); im["mimeType"] = "image/jpeg"
+    data = bytearray()
+    for k, bv in enumerate(j["bufferViews"]):
+        while len(data) % 4: data += b"\0"
+        o = bv.get("byteOffset", 0)
+        chunk = replace.get(k, bin_[o:o + bv["byteLength"]])
+        bv["byteOffset"] = len(data); bv["byteLength"] = len(chunk)
+        data += chunk
+    while len(data) % 4: data += b"\0"
+    j["buffers"] = [{"byteLength": len(data)}]
+    js = json.dumps(j, separators=(",", ":")).encode()
+    js += b" " * ((4 - len(js) % 4) % 4)
+    blob = struct.pack("<III", 0x46546C67, 2, 12 + 8 + len(js) + 8 + len(data))
+    blob += struct.pack("<II", len(js), 0x4E4F534A) + js + struct.pack("<II", len(data), 0x004E4942) + bytes(data)
+    open(out, "wb").write(blob)
+
+
 def main():
     src, name = sys.argv[1], sys.argv[2]
     target = int(sys.argv[3]) if len(sys.argv) > 3 else TARGETS.get(name, DEFAULT)
     j, bin_ = read_glb(src)
     if j.get("skins") or j.get("animations"):
-        sys.exit("a rigged model: not handled yet (keep it as it is)")
+        # A rigged, animated model: the mesh stays (the skin is bound to it), only the textures shrink.
+        out = os.path.join(ROOT, "content", "art", "models", name + ".glb")
+        os.makedirs(os.path.dirname(out), exist_ok=True)
+        shrink_textures(j, bin_, out)
+        print(f"{name}: rigged, {len(j.get('animations', []))} animations, {os.path.getsize(src) // 1024} → {os.path.getsize(out) // 1024} KB")
+        return
     prim = j["meshes"][0]["primitives"][0]
     P = accessor(j, bin_, prim["attributes"]["POSITION"]).astype(np.float32)
     N = accessor(j, bin_, prim["attributes"]["NORMAL"]).astype(np.float32)
@@ -144,4 +183,5 @@ def main():
     print(f"{name}: {len(I)} → {len(I2)} triangles, {len(P2)} vertices, {os.path.getsize(src) // 1024} → {os.path.getsize(out) // 1024} KB, size {np.round(P2.max(0) - P2.min(0), 3).tolist()}")
 
 
-main()
+if __name__ == "__main__":
+    main()

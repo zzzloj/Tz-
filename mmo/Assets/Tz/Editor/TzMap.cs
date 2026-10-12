@@ -142,7 +142,14 @@ public static class TzMap
     }
 
     static Mesh cube, cylinder, sphere;
-    static Dictionary<string, TzModels.Model> models = new Dictionary<string, TzModels.Model>();
+    static Dictionary<string, List<TzModels.Model>> models = new Dictionary<string, List<TzModels.Model>>();
+
+    /// <summary>A model for [kind], chosen by the place (the same place gets the same one every build).</summary>
+    static TzModels.Model ModelFor(string kind, Vector3 at)
+    {
+        if (!models.TryGetValue(kind, out var list) || list.Count == 0) return null;
+        return list[TzWorld.Hash($"{Mathf.RoundToInt(at.x)},{Mathf.RoundToInt(at.z)}") % list.Count];
+    }
     static Mesh Builtin(string name)
     {
         var go = GameObject.CreatePrimitive(name == "Cube" ? PrimitiveType.Cube : name == "Cylinder" ? PrimitiveType.Cylinder : PrimitiveType.Sphere);
@@ -310,7 +317,8 @@ public static class TzMap
             var at = W(b.Pos);
             float rot = (float)b.Rot, bw = (float)b.W, bd = (float)b.D, bh = (float)b.H;
             float front = bd / 2;
-            if (models.TryGetValue(b.Kind, out var model))
+            var model = ModelFor(b.Kind, at);
+            if (model != null)
             {
                 // The model fitted into the building's footprint, its front to the street.
                 bool turned = Mathf.Abs(Mathf.Repeat(model.Front, 180f) - 90f) < 1f;
@@ -388,10 +396,19 @@ public static class TzMap
         {
             var at = W(p.Pos);
             float s = (float)p.Scale, r = (float)p.Rot;
+            // A model of the kind (not trees: they have their own far shape): one shared mesh, culled when small.
+            if (p.Kind != "tree" && PropHeight.TryGetValue(p.Kind, out var height) && ModelFor(p.Kind, at) is TzModels.Model pm)
+            {
+                Instance(pm, at, r, height * s, trees, height < 2f ? 0.03f : 0.012f);
+                if (PropCollider.TryGetValue(p.Kind, out var box))
+                    colliders.For(null, at).Add(cube, TRS(at + Vector3.up * box.y / 2, r, Vector3.Scale(box, new Vector3(s, 1, s))));
+                continue;
+            }
             switch (p.Kind)
             {
                 case "tree":
-                    if (models.TryGetValue("tree", out var treeModel))
+                    var treeModel = ModelFor("tree", at);
+                    if (treeModel != null)
                         Tree(treeModel, at, r, s, trees, bark, leaves);
                     else
                     {
@@ -453,6 +470,34 @@ public static class TzMap
     }
 
     static Mesh farTree;
+
+    /// <summary>How tall a prop of a kind stands (× its scale), when a model draws it.</summary>
+    static readonly Dictionary<string, float> PropHeight = new Dictionary<string, float>
+    {
+        ["tree-dead"] = 7f, ["bush"] = 1.4f, ["rock"] = 1.1f, ["barrel"] = 1.1f, ["crates"] = 1.3f, ["grave"] = 1.0f,
+    };
+
+    /// <summary>The box that stops walkers at a prop of a kind (none — walk through).</summary>
+    static readonly Dictionary<string, Vector3> PropCollider = new Dictionary<string, Vector3>
+    {
+        ["tree-dead"] = new Vector3(0.6f, 3f, 0.6f), ["rock"] = new Vector3(1.5f, 1.2f, 1.1f),
+        ["barrel"] = new Vector3(0.8f, 1f, 0.8f), ["crates"] = new Vector3(1f, 1f, 1f),
+    };
+
+    /// <summary>One prop drawn by a model [height] m tall, hidden when it takes less than [cull] of the screen.</summary>
+    static void Instance(TzModels.Model m, Vector3 at, float rot, float height, Transform parent, float cull)
+    {
+        float k = height / Mathf.Max(0.01f, m.Size.y);
+        var go = new GameObject(m.Name);
+        go.transform.SetParent(parent, false);
+        go.transform.SetPositionAndRotation(at - Vector3.up * m.Bottom * k, Quaternion.Euler(0, rot + m.Front, 0));
+        go.transform.localScale = Vector3.one * k;
+        go.AddComponent<MeshFilter>().sharedMesh = m.Mesh;
+        var r = go.AddComponent<MeshRenderer>(); r.sharedMaterial = m.Material;
+        var lod = go.AddComponent<LODGroup>();
+        lod.SetLODs(new[] { new LOD(cull, new Renderer[] { r }) });
+        lod.RecalculateBounds();
+    }
 
     /// <summary>
     /// A tree of the model, ~8.5 m × scale tall, and far away the simple shape (a trunk and a ball) by a LOD group:

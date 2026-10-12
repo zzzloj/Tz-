@@ -1,0 +1,14 @@
+{
+  "_doc": "Orders for Tripo's API (tools/models/tripo.py, run by .github/workflows/models.yml when this file changes on main; needs the secret TRIPO_API_KEY). Key — the model's name (content/art/models/<name>.glb); a model already there is not ordered again unless \"redo\": true. image — the picture to make it from; faces — the generator's face limit; for — what it replaces on the map (see models.json); front — degrees that turn its front to the street; rig — skeleton type (biped, quadruped, hexapod, octopod, avian, serpentine, aquatic); animations — the API's preset names (for all rig types: preset:idle, walk, run, jump, slash, shoot, hurt, fall, turn, climb, dive; for animals preset:quadruped:walk, preset:octopod:walk, preset:hexapod:walk, preset:serpentine:march, preset:aquatic:march). Prices (12.10.2026): model with HD texture ~40 credits, rig 25, an animation 10; 100 credits = $1.",
+  "house-b": {"image": "content/art/topdown/objects/obj-house-b.webp", "faces": 6000, "for": ["home", "house"]},
+  "house-c": {"image": "content/art/topdown/objects/obj-house-c.webp", "faces": 6000, "for": ["home", "barn"]},
+  "tree-dead": {"image": "content/art/topdown/objects/obj-tree-dead.webp", "faces": 3000, "for": ["tree-dead"]},
+  "bush": {"image": "content/art/topdown/objects/obj-bush.webp", "faces": 1500, "for": ["bush"]},
+  "rocks": {"image": "content/art/topdown/objects/obj-rocks.webp", "faces": 1500, "for": ["rock"]},
+  "barrel": {"image": "content/art/topdown/objects/obj-barrel.webp", "faces": 1500, "for": ["barrel"]},
+  "crates": {"image": "content/art/topdown/objects/obj-crates.webp", "faces": 1500, "for": ["crates"]},
+  "rat": {"image": "content/art/topdown/figures/fig-mob-rat.webp", "faces": 5000, "for": ["n.c.rat"], "rig": "quadruped",
+          "animations": ["preset:idle", "preset:quadruped:walk", "preset:slash", "preset:hurt", "preset:fall"]},
+  "spider": {"image": "content/art/topdown/figures/fig-mob-spider.webp", "faces": 5000, "for": ["n.c.pauk"], "rig": "octopod",
+             "animations": ["preset:idle", "preset:octopod:walk", "preset:slash", "preset:hurt", "preset:fall"]}
+}
