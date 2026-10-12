@@ -61,7 +61,7 @@ def wait(task, what):
             print(f"  {what}: {task} done in {time.time() - t0:.0f} s, credits {c}")
             return d
         if st in ("failed", "cancelled", "banned", "expired", "unknown"):
-            raise RuntimeError(f"{what}: task {task} {st}: {json.dumps(d)[:500]}")
+            raise RuntimeError(f"{what}: task {task} {st}: {json.dumps(d)[:1500]}")
         if time.time() - t0 > 1200:
             raise RuntimeError(f"{what}: task {task} still {st} after 20 min")
         time.sleep(3)
@@ -91,6 +91,13 @@ def order(name, o, index):
     raw = os.path.join(HERE, "raw", name)
     os.makedirs(raw, exist_ok=True)
     print(f"{name}: {o['image']}")
+    if o.get("rig_task"):
+        # Rigged already (its task given): only the animations.
+        entry = index.get(name, {"for": o.get("for", []), "front": o.get("front", 0), "source": f"Tripo API, {o['image']}"})
+        entry["rig"] = o["rig"]
+        animate(name, o, o["rig_task"], raw, entry)
+        index[name] = entry
+        return
     img = Image.open(os.path.join(ROOT, o["image"])).convert("RGBA")
     buf = io.BytesIO(); img.save(buf, "PNG")
     token = call("POST", "/files", files={"file": (name + ".png", buf.getvalue(), "image/png")})["file_token"]
@@ -114,22 +121,34 @@ def order(name, o, index):
         rigged = download(urls(d.get("output", {}))[0][1], os.path.join(raw, name + "-rig.glb"))
         prepare.shrink_textures(*prepare.read_glb(rigged), os.path.join(MODELS, name + ".glb"))
         entry["rig"] = o["rig"]
-        anims = o.get("animations", [])
-        if anims:
-            ret = call("POST", "/animations/retarget", {"input": rig_task, "animations": anims, "out_format": "glb",
-                                                         "bake_animation": True, "animate_in_place": True})["task_id"]
-            d = wait(ret, "animations")
-            links = urls(d.get("output", {}))
-            entry["animations"] = []
-            for k, (key, url) in enumerate(links):
-                anim = anims[k].split(":")[-1] if k < len(anims) else f"a{k}"
-                p = download(url, os.path.join(raw, f"{name}@{anim}.glb"))
-                prepare.shrink_textures(*prepare.read_glb(p), os.path.join(MODELS, f"{name}@{anim}.glb"))
-                entry["animations"].append(anim)
+        print(f"  rig task {rig_task} (give it as \"rig_task\" to order only animations later)")
+        animate(name, o, rig_task, raw, entry)
     else:
         import subprocess
         subprocess.run([sys.executable, os.path.join(HERE, "prepare.py"), model_path, name], check=True)
     index[name] = entry
+
+
+def animate(name, o, rig_task, raw, entry):
+    """Each animation by its own retarget task, so that one the rig cannot do does not lose the others."""
+    entry["animations"] = []
+    bad = []
+    for preset in o.get("animations", []):
+        anim = preset.split(":")[-1]
+        try:
+            ret = call("POST", "/animations/retarget", {"input": rig_task, "animation": preset, "out_format": "glb",
+                                                         "bake_animation": True, "animate_in_place": True})["task_id"]
+            d = wait(ret, "animation " + preset)
+            links = urls(d.get("output", {}))
+            if not links: raise RuntimeError(f"no model in {json.dumps(d)[:800]}")
+            p = download(links[0][1], os.path.join(raw, f"{name}@{anim}.glb"))
+            prepare.shrink_textures(*prepare.read_glb(p), os.path.join(MODELS, f"{name}@{anim}.glb"))
+            entry["animations"].append(anim)
+        except Exception as e:
+            print(f"  {preset}: FAILED {str(e)[:1500]}")
+            bad.append(preset)
+    if bad and not entry["animations"]:
+        raise RuntimeError("no animation came: " + ", ".join(bad))
 
 
 def main():

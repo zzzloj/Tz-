@@ -24,7 +24,7 @@
       "home",
       "house"
     ],
-    "front": 0,
+    "front": -90,
     "source": "Tripo API, content/art/topdown/objects/obj-house-b.webp, task 7dea168d-656e-4212-b535-0b31e5cd2deb"
   },
   "house-c": {
