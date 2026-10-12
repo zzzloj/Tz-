@@ -1400,6 +1400,7 @@ public static class TzImport
 
     // ---- maps and portals ----------------------------------------------------------------------------------
     const string MapsDir = "Assets/Tz/Generated/Maps";
+    const string DemoServerInstance = "Assets/Tz/BaseDemo/Prefabs/MMOServerInstance-CE.prefab";
     const string DemoWarpDatabase = "Assets/Tz/BaseDemo/GameData/WarpPortalDatabase-CE.asset";
     const string DemoWarpPortal = "Assets/Tz/BaseDemo/Prefabs/GamePlay/WarpPortalEntity-CE.prefab";
 
@@ -1444,6 +1445,20 @@ public static class TzImport
         list.arraySize = infos.Count;
         for (int i = 0; i < infos.Count; i++) list.GetArrayElementAtIndex(i).objectReferenceValue = infos[i];
         dbo.ApplyModifiedPropertiesWithoutUndo();
+        // The server starts a process for every map in its list (the demo lists only its own map).
+        var server = PrefabUtility.LoadPrefabContents(DemoServerInstance);
+        var spawner = server.GetComponentsInChildren<Component>(true).FirstOrDefault(c => c != null && c.GetType().Name == "MapSpawnNetworkManager");
+        if (spawner != null)
+        {
+            var sso = new SerializedObject(spawner);
+            var sm = sso.FindProperty("spawningMaps");
+            sm.arraySize = infos.Count;
+            for (int i = 0; i < infos.Count; i++) sm.GetArrayElementAtIndex(i).objectReferenceValue = infos[i];
+            sso.ApplyModifiedPropertiesWithoutUndo();
+            PrefabUtility.SaveAsPrefabAsset(server, DemoServerInstance);
+        }
+        else { problems++; Debug.LogError("[TzImport] no MapSpawnNetworkManager in " + DemoServerInstance); }
+        PrefabUtility.UnloadPrefabContents(server);
         AssetDatabase.SaveAssets();
         Debug.Log($"[TzImport] maps: {string.Join(", ", worlds.Select(w => w.MapName))}");
         return result;
