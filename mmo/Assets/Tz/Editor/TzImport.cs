@@ -69,12 +69,20 @@ public static class TzImport
         var npcBalance = Json(Path.Combine(repoRoot, "content", "balance", "npcs.json"));
         bool IsMonster(string id) => npcBalance.TryGetValue(id, out var o) && o is Dictionary<string, object> d
             && d.TryGetValue("kind", out var k) && (k as string == "mob" || k as string == "animal");
-        var world = Tz.World.TzWorld.Build(repoRoot, 0, IsMonster);
-        var monsters = Monsters(repoRoot, balance, items, magic, new HashSet<string>(world.Spawns.Select(s => s.Template)));
-        try { problems += TzMap.Build(world, DemoMap, DemoMapInfo); }
-        catch (Exception e) { problems++; Debug.LogError("[TzImport] map: " + e); }
-        Spawns(monsters, world);
-        People(repoRoot, items, world);
+        var worlds = new List<Tz.World.TzWorld>();
+        for (int i = 0; i < Tz.World.TzWorld.Maps.Length; i++)
+            if (Tz.World.TzWorld.Maps[i].on) worlds.Add(Tz.World.TzWorld.Build(repoRoot, i, IsMonster));
+        var monsters = Monsters(repoRoot, balance, items, magic, new HashSet<string>(worlds.SelectMany(w => w.Spawns).Select(s => s.Template)));
+        var maps = MapAssets(worlds);
+        TzMap.Begin(repoRoot);
+        foreach (var w in worlds)
+        {
+            try { problems += TzMap.Build(w, maps[w.MapIndex].scene, maps[w.MapIndex].info); }
+            catch (Exception e) { problems++; Debug.LogError($"[TzImport] map {w.MapName}: " + e); }
+            Spawns(monsters, w, maps[w.MapIndex].scene);
+        }
+        People(repoRoot, items, worlds, maps);
+        Portals(worlds, maps);
         problems += TzMobile.Build();
         AddMonsterPrefabs(monsters.Select(m => m.Prefab).Concat(summons.Values));
         Database(attributes.Values, weaponTypes.Values, armorTypes.Values, items.Values, skills.Values.Concat(spells.Values).Concat(techniques.Values).Concat(new[] { stun, busy, zombie }).Concat(actions.Values), magic);
@@ -1270,9 +1278,9 @@ public static class TzImport
     /// Monsters where the old world had them (TzWorld.Spawns: the place it respawns at, how many, the old
     /// respawn time min..max s — the area brings one back after their average). The demo's areas go.
     /// </summary>
-    static void Spawns(List<Monster> monsters, Tz.World.TzWorld world)
+    static void Spawns(List<Monster> monsters, Tz.World.TzWorld world, string scenePath)
     {
-        var scene = EditorSceneManager.OpenScene(DemoMap, OpenSceneMode.Single);
+        var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
         int mask = 2097015;
         foreach (var old in UnityEngine.Object.FindObjectsByType<MonsterSpawnArea>(FindObjectsInactive.Include, FindObjectsSortMode.None))
         {
@@ -1303,7 +1311,7 @@ public static class TzImport
         }
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
-        Debug.Log($"[TzImport] {made} spawn areas, {monstersMade} monsters on {DemoMap}");
+        Debug.Log($"[TzImport] {made} spawn areas, {monstersMade} monsters on {scenePath}");
     }
 
     // ---- people ------------------------------------------------------------------------------------------
@@ -1330,20 +1338,22 @@ public static class TzImport
     /// restocked every "buy" period; they buy what their "sell" topic says (TzShopDialog). The banker keeps
     /// the player's storage. Teachers and quests are not here yet: they only greet.
     /// </summary>
-    static void People(string root, Dictionary<string, BaseItem> items, Tz.World.TzWorld world)
+    static void People(string root, Dictionary<string, BaseItem> items, List<Tz.World.TzWorld> worlds, Dictionary<int, (string scene, string info)> mapAssets)
     {
         var prefab = NpcPrefab();
-        var mapInfo = AssetDatabase.LoadMainAssetAtPath(DemoMapInfo);
         var db = AssetDatabase.LoadMainAssetAtPath(DemoNpcDatabase);
         var so = new SerializedObject(db);
         var maps = P(so, "maps");
         if (maps == null) return;
-        maps.arraySize = 1;
-        var map = maps.GetArrayElementAtIndex(0);
-        map.FindPropertyRelative("mapInfo").objectReferenceValue = mapInfo;
+        maps.arraySize = worlds.Count;
+        int shops = 0, talkers = 0;
+        for (int wi = 0; wi < worlds.Count; wi++)
+        {
+        var world = worlds[wi];
+        var map = maps.GetArrayElementAtIndex(wi);
+        map.FindPropertyRelative("mapInfo").objectReferenceValue = AssetDatabase.LoadMainAssetAtPath(mapAssets[world.MapIndex].info);
         var npcs = map.FindPropertyRelative("npcs");
         npcs.arraySize = 0;
-        int shops = 0, talkers = 0;
         foreach (var person in world.Npcs)
         {
             string id = person.Template;
@@ -1382,9 +1392,101 @@ public static class TzImport
             entry.FindPropertyRelative("title").stringValue = name;
             entry.FindPropertyRelative("startDialog").objectReferenceValue = dialog;
         }
+        }
         so.ApplyModifiedPropertiesWithoutUndo();
         EditorUtility.SetDirty(db);
-        Debug.Log($"[TzImport] people: {world.Npcs.Count} ({shops} traders, {talkers} others)");
+        Debug.Log($"[TzImport] people: {worlds.Sum(w => w.Npcs.Count)} on {worlds.Count} maps ({shops} traders, {talkers} others)");
+    }
+
+    // ---- maps and portals ----------------------------------------------------------------------------------
+    const string MapsDir = "Assets/Tz/Generated/Maps";
+    const string DemoWarpDatabase = "Assets/Tz/BaseDemo/GameData/WarpPortalDatabase-CE.asset";
+    const string DemoWarpPortal = "Assets/Tz/BaseDemo/Prefabs/GamePlay/WarpPortalEntity-CE.prefab";
+
+    /// <summary>The scenes of the built maps besides the demo's (MmoBuild puts them into the build).</summary>
+    public static readonly List<string> MapScenes = new List<string>();
+
+    /// <summary>
+    /// A scene and a map info for every built map: the first map is the demo's (BaseMap-CE, where saved
+    /// characters are), the others are copies of the demo scene and map info (its death rules too) in
+    /// Assets/Tz/Generated/Maps named by TzWorld.Maps; all go into the game database.
+    /// </summary>
+    static Dictionary<int, (string scene, string info)> MapAssets(List<Tz.World.TzWorld> worlds)
+    {
+        var result = new Dictionary<int, (string, string)>();
+        MapScenes.Clear();
+        AssetDatabase.DeleteAsset(MapsDir);
+        Directory.CreateDirectory(MapsDir);
+        AssetDatabase.Refresh();
+        var infos = new List<UnityEngine.Object>();
+        foreach (var w in worlds)
+        {
+            var def = Tz.World.TzWorld.Maps[w.MapIndex];
+            string scene = DemoMap, info = DemoMapInfo;
+            if (def.scene != System.IO.Path.GetFileNameWithoutExtension(DemoMap))
+            {
+                scene = $"{MapsDir}/{def.scene}.unity";
+                info = $"{MapsDir}/{def.scene}.asset";
+                if (!AssetDatabase.CopyAsset(DemoMap, scene) || !AssetDatabase.CopyAsset(DemoMapInfo, info))
+                { problems++; Debug.LogError($"[TzImport] cannot copy the demo map for {def.scene}"); continue; }
+                var so = new SerializedObject(AssetDatabase.LoadMainAssetAtPath(info));
+                P(so, "scene.sceneAsset").objectReferenceValue = AssetDatabase.LoadAssetAtPath<SceneAsset>(scene);
+                S(so, "scene.sceneName", def.scene);
+                S(so, "id", def.scene);
+                so.ApplyModifiedPropertiesWithoutUndo();
+                MapScenes.Add(scene);
+            }
+            result[w.MapIndex] = (scene, info);
+            infos.Add(AssetDatabase.LoadMainAssetAtPath(info));
+        }
+        var dbo = new SerializedObject(AssetDatabase.LoadMainAssetAtPath(DemoDatabase));
+        var list = P(dbo, "mapInfos");
+        list.arraySize = infos.Count;
+        for (int i = 0; i < infos.Count; i++) list.GetArrayElementAtIndex(i).objectReferenceValue = infos[i];
+        dbo.ApplyModifiedPropertiesWithoutUndo();
+        AssetDatabase.SaveAssets();
+        Debug.Log($"[TzImport] maps: {string.Join(", ", worlds.Select(w => w.MapName))}");
+        return result;
+    }
+
+    /// <summary>
+    /// The old exits between places of two built maps as the framework's warp portals (WarpPortalDatabase):
+    /// at the end of the path stub to the other map, entering it takes the player to that place on the other map.
+    /// </summary>
+    static void Portals(List<Tz.World.TzWorld> worlds, Dictionary<int, (string scene, string info)> mapAssets)
+    {
+        var portal = AssetDatabase.LoadAssetAtPath<GameObject>(DemoWarpPortal)?.GetComponent<WarpPortalEntity>();
+        if (portal == null) { problems++; Debug.LogError("[TzImport] no warp portal prefab " + DemoWarpPortal); return; }
+        var so = new SerializedObject(AssetDatabase.LoadMainAssetAtPath(DemoWarpDatabase));
+        var maps = P(so, "maps");
+        maps.arraySize = worlds.Count;
+        int total = 0;
+        for (int wi = 0; wi < worlds.Count; wi++)
+        {
+            var w = worlds[wi];
+            var m = maps.GetArrayElementAtIndex(wi);
+            m.FindPropertyRelative("mapInfo").objectReferenceValue = AssetDatabase.LoadMainAssetAtPath(mapAssets[w.MapIndex].info);
+            var list = m.FindPropertyRelative("warpPortals");
+            var exits = w.Exits.Where(e => e.TargetMap >= 0 && mapAssets.ContainsKey(e.TargetMap)).ToList();
+            list.arraySize = exits.Count;
+            for (int k = 0; k < exits.Count; k++)
+            {
+                var e = exits[k];
+                var el = list.GetArrayElementAtIndex(k);
+                el.FindPropertyRelative("entityPrefab").objectReferenceValue = portal;
+                el.FindPropertyRelative("position").vector3Value = new Vector3((float)e.Pos.X, 0.5f, (float)e.Pos.Z);
+                el.FindPropertyRelative("rotation").vector3Value = new Vector3(0, (float)e.Rot, 0);
+                el.FindPropertyRelative("warpPortalType").enumValueIndex = 0;
+                el.FindPropertyRelative("warpToMapInfo").objectReferenceValue = AssetDatabase.LoadMainAssetAtPath(mapAssets[e.TargetMap].info);
+                el.FindPropertyRelative("warpToPosition").vector3Value = new Vector3((float)e.TargetPos.X, 0.5f, (float)e.TargetPos.Z);
+                el.FindPropertyRelative("warpOverrideRotation").boolValue = false;
+            }
+            total += exits.Count;
+            Debug.Log($"[TzImport] portals of {w.MapName}: {string.Join(", ", exits.GroupBy(e => e.TargetMap).Select(g => $"{g.Count()} to {Tz.World.TzWorld.Maps[g.Key].name}"))}");
+        }
+        so.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(so.targetObject);
+        Debug.Log($"[TzImport] portals: {total}");
     }
 
     static NpcDialog Shop(string path, string name, string greeting, string bank, Dictionary<string, object> topics, Dictionary<string, BaseItem> items)

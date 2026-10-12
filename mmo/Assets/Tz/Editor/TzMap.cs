@@ -21,7 +21,18 @@ using Object = UnityEngine.Object;
 /// </summary>
 public static class TzMap
 {
-    const string Dir = "Assets/Tz/Generated/World";
+    const string WorldDir = "Assets/Tz/Generated/World";
+    /// <summary>The folder of the map being built (its meshes, materials, navigation mesh).</summary>
+    static string Dir = WorldDir;
+
+    /// <summary>Before the maps of an import: clears what earlier imports made and loads the models once.</summary>
+    public static void Begin(string repoRoot)
+    {
+        AssetDatabase.DeleteAsset(WorldDir);
+        Directory.CreateDirectory(WorldDir);
+        AssetDatabase.Refresh();
+        models = TzModels.Load(repoRoot);
+    }
     const string GroundArt = "Assets/Tz/Art/Ground";
     const float Chunk = 64f;
     /// <summary>Layers the framework does not take for ground (GameInstance.GetGameEntityGroundDetectionLayerMask): monsters and drops do not land on roofs, trees and the walls over water.</summary>
@@ -142,7 +153,7 @@ public static class TzMap
     }
 
     static Mesh cube, cylinder, sphere;
-    static Dictionary<string, List<TzModels.Model>> models = new Dictionary<string, List<TzModels.Model>>();
+    static Dictionary<string, List<TzModels.Model>> models;
 
     /// <summary>A model for [kind], chosen by the place (the same place gets the same one every build).</summary>
     static TzModels.Model ModelFor(string kind, Vector3 at)
@@ -167,12 +178,13 @@ public static class TzMap
     {
         int problems = 0;
         materials.Clear();
+        Dir = $"{WorldDir}/{Path.GetFileNameWithoutExtension(scenePath)}";
         AssetDatabase.DeleteAsset(Dir);
         Directory.CreateDirectory(Dir + "/Meshes");
         AssetDatabase.Refresh();
         cube = Builtin("Cube"); cylinder = Builtin("Cylinder"); sphere = Builtin("Sphere");
         farTree = null;
-        models = TzModels.Load(Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..")));
+        if (models == null) Begin(Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..")));
 
         var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
         var level = GameObject.Find("Level");
@@ -216,6 +228,8 @@ public static class TzMap
             var so = new SerializedObject(info);
             var sp = so.FindProperty("startPosition");
             if (sp != null) sp.vector3Value = W(w.Start, 0.2f);
+            var title = so.FindProperty("defaultTitle");
+            if (title != null) title.stringValue = w.MapName;
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(info);
         }
@@ -392,6 +406,7 @@ public static class TzMap
         var wood = Mat("wood", new Color(0.5f, 0.35f, 0.2f));
         var trees = new GameObject("Trees").transform;
         trees.SetParent(root, false);
+        instances.Clear(); instanceLooks.Clear();
         foreach (var p in w.Props)
         {
             var at = W(p.Pos);
@@ -399,7 +414,7 @@ public static class TzMap
             // A model of the kind (not trees: they have their own far shape): one shared mesh, culled when small.
             if (p.Kind != "tree" && PropHeight.TryGetValue(p.Kind, out var height) && ModelFor(p.Kind, at) is TzModels.Model pm)
             {
-                Instance(pm, at, r, height * s, trees, height < 2f ? 0.03f : 0.012f);
+                Instance(pm, at, r, height * s, PropDistance.TryGetValue(p.Kind, out var dist) ? dist : 60f);
                 if (PropCollider.TryGetValue(p.Kind, out var box))
                     colliders.For(null, at).Add(cube, TRS(at + Vector3.up * box.y / 2, r, Vector3.Scale(box, new Vector3(s, 1, s))));
                 continue;
@@ -409,7 +424,7 @@ public static class TzMap
                 case "tree":
                     var treeModel = ModelFor("tree", at);
                     if (treeModel != null)
-                        Tree(treeModel, at, r, s, trees, bark, leaves);
+                        Tree(treeModel, at, r, s, bark, leaves);
                     else
                     {
                         batch.For(bark, at).Add(cylinder, TRS(at + Vector3.up * 1.2f * s, r, new Vector3(0.45f, 1.2f, 0.45f) * s));
@@ -448,6 +463,7 @@ public static class TzMap
                     break;
             }
         }
+        EmitInstances(trees);
         var go = new GameObject("Props");
         go.transform.SetParent(root, false);
         batch.Emit(go.transform, "props");
@@ -477,6 +493,12 @@ public static class TzMap
         ["tree-dead"] = 7f, ["bush"] = 1.4f, ["rock"] = 1.1f, ["barrel"] = 1.1f, ["crates"] = 1.3f, ["grave"] = 1.0f,
     };
 
+    /// <summary>How far a prop of a kind is seen, metres.</summary>
+    static readonly Dictionary<string, float> PropDistance = new Dictionary<string, float>
+    {
+        ["tree-dead"] = 120f, ["bush"] = 50f, ["rock"] = 120f, ["barrel"] = 45f, ["crates"] = 45f, ["grave"] = 40f,
+    };
+
     /// <summary>The box that stops walkers at a prop of a kind (none — walk through).</summary>
     static readonly Dictionary<string, Vector3> PropCollider = new Dictionary<string, Vector3>
     {
@@ -484,54 +506,66 @@ public static class TzMap
         ["barrel"] = new Vector3(0.8f, 1f, 0.8f), ["crates"] = new Vector3(1f, 1f, 1f),
     };
 
-    /// <summary>One prop drawn by a model [height] m tall, hidden when it takes less than [cull] of the screen.</summary>
-    static void Instance(TzModels.Model m, Vector3 at, float rot, float height, Transform parent, float cull)
+    /// <summary>Copies of models to draw by GPU instancing (TzInstancer), by model and chunk.</summary>
+    static readonly Dictionary<(TzModels.Model, int, int), List<Matrix4x4>> instances = new Dictionary<(TzModels.Model, int, int), List<Matrix4x4>>();
+    static readonly Dictionary<TzModels.Model, (float near, Mesh far, Material[] farMats, float farDistance)> instanceLooks = new Dictionary<TzModels.Model, (float, Mesh, Material[], float)>();
+
+    /// <summary>One prop drawn by a model [height] m tall, seen up to [distance] m.</summary>
+    static void Instance(TzModels.Model m, Vector3 at, float rot, float height, float distance)
     {
         float k = height / Mathf.Max(0.01f, m.Size.y);
-        var go = new GameObject(m.Name);
-        go.transform.SetParent(parent, false);
-        go.transform.SetPositionAndRotation(at - Vector3.up * m.Bottom * k, Quaternion.Euler(0, rot + m.Front, 0));
-        go.transform.localScale = Vector3.one * k;
-        go.AddComponent<MeshFilter>().sharedMesh = m.Mesh;
-        var r = go.AddComponent<MeshRenderer>(); r.sharedMaterial = m.Material;
-        var lod = go.AddComponent<LODGroup>();
-        lod.SetLODs(new[] { new LOD(cull, new Renderer[] { r }) });
-        lod.RecalculateBounds();
+        var key = (m, Mathf.FloorToInt(at.x / Chunk), Mathf.FloorToInt(at.z / Chunk));
+        if (!instances.TryGetValue(key, out var list)) instances[key] = list = new List<Matrix4x4>();
+        list.Add(Matrix4x4.TRS(at - Vector3.up * m.Bottom * k, Quaternion.Euler(0, rot + m.Front, 0), Vector3.one * k));
+        if (!instanceLooks.ContainsKey(m)) instanceLooks[m] = (distance, null, null, 0f);
     }
 
     /// <summary>
-    /// A tree of the model, ~8.5 m × scale tall, and far away the simple shape (a trunk and a ball) by a LOD group:
-    /// thousands of trees share the model's mesh, the phone draws the model only near the camera.
+    /// A tree of the model, ~8.5 m × scale tall; farther than 70 m the simple shape (a trunk and a ball) in the
+    /// model's own units, so that the same matrices draw both.
     /// </summary>
-    static void Tree(TzModels.Model m, Vector3 at, float rot, float scale, Transform parent, Material bark, Material leaves)
+    static void Tree(TzModels.Model m, Vector3 at, float rot, float scale, Material bark, Material leaves)
     {
-        if (farTree == null)
+        if (!instanceLooks.ContainsKey(m))
         {
-            var trunk = new Builder(); trunk.Add(cylinder, TRS(Vector3.up * 1.2f, 0, new Vector3(0.45f, 1.2f, 0.45f)));
-            var crown = new Builder(); crown.Add(sphere, TRS(Vector3.up * 3.3f, 0, new Vector3(3.2f, 3f, 3.2f)));
-            farTree = new Mesh { name = "tree-far" };
-            farTree.CombineMeshes(new[] { new CombineInstance { mesh = trunk.Make("t"), transform = Matrix4x4.identity }, new CombineInstance { mesh = crown.Make("c"), transform = Matrix4x4.identity } }, false, true);
-            AssetDatabase.CreateAsset(farTree, $"{Dir}/Meshes/tree-far.asset");
+            float u = m.Size.y / 4.8f;
+            var trunk = new Builder(); trunk.Add(cylinder, TRS(Vector3.up * (1.2f * u + m.Bottom), 0, new Vector3(0.45f, 1.2f, 0.45f) * u));
+            var crown = new Builder(); crown.Add(sphere, TRS(Vector3.up * (3.3f * u + m.Bottom), 0, new Vector3(3.2f, 3f, 3.2f) * u));
+            var far = new Mesh { name = m.Name + "-far" };
+            far.CombineMeshes(new[] { new CombineInstance { mesh = trunk.Make("t"), transform = Matrix4x4.identity }, new CombineInstance { mesh = crown.Make("c"), transform = Matrix4x4.identity } }, false, true);
+            AssetDatabase.CreateAsset(far, $"{Dir}/Meshes/{m.Name}-far.asset");
+            instanceLooks[m] = (70f, far, new[] { bark, leaves }, 300f);
         }
-        float k = 8.5f * scale / Mathf.Max(0.01f, m.Size.y);
-        var go = new GameObject("Tree");
-        go.transform.SetParent(parent, false);
-        go.transform.SetPositionAndRotation(at, Quaternion.Euler(0, rot, 0));
-        var near = new GameObject("Near");
-        near.transform.SetParent(go.transform, false);
-        near.transform.localPosition = -Vector3.up * m.Bottom * k;
-        near.transform.localRotation = Quaternion.Euler(0, m.Front, 0);
-        near.transform.localScale = Vector3.one * k;
-        near.AddComponent<MeshFilter>().sharedMesh = m.Mesh;
-        var nr = near.AddComponent<MeshRenderer>(); nr.sharedMaterial = m.Material;
-        var far = new GameObject("Far");
-        far.transform.SetParent(go.transform, false);
-        far.transform.localScale = Vector3.one * (8.5f * scale / 4.8f);
-        far.AddComponent<MeshFilter>().sharedMesh = farTree;
-        var fr = far.AddComponent<MeshRenderer>(); fr.sharedMaterials = new[] { bark, leaves };
-        var lod = go.AddComponent<LODGroup>();
-        lod.SetLODs(new[] { new LOD(0.12f, new Renderer[] { nr }), new LOD(0.015f, new Renderer[] { fr }) });
-        lod.RecalculateBounds();
+        Instance(m, at, rot, 8.5f * scale, 70f);
+    }
+
+    /// <summary>The collected copies as TzInstancer objects under [parent].</summary>
+    static void EmitInstances(Transform parent)
+    {
+        int n = 0;
+        foreach (var kv in instances)
+        {
+            var (m, cx, cz) = kv.Key;
+            var look = instanceLooks[m];
+            var go = new GameObject($"{m.Name} {cx},{cz}");
+            go.transform.SetParent(parent, false);
+            var r = go.AddComponent<TzInstancer>();
+            r.nearMesh = m.Mesh; r.nearMaterial = m.Material;
+            r.farMesh = look.far; r.farMaterials = look.farMats ?? new Material[0];
+            r.nearDistance = look.near; r.farDistance = look.far != null ? look.farDistance : look.near;
+            r.matrices = kv.Value.ToArray();
+            var b = new Bounds(kv.Value[0].GetColumn(3), Vector3.zero);
+            foreach (var mx in kv.Value)
+            {
+                float k = mx.lossyScale.x;
+                b.Encapsulate(new Bounds((Vector3)mx.GetColumn(3) + Vector3.up * (m.Size.y * k / 2), m.Size * k * 1.2f));
+            }
+            r.bounds = b;
+            n += kv.Value.Count;
+        }
+        Debug.Log($"[TzImport] map: {n} model copies in {instances.Count} instanced groups");
+        instances.Clear();
+        instanceLooks.Clear();
     }
 
     /// <summary>Invisible walls: over the water (rows of water cells as long boxes) and around the map.</summary>

@@ -61,7 +61,8 @@ namespace Tz.World
 
         public class Spawn { public string Template; public V Pos; public int Count; public double RespawnMin, RespawnMax; public Place Place; }
 
-        public class ExitSign { public V Pos; public double Rot; public Place From; public string Target, TargetName; }
+        /// <summary>An exit out of the map; to a place of another map: that map and the place's position there (a portal).</summary>
+        public class ExitSign { public V Pos; public double Rot; public Place From; public string Target, TargetName; public int TargetMap = -1; public V TargetPos; }
 
         public const double SX = 1.25, SZ = 1.5;
         /// <summary>The ground grid's cell, metres.</summary>
@@ -82,11 +83,38 @@ namespace Tz.World
         public List<string> Problems = new List<string>();
 
         // ---- the maps ------------------------------------------------------------------------------------
-        /// <summary>The maps cut from the old world map: name, the start place, the rectangle of old coordinates.</summary>
-        public static readonly (string name, string start, int x0, int y0, int x1, int y1)[] Maps =
+        /// <summary>
+        /// The maps cut from the old world map: name, scene, the start place (none — the place nearest the middle),
+        /// the rectangle of old coordinates, whether it is built. A place belongs to the first map whose
+        /// rectangle holds it. Every built map is a server process (~330 MB), so they are switched on a few at a time.
+        /// </summary>
+        public static readonly (string name, string scene, string start, int x0, int y0, int x1, int y1, bool on)[] Maps =
         {
-            ("Город", "_begin", 900, 350, 1400, 750),
+            ("Город", "BaseMap-CE", "_begin", 900, 350, 1400, 750, true),
+            ("Северные леса", "Tz-North", null, 450, 0, 1450, 350, true),
+            ("Восточная долина", "Tz-East", null, 1400, 0, 2600, 750, true),
+            ("Подземелья", "Tz-Dungeon", null, 1950, 750, 2600, 1300, false),
+            ("Острова", "Tz-Isles", null, 0, 950, 300, 2330, false),
+            ("Оазис", "Tz-Oasis", null, 2900, 0, 3101, 450, false),
+            ("Лесная глушь", "Tz-Wild", null, 0, 0, 450, 500, false),
         };
+
+        /// <summary>The map an old coordinate belongs to (−1 — none).</summary>
+        public static int MapOf(double x, double y)
+        {
+            for (int i = 0; i < Maps.Length; i++)
+                if (x >= Maps[i].x0 && x <= Maps[i].x1 && y >= Maps[i].y0 && y <= Maps[i].y1) return i;
+            return -1;
+        }
+
+        /// <summary>An old coordinate in metres of map [i] (its rectangle's middle is the origin).</summary>
+        public static V AtMap(int i, double x, double y)
+        {
+            var m = Maps[i];
+            return new V((x - (m.x0 + m.x1) / 2.0) * SX, ((m.y0 + m.y1) / 2.0 - y) * SZ);
+        }
+
+        public int MapIndex;
 
         // ---- reading -------------------------------------------------------------------------------------
         static readonly Regex Coord = new Regex(@"^x(\d+)x(\d+)$");
@@ -142,7 +170,7 @@ namespace Tz.World
         public static TzWorld Build(string root, int mapIndex, Func<string, bool> monster)
         {
             var map = Maps[mapIndex];
-            var w = new TzWorld { MapName = map.name };
+            var w = new TzWorld { MapName = map.name, MapIndex = mapIndex };
             var all = new Dictionary<string, Dictionary<string, object>>();
             foreach (var f in Directory.GetFiles(Path.Combine(root, "content", "locations"), "*.json"))
                 if (TzJsonReader(File.ReadAllText(f)) is Dictionary<string, object> d && d.TryGetValue("id", out var id) && id is string s)
@@ -171,7 +199,7 @@ namespace Tz.World
 
         V At(double x, double y) => new V((x - cx) * SX, (cy - y) * SZ);
 
-        void Read(Dictionary<string, Dictionary<string, object>> locations, (string name, string start, int x0, int y0, int x1, int y1) map, Func<string, bool> monster)
+        void Read(Dictionary<string, Dictionary<string, object>> locations, (string name, string scene, string start, int x0, int y0, int x1, int y1, bool on) map, Func<string, bool> monster)
         {
             all = locations;
             // Places one enters: the target of an entering exit, named like a building.
@@ -198,7 +226,7 @@ namespace Tz.World
             foreach (var kv in all)
             {
                 if (indoor.Contains(kv.Key) || !TryCoord(kv.Key, out var x, out var y)) continue;
-                if (x < map.x0 || x > map.x1 || y < map.y0 || y > map.y1) continue;
+                if (MapOf(x, y) != MapIndex) continue;
                 Add(kv.Key, kv.Value, false).Pos = At(x, y);
             }
             // Outdoor places without coordinates (the start lane) next to them by the directions of their exits.
@@ -216,8 +244,13 @@ namespace Tz.World
                 Add(kv.Key, kv.Value, false).Pos = new V(guesses.Average(g => g.X), guesses.Average(g => g.Z));
             }
             // The start: the start place, else the middle.
-            Start = byId.TryGetValue(map.start, out var sp) ? sp.Pos : new V(0, 0);
-            if (!byId.ContainsKey(map.start)) Problems.Add("no start place " + map.start);
+            if (map.start != null && byId.TryGetValue(map.start, out var sp)) Start = sp.Pos;
+            else
+            {
+                if (map.start != null) Problems.Add("no start place " + map.start);
+                var mid = Places.Where(p => !p.Indoor).OrderBy(p => p.Pos.Len).FirstOrDefault();
+                Start = mid != null ? mid.Pos : new V(0, 0);
+            }
 
             // Buildings: groups of indoor places joined by their exits; the street is the outdoor place they open to.
             var seen = new HashSet<string>();
@@ -277,7 +310,13 @@ namespace Tz.World
                         var end = p.Pos + dir * 16;
                         var stub = new Place { Id = "→" + target, Name = Name(t), Kind = p.Kind, Pos = end, Data = new Dictionary<string, object>() };
                         Paths.Add(new Way { A = p, B = stub, Width = PathWidth(p.Kind, p.Kind), Surface = PathSurface(p.Kind, p.Kind) });
-                        Exits.Add(new ExitSign { Pos = end, Rot = Deg(dir), From = p, Target = target, TargetName = Name(t) });
+                        var sign = new ExitSign { Pos = end, Rot = Deg(dir), From = p, Target = target, TargetName = Name(t) };
+                        if (TryCoord(target, out var ex, out var ey) && MapOf(ex, ey) is int tm && tm >= 0 && tm != MapIndex)
+                        {
+                            sign.TargetMap = tm;
+                            sign.TargetPos = AtMap(tm, ex, ey);
+                        }
+                        Exits.Add(sign);
                     }
                 }
 
@@ -569,13 +608,14 @@ namespace Tz.World
                     double roll = rnd.NextDouble();
                     string kind = null;
                     double clearance = 1.5;
-                    if (f > 34) kind = roll < 0.75 ? "tree" : "rock";                       // the edge: closed
+                    if (f > 60) continue;                                                   // far from every path: open ground
+                    if (f > 34) kind = roll < 0.30 ? "tree" : roll < 0.38 ? "rock" : null;   // the edge: a thin wood
                     else switch (k)
                     {
                         case Kind.Forest: if (roll < 0.62) kind = roll < 0.08 ? "bush" : "tree"; break;
                         case Kind.Swamp: if (roll < 0.25) kind = roll < 0.15 ? "tree-dead" : "bush"; break;
                         case Kind.Cemetery: if (roll < 0.45) kind = roll < 0.35 ? "grave" : "tree-dead"; clearance = 1; break;
-                        case Kind.Rocks: if (roll < 0.40) kind = "rock"; break;
+                        case Kind.Rocks: if (roll < 0.18) kind = "rock"; break;
                         case Kind.Road: case Kind.Field: if (roll < 0.10) kind = roll < 0.05 ? "tree" : "bush"; break;
                         case Kind.Lake: case Kind.Shore: if (roll < 0.10) kind = "bush"; break;
                         case Kind.Town: case Kind.Pier: if (f > 3 && roll < 0.04) kind = roll < 0.02 ? "barrel" : "crates"; break;

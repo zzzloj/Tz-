@@ -29,12 +29,13 @@ public static class MmoBuild
         EnsureTextMeshPro();
         CopyContent();
         TzImport.Run(Path.GetFullPath(Path.Combine(Root(), "..")));
-        EditorBuildSettings.scenes = Array.ConvertAll(SceneList, s => new EditorBuildSettingsScene(s, true));
+        var all = SceneList.Concat(TzImport.MapScenes).ToArray();
+        EditorBuildSettings.scenes = Array.ConvertAll(all, s => new EditorBuildSettingsScene(s, true));
         PlayerSettings.companyName = "Amulet";
         PlayerSettings.productName = "Амулет дракона MMO";
         PlayerSettings.bundleVersion = "0.0.2";
         AssetDatabase.SaveAssets();
-        return SceneList;
+        return all;
     }
 
     /// <summary>

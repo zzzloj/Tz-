@@ -23,9 +23,11 @@ static class Program
         for (int m = 0; m < TzWorld.Maps.Length; m++)
         {
             var w = TzWorld.Build(root, m, Monster);
-            Console.WriteLine($"{w.MapName}: {w.Places.Count(p => !p.Indoor)} places, {w.Buildings.Count(b => b.Rooms.Count > 0)} buildings ({w.Places.Count(p => p.Indoor)} rooms), " +
+            Console.WriteLine($"{w.MapName}{(TzWorld.Maps[m].on ? "" : " (off)")}: {w.Places.Count(p => !p.Indoor)} places, {w.Buildings.Count(b => b.Rooms.Count > 0)} buildings ({w.Places.Count(p => p.Indoor)} rooms), " +
                 $"{w.Buildings.Count(b => b.Rooms.Count == 0)} houses, {w.Paths.Count} paths, {w.Props.Count} props, {w.Npcs.Count} people, {w.Spawns.Count} spawns, {w.Exits.Count} exits, " +
                 $"ground {w.Ground.GetLength(0)}×{w.Ground.GetLength(1)} cells, start {w.Start}");
+            foreach (var g in w.Exits.Where(e => e.TargetMap >= 0).GroupBy(e => e.TargetMap))
+                Console.WriteLine($"  portals to {TzWorld.Maps[g.Key].name}{(TzWorld.Maps[g.Key].on ? "" : " (off)")}: {g.Count()}");
             foreach (var p in w.Problems) Console.WriteLine("  problem: " + p);
             bad += w.Problems.Count;
 
