@@ -29,6 +29,8 @@ jobs:
   build:
     needs: rules
     runs-on: ubuntu-24.04
+    permissions:
+      contents: write   # pictures of the map to the branch mmo-shots
     timeout-minutes: 120
     strategy:
       fail-fast: false
@@ -97,6 +99,32 @@ jobs:
           customParameters: -logFile /github/workspace/unity.log
           allowDirtyBuild: true   # the kit is patched in place (mmo/tools/patch_kit.py)
           versioning: None
+
+      # Pictures of the built map (TzShots): the editor again, now with graphics (software OpenGL under
+      # xvfb), on the imported project; they go to the branch mmo-shots for looking at without a phone.
+      - name: Pictures of the map
+        if: matrix.out == 'Server'
+        continue-on-error: true
+        timeout-minutes: 25
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        run: |
+          version=$(sed -n 's/^m_EditorVersion: //p' mmo/ProjectSettings/ProjectVersion.txt)
+          docker run --rm -v "$PWD":/w -w /w -e UNITY_LICENSE "unityci/editor:ubuntu-$version-${{ matrix.image }}" bash -c '
+            (apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq xvfb xauth libgl1-mesa-dri libglu1-mesa) > /dev/null 2>&1
+            mkdir -p /root/.local/share/unity3d/Unity
+            printf "%s" "$UNITY_LICENSE" > /root/.local/share/unity3d/Unity/Unity_lic.ulf
+            xvfb-run -a -s "-screen 0 1920x1080x24" unity-editor -batchmode -projectPath /w/mmo -buildTarget Linux64 -standaloneBuildSubtarget Server \
+              -executeMethod TzShots.Take -logFile /w/shots.log
+            echo "exit $?" >> /w/shots.log'
+          echo "::notice title=shots::$(grep -E "TzShots|exit|graphics|Exception|rror" shots.log | head -40 | cut -c1-250 | sed ':a;N;$!ba;s/\n/%0A/g')"
+          ls mmo/build/shots
+          if [ "${{ github.ref }}" = "refs/heads/main" ] && ls mmo/build/shots/*.jpg > /dev/null 2>&1; then
+            rm -rf /tmp/shots && cp -r mmo/build/shots /tmp/shots && cd /tmp/shots
+            git init -q && git checkout -q -b mmo-shots && git add . \
+              && git -c user.name="mmo ci" -c user.email="ci@localhost" commit -qm "Map pictures for ${GITHUB_SHA}" \
+              && git push -qf "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" mmo-shots
+          fi
 
       - name: Errors of the Unity log as annotations
         if: always()
