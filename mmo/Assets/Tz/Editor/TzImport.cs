@@ -1344,9 +1344,9 @@ public static class TzImport
                     if (eq < 0) continue;
                     string itemId = part.Substring(eq + 1).Split(':')[0];
                     var q = part.Substring(0, eq).Split(':');
-                    double ch = q.Length > 0 && double.TryParse(q[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var c0) ? c0 : 100;
+                    double chance0 = q.Length > 0 && double.TryParse(q[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var c0) ? c0 : 100;
                     int mn = q.Length > 1 && int.TryParse(q[1], out var c1) ? c1 : 1, mx = q.Length > 2 && int.TryParse(q[2], out var c2) ? c2 : mn;
-                    if (items.ContainsKey(itemId) && !stock.Any(x => x.id == itemId)) stock.Add((itemId, ch, mn, mx));
+                    if (items.ContainsKey(itemId) && !stock.Any(x => x.id == itemId)) stock.Add((itemId, chance0, mn, mx));
                 }
 
             var dialog = Make<TzShopDialog>($"{Generated}/Npcs/{id}-shop.asset");
