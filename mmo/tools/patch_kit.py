@@ -37,6 +37,7 @@ def main():
          lambda s: s.replace('.colliderEntityId != EntityId.None', '.colliderInstanceID != 0')
                     .replace('.colliderEntityId == EntityId.None', '.colliderInstanceID == 0'))
     one_pool()
+    keep_runes()
 
 def one_pool():
     """Our training points are one pool for attributes and skills (claude/balance.md §4); the kit keeps two,
@@ -58,6 +59,18 @@ def drop_urp():
     for f in sorted(os.listdir(folder)):
         if 'Urp' in f:
             os.remove(os.path.join(folder, f)); print('removed', f)
+
+
+def keep_runes():
+    """A spell's rune i.r.* stays after the cast, its scroll i.m.* burns (Magic.kt); the kit spends every
+    thing a skill is used from. TzSpell.KeepsItem tells which to keep."""
+    mark = '// Tz: runes stay'
+    def fix(s):
+        if mark in s: return s
+        a = 'if (IsServer && itemDataId.HasValue && Entity.DecreaseItems(itemDataId.Value, 1))'
+        assert a in s, 'the kit changed: keep_runes needs a new look'
+        return s.replace(a, 'if (IsServer && itemDataId.HasValue && !TzSpell.KeepsItem(itemDataId.Value) && Entity.DecreaseItems(itemDataId.Value, 1)) ' + mark)
+    edit('Core/Scripts/Gameplay/CharacterSystems/CharacterActionsSystem/DefaultCharacterUseSkillComponent.cs', fix)
 
 
 if __name__ == '__main__':

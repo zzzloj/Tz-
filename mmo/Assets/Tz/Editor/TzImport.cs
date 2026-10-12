@@ -42,22 +42,25 @@ public static class TzImport
             Directory.CreateDirectory(Path.Combine(repoRoot, "mmo", Generated, dir));
         AssetDatabase.Refresh();
         ExpTable(balance);
-        var attributes = Attributes(balance);
+        var magic = MagicElement();
+        var attributes = Attributes(balance, magic);
         var weaponTypes = WeaponTypes();
         var armorTypes = ArmorTypes();
-        var items = Items(repoRoot, balance, attributes, weaponTypes, armorTypes);
-        var skills = Skills(balance);
-        Player(balance, attributes, items, skills);
+        var skills = Skills(balance, magic);
+        var spells = Spells(repoRoot, balance, skills, magic);
+        var items = Items(repoRoot, balance, attributes, weaponTypes, armorTypes, spells, magic);
+        AddFoodToSpells(spells, items);
+        Player(balance, attributes, items, skills.Concat(spells.Select(kv => new KeyValuePair<string, BaseSkill>(kv.Key, kv.Value))).ToDictionary(kv => kv.Key, kv => kv.Value));
         LoginDataManager();
         DefaultWeapon();
-        var monsters = Monsters(repoRoot, balance, items);
+        var monsters = Monsters(repoRoot, balance, items, magic);
         Spawns(monsters);
         Shops(repoRoot, items);
-        Database(attributes.Values, weaponTypes.Values, armorTypes.Values, items.Values, skills.Values);
+        Database(attributes.Values, weaponTypes.Values, armorTypes.Values, items.Values, skills.Values.Concat(spells.Values), magic);
         try { CyrillicFont(); }
         catch (Exception e) { problems++; Debug.LogError("[TzImport] Cyrillic font: " + e); }
         AssetDatabase.SaveAssets();
-        Debug.Log($"[TzImport] done: {attributes.Count} attributes, {weaponTypes.Count} weapon types, {armorTypes.Count} armour slots, {items.Count} items, {skills.Count} skills, {monsters.Count} monsters, {problems} problems");
+        Debug.Log($"[TzImport] done: {attributes.Count} attributes, {weaponTypes.Count} weapon types, {armorTypes.Count} armour slots, {items.Count} items, {skills.Count} skills, {spells.Count} spells, {monsters.Count} monsters, {problems} problems");
     }
 
     // ---- helpers ---------------------------------------------------------------------------------
@@ -167,6 +170,29 @@ public static class TzImport
         EditorUtility.SetDirty(asset);
     }
 
+    // ---- magic --------------------------------------------------------------------------------------------
+    /// <summary>The magic damage element: spells, staves and magic monsters hit with it; magic defence is its armour.</summary>
+    static DamageElement MagicElement()
+    {
+        var e = Make<DamageElement>($"{Generated}/Types/element-magic.asset");
+        var so = new SerializedObject(e);
+        S(so, "id", "magic");
+        S(so, "defaultTitle", "Магия");
+        so.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(e);
+        return e;
+    }
+
+    static void ArmorOf(SerializedProperty list, DamageElement element, float baseAmount, float perLevel)
+    {
+        list.arraySize++;
+        var e = list.GetArrayElementAtIndex(list.arraySize - 1);
+        e.FindPropertyRelative("damageElement").objectReferenceValue = element;
+        e.FindPropertyRelative("amount.baseAmount").floatValue = baseAmount;
+        e.FindPropertyRelative("amount.amountIncreaseEachLevel").floatValue = perLevel;
+        e.FindPropertyRelative("amount.rateIncreaseEachLevel").floatValue = 0;
+    }
+
     // ---- attributes, weapon classes, armour slots ------------------------------------------------------
     const string StartWeapon = "i.w.k.begin";
 
@@ -185,7 +211,7 @@ public static class TzImport
     /// a pause about 2 % shorter (rate of fire +2.22 %: 1 / (1 + 0.0222·dex) ≈ 1 − 0.02·dex up to 10),
     /// +0.5 % block with a shield (TzGameplayRule); of intelligence: +5 mana.
     /// </summary>
-    static Dictionary<string, MultiplayerARPG.Attribute> Attributes(TzBalance b)
+    static Dictionary<string, MultiplayerARPG.Attribute> Attributes(TzBalance b, DamageElement magic)
     {
         var result = new Dictionary<string, MultiplayerARPG.Attribute>();
         foreach (var (id, title) in new[] { ("str", "Сила"), ("dex", "Ловкость"), ("int", "Интеллект") })
@@ -202,7 +228,13 @@ public static class TzImport
                 F(so, "statsIncreaseEachLevel.evasion", (float)b.EvaPerDex);
                 F(so, "statsIncreaseEachLevel.rateOfFireRate", 0.0222f);
             }
-            if (id == "int") F(so, "statsIncreaseEachLevel.mp", (float)b.ManaPerInt);
+            if (id == "int")
+            {
+                F(so, "statsIncreaseEachLevel.mp", (float)b.ManaPerInt);
+                // Magic defence +5 a point (balance.md §5).
+                var armors = P(so, "increaseArmors");
+                if (armors != null) { armors.arraySize = 0; ArmorOf(armors, magic, (float)b.MagicDefencePerInt, (float)b.MagicDefencePerInt); }
+            }
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(a);
             result[id] = a;
@@ -277,6 +309,8 @@ public static class TzImport
         // Keys and titles of engine/shared Protocol.kt SKILLS; only those our rules use so far.
         ("hand", "Рукопашная"), ("coldweapon", "Холодное оружие"), ("ranged", "Стрельба"),
         ("parring", "Парирование"), ("uklon", "Уклон"), ("regeneration", "Регенерация"),
+        ("magic", "Магия"), ("magic_resist", "Сопротивление магии"), ("magic_uklon", "Уклон от магии"),
+        ("meditation", "Медитация"), ("healing", "Лечение"),
     };
 
     /// <summary>
@@ -285,7 +319,7 @@ public static class TzImport
     /// yet). Their effects are in TzGameplayRule (weapon skills, parrying, regeneration); dodging gives
     /// +3 evasion a step through the skill's buff.
     /// </summary>
-    static Dictionary<string, BaseSkill> Skills(TzBalance b)
+    static Dictionary<string, BaseSkill> Skills(TzBalance b, DamageElement magic)
     {
         var result = new Dictionary<string, BaseSkill>();
         foreach (var (id, title) in SkillList)
@@ -309,6 +343,12 @@ public static class TzImport
                     e.FindPropertyRelative("gold").intValue = b.TeacherPrice(n);
                 }
             }
+            if (id == "magic_resist")
+            {
+                // Magic defence +8 a step, as the magic element's armour.
+                var armors = P(so, "buff.increaseArmors");
+                if (armors != null) { armors.arraySize = 0; ArmorOf(armors, magic, (float)b.MagicDefencePerResist, (float)b.MagicDefencePerResist); }
+            }
             if (id == "uklon")
             {
                 F(so, "buff.increaseStats.baseStats.evasion", (float)b.EvaPerDodge);
@@ -319,6 +359,158 @@ public static class TzImport
             result[id] = skill;
         }
         return result;
+    }
+
+    /// <summary>The spells made so far (the others need summons, pets or the world map: later).</summary>
+    static TzSpell.Kind? SpellKind(string id)
+    {
+        if (id.StartsWith("m.w.a.")) return id == "m.w.a.qv" ? (TzSpell.Kind?)null : TzSpell.Kind.Area;
+        if (id.StartsWith("m.w.")) return TzSpell.Kind.Battle;
+        switch (id)
+        {
+            case "m.heal": case "m.heal.great": return TzSpell.Kind.Heal;
+            case "m.heal.all": return TzSpell.Kind.HealAll;
+            case "m.armor": return TzSpell.Kind.Armor;
+            case "m.str": return TzSpell.Kind.Strength;
+            case "m.man": return TzSpell.Kind.Mana;
+            case "m.meditation": return TzSpell.Kind.Meditation;
+            case "m.createfood": return TzSpell.Kind.CreateFood;
+            case "m.buket": return TzSpell.Kind.Bouquet;
+            case "m.n": case "m.roj": return TzSpell.Kind.Other;   // stun 20 s
+            default: return null;
+        }
+    }
+
+    /// <summary>The lowest price a teacher asks for a spell or technique (content/dialogs "skill|id|cost", content/logic "teach"); 0 — only from a quest.</summary>
+    static Dictionary<string, int> TeacherPrices(string root)
+    {
+        var prices = new Dictionary<string, int>();
+        void Note(string id, int cost) { if (!prices.TryGetValue(id, out var c) || cost < c) prices[id] = cost; }
+        foreach (var f in Directory.GetFiles(Path.Combine(root, "content", "dialogs"), "*.json"))
+            if (Json(f).TryGetValue("topics", out var t) && t is Dictionary<string, object> topics)
+                foreach (var v in topics.Values.OfType<string>())
+                {
+                    var p = v.Split('|');
+                    if (p.Length > 2 && p[0] == "skill" && double.TryParse(p[2], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var c))
+                        Note(p[1], (int)c);
+                }
+        var teach = new System.Text.RegularExpressions.Regex("\"teach\"\\s*:\\s*\"([^\"]+)\"[^}]*?\"cost\"\\s*:\\s*(\\d+)");
+        foreach (var f in Directory.GetFiles(Path.Combine(root, "content", "logic"), "*.json"))
+            foreach (System.Text.RegularExpressions.Match m in teach.Matches(File.ReadAllText(f)))
+                Note(m.Groups[1].Value, int.Parse(m.Groups[2].Value));
+        return prices;
+    }
+
+    /// <summary>
+    /// Spells of content/items/m.*.json as TzSpell skills (Magic.kt): mana, cooldown (battle spells: the
+    /// staff's pause instead), circle, power; learnt once for the teacher's price (no training points),
+    /// or cast from a scroll or rune without learning.
+    /// </summary>
+    static Dictionary<string, TzSpell> Spells(string root, TzBalance b, Dictionary<string, BaseSkill> skills, DamageElement magic)
+    {
+        var result = new Dictionary<string, TzSpell>();
+        var prices = TeacherPrices(root);
+        foreach (var file in Directory.GetFiles(Path.Combine(root, "content", "items"), "m.*.json").OrderBy(f => f))
+        {
+            var o = Json(file);
+            string id = o.TryGetValue("id", out var iv) ? iv as string : null;
+            if (id == null) continue;
+            var kind = SpellKind(id);
+            if (kind == null) continue;
+            string name = o.TryGetValue("name", out var nm) && nm is string s && s.Length > 0 ? char.ToUpper(s[0]) + s.Substring(1) : id;
+            var spell = Make<TzSpell>($"{Generated}/Types/spell-{id}.asset");
+            var so = new SerializedObject(spell);
+            S(so, "id", id);
+            S(so, "defaultTitle", name);
+            S(so, "defaultDescription", o.TryGetValue("description", out var dv) ? dv as string ?? "" : "");
+            P(so, "kind").enumValueIndex = (int)kind.Value;
+            I(so, "circle", (int)N(o, "level", 1));
+            I(so, "powerMin", (int)N(o, "power_min"));
+            I(so, "powerMax", (int)N(o, "power_max"));
+            P(so, "criminalsOnly").boolValue = N(o, "criminals_only") != 0;
+            P(so, "drainsMana").boolValue = id == "m.w.hit";
+            P(so, "vampire").boolValue = id == "m.w.vamp";
+            P(so, "skillType").enumValueIndex = 0;   // Active
+            I(so, "maxLevel", 1);
+            I(so, "consumeMp.baseAmount", (int)N(o, "mana_cost"));
+            bool battle = kind == TzSpell.Kind.Battle || kind == TzSpell.Kind.Area;
+            F(so, "coolDownDuration.baseAmount", battle ? (float)b.Pause("staff", 0) : (float)N(o, "cooldown"));
+            if (battle)
+            {
+                P(so, "skillAttackType").enumValueIndex = 1;   // Normal: TzSpell gives the damage
+                I(so, "damageInfo.damageType", 0);               // melee: at once
+                F(so, "damageInfo.hitDistance", kind == TzSpell.Kind.Area ? 10f : 12f);
+                F(so, "damageInfo.hitFov", 360f);
+                P(so, "damageInfo.hitOnlySelectedTarget").boolValue = kind == TzSpell.Kind.Battle;
+                P(so, "damageAmount.damageElement").objectReferenceValue = magic;
+            }
+            else
+            {
+                P(so, "skillAttackType").enumValueIndex = 0;
+                switch (kind.Value)
+                {
+                    case TzSpell.Kind.Heal: case TzSpell.Kind.Armor: case TzSpell.Kind.Strength: case TzSpell.Kind.Mana:
+                        P(so, "skillBuffType").enumValueIndex = 4;   // BuffToTarget (yourself if none)
+                        P(so, "buffToUserIfNoTarget").boolValue = true;
+                        F(so, "buffDistance.baseAmount", 10f);
+                        P(so, "buff.noDuration").boolValue = true;
+                        break;
+                    case TzSpell.Kind.Other:   // рой мошек: the target stands 20 s
+                        P(so, "skillBuffType").enumValueIndex = 7;   // BuffToEnemy
+                        F(so, "buffDistance.baseAmount", 10f);
+                        F(so, "buff.duration.baseAmount", 20f);
+                        P(so, "buff.disallowMove").boolValue = true;
+                        P(so, "buff.disallowAttack").boolValue = true;
+                        P(so, "buff.disallowUseSkill").boolValue = true;
+                        P(so, "buff.disallowUseItem").boolValue = true;
+                        break;
+                }
+                if (kind == TzSpell.Kind.Armor)
+                {
+                    // Armour + (the mage's int + level): the buff's level carries it.
+                    var armors = P(so, "buff.increaseArmors");
+                    armors.arraySize = 0;
+                    ArmorOf(armors, null, 1, 1);
+                }
+                if (kind == TzSpell.Kind.Strength) { F(so, "buff.increaseStatsRate.baseStats.hp", 0.02f); F(so, "buff.increaseStatsRate.statsIncreaseEachLevel.hp", 0.02f); }
+                if (kind == TzSpell.Kind.Mana) { F(so, "buff.increaseStatsRate.baseStats.mp", 0.02f); F(so, "buff.increaseStatsRate.statsIncreaseEachLevel.mp", 0.02f); }
+            }
+            // Learning: the teacher's price once; a spell no teacher sells (or a quest gives for 0) comes only on scrolls and runes.
+            int price = prices.TryGetValue(id, out var pr) ? pr : 0;
+            var steps = P(so, "requirementEachLevels");
+            steps.arraySize = 1;
+            var step = steps.GetArrayElementAtIndex(0);
+            step.FindPropertyRelative("disallow").boolValue = price <= 0;
+            step.FindPropertyRelative("characterLevel").intValue = 0;
+            step.FindPropertyRelative("skillPoint").floatValue = 0;
+            step.FindPropertyRelative("gold").intValue = price;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(spell);
+            result[id] = spell;
+        }
+        Debug.Log($"[TzImport] spells: {result.Count} — {string.Join(", ", result.Keys)}");
+        return result;
+    }
+
+    /// <summary>Создать еду and Букет make things, chosen as in Magic.kt (createfood weights by repeating).</summary>
+    static void AddFoodToSpells(Dictionary<string, TzSpell> spells, Dictionary<string, BaseItem> items)
+    {
+        void Fill(string spell, IEnumerable<(string id, int weight)> things)
+        {
+            if (!spells.TryGetValue(spell, out var s)) return;
+            var list = new List<BaseItem>();
+            foreach (var (id, weight) in things)
+                if (items.TryGetValue(id, out var it)) for (int i = 0; i < weight; i++) list.Add(it);
+                else Debug.Log($"[TzImport] {spell}: no {id}");
+            var so = new SerializedObject(s);
+            var makes = P(so, "makes");
+            makes.arraySize = list.Count;
+            for (int i = 0; i < list.Count; i++) makes.GetArrayElementAtIndex(i).objectReferenceValue = list[i];
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(s);
+        }
+        Fill("m.createfood", new[] { ("i.f.apple", 21), ("i.f.cabbage", 15), ("i.f.bread", 20), ("i.f.sandwich", 20), ("i.f.mushroom", 10), ("i.f.sausage", 15) });
+        Fill("m.buket", "roftphlgvadibjeknmxs".Select(c => ("i.bc." + c, 1)));
     }
 
     const string DemoServerInstance = "Assets/Tz/BaseDemo/Prefabs/MMOServerInstance-CE.prefab";
@@ -352,7 +544,7 @@ public static class TzImport
     /// trader who buys such things in the old game (docs/mechanics-world.md §4.3).
     /// </summary>
     static Dictionary<string, BaseItem> Items(string root, TzBalance b, Dictionary<string, MultiplayerARPG.Attribute> attributes,
-        Dictionary<string, WeaponType> weaponTypes, Dictionary<string, ArmorType> armorTypes)
+        Dictionary<string, WeaponType> weaponTypes, Dictionary<string, ArmorType> armorTypes, Dictionary<string, TzSpell> spells, DamageElement magic)
     {
         var result = new Dictionary<string, BaseItem>();
         var balance = Json(Path.Combine(root, "content", "balance", "items.json"));
@@ -374,6 +566,23 @@ public static class TzImport
             Prices[id] = price;
 
             string path = $"{Generated}/Items/{id}.asset";
+            string spellId = id.StartsWith("i.m.") ? "m." + id.Substring(4) : id.StartsWith("i.r.") ? "m." + id.Substring(4) : null;
+            if (spellId != null && spells.TryGetValue(spellId, out var spellOfItem))
+            {
+                // A scroll (burns) or a rune (stays): casts its spell without learning it.
+                var scroll = Make<SkillItem>(path);
+                var sso = new SerializedObject(scroll);
+                S(sso, "id", id);
+                S(sso, "defaultTitle", name);
+                I(sso, "sellPrice", (int)Math.Round(price * SellMultiplier(id)));
+                I(sso, "maxStack", id.StartsWith("i.m.") ? 99 : 1);
+                P(sso, "usingSkill").objectReferenceValue = spellOfItem;
+                I(sso, "usingSkillLevel", 1);
+                sso.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(scroll);
+                result[id] = scroll;
+                continue;
+            }
             if (kind == "food" && o != src)
             {
                 // Food and elixirs: a share of the maximum health and mana at once (TzFoodItem).
@@ -415,6 +624,9 @@ public static class TzImport
                 F(so, "damageAmount.amount.baseAmount.max", dmg[1]);
                 F(so, "damageAmount.amount.amountIncreaseEachLevel.min", 0);
                 F(so, "damageAmount.amount.amountIncreaseEachLevel.max", 0);
+                // Staves hit with magic, through armour (balance.md §7): the old verb says so.
+                string verb = src.TryGetValue("verb", out var vb) ? vb as string : null;
+                P(so, "damageAmount.damageElement").objectReferenceValue = verb == "магией" || verb == "молнией" ? magic : null;
                 double pause = Math.Max(0.5, N(o, "pause", b.Pause(cls, 0)));
                 F(so, "rateOfFire", (float)(60 / pause));
                 F(so, "increaseStats.baseStats.criRate", (float)((b.CritBase(cls) - b.CritBase("hand")) / 100));
@@ -471,7 +683,7 @@ public static class TzImport
     }
 
     /// <summary>Registers what was made in the demo's game database, so saved characters find their things.</summary>
-    static void Database(IEnumerable<MultiplayerARPG.Attribute> attributes, IEnumerable<WeaponType> weaponTypes, IEnumerable<ArmorType> armorTypes, IEnumerable<BaseItem> items, IEnumerable<BaseSkill> skills)
+    static void Database(IEnumerable<MultiplayerARPG.Attribute> attributes, IEnumerable<WeaponType> weaponTypes, IEnumerable<ArmorType> armorTypes, IEnumerable<BaseItem> items, IEnumerable<BaseSkill> skills, DamageElement magic)
     {
         var db = AssetDatabase.LoadMainAssetAtPath(DemoDatabase);
         var so = new SerializedObject(db);
@@ -488,6 +700,7 @@ public static class TzImport
         Fill("armorTypes", armorTypes.Cast<UnityEngine.Object>());
         Fill("items", items.Cast<UnityEngine.Object>());
         Fill("skills", skills.Cast<UnityEngine.Object>());
+        Fill("damageElements", new UnityEngine.Object[] { magic });
         so.ApplyModifiedPropertiesWithoutUndo();
         EditorUtility.SetDirty(db);
     }
@@ -512,7 +725,7 @@ public static class TzImport
     static Dictionary<string, object> Json(string path) => TzJson.Parse(File.ReadAllText(path)) as Dictionary<string, object>;
     static double N(Dictionary<string, object> o, string k, double def = 0) => o.TryGetValue(k, out var v) && v is double d ? d : def;
 
-    static List<Monster> Monsters(string root, TzBalance b, Dictionary<string, BaseItem> items)
+    static List<Monster> Monsters(string root, TzBalance b, Dictionary<string, BaseItem> items, DamageElement magic)
     {
         var npcs = Json(Path.Combine(root, "content", "balance", "npcs.json"));
         var chosen = npcs
@@ -572,6 +785,10 @@ public static class TzImport
             armor.FindPropertyRelative("amount.baseAmount").floatValue = (float)N(o, "armor");
             armor.FindPropertyRelative("amount.amountIncreaseEachLevel").floatValue = 0;
             armor.FindPropertyRelative("amount.rateIncreaseEachLevel").floatValue = 0;
+            ArmorOf(armors, magic, (float)N(o, "magicDefence"), 0);
+            // A monster whose old blow is «магией»/«молнией» hits with magic.
+            string verb = File.Exists(file) && Json(file).TryGetValue("war", out var wv) && wv is Dictionary<string, object> war && war.TryGetValue("verb", out var vv) ? vv as string : null;
+            P(so, "damageAmount.damageElement").objectReferenceValue = verb == "магией" || verb == "молнией" ? magic : null;
             var dmg = o.TryGetValue("dmg", out var dv) && dv is List<object> dl && dl.Count == 2 ? dl.Select(x => (float)(double)x).ToArray() : new[] { 1f, 2f };
             F(so, "damageAmount.amount.baseAmount.min", dmg[0]);
             F(so, "damageAmount.amount.baseAmount.max", dmg[1]);

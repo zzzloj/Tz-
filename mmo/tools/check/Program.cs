@@ -62,6 +62,14 @@ static class Program
                 case "Pause": got = b.Pause((string)a[0], I(a[1])); break;
                 case "CritBase": got = b.CritBase((string)a[0]); break;
                 case "Penetration": got = b.Penetration((string)a[0]); break;
+                case "SpellChance": got = b.SpellChance(I(a[0]), I(a[1]), I(a[2]), I(a[3])); break;
+                case "SpellDamage":
+                    b.SpellDamage(I(a[0]), I(a[1]), I(a[2]), (string)a[3], 0, I(a[4]), I(a[5]), out int smin, out int smax);
+                    gotPair = new double[] { smin, smax };
+                    got = smin;
+                    break;
+                case "HealAmount": got = b.HealAmount(I(a[0]), I(a[1]), I(a[2])); break;
+                case "MagicEvasion": got = b.MagicEvasion(I(a[0]), I(a[1]), I(a[2])); break;
                 case "Duel":
                     int ah, dh;
                     var fa = Fighter((Dictionary<string, object>)a[0], out ah);

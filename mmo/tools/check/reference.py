@@ -2,7 +2,7 @@
 balance model tools/balance/model.py, which mirrors the game server's Balance.kt. Writes reference.json;
 the dotnet check (Program.cs) recomputes every case in C# and fails on a difference.
 Run: python3 mmo/tools/check/reference.py && dotnet run --project mmo/tools/check"""
-import json, os, random, sys
+import json, math, os, random, sys
 here = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(here, '..', '..', '..', 'tools', 'balance'))
 import model as m
@@ -41,6 +41,28 @@ for cls, p in m.PAUSE.items():
         case('Pause', [cls, dex], m.delay(p, dex))
     case('CritBase', [cls], m.crit_chance(cls))
     case('Penetration', [cls], m.pen_factor(cls))
+
+# Magic (Magic.kt spellChance, spellDamage, heal; Combat.kt magicDodge), written out here from the Kotlin.
+for magic in (0, 3, 10):
+    for int_ in (1, 6, 10):
+        for strv in (2, 5, 10):
+            for circle in (1, 3, 5):
+                case('SpellChance', [magic, int_, strv, circle], int(min(95, (magic * 0.25 + int_ * 0.75) * 10 - circle * 10 + 10 - max(0, strv - 4) * 2)))
+        for L in (1, 10, 30):
+            for cls in ('hand', 'staff'):
+                worn = m.weapon_dps(m.tier_worn(L))
+                bare = min(1.0, 2.0 / worn) if cls == 'hand' else 1.0
+                k = worn * bare * 2.6 * (1 + 0.04 * int_ + 0.03 * magic) / 15.0
+                for pmin, pmax in ((4, 10), (14, 20), (0, 40)):
+                    jround = lambda x: int(math.floor(x + 0.5))
+                    case('SpellDamage', [L, int_, magic, cls, pmin, pmax], [max(0, jround(pmin * k)), max(1, jround(pmax * k))])
+for hp in (25, 120):
+    for roll in (8, 20):
+        for int_ in (1, 10):
+            case('HealAmount', [hp, roll, int_], int(math.floor(hp * roll / 50.0 * (1 + 0.04 * int_) + 0.5)))
+for dex in (0, 7):
+    for mu in (0, 5):
+        case('MagicEvasion', [dex, mu, 12], dex + 3 * mu + 12)
 
 # Duels: random fighters, the power ratio and win chance.
 rnd = random.Random(7)

@@ -164,6 +164,9 @@ namespace Tz.Rules
             return a <= 0 ? 0 : a / (a + K(attackerLevel));
         }
 
+        public double MagicDefencePerInt => Num(Obj("magic"), "perInt", 5);
+        public double MagicDefencePerResist => Num(Obj("magic"), "perResist", 8);
+
         public double MagicDefence(int @int, int magicResist, double armor)
         {
             var mg = Obj("magic");
@@ -178,6 +181,40 @@ namespace Tz.Rules
             return Math.Min(Num(bl, "max", 30), Num(bl, "base", 5) + Num(bl, "perParry", 2) * parry + Num(bl, "perDex", 0.5) * dex);
         }
         public double BlockCut => Num(Obj("block"), "cut", 0.5);
+
+        // ---- magic (Magic.kt, balance.md §8) ------------------------------------------------------------
+        /// <summary>Seconds of weapon damage in a spell of power 15 (calibrated 06.10).</summary>
+        public const double SpellPerCast = 2.6;
+        /// <summary>Damage a second of bare fists: what a mage without a weapon is cut to.</summary>
+        public const double FistDps = 2.0;
+
+        /// <summary>
+        /// Chance to cast in percent (cast if roll(0,100) ≤ it): magic and intelligence count, the circle
+        /// takes 10 a step, strength over 4 spoils it, −10 in the saddle, +20 with the flag; at most 95.
+        /// </summary>
+        public int SpellChance(int magic, int @int, int str, int circle, bool mounted = false, bool flag = false) =>
+            (int)Math.Min(95.0, (magic * 0.25 + @int * 0.75) * 10 - circle * 10 + 10 - Math.Max(0, str - 4) * 2
+                - (mounted ? 10 : 0) + (flag ? 20 : 0));
+
+        /// <summary>Damage range of a battle spell of old power pmin..pmax for a mage of this level.</summary>
+        public void SpellDamage(int level, int @int, int magic, string weaponClass, double spellPct, int pmin, int pmax, out int min, out int max)
+        {
+            double worn = WeaponDps(TierWorn(level));
+            double bare = weaponClass == "hand" ? Math.Min(1.0, FistDps / worn) : 1.0;
+            double unit = worn * bare * SpellPerCast * (1 + 0.04 * @int + 0.03 * magic) * (1 + spellPct / 100.0);
+            double k = unit / 15.0;
+            min = Math.Max(0, (int)RoundL(pmin * k));
+            max = Math.Max(1, (int)RoundL(pmax * k));
+        }
+
+        /// <summary>Health healed by a healing spell: maxHp · roll / 50 · (1 + 0.04·int).</summary>
+        public int HealAmount(int maxHp, int roll, int @int) => (int)RoundL(maxHp * roll / 50.0 * (1 + 0.04 * @int));
+
+        /// <summary>Evasion against magic: dex + 3·magic evasion skill + level.</summary>
+        public double MagicEvasion(int dex, int magicDodge, int l) => EvaPerDex * dex + EvaPerDodge * magicDodge + l;
+
+        /// <summary>Mana regeneration per tick, like health's with meditation in place of regeneration.</summary>
+        public double ManaRegenPerTick(int maxMana, int meditation, bool safe) => RegenPerTick(maxMana, meditation, safe);
 
         // ---- monsters ------------------------------------------------------------------------------
         Dictionary<string, object> Mo => Obj("monsters");

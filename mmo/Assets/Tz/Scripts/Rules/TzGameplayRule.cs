@@ -52,6 +52,30 @@ public class TzGameplayRule : DefaultGameplayRule
     // The framework asks for the damage of an element and then, in the same expression, for the share
     // the armour stops, without the attacker: remember who strikes between the two calls (one thread).
     [ThreadStatic] static int strikingLevel;
+    [ThreadStatic] static bool strikingPlayer;
+
+    static DamageElement magicElement;
+    /// <summary>The magic damage element (id "magic", made by TzImport): spells, staves, magic monsters.</summary>
+    public static DamageElement MagicElement
+    {
+        get
+        {
+            if (magicElement == null && GameInstance.DamageElements != null)
+                foreach (var e in GameInstance.DamageElements.Values)
+                    if (e != null && e.Id == "magic") { magicElement = e; break; }
+            return magicElement;
+        }
+    }
+
+    static bool IsMagic(DamageElement e) => e != null && MagicElement != null && e == MagicElement;
+
+    /// <summary>Evasion against magic: players dex + 3·magic evasion + level; monsters their evasion.</summary>
+    public static float MagicEvasion(BaseCharacterEntity c)
+    {
+        if (!(c is BasePlayerCharacterEntity))
+            return c.GetCaches().Stats.evasion;
+        return (float)Balance.MagicEvasion(Mathf.RoundToInt(AttributeAmount(c, "dex")), SkillLevel(c, "magic_uklon"), c.Level);
+    }
     [ThreadStatic] static double strikingPen;
 
     public override float GetHitChance(BaseCharacterEntity attacker, BaseCharacterEntity damageReceiver)
@@ -67,13 +91,26 @@ public class TzGameplayRule : DefaultGameplayRule
         isBlocked = false;
         if (attacker == null)
             return true;
-        // Skill in the weapon in hand: +3 accuracy a step (balance.md §5).
-        float acc = attacker.GetCaches().Stats.accuracy + (float)Balance.AccPerWeaponSkill * SkillLevel(attacker, WeaponSkill(WeaponClass(weapon)));
-        float eva = damageReceiver.GetCaches().Stats.evasion;
+        var spell = skill as TzSpell;
+        bool magic = spell != null;
+        if (!magic && damageAmounts != null)
+            foreach (var e in damageAmounts.Keys) if (IsMagic(e)) { magic = true; break; }
+        // Holy spells hit monsters only.
+        if (spell != null && spell.criminalsOnly && damageReceiver is BasePlayerCharacterEntity)
+            return false;
+        // Skill in the weapon in hand: +3 accuracy a step (balance.md §5); a spell +20 (Magic.kt battleSpell).
+        string cls = WeaponClass(weapon);
+        float acc = attacker.GetCaches().Stats.accuracy + (float)Balance.AccPerWeaponSkill * SkillLevel(attacker, WeaponSkill(cls)) + (spell != null ? 20f : 0f);
+        float eva = magic ? MagicEvasion(damageReceiver) : damageReceiver.GetCaches().Stats.evasion;
         if (UnityEngine.Random.value * 100f >= Balance.HitChance(acc, eva))
             return false;
-        isCritical = UnityEngine.Random.value < GetCriticalChance(attacker, damageReceiver);
-        isBlocked = UnityEngine.Random.value < GetBlockChance(attacker, damageReceiver);
+        float crit = GetCriticalChance(attacker, damageReceiver);
+        if (spell != null)
+            // Spells crit 6 %, plus what items add over the weapon's own chance.
+            crit = Mathf.Max(0f, crit - (float)(Balance.CritBase(cls) / 100.0)) + (float)(Balance.CritBase("spell") / 100.0);
+        isCritical = UnityEngine.Random.value < crit;
+        // A shield does not stop magic.
+        isBlocked = !magic && UnityEngine.Random.value < GetBlockChance(attacker, damageReceiver);
         return true;
     }
 
@@ -82,8 +119,9 @@ public class TzGameplayRule : DefaultGameplayRule
         string cls = WeaponClass(weapon);
         strikingLevel = attacker != null ? attacker.Level : 1;
         strikingPen = Balance.Penetration(cls);
+        strikingPlayer = damageReceiver is BasePlayerCharacterEntity;
         float damage = base.RandomAttackDamage(fromPosition, attacker, damageReceiver, damageElement, damageAmount, weapon, skill, skillLevel, randomSeed);
-        bool physical = damageElement == null || damageElement == GameInstance.Singleton.DefaultDamageElement;
+        bool physical = (damageElement == null || damageElement == GameInstance.Singleton.DefaultDamageElement) && !IsMagic(damageElement);
         if (attacker != null && physical && skill == null && cls != "crossbow")
         {
             // Strength adds str/2 per 4 s of pause to every blow, so damage per second stays fair (balance.md §5).
@@ -91,14 +129,14 @@ public class TzGameplayRule : DefaultGameplayRule
             double pause = w != null && w.RateOfFire > 0 ? 60.0 / w.RateOfFire : Balance.Pause(cls, 0);
             damage += (float)Balance.StrengthBonus(Mathf.RoundToInt(AttributeAmount(attacker, "str")), pause);
         }
-        if (attacker != null && physical && skill == null)
-            // Skill in the weapon: +3 % damage a step, on the weapon's damage and strength's (Combat.kt).
+        if (attacker != null && skill == null)
+            // Skill in the weapon (staves' magic blows too): +3 % damage a step, on the weapon's damage and strength's (Combat.kt).
             damage *= (float)Balance.WeaponSkillMultiplier(SkillLevel(attacker, WeaponSkill(cls)));
         return damage;
     }
 
     /// <summary>A character's amount of the attribute with this id (str, dex, int); 0 if none.</summary>
-    public static float AttributeAmount(BaseCharacterEntity character, string id)
+    public static float AttributeAmount(ICharacterData character, string id)
     {
         var attributes = character.GetCaches().Attributes;
         if (attributes == null) return 0;
@@ -119,7 +157,7 @@ public class TzGameplayRule : DefaultGameplayRule
     }
 
     /// <summary>A character's step in the skill with this id (Protocol.kt SKILLS keys); 0 if not learnt.</summary>
-    public static int SkillLevel(BaseCharacterEntity character, string id)
+    public static int SkillLevel(ICharacterData character, string id)
     {
         var skills = character.GetCaches().Skills;
         if (skills == null) return 0;
@@ -135,14 +173,21 @@ public class TzGameplayRule : DefaultGameplayRule
         float resistance;
         if (damageReceiverResistances.TryGetValue(damageElement, out resistance))
             damageAmount -= damageAmount * Mathf.Min(resistance, damageElement.MaxResistanceAmount);
+        int level = strikingLevel > 0 ? strikingLevel : 1;
+        if (IsMagic(damageElement))
+        {
+            // Magic defence: 5·int + 8·magic resistance (through the attribute's and the skill's armour of
+            // the magic element) + ¼ of the armour for characters; monsters have theirs as it is.
+            damageReceiverArmors.TryGetValue(damageElement, out float defence);
+            if (strikingPlayer && damageReceiverArmors.TryGetValue(GameInstance.Singleton.DefaultDamageElement, out float physicalArmor))
+                defence += 0.25f * physicalArmor;
+            damageAmount *= (float)(1 - Balance.MagicCut(defence, level));
+            return damageAmount;
+        }
         float armor;
         if (damageReceiverArmors.TryGetValue(damageElement, out armor))
         {
-            bool physical = damageElement == GameInstance.Singleton.DefaultDamageElement;
-            int level = strikingLevel > 0 ? strikingLevel : 1;
-            double cut = physical
-                ? Balance.ArmorCut(armor, level, strikingPen > 0 ? strikingPen : 1.0)
-                : Balance.MagicCut(armor, level);
+            double cut = Balance.ArmorCut(armor, level, strikingPen > 0 ? strikingPen : 1.0);
             damageAmount *= (float)(1 - cut);
         }
         return damageAmount;
@@ -185,6 +230,12 @@ public class TzGameplayRule : DefaultGameplayRule
     {
         // The server heals RegenPerTick every RegenEvery seconds; here it flows evenly.
         return (float)(Balance.RegenPerTick(character.GetCaches().MaxHp, SkillLevel(character, "regeneration"), false) / Balance.RegenEvery) + character.GetCaches().Stats.hpRecovery;
+    }
+
+    public override float GetRecoveryMpPerSeconds(BaseCharacterEntity character)
+    {
+        // Mana returns like health, with meditation in place of regeneration.
+        return (float)(Balance.ManaRegenPerTick(character.GetCaches().MaxMp, SkillLevel(character, "meditation"), false) / Balance.RegenEvery) + character.GetCaches().Stats.mpRecovery;
     }
 
     public override bool RewardExp(BaseCharacterEntity character, int exp, float multiplier, RewardGivenType rewardGivenType, int giverLevel, int sourceLevel, out int rewardedExp)
