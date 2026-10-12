@@ -1450,11 +1450,15 @@ public static class TzImport
         if (spawner != null)
         {
             var sso = new SerializedObject(spawner);
+            // The list exists only in the standalone (server) build's serialization.
             var sm = sso.FindProperty("spawningMaps");
-            sm.arraySize = infos.Count;
-            for (int i = 0; i < infos.Count; i++) sm.GetArrayElementAtIndex(i).objectReferenceValue = infos[i];
-            sso.ApplyModifiedPropertiesWithoutUndo();
-            PrefabUtility.SaveAsPrefabAsset(server, DemoServerInstance);
+            if (sm != null)
+            {
+                sm.arraySize = infos.Count;
+                for (int i = 0; i < infos.Count; i++) sm.GetArrayElementAtIndex(i).objectReferenceValue = infos[i];
+                sso.ApplyModifiedPropertiesWithoutUndo();
+                PrefabUtility.SaveAsPrefabAsset(server, DemoServerInstance);
+            }
         }
         else { problems++; Debug.LogError("[TzImport] no MapSpawnNetworkManager in " + DemoServerInstance); }
         PrefabUtility.UnloadPrefabContents(server);
