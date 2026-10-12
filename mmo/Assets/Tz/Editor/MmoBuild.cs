@@ -173,6 +173,18 @@ public static class MmoBuild
         return report.summary.result == BuildResult.Succeeded;
     }
 
+    /// <summary>
+    /// build/Server/maps.txt: the maps the server starts ("BaseMap-CE|Tz-North|…", the -spawnMaps argument,
+    /// deploy/vps/mmo/docker-compose.yml): its saved config would otherwise keep the first deploy's list.
+    /// </summary>
+    static void WriteMaps()
+    {
+        var ids = Tz.World.TzWorld.Maps.Where(m => m.on).Select(m => m.scene);
+        var dir = Path.Combine(Root(), "build", "Server");
+        Directory.CreateDirectory(dir);
+        File.WriteAllText(Path.Combine(dir, "maps.txt"), string.Join("|", ids));
+    }
+
     /// <summary>The Linux server: one build for every role (central, map spawn, map, database), chosen by command-line flags; runs with -batchmode -nographics.</summary>
     public static void BuildServer()
     {
@@ -199,7 +211,8 @@ public static class MmoBuild
         Debug.Log("Linux variations: " + (Directory.Exists(variations) ? string.Join(", ", Directory.GetDirectories(variations).Select(Path.GetFileName)) : "none at " + variations));
         PlayerSettings.SetScriptingBackend(NamedBuildTarget.Server, ScriptingImplementation.Mono2x);
         options.subtarget = (int)StandaloneBuildSubtarget.Server;
-        if (TryRun(options)) return;
+        WriteMaps();
+        if (TryRun(options)) { WriteMaps(); return; }
         // No server module: the ordinary player, with the old input manager switched off so nothing polls the mouse.
         Debug.LogWarning("Dedicated Server build failed; falling back to the player with the Input System only.");
         var settings = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/ProjectSettings.asset")[0]);

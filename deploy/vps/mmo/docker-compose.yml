@@ -19,20 +19,14 @@ services:
       - "7000:7000/udp"
       - "7500:7500/udp"
       - "8000-8010:8000-8010/udp"
+    # The maps to start come from the build (maps.txt, MmoBuild.WriteMaps): the saved config keeps an old list.
     command:
-      - /srv/server/tz-mmo-server.x86_64
-      - -batchmode
-      - -nographics
-      - -logFile
-      - /dev/stdout
-      - -startDatabaseServer
-      # The demo's database options: 0 MySQL, 1 SQLite (no Postgres in the prefab yet).
-      - -databaseOptionIndex
-      - "1"
-      - -startLoginServer
-      - -startCentralServer
-      - -startMapSpawnServer
-      - -spawnExePath
-      - /srv/server/tz-mmo-server.x86_64
-      - -publicAddress
-      - ${TZ_MMO_PUBLIC_ADDRESS:-217.177.74.66}
+      - sh
+      - -c
+      - >-
+        exec /srv/server/tz-mmo-server.x86_64 -batchmode -nographics -logFile /dev/stdout
+        -startDatabaseServer -databaseOptionIndex 1
+        -startLoginServer -startCentralServer -startMapSpawnServer
+        -spawnExePath /srv/server/tz-mmo-server.x86_64
+        -publicAddress ${TZ_MMO_PUBLIC_ADDRESS:-217.177.74.66}
+        -spawnMaps "$$(cat /srv/server/maps.txt 2>/dev/null || echo BaseMap-CE)"
