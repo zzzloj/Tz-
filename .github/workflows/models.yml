@@ -32,8 +32,12 @@ jobs:
           TRIPO_API_KEY: ${{ secrets.TRIPO_API_KEY }}
         run: |
           set -o pipefail
-          python3 tools/models/tripo.py 2>&1 | grep -v "Qt Plugin\|Cannot load library\|plugins:\|^$" | tee tripo.log
-          echo "::notice title=tripo::$(cut -c1-300 tripo.log | tail -60 | sed ':a;N;$!ba;s/\n/%0A/g')"
+          code=0
+          python3 tools/models/tripo.py > tripo.log 2>&1 || code=$?
+          grep -v "Qt Plugin\|Cannot load library\|plugins:\|^$" tripo.log > tripo-short.log || true
+          cat tripo-short.log
+          echo "::notice title=tripo::$(cut -c1-300 tripo-short.log | tail -60 | sed ':a;N;$!ba;s/\n/%0A/g')"
+          exit $code
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -44,8 +48,10 @@ jobs:
           retention-days: 14
 
       - name: Commit the models
+        if: always()
         run: |
+          # Only when a model came: models.json alone (a failed order) is not worth a commit.
+          if [ -z "$(git status --porcelain content/art/models | grep '\.glb')" ]; then echo "no new models"; exit 0; fi
           git add content/art/models
-          if git diff --cached --quiet; then echo "nothing new"; exit 0; fi
           git -c user.name="tripo ci" -c user.email="ci@localhost" commit -qm "Модели из Tripo: $(git diff --cached --name-only | sed -n 's#content/art/models/\(.*\)\.glb#\1#p' | tr '\n' ' ')"
           git push -q origin HEAD:main

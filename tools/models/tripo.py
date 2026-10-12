@@ -148,9 +148,15 @@ def main():
         except Exception as e:
             print(f"{name}: FAILED {e}")
             failed.append(name)
+            if "2010" in str(e):
+                print("no credits left on the API balance: stopping")
+                break
+            continue
         json.dump(index, open(index_path, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
     total = sum(c for _, _, c in spent if isinstance(c, (int, float)))
     print(f"done: {len(spent)} tasks, {total} credits; failed: {', '.join(failed) or 'none'}")
+    if failed:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
