@@ -1,0 +1,5 @@
+{
+  "_doc": "3D models of the MMO (mmo/Assets/Tz/Editor/TzModels.cs). Key — file <key>.glb here, made by tools/models/prepare.py from a generator's model (Tripo). for — what it replaces on the map: building kinds (home — a house one does not enter, house, shop, tavern, hall, barn) or prop kinds (tree, tree-dead, bush, rock, grave, barrel, crates, sign). front — degrees around the vertical that turn the model's front (its door) to the street.",
+  "house-a": {"for": ["home", "house", "shop", "tavern", "hall", "barn"], "front": -90, "source": "Tripo, image to 3D from content/art/topdown/objects/obj-house-a.webp, 12.10.2026"},
+  "tree": {"for": ["tree"], "front": 0, "source": "Tripo, image to 3D from content/art/topdown/objects/obj-tree.webp, 12.10.2026"}
+}

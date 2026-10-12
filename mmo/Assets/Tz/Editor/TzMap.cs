@@ -142,6 +142,7 @@ public static class TzMap
     }
 
     static Mesh cube, cylinder, sphere;
+    static Dictionary<string, TzModels.Model> models = new Dictionary<string, TzModels.Model>();
     static Mesh Builtin(string name)
     {
         var go = GameObject.CreatePrimitive(name == "Cube" ? PrimitiveType.Cube : name == "Cylinder" ? PrimitiveType.Cylinder : PrimitiveType.Sphere);
@@ -163,6 +164,8 @@ public static class TzMap
         Directory.CreateDirectory(Dir + "/Meshes");
         AssetDatabase.Refresh();
         cube = Builtin("Cube"); cylinder = Builtin("Cylinder"); sphere = Builtin("Sphere");
+        farTree = null;
+        models = TzModels.Load(Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..")));
 
         var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
         var level = GameObject.Find("Level");
@@ -306,8 +309,28 @@ public static class TzMap
             var roof = Mat("roof-" + b.Kind, colors.roof);
             var at = W(b.Pos);
             float rot = (float)b.Rot, bw = (float)b.W, bd = (float)b.D, bh = (float)b.H;
-            batch.For(wall, at).Add(cube, TRS(at + Vector3.up * bh / 2, rot, new Vector3(bw, bh, bd)));
-            batch.For(roof, at).Add(roofMesh, TRS(at + Vector3.up * bh, rot, new Vector3(bw + 0.6f, Mathf.Min(bw, bd) * 0.45f, bd + 0.6f)));
+            float front = bd / 2;
+            if (models.TryGetValue(b.Kind, out var model))
+            {
+                // The model fitted into the building's footprint, its front to the street.
+                bool turned = Mathf.Abs(Mathf.Repeat(model.Front, 180f) - 90f) < 1f;
+                float mx = turned ? model.Size.z : model.Size.x, mz = turned ? model.Size.x : model.Size.z;
+                float k = Mathf.Min(bw / mx, bd / mz);
+                bh = model.Size.y * k;
+                front = mz * k / 2;
+                var mgo = new GameObject("Model " + model.Name);
+                mgo.transform.SetParent(parent, false);
+                mgo.transform.SetPositionAndRotation(at - Vector3.up * model.Bottom * k, Quaternion.Euler(0, rot + model.Front, 0));
+                mgo.transform.localScale = Vector3.one * k;
+                mgo.AddComponent<MeshFilter>().sharedMesh = model.Mesh;
+                mgo.AddComponent<MeshRenderer>().sharedMaterial = model.Material;
+                GameObjectUtility.SetStaticEditorFlags(mgo, StaticEditorFlags.BatchingStatic);
+            }
+            else
+            {
+                batch.For(wall, at).Add(cube, TRS(at + Vector3.up * bh / 2, rot, new Vector3(bw, bh, bd)));
+                batch.For(roof, at).Add(roofMesh, TRS(at + Vector3.up * bh, rot, new Vector3(bw + 0.6f, Mathf.Min(bw, bd) * 0.45f, bd + 0.6f)));
+            }
             // The collider: a box of the building.
             var go = new GameObject(string.IsNullOrEmpty(b.Name) ? "House" : b.Name);
             go.transform.SetParent(parent, false);
@@ -317,11 +340,12 @@ public static class TzMap
             if (b.Rooms.Count == 0) continue;
             // A door and a sign over it, on the side to the street (+Z of the building).
             var fwd = Quaternion.Euler(0, rot, 0) * Vector3.forward;
-            batch.For(Mat("door", new Color(0.25f, 0.15f, 0.08f)), at)
-                .Add(cube, TRS(at + fwd * (bd / 2 + 0.03f) + Vector3.up * 1.1f, rot, new Vector3(1.4f, 2.2f, 0.1f)));
+            if (model == null)
+                batch.For(Mat("door", new Color(0.25f, 0.15f, 0.08f)), at)
+                    .Add(cube, TRS(at + fwd * (bd / 2 + 0.03f) + Vector3.up * 1.1f, rot, new Vector3(1.4f, 2.2f, 0.1f)));
             var sign = new GameObject("Sign " + b.Name, typeof(RectTransform));
             sign.transform.SetParent(go.transform, true);
-            sign.transform.position = at + fwd * (bd / 2 + 0.08f) + Vector3.up * Mathf.Min(bh - 0.6f, 3.2f);
+            sign.transform.position = at + fwd * (front + 0.15f) + Vector3.up * Mathf.Min(bh - 0.6f, 3.2f);
             sign.transform.rotation = Quaternion.LookRotation(-fwd);
             var text = sign.AddComponent<TextMeshPro>();
             text.text = b.Name;
@@ -358,6 +382,8 @@ public static class TzMap
         var stone = Mat("stone", new Color(0.5f, 0.5f, 0.5f));
         var grave = Mat("grave", new Color(0.62f, 0.62f, 0.6f));
         var wood = Mat("wood", new Color(0.5f, 0.35f, 0.2f));
+        var trees = new GameObject("Trees").transform;
+        trees.SetParent(root, false);
         foreach (var p in w.Props)
         {
             var at = W(p.Pos);
@@ -365,8 +391,13 @@ public static class TzMap
             switch (p.Kind)
             {
                 case "tree":
-                    batch.For(bark, at).Add(cylinder, TRS(at + Vector3.up * 1.2f * s, r, new Vector3(0.45f, 1.2f, 0.45f) * s));
-                    batch.For(leaves, at).Add(sphere, TRS(at + Vector3.up * 3.3f * s, r, new Vector3(3.2f, 3f, 3.2f) * s));
+                    if (models.TryGetValue("tree", out var treeModel))
+                        Tree(treeModel, at, r, s, trees, bark, leaves);
+                    else
+                    {
+                        batch.For(bark, at).Add(cylinder, TRS(at + Vector3.up * 1.2f * s, r, new Vector3(0.45f, 1.2f, 0.45f) * s));
+                        batch.For(leaves, at).Add(sphere, TRS(at + Vector3.up * 3.3f * s, r, new Vector3(3.2f, 3f, 3.2f) * s));
+                    }
                     colliders.For(null, at).Add(cube, TRS(at + Vector3.up * 1.5f, r, new Vector3(0.7f, 3f, 0.7f) * s));
                     break;
                 case "tree-dead":
@@ -419,6 +450,43 @@ public static class TzMap
             t.rectTransform.sizeDelta = new Vector2(1.4f, 0.5f);
             t.color = new Color(1f, 0.95f, 0.8f);
         }
+    }
+
+    static Mesh farTree;
+
+    /// <summary>
+    /// A tree of the model, ~8.5 m × scale tall, and far away the simple shape (a trunk and a ball) by a LOD group:
+    /// thousands of trees share the model's mesh, the phone draws the model only near the camera.
+    /// </summary>
+    static void Tree(TzModels.Model m, Vector3 at, float rot, float scale, Transform parent, Material bark, Material leaves)
+    {
+        if (farTree == null)
+        {
+            var trunk = new Builder(); trunk.Add(cylinder, TRS(Vector3.up * 1.2f, 0, new Vector3(0.45f, 1.2f, 0.45f)));
+            var crown = new Builder(); crown.Add(sphere, TRS(Vector3.up * 3.3f, 0, new Vector3(3.2f, 3f, 3.2f)));
+            farTree = new Mesh { name = "tree-far" };
+            farTree.CombineMeshes(new[] { new CombineInstance { mesh = trunk.Make("t"), transform = Matrix4x4.identity }, new CombineInstance { mesh = crown.Make("c"), transform = Matrix4x4.identity } }, false, true);
+            AssetDatabase.CreateAsset(farTree, $"{Dir}/Meshes/tree-far.asset");
+        }
+        float k = 8.5f * scale / Mathf.Max(0.01f, m.Size.y);
+        var go = new GameObject("Tree");
+        go.transform.SetParent(parent, false);
+        go.transform.SetPositionAndRotation(at, Quaternion.Euler(0, rot, 0));
+        var near = new GameObject("Near");
+        near.transform.SetParent(go.transform, false);
+        near.transform.localPosition = -Vector3.up * m.Bottom * k;
+        near.transform.localRotation = Quaternion.Euler(0, m.Front, 0);
+        near.transform.localScale = Vector3.one * k;
+        near.AddComponent<MeshFilter>().sharedMesh = m.Mesh;
+        var nr = near.AddComponent<MeshRenderer>(); nr.sharedMaterial = m.Material;
+        var far = new GameObject("Far");
+        far.transform.SetParent(go.transform, false);
+        far.transform.localScale = Vector3.one * (8.5f * scale / 4.8f);
+        far.AddComponent<MeshFilter>().sharedMesh = farTree;
+        var fr = far.AddComponent<MeshRenderer>(); fr.sharedMaterials = new[] { bark, leaves };
+        var lod = go.AddComponent<LODGroup>();
+        lod.SetLODs(new[] { new LOD(0.12f, new Renderer[] { nr }), new LOD(0.015f, new Renderer[] { fr }) });
+        lod.RecalculateBounds();
     }
 
     /// <summary>Invisible walls: over the water (rows of water cells as long boxes) and around the map.</summary>
