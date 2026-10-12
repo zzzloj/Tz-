@@ -65,9 +65,16 @@ public static class TzImport
             .ToDictionary(kv => kv.Key, kv => kv.Value));
         LoginDataManager();
         DefaultWeapon();
-        var monsters = Monsters(repoRoot, balance, items, magic);
-        Spawns(monsters);
-        Shops(repoRoot, items);
+        // The map from the old places (TzWorld, TzMap): its monsters are imported whatever their level.
+        var npcBalance = Json(Path.Combine(repoRoot, "content", "balance", "npcs.json"));
+        bool IsMonster(string id) => npcBalance.TryGetValue(id, out var o) && o is Dictionary<string, object> d
+            && d.TryGetValue("kind", out var k) && (k as string == "mob" || k as string == "animal");
+        var world = Tz.World.TzWorld.Build(repoRoot, 0, IsMonster);
+        var monsters = Monsters(repoRoot, balance, items, magic, new HashSet<string>(world.Spawns.Select(s => s.Template)));
+        try { problems += TzMap.Build(world, DemoMap, DemoMapInfo); }
+        catch (Exception e) { problems++; Debug.LogError("[TzImport] map: " + e); }
+        Spawns(monsters, world);
+        People(repoRoot, items, world);
         AddMonsterPrefabs(monsters.Select(m => m.Prefab).Concat(summons.Values));
         Database(attributes.Values, weaponTypes.Values, armorTypes.Values, items.Values, skills.Values.Concat(spells.Values).Concat(techniques.Values).Concat(new[] { stun, busy, zombie }).Concat(actions.Values), magic);
         try { CyrillicFont(); }
@@ -1109,12 +1116,12 @@ public static class TzImport
     static Dictionary<string, object> Json(string path) => TzJson.Parse(File.ReadAllText(path)) as Dictionary<string, object>;
     static double N(Dictionary<string, object> o, string k, double def = 0) => o.TryGetValue(k, out var v) && v is double d ? d : def;
 
-    static List<Monster> Monsters(string root, TzBalance b, Dictionary<string, BaseItem> items, DamageElement magic)
+    static List<Monster> Monsters(string root, TzBalance b, Dictionary<string, BaseItem> items, DamageElement magic, HashSet<string> onMap)
     {
         var npcs = Json(Path.Combine(root, "content", "balance", "npcs.json"));
         var chosen = npcs
             .Where(kv => kv.Value is Dictionary<string, object> o && (string)(o.TryGetValue("kind", out var k) ? k : "") is string kind
-                && (kind == "mob" || kind == "animal") && N(o, "level", 99) <= StartZoneMaxLevel)
+                && (kind == "mob" || kind == "animal") && (N(o, "level", 99) <= StartZoneMaxLevel || onMap.Contains(kv.Key)))
             .Select(kv => (id: kv.Key, o: (Dictionary<string, object>)kv.Value))
             // Monsters first, then animals; by level.
             .OrderBy(x => (string)x.o["kind"] == "mob" ? 0 : 1).ThenBy(x => N(x.o, "level")).ThenBy(x => x.id)
@@ -1256,48 +1263,74 @@ public static class TzImport
     }
 
     /// <summary>The demo map's spawn areas get our monsters in turn, each at its own level, four at a time.</summary>
-    static void Spawns(List<Monster> monsters)
+    /// <summary>
+    /// Monsters where the old world had them (TzWorld.Spawns: the place it respawns at, how many, the old
+    /// respawn time min..max s — the area brings one back after their average). The demo's areas go.
+    /// </summary>
+    static void Spawns(List<Monster> monsters, Tz.World.TzWorld world)
     {
-        if (monsters.Count == 0) return;
         var scene = EditorSceneManager.OpenScene(DemoMap, OpenSceneMode.Single);
-        var areas = UnityEngine.Object.FindObjectsByType<MonsterSpawnArea>(FindObjectsInactive.Include, FindObjectsSortMode.None)
-            .OrderBy(a => a.transform.position.x).ThenBy(a => a.transform.position.z).ToArray();
-        for (int i = 0; i < areas.Length; i++)
+        int mask = 2097015;
+        foreach (var old in UnityEngine.Object.FindObjectsByType<MonsterSpawnArea>(FindObjectsInactive.Include, FindObjectsSortMode.None))
         {
-            var m = monsters[i % monsters.Count];
-            var so = new SerializedObject(areas[i]);
+            mask = old.groundLayerMask.value;
+            UnityEngine.Object.DestroyImmediate(old.gameObject);
+        }
+        var parent = GameObject.Find("Spawners");
+        var byId = monsters.ToDictionary(m => m.Id);
+        int made = 0, monstersMade = 0;
+        foreach (var s in world.Spawns)
+        {
+            if (!byId.TryGetValue(s.Template, out var m)) { Debug.LogWarning($"[TzImport] spawn: no monster {s.Template} at {s.Place.Id}"); continue; }
+            var go = new GameObject($"Spawn {m.Id} at {s.Place.Id}");
+            if (parent != null) go.transform.SetParent(parent.transform, false);
+            go.transform.position = new Vector3((float)s.Pos.X, 0, (float)s.Pos.Z);
+            var area = go.AddComponent<MonsterSpawnArea>();
+            var so = new SerializedObject(area);
+            P(so, "groundLayerMask").intValue = mask;
+            F(so, "randomRadius", 5f);
             P(so, "prefab").objectReferenceValue = m.Prefab.GetComponent<BaseMonsterCharacterEntity>();
             I(so, "minLevel", m.Level);
             I(so, "maxLevel", m.Level);
-            I(so, "minAmount", 4);
-            I(so, "maxAmount", 4);
+            I(so, "minAmount", s.Count);
+            I(so, "maxAmount", s.Count);
+            F(so, "destroyRespawnDelay", (float)((s.RespawnMin + s.RespawnMax) / 2));
             so.ApplyModifiedPropertiesWithoutUndo();
-            areas[i].gameObject.name = "Spawn " + m.Id;
+            made++; monstersMade += s.Count;
         }
+        EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
-        Debug.Log($"[TzImport] {areas.Length} spawn areas on {DemoMap}");
+        Debug.Log($"[TzImport] {made} spawn areas, {monstersMade} monsters on {DemoMap}");
     }
 
-    // ---- traders ------------------------------------------------------------------------------------------
-    /// <summary>The town's traders on the demo map for now (docs/mechanics-world.md §4.3).</summary>
-    static readonly string[] Traders = { "n.Goston", "n.Plant", "n.Silt", "n.Silvia", "n.Leksli" };
+    // ---- people ------------------------------------------------------------------------------------------
     const string DemoMapInfo = "Assets/Tz/BaseDemo/GameData/Resources/MapInfos/BaseMap-CE.asset";
     const string DemoNpcDatabase = "Assets/Tz/BaseDemo/GameData/NpcDatabase-CE.asset";
+    static readonly System.Globalization.CultureInfo Inv = System.Globalization.CultureInfo.InvariantCulture;
+
+    /// <summary>The greeting of an old dialog ("begin"), without its markup; PHP ones (eval:) get a plain hello.</summary>
+    static string Greeting(Dictionary<string, object> topics)
+    {
+        string text = topics != null && topics.TryGetValue("begin", out var bg)
+            ? bg as string ?? (bg is Dictionary<string, object> begin && begin.TryGetValue("text", out var tx) ? tx as string : null) : null;
+        if (string.IsNullOrWhiteSpace(text) || text.StartsWith("eval:")) return "Здравствуй, путник.";
+        text = text.Replace("<imja>", "путник").Replace("{{sid}}", "");
+        text = System.Text.RegularExpressions.Regex.Replace(text, "<[^>]*>", "");
+        text = text.Replace("\";", "").Replace("  ", " ").Trim();
+        return text;
+    }
 
     /// <summary>
-    /// Traders with the old stock and prices: what is in their "bank" (content/npcs), each thing for
-    /// round(price · the multiplier of their "buy" topic) (1 for things of price ≤ 1), their greeting.
-    /// The framework's shop has no stock counts and no restocking: everything is always there.
-    /// They stand in a half circle around the map's start point.
+    /// The people of the map (TzWorld.Npcs) at their places, with their old greeting. Traders (an old "bank"
+    /// and a "buy" topic) get a shop with the old stock: what is in their bank (content/npcs), each thing for
+    /// round(price · the multiplier of the "buy" topic) (1 for things of price ≤ 1), stock chance:min:max,
+    /// restocked every "buy" period; they buy what their "sell" topic says (TzShopDialog). The banker keeps
+    /// the player's storage. Teachers and quests are not here yet: they only greet.
     /// </summary>
-    static void Shops(string root, Dictionary<string, BaseItem> items)
+    static void People(string root, Dictionary<string, BaseItem> items, Tz.World.TzWorld world)
     {
         var prefab = NpcPrefab();
         var mapInfo = AssetDatabase.LoadMainAssetAtPath(DemoMapInfo);
-        var start = new SerializedObject(mapInfo).FindProperty("startPosition")?.vector3Value ?? Vector3.zero;
-        EditorSceneManager.OpenScene(DemoMap, OpenSceneMode.Single);
-        Physics.SyncTransforms();
-
         var db = AssetDatabase.LoadMainAssetAtPath(DemoNpcDatabase);
         var so = new SerializedObject(db);
         var maps = P(so, "maps");
@@ -1307,92 +1340,112 @@ public static class TzImport
         map.FindPropertyRelative("mapInfo").objectReferenceValue = mapInfo;
         var npcs = map.FindPropertyRelative("npcs");
         npcs.arraySize = 0;
-        for (int n = 0; n < Traders.Length; n++)
+        int shops = 0, talkers = 0;
+        foreach (var person in world.Npcs)
         {
-            string id = Traders[n];
+            string id = person.Template;
             var npcFile = Path.Combine(root, "content", "npcs", id + ".json");
             var dialogFile = Path.Combine(root, "content", "dialogs", id + ".json");
-            if (!File.Exists(npcFile) || !File.Exists(dialogFile)) { problems++; Debug.LogError("[TzImport] no trader " + id); continue; }
-            var npc = Json(npcFile);
-            string name = npc.TryGetValue("char", out var ch) && ch is Dictionary<string, object> c && c.TryGetValue("name", out var nm) ? nm as string : id;
-            var topics = Json(dialogFile).TryGetValue("topics", out var tp) ? tp as Dictionary<string, object> : null;
-            string greeting = topics != null && topics.TryGetValue("begin", out var bg) && bg is Dictionary<string, object> begin && begin.TryGetValue("text", out var tx) ? tx as string : "";
-            greeting = (greeting ?? "").Replace("<imja>", "путник").Replace("  ", " ");
-            double mult = 1, period = 1200;
-            if (topics != null && topics.TryGetValue("buy", out var buy) && buy is string bs)
+            var npc = File.Exists(npcFile) ? Json(npcFile) : new Dictionary<string, object>();
+            var topics = File.Exists(dialogFile) && Json(dialogFile).TryGetValue("topics", out var tp) ? tp as Dictionary<string, object> : null;
+            string name = person.Name;
+            string greeting = Greeting(topics);
+            string slug = id.Replace('.', '-') + "-" + (shops + talkers);
+
+            NpcDialog dialog;
+            if (npc.TryGetValue("bank", out var bk) && bk is string bank && topics != null && topics.ContainsKey("buy"))
             {
-                var bp = bs.Split('|');
-                if (double.TryParse(bp[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var m) && m > 0) mult = m;
-                if (bp.Length > 1 && double.TryParse(bp[1], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var per) && per > 0) period = per;
+                dialog = Shop($"{Generated}/Npcs/{slug}-shop.asset", name, greeting, bank, topics, items);
+                shops++;
             }
-            // "sell": "share|prefix:prefix…" — what the trader buys and for what share; no topic — buys nothing.
-            double buys = 0;
-            var filters = new List<string>();
-            if (topics != null && topics.TryGetValue("sell", out var sl) && sl is string ss)
+            else
             {
-                var sp = ss.Split('|');
-                double.TryParse(sp[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out buys);
-                if (sp.Length > 1) filters.AddRange(sp[1].Split(':').Where(f => f.Length > 0));
+                dialog = Make<NpcDialog>($"{Generated}/Npcs/{slug}-talk.asset");
+                var dso = new SerializedObject(dialog);
+                S(dso, "title", name);
+                S(dso, "description", greeting);
+                // The banker keeps things (NpcDialogType.PlayerStorage), the others only greet (Normal).
+                P(dso, "type").enumValueIndex = id == "n.bankir" ? 7 : 0;
+                dso.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(dialog);
+                talkers++;
             }
 
-            // bank: "chance:min:max=item:…|…"
-            var stock = new List<(string id, double chance, int min, int max)>();
-            if (npc.TryGetValue("bank", out var bk) && bk is string bank)
-                foreach (var part in bank.Split('|'))
-                {
-                    int eq = part.IndexOf('=');
-                    if (eq < 0) continue;
-                    string itemId = part.Substring(eq + 1).Split(':')[0];
-                    var q = part.Substring(0, eq).Split(':');
-                    double chance0 = q.Length > 0 && double.TryParse(q[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var c0) ? c0 : 100;
-                    int mn = q.Length > 1 && int.TryParse(q[1], out var c1) ? c1 : 1, mx = q.Length > 2 && int.TryParse(q[2], out var c2) ? c2 : mn;
-                    if (items.ContainsKey(itemId) && !stock.Any(x => x.id == itemId)) stock.Add((itemId, chance0, mn, mx));
-                }
-
-            var dialog = Make<TzShopDialog>($"{Generated}/Npcs/{id}-shop.asset");
-            var dso = new SerializedObject(dialog);
-            S(dso, "title", name);
-            S(dso, "description", greeting);
-            P(dso, "type").enumValueIndex = 2;   // NpcDialogType.Shop
-            var sell = P(dso, "sellItems");
-            sell.arraySize = stock.Count;
-            var chances = P(dso, "stockChance"); chances.arraySize = stock.Count;
-            var mins = P(dso, "stockMin"); mins.arraySize = stock.Count;
-            var maxs = P(dso, "stockMax"); maxs.arraySize = stock.Count;
-            for (int i = 0; i < stock.Count; i++)
-            {
-                double price = Prices.TryGetValue(stock[i].id, out var pr) ? pr : 1;
-                var e = sell.GetArrayElementAtIndex(i);
-                e.FindPropertyRelative("item").objectReferenceValue = items[stock[i].id];
-                e.FindPropertyRelative("level").intValue = 1;
-                e.FindPropertyRelative("amount").intValue = 1;
-                e.FindPropertyRelative("sellPrice").intValue = (int)Math.Max(1, Math.Round(price <= 1 ? price : price * mult));
-                chances.GetArrayElementAtIndex(i).floatValue = (float)stock[i].chance;
-                mins.GetArrayElementAtIndex(i).intValue = stock[i].min;
-                maxs.GetArrayElementAtIndex(i).intValue = stock[i].max;
-            }
-            F(dso, "restockSeconds", (float)period);
-            F(dso, "buyMultiplier", (float)buys);
-            var bf = P(dso, "buyFilters");
-            bf.arraySize = filters.Count;
-            for (int i = 0; i < filters.Count; i++) bf.GetArrayElementAtIndex(i).stringValue = filters[i];
-            dso.ApplyModifiedPropertiesWithoutUndo();
-            EditorUtility.SetDirty(dialog);
-
-            float angle = (n - (Traders.Length - 1) / 2f) * 30f;
-            var pos = start + Quaternion.Euler(0, angle, 0) * new Vector3(0, 0, 6);
-            pos.y = Physics.Raycast(new Vector3(pos.x, start.y + 300, pos.z), Vector3.down, out var hit, 1000f) ? hit.point.y : start.y;
             npcs.arraySize++;
             var entry = npcs.GetArrayElementAtIndex(npcs.arraySize - 1);
             entry.FindPropertyRelative("entityPrefab").objectReferenceValue = prefab;
-            entry.FindPropertyRelative("position").vector3Value = pos;
-            entry.FindPropertyRelative("rotation").vector3Value = new Vector3(0, angle + 180, 0);
+            entry.FindPropertyRelative("position").vector3Value = new Vector3((float)person.Pos.X, 0.05f, (float)person.Pos.Z);
+            entry.FindPropertyRelative("rotation").vector3Value = new Vector3(0, (float)person.Rot, 0);
             entry.FindPropertyRelative("title").stringValue = name;
             entry.FindPropertyRelative("startDialog").objectReferenceValue = dialog;
-            Debug.Log($"[TzImport] trader {id} «{name}» at {pos}: {stock.Count} things, ×{mult}, buys ×{buys} {string.Join(":", filters)}");
         }
         so.ApplyModifiedPropertiesWithoutUndo();
         EditorUtility.SetDirty(db);
+        Debug.Log($"[TzImport] people: {world.Npcs.Count} ({shops} traders, {talkers} others)");
+    }
+
+    static NpcDialog Shop(string path, string name, string greeting, string bank, Dictionary<string, object> topics, Dictionary<string, BaseItem> items)
+    {
+        double mult = 1, period = 1200;
+        if (topics.TryGetValue("buy", out var buy) && buy is string bs)
+        {
+            var bp = bs.Split('|');
+            if (double.TryParse(bp[0], System.Globalization.NumberStyles.Float, Inv, out var m) && m > 0) mult = m;
+            if (bp.Length > 1 && double.TryParse(bp[1], System.Globalization.NumberStyles.Float, Inv, out var per) && per > 0) period = per;
+        }
+        // "sell": "share|prefix:prefix…" — what the trader buys and for what share; no topic — buys nothing.
+        double buys = 0;
+        var filters = new List<string>();
+        if (topics.TryGetValue("sell", out var sl) && sl is string ss)
+        {
+            var sp = ss.Split('|');
+            double.TryParse(sp[0], System.Globalization.NumberStyles.Float, Inv, out buys);
+            if (sp.Length > 1) filters.AddRange(sp[1].Split(':').Where(f => f.Length > 0));
+        }
+        // bank: "chance:min:max=item:…|…"
+        var stock = new List<(string id, double chance, int min, int max)>();
+        foreach (var part in bank.Split('|'))
+        {
+            int eq = part.IndexOf('=');
+            if (eq < 0) continue;
+            string itemId = part.Substring(eq + 1).Split(':')[0];
+            var q = part.Substring(0, eq).Split(':');
+            double chance0 = q.Length > 0 && double.TryParse(q[0], System.Globalization.NumberStyles.Float, Inv, out var c0) ? c0 : 100;
+            int mn = q.Length > 1 && int.TryParse(q[1], out var c1) ? c1 : 1, mx = q.Length > 2 && int.TryParse(q[2], out var c2) ? c2 : mn;
+            if (items.ContainsKey(itemId) && !stock.Any(x => x.id == itemId)) stock.Add((itemId, chance0, mn, mx));
+        }
+
+        var dialog = Make<TzShopDialog>(path);
+        var dso = new SerializedObject(dialog);
+        S(dso, "title", name);
+        S(dso, "description", greeting);
+        P(dso, "type").enumValueIndex = 2;   // NpcDialogType.Shop
+        var sell = P(dso, "sellItems");
+        sell.arraySize = stock.Count;
+        var chances = P(dso, "stockChance"); chances.arraySize = stock.Count;
+        var mins = P(dso, "stockMin"); mins.arraySize = stock.Count;
+        var maxs = P(dso, "stockMax"); maxs.arraySize = stock.Count;
+        for (int i = 0; i < stock.Count; i++)
+        {
+            double price = Prices.TryGetValue(stock[i].id, out var pr) ? pr : 1;
+            var e = sell.GetArrayElementAtIndex(i);
+            e.FindPropertyRelative("item").objectReferenceValue = items[stock[i].id];
+            e.FindPropertyRelative("level").intValue = 1;
+            e.FindPropertyRelative("amount").intValue = 1;
+            e.FindPropertyRelative("sellPrice").intValue = (int)Math.Max(1, Math.Round(price <= 1 ? price : price * mult));
+            chances.GetArrayElementAtIndex(i).floatValue = (float)stock[i].chance;
+            mins.GetArrayElementAtIndex(i).intValue = stock[i].min;
+            maxs.GetArrayElementAtIndex(i).intValue = stock[i].max;
+        }
+        F(dso, "restockSeconds", (float)period);
+        F(dso, "buyMultiplier", (float)buys);
+        var bf = P(dso, "buyFilters");
+        bf.arraySize = filters.Count;
+        for (int i = 0; i < filters.Count; i++) bf.GetArrayElementAtIndex(i).stringValue = filters[i];
+        dso.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(dialog);
+        Debug.Log($"[TzImport] trader «{name}»: {stock.Count} things, ×{mult}, buys ×{buys} {string.Join(":", filters)}");
+        return dialog;
     }
 
     /// <summary>A trader on the map: a capsule with the framework's NpcEntity and its own network asset id.</summary>

@@ -24,3 +24,6 @@
 # Made from content/ by TzImport before a build.
 /Assets/Tz/Generated/
 /Assets/Tz/Generated.meta
+# Converted from content/art by tools/prepare_art.py before a build.
+/Assets/Tz/Art/
+/Assets/Tz/Art.meta
