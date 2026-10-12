@@ -84,7 +84,7 @@ public static class TzShots
         for (int i = 0; i < creatures.Count; i++)
         {
             var c = (GameObject)PrefabUtility.InstantiatePrefab(creatures[i]);
-            c.transform.SetPositionAndRotation(row + Vector3.right * i * 3f, Quaternion.Euler(0, 200, 0));
+            c.transform.SetPositionAndRotation(row + Vector3.right * i * 3f, Quaternion.Euler(0, 20, 0));   // facing the camera
             var model = c.GetComponents<Component>().FirstOrDefault(k => k != null && k.GetType().Name == "PlayableCharacterModel");
             var clip = model != null ? new SerializedObject(model).FindProperty("defaultAnimations.moveStates.forwardState.clip")?.objectReferenceValue as AnimationClip : null;
             if (clip != null) clip.SampleAnimation(c, clip.length * 0.3f);
