@@ -75,6 +75,7 @@ public static class TzImport
         catch (Exception e) { problems++; Debug.LogError("[TzImport] map: " + e); }
         Spawns(monsters, world);
         People(repoRoot, items, world);
+        problems += TzMobile.Build();
         AddMonsterPrefabs(monsters.Select(m => m.Prefab).Concat(summons.Values));
         Database(attributes.Values, weaponTypes.Values, armorTypes.Values, items.Values, skills.Values.Concat(spells.Values).Concat(techniques.Values).Concat(new[] { stun, busy, zombie }).Concat(actions.Values), magic);
         try { CyrillicFont(); }

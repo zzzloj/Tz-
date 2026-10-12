@@ -15,6 +15,7 @@
 /Assets/TextMesh Pro/
 /Assets/TextMesh Pro.meta
 !/tools/check/check.csproj
+!/tools/world/world.csproj
 /tools/check/bin/
 /tools/check/obj/
 /tools/check/reference.json
