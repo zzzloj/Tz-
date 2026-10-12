@@ -1119,6 +1119,7 @@ public static class TzImport
 
     static List<Monster> Monsters(string root, TzBalance b, Dictionary<string, BaseItem> items, DamageElement magic, HashSet<string> onMap)
     {
+        TzCreatures.Load(root);
         var npcs = Json(Path.Combine(root, "content", "balance", "npcs.json"));
         var chosen = npcs
             .Where(kv => kv.Value is Dictionary<string, object> o && (string)(o.TryGetValue("kind", out var k) ? k : "") is string kind
@@ -1219,6 +1220,7 @@ public static class TzImport
                 P(iso, "assetId").stringValue = AssetDatabase.AssetPathToGUID(prefabPath);
                 iso.ApplyModifiedPropertiesWithoutUndo();
             }
+            TzCreatures.Dress(prefab, id);   // its 3D creature, if there is one
             prefab.name = id;
             PrefabUtility.SaveAsPrefabAsset(prefab, prefabPath);
             PrefabUtility.UnloadPrefabContents(prefab);

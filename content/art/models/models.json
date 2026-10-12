@@ -1,5 +1,5 @@
 {
-  "_doc": "3D models of the MMO (mmo/Assets/Tz/Editor/TzModels.cs). Key — file <key>.glb here, made by tools/models/prepare.py from a generator's model (Tripo). for — what it replaces on the map: building kinds (home — a house one does not enter, house, shop, tavern, hall, barn) or prop kinds (tree, tree-dead, bush, rock, grave, barrel, crates, sign). front — degrees around the vertical that turn the model’s front (its door, Tripo puts it on +Z or −Z) to the street.",
+  "_doc": "3D models of the MMO (mmo/Assets/Tz/Editor/TzModels.cs). Key — file <key>.glb here, made by tools/models/prepare.py from a generator's model (Tripo). for — what it replaces on the map: building kinds (home — a house one does not enter, house, shop, tavern, hall, barn) or prop kinds (tree, tree-dead, bush, rock, grave, barrel, crates, sign). front — degrees around the vertical that turn the model’s front (its door, Tripo puts it on +Z or −Z) to the street. Creatures (rig): size — metres of their longest side; <name>@walk.glb — their walk.",
   "house-a": {
     "for": [
       "home",
@@ -79,17 +79,19 @@
     "rig": "quadruped",
     "animations": [
       "walk"
-    ]
+    ],
+    "size": 1.3
   },
   "spider": {
     "for": [
       "n.c.pauk"
     ],
-    "front": 0,
+    "front": 90,
     "source": "Tripo API, content/art/topdown/figures/fig-mob-spider.webp",
     "rig": "octopod",
     "animations": [
       "walk"
-    ]
+    ],
+    "size": 1.6
   }
 }

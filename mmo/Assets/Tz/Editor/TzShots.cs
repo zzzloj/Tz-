@@ -76,6 +76,21 @@ public static class TzShots
         Place("08-swamp", p => p.Kind == TzWorld.Kind.Swamp, 45, 24);
         var tavern = world.Buildings.FirstOrDefault(b => b.Name == "Таверна");
         if (tavern != null) views.Add(("09-tavern", W(tavern.Door), (float)tavern.Rot + 180, 14));
+        // The 3D creatures in a row near the start, caught mid-step of their walk.
+        var creatures = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Tz/Generated/Monsters" })
+            .Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadAssetAtPath<GameObject>)
+            .Where(p => p != null && p.GetComponentsInChildren<SkinnedMeshRenderer>(true).Length > 0).ToList();
+        var row = W(world.Start) + new Vector3(4, 0, -6);
+        for (int i = 0; i < creatures.Count; i++)
+        {
+            var c = (GameObject)PrefabUtility.InstantiatePrefab(creatures[i]);
+            c.transform.SetPositionAndRotation(row + Vector3.right * i * 3f, Quaternion.Euler(0, 200, 0));
+            var model = c.GetComponents<Component>().FirstOrDefault(k => k != null && k.GetType().Name == "PlayableCharacterModel");
+            var clip = model != null ? new SerializedObject(model).FindProperty("defaultAnimations.moveStates.forwardState.clip")?.objectReferenceValue as AnimationClip : null;
+            if (clip != null) clip.SampleAnimation(c, clip.length * 0.3f);
+            Debug.Log($"[TzShots] creature {creatures[i].name}, walk {(clip != null ? clip.length.ToString("0.00") + " s" : "none")}");
+        }
+        if (creatures.Count > 0) views.Add(("10-creatures", row + Vector3.right * (creatures.Count - 1) * 1.5f, 180, 6));
         foreach (var v in views)
         {
             var rot = Quaternion.Euler(40, v.yaw, 0);
