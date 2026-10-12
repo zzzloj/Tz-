@@ -13,9 +13,12 @@ using UnityEngine;
 ///   both stop a share a / (a + 50 + 10·attacker level), heavy weapons meet 25 % less armour, light ones 15 % more;
 /// - criRate, criDmgRate — crit chance (a share, no floor: crit only from items) and its multiplier;
 ///   a crit never turns a miss into a hit;
-/// - block only with a shield: 5 % + 0.5 % a point of dexterity (≤ 30 %) + items' blockRate; a blocked blow loses BlockCut (half);
-/// - strength adds str/2 per 4 s of pause to a physical blow (not crossbows, not skills);
-/// - experience: monsters' experience by the level gap, two training points a level (+2 every tenth) as stat points.
+/// - block only with a shield: 5 % + 2 % a step of parrying + 0.5 % a point of dexterity (≤ 30 %) + items' blockRate;
+///   a blocked blow loses BlockCut (half);
+/// - strength adds str/2 per 4 s of pause to a physical blow (not crossbows, not skills); the skill of the weapon in
+///   hand (hand / coldweapon / ranged) adds +3 accuracy and +3 % damage a step; regeneration +0.3 % of health a step;
+/// - experience: monsters' experience by the level gap, two training points a level (+2 every tenth) into the one
+///   pool of attributes and skills (StatPoint and SkillPoint kept equal, mmo/tools/patch_kit.py one_pool).
 /// Weapon classes (pause, crit, penetration) are the ids of the framework's WeaponType assets: knife, sword, axe, …
 /// </summary>
 [CreateAssetMenu(fileName = "TzGameplayRule", menuName = "Tz/Gameplay Rule")]
@@ -64,7 +67,10 @@ public class TzGameplayRule : DefaultGameplayRule
         isBlocked = false;
         if (attacker == null)
             return true;
-        if (UnityEngine.Random.value >= GetHitChance(attacker, damageReceiver))
+        // Skill in the weapon in hand: +3 accuracy a step (balance.md §5).
+        float acc = attacker.GetCaches().Stats.accuracy + (float)Balance.AccPerWeaponSkill * SkillLevel(attacker, WeaponSkill(WeaponClass(weapon)));
+        float eva = damageReceiver.GetCaches().Stats.evasion;
+        if (UnityEngine.Random.value * 100f >= Balance.HitChance(acc, eva))
             return false;
         isCritical = UnityEngine.Random.value < GetCriticalChance(attacker, damageReceiver);
         isBlocked = UnityEngine.Random.value < GetBlockChance(attacker, damageReceiver);
@@ -85,6 +91,9 @@ public class TzGameplayRule : DefaultGameplayRule
             double pause = w != null && w.RateOfFire > 0 ? 60.0 / w.RateOfFire : Balance.Pause(cls, 0);
             damage += (float)Balance.StrengthBonus(Mathf.RoundToInt(AttributeAmount(attacker, "str")), pause);
         }
+        if (attacker != null && physical && skill == null)
+            // Skill in the weapon: +3 % damage a step, on the weapon's damage and strength's (Combat.kt).
+            damage *= (float)Balance.WeaponSkillMultiplier(SkillLevel(attacker, WeaponSkill(cls)));
         return damage;
     }
 
@@ -94,6 +103,27 @@ public class TzGameplayRule : DefaultGameplayRule
         var attributes = character.GetCaches().Attributes;
         if (attributes == null) return 0;
         foreach (var kv in attributes)
+            if (kv.Key != null && kv.Key.Id == id) return kv.Value;
+        return 0;
+    }
+
+    /// <summary>The skill that serves a weapon class: fists — hand, bows, crossbows, thrown — ranged, the rest — coldweapon.</summary>
+    public static string WeaponSkill(string weaponClass)
+    {
+        switch (weaponClass)
+        {
+            case "hand": return "hand";
+            case "bow": case "crossbow": case "thrown": return "ranged";
+            default: return "coldweapon";
+        }
+    }
+
+    /// <summary>A character's step in the skill with this id (Protocol.kt SKILLS keys); 0 if not learnt.</summary>
+    public static int SkillLevel(BaseCharacterEntity character, string id)
+    {
+        var skills = character.GetCaches().Skills;
+        if (skills == null) return 0;
+        foreach (var kv in skills)
             if (kv.Key != null && kv.Key.Id == id) return kv.Value;
         return 0;
     }
@@ -131,13 +161,13 @@ public class TzGameplayRule : DefaultGameplayRule
 
     public override float GetBlockChance(BaseCharacterEntity attacker, BaseCharacterEntity damageReceiver)
     {
-        // Only with a shield: 5 % + 0.5 % a point of dexterity (+2 % a point of parrying, later), at most 30 %,
+        // Only with a shield: 5 % + 2 % a step of parrying + 0.5 % a point of dexterity, at most 30 %,
         // plus what items add to blockRate.
         var left = damageReceiver.GetCaches().LeftHandItem;
         if (left.IsEmptySlot() || left.GetShieldItem() == null)
             return 0f;
         int dex = Mathf.RoundToInt(AttributeAmount(damageReceiver, "dex"));
-        return Mathf.Clamp01((float)(Balance.BlockChance(0, dex) / 100.0) + damageReceiver.GetCaches().Stats.blockRate);
+        return Mathf.Clamp01((float)(Balance.BlockChance(SkillLevel(damageReceiver, "parring"), dex) / 100.0) + damageReceiver.GetCaches().Stats.blockRate);
     }
 
     public override float GetBlockDamage(BaseCharacterEntity attacker, BaseCharacterEntity damageReceiver, float damage)
@@ -154,7 +184,7 @@ public class TzGameplayRule : DefaultGameplayRule
     public override float GetRecoveryHpPerSeconds(BaseCharacterEntity character)
     {
         // The server heals RegenPerTick every RegenEvery seconds; here it flows evenly.
-        return (float)(Balance.RegenPerTick(character.GetCaches().MaxHp, 0, false) / Balance.RegenEvery) + character.GetCaches().Stats.hpRecovery;
+        return (float)(Balance.RegenPerTick(character.GetCaches().MaxHp, SkillLevel(character, "regeneration"), false) / Balance.RegenEvery) + character.GetCaches().Stats.hpRecovery;
     }
 
     public override bool RewardExp(BaseCharacterEntity character, int exp, float multiplier, RewardGivenType rewardGivenType, int giverLevel, int sourceLevel, out int rewardedExp)
@@ -168,7 +198,11 @@ public class TzGameplayRule : DefaultGameplayRule
         bool up = base.RewardExp(character, exp, multiplier, rewardGivenType, giverLevel, sourceLevel, out rewardedExp);
         if (up && character is BasePlayerCharacterEntity player)
             for (int l = before + 1; l <= character.Level; l++)
+            {
+                // One pool for attributes and skills: both counters get the points (patch_kit.py one_pool).
                 player.StatPoint += Balance.PointsForLevel(l);
+                player.SkillPoint += Balance.PointsForLevel(l);
+            }
         return up;
     }
 }

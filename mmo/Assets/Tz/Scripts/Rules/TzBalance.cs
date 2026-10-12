@@ -91,6 +91,9 @@ namespace Tz.Rules
         public int AttrSumMax => (int)Num(Obj("attributes"), "sumMax", 24);
         public int SkillMax => (int)Num(Obj("skills"), "max", 10);
 
+        /// <summary>A teacher's price for the n-th step of anything: 15·n² coins.</summary>
+        public int TeacherPrice(int n) => Round(Num(o, "teacherPrice", 15) * n * n);
+
         // ---- hero ------------------------------------------------------------------------------
         Dictionary<string, object> H => Obj("hero");
         public int HpMax(int str, int l) => Round(Num(H, "hpBase", 15) + Num(H, "hpPerStr", 5) * str + Num(H, "hpPerLevel", 3) * (l - 1));

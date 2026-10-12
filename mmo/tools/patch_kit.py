@@ -1,4 +1,5 @@
-"""Makes Open MMORPG (Assets/OpenMMORPG, a git submodule we do not edit) compile on Unity 6000.0.
+"""Makes Open MMORPG (Assets/OpenMMORPG, a git submodule we do not edit) compile on Unity 6000.0,
+and changes the few places of it our rules cannot reach from GameplayRule (one_pool).
 
 The kit targets Unity 6000.3, whose Personal licence our CI cannot use (mmo/README.md), and only a few
 editor-only files use 6000.3 APIs. This rewrites them in the checked-out copy; run it before Unity
@@ -35,6 +36,21 @@ def main():
     edit('Core/Scripts/Gameplay/PhysicFunctions/JobifiedPhysicFunctions.cs',
          lambda s: s.replace('.colliderEntityId != EntityId.None', '.colliderInstanceID != 0')
                     .replace('.colliderEntityId == EntityId.None', '.colliderInstanceID == 0'))
+    one_pool()
+
+def one_pool():
+    """Our training points are one pool for attributes and skills (claude/balance.md §4); the kit keeps two,
+    StatPoint and SkillPoint. TzGameplayRule and TzLoginServerDataManager give both the same points, and
+    here spending one point spends it from both, so they stay equal."""
+    mark = '// Tz: one pool'
+    def fix(s):
+        if mark in s: return s
+        a = '            playerCharacter.StatPoint -= 1;\n'
+        b = '            playerCharacter.SkillPoint -= requireSkillPoint;\n'
+        assert a in s and b in s, 'the kit changed: one_pool needs a new look'
+        return (s.replace(a, a + '            playerCharacter.SkillPoint -= 1; ' + mark + '\n')
+                 .replace(b, b + '            playerCharacter.StatPoint -= requireSkillPoint; ' + mark + '\n'))
+    edit('Core/Scripts/Networking/Implements/DefaultServerCharacterMessageHandlers.cs', fix)
 
 def drop_urp():
     """The graphic settings for URP need the URP package; we stay on the built-in pipeline for now."""

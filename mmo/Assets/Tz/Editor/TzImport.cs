@@ -46,16 +46,18 @@ public static class TzImport
         var weaponTypes = WeaponTypes();
         var armorTypes = ArmorTypes();
         var items = Items(repoRoot, balance, attributes, weaponTypes, armorTypes);
-        Player(balance, attributes, items);
+        var skills = Skills(balance);
+        Player(balance, attributes, items, skills);
+        LoginDataManager();
         DefaultWeapon();
         var monsters = Monsters(repoRoot, balance, items);
         Spawns(monsters);
         Shops(repoRoot, items);
-        Database(attributes.Values, weaponTypes.Values, armorTypes.Values, items.Values);
+        Database(attributes.Values, weaponTypes.Values, armorTypes.Values, items.Values, skills.Values);
         try { CyrillicFont(); }
         catch (Exception e) { problems++; Debug.LogError("[TzImport] Cyrillic font: " + e); }
         AssetDatabase.SaveAssets();
-        Debug.Log($"[TzImport] done: {attributes.Count} attributes, {weaponTypes.Count} weapon types, {armorTypes.Count} armour slots, {items.Count} items, {monsters.Count} monsters, {problems} problems");
+        Debug.Log($"[TzImport] done: {attributes.Count} attributes, {weaponTypes.Count} weapon types, {armorTypes.Count} armour slots, {items.Count} items, {skills.Count} skills, {monsters.Count} monsters, {problems} problems");
     }
 
     // ---- helpers ---------------------------------------------------------------------------------
@@ -110,7 +112,7 @@ public static class TzImport
     /// the rest by level — accuracy and evasion +1, health +3, mana +2 a level; the base crit (fists);
     /// the starting knife in hand.
     /// </summary>
-    static void Player(TzBalance b, Dictionary<string, MultiplayerARPG.Attribute> attributes, Dictionary<string, Item> items)
+    static void Player(TzBalance b, Dictionary<string, MultiplayerARPG.Attribute> attributes, Dictionary<string, BaseItem> items, Dictionary<string, BaseSkill> skills)
     {
         var asset = AssetDatabase.LoadMainAssetAtPath(DemoPlayer);
         var so = new SerializedObject(asset);
@@ -141,6 +143,21 @@ public static class TzImport
                 e.FindPropertyRelative("amount.baseAmount").floatValue = b.AttrStart;
                 e.FindPropertyRelative("amount.amountIncreaseEachLevel").floatValue = 0;
                 e.FindPropertyRelative("amount.rateIncreaseEachLevel").floatValue = 0;
+            }
+        }
+        var learnable = P(so, "skills");
+        if (learnable != null)
+        {
+            // Every skill can be learnt from step 0.
+            var all = skills.Values.ToArray();
+            learnable.arraySize = all.Length;
+            for (int i = 0; i < all.Length; i++)
+            {
+                var e = learnable.GetArrayElementAtIndex(i);
+                e.FindPropertyRelative("skill").objectReferenceValue = all[i];
+                e.FindPropertyRelative("level").intValue = 0;
+                e.FindPropertyRelative("skillLevel.baseAmount").intValue = 0;
+                e.FindPropertyRelative("skillLevel.amountIncreaseEachLevel").intValue = 0;
             }
         }
         if (items.TryGetValue(StartWeapon, out var knife))
@@ -254,6 +271,77 @@ public static class TzImport
         return result;
     }
 
+    // ---- skills ------------------------------------------------------------------------------------------
+    static readonly (string id, string title)[] SkillList =
+    {
+        // Keys and titles of engine/shared Protocol.kt SKILLS; only those our rules use so far.
+        ("hand", "Рукопашная"), ("coldweapon", "Холодное оружие"), ("ranged", "Стрельба"),
+        ("parring", "Парирование"), ("uklon", "Уклон"), ("regeneration", "Регенерация"),
+    };
+
+    /// <summary>
+    /// Passive skills, steps 0–10, a step for one training point and 15·n² coins for the n-th (the teacher's
+    /// price, balance.md §4; the framework takes the coins when the step is learnt — there are no teachers
+    /// yet). Their effects are in TzGameplayRule (weapon skills, parrying, regeneration); dodging gives
+    /// +3 evasion a step through the skill's buff.
+    /// </summary>
+    static Dictionary<string, BaseSkill> Skills(TzBalance b)
+    {
+        var result = new Dictionary<string, BaseSkill>();
+        foreach (var (id, title) in SkillList)
+        {
+            var skill = Make<Skill>($"{Generated}/Types/skill-{id}.asset");
+            var so = new SerializedObject(skill);
+            S(so, "id", id);
+            S(so, "defaultTitle", title);
+            P(so, "skillType").enumValueIndex = 1;   // SkillType.Passive
+            I(so, "maxLevel", b.SkillMax);
+            var steps = P(so, "requirementEachLevels");
+            if (steps != null)
+            {
+                steps.arraySize = b.SkillMax;
+                for (int n = 1; n <= b.SkillMax; n++)
+                {
+                    var e = steps.GetArrayElementAtIndex(n - 1);
+                    e.FindPropertyRelative("disallow").boolValue = false;
+                    e.FindPropertyRelative("characterLevel").intValue = 0;
+                    e.FindPropertyRelative("skillPoint").floatValue = 1;
+                    e.FindPropertyRelative("gold").intValue = b.TeacherPrice(n);
+                }
+            }
+            if (id == "uklon")
+            {
+                F(so, "buff.increaseStats.baseStats.evasion", (float)b.EvaPerDodge);
+                F(so, "buff.increaseStats.statsIncreaseEachLevel.evasion", (float)b.EvaPerDodge);
+            }
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(skill);
+            result[id] = skill;
+        }
+        return result;
+    }
+
+    const string DemoServerInstance = "Assets/Tz/BaseDemo/Prefabs/MMOServerInstance-CE.prefab";
+
+    /// <summary>Puts TzLoginServerDataManager under the login server, which looks for one among its children.</summary>
+    static void LoginDataManager()
+    {
+        var root = PrefabUtility.LoadPrefabContents(DemoServerInstance);
+        try
+        {
+            var login = root.GetComponentInChildren<MultiplayerARPG.MMO.LoginNetworkManager>(true);
+            if (login == null) { problems++; Debug.LogError("[TzImport] no LoginNetworkManager in " + DemoServerInstance); return; }
+            if (login.GetComponentInChildren<TzLoginServerDataManager>(true) == null)
+            {
+                var go = new GameObject("TzLoginServerDataManager");
+                go.transform.SetParent(login.transform, false);
+                go.AddComponent<TzLoginServerDataManager>();
+                PrefabUtility.SaveAsPrefabAsset(root, DemoServerInstance);
+            }
+        }
+        finally { PrefabUtility.UnloadPrefabContents(root); }
+    }
+
     // ---- items -------------------------------------------------------------------------------------------
     /// <summary>
     /// Every thing of content/items with its name and price; weapons, armour and shields take the new
@@ -263,10 +351,10 @@ public static class TzImport
     /// The price a trader pays (the framework has one per thing) is the price × the multiplier of the
     /// trader who buys such things in the old game (docs/mechanics-world.md §4.3).
     /// </summary>
-    static Dictionary<string, Item> Items(string root, TzBalance b, Dictionary<string, MultiplayerARPG.Attribute> attributes,
+    static Dictionary<string, BaseItem> Items(string root, TzBalance b, Dictionary<string, MultiplayerARPG.Attribute> attributes,
         Dictionary<string, WeaponType> weaponTypes, Dictionary<string, ArmorType> armorTypes)
     {
-        var result = new Dictionary<string, Item>();
+        var result = new Dictionary<string, BaseItem>();
         var balance = Json(Path.Combine(root, "content", "balance", "items.json"));
         var kinds = new HashSet<string> { "weapon", "armor", "item", "food", "gem", "book" };
         foreach (var file in Directory.GetFiles(Path.Combine(root, "content", "items"), "*.json").OrderBy(f => f))
@@ -286,6 +374,22 @@ public static class TzImport
             Prices[id] = price;
 
             string path = $"{Generated}/Items/{id}.asset";
+            if (kind == "food" && o != src)
+            {
+                // Food and elixirs: a share of the maximum health and mana at once (TzFoodItem).
+                var food = Make<TzFoodItem>(path);
+                var fso = new SerializedObject(food);
+                S(fso, "id", id);
+                S(fso, "defaultTitle", name);
+                I(fso, "sellPrice", (int)Math.Round(price * SellMultiplier(id)));
+                I(fso, "maxStack", 999);
+                F(fso, "healPct", (float)N(o, "healPct"));
+                F(fso, "manaPct", (float)N(o, "manaPct"));
+                fso.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(food);
+                result[id] = food;
+                continue;
+            }
             AssetDatabase.DeleteAsset(path);
             if (!AssetDatabase.CopyAsset(DemoWeapon, path)) { problems++; Debug.LogError("[TzImport] cannot copy an item for " + id); continue; }
             var item = AssetDatabase.LoadAssetAtPath<Item>(path);
@@ -347,7 +451,7 @@ public static class TzImport
             EditorUtility.SetDirty(item);
             result[id] = item;
         }
-        Debug.Log($"[TzImport] items: {result.Count} — {result.Values.Count(i => i.IsWeapon())} weapons, {result.Values.Count(i => i.IsShield())} shields, {result.Values.Count(i => i.IsArmor())} armour, {result.Values.Count(i => i.IsJunk())} other");
+        Debug.Log($"[TzImport] items: {result.Count} — {result.Values.Count(i => i.IsWeapon())} weapons, {result.Values.Count(i => i.IsShield())} shields, {result.Values.Count(i => i.IsArmor())} armour, {result.Values.Count(i => i is TzFoodItem)} food, {result.Values.Count(i => i.IsJunk())} other");
         return result;
     }
 
@@ -367,7 +471,7 @@ public static class TzImport
     }
 
     /// <summary>Registers what was made in the demo's game database, so saved characters find their things.</summary>
-    static void Database(IEnumerable<MultiplayerARPG.Attribute> attributes, IEnumerable<WeaponType> weaponTypes, IEnumerable<ArmorType> armorTypes, IEnumerable<Item> items)
+    static void Database(IEnumerable<MultiplayerARPG.Attribute> attributes, IEnumerable<WeaponType> weaponTypes, IEnumerable<ArmorType> armorTypes, IEnumerable<BaseItem> items, IEnumerable<BaseSkill> skills)
     {
         var db = AssetDatabase.LoadMainAssetAtPath(DemoDatabase);
         var so = new SerializedObject(db);
@@ -383,6 +487,7 @@ public static class TzImport
         Fill("weaponTypes", weaponTypes.Cast<UnityEngine.Object>());
         Fill("armorTypes", armorTypes.Cast<UnityEngine.Object>());
         Fill("items", items.Cast<UnityEngine.Object>());
+        Fill("skills", skills.Cast<UnityEngine.Object>());
         so.ApplyModifiedPropertiesWithoutUndo();
         EditorUtility.SetDirty(db);
     }
@@ -407,7 +512,7 @@ public static class TzImport
     static Dictionary<string, object> Json(string path) => TzJson.Parse(File.ReadAllText(path)) as Dictionary<string, object>;
     static double N(Dictionary<string, object> o, string k, double def = 0) => o.TryGetValue(k, out var v) && v is double d ? d : def;
 
-    static List<Monster> Monsters(string root, TzBalance b, Dictionary<string, Item> items)
+    static List<Monster> Monsters(string root, TzBalance b, Dictionary<string, BaseItem> items)
     {
         var npcs = Json(Path.Combine(root, "content", "balance", "npcs.json"));
         var chosen = npcs
@@ -515,7 +620,7 @@ public static class TzImport
     /// "osvej" — trophies of the carcass, always (in the old game they were cut off with a knife).
     /// Money comes from the balance's gold, not from here.
     /// </summary>
-    static void Drops(SerializedObject so, string npcFile, Dictionary<string, Item> items)
+    static void Drops(SerializedObject so, string npcFile, Dictionary<string, BaseItem> items)
     {
         var list = P(so, "tzDrops");
         if (list == null) return;
@@ -579,7 +684,7 @@ public static class TzImport
     /// The framework's shop has no stock counts and no restocking: everything is always there.
     /// They stand in a half circle around the map's start point.
     /// </summary>
-    static void Shops(string root, Dictionary<string, Item> items)
+    static void Shops(string root, Dictionary<string, BaseItem> items)
     {
         var prefab = NpcPrefab();
         var mapInfo = AssetDatabase.LoadMainAssetAtPath(DemoMapInfo);
