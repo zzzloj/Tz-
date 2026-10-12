@@ -40,18 +40,29 @@ def main():
     keep_runes()
 
 def one_pool():
-    """Our training points are one pool for attributes and skills (claude/balance.md §4); the kit keeps two,
-    StatPoint and SkillPoint. TzGameplayRule and TzLoginServerDataManager give both the same points, and
-    here spending one point spends it from both, so they stay equal."""
+    """Learning as in our game (claude/balance.md §4, TzRules): one pool of training points for attributes
+    and skills — the kit keeps StatPoint and SkillPoint, we give both the same points and spend a point from
+    both; attributes at most 24 together; a step costs the teacher's price (15·n² coins), free for a newcomer."""
     mark = '// Tz: one pool'
     def fix(s):
         if mark in s: return s
         a = '            playerCharacter.StatPoint -= 1;\n'
         b = '            playerCharacter.SkillPoint -= requireSkillPoint;\n'
-        assert a in s and b in s, 'the kit changed: one_pool needs a new look'
-        return (s.replace(a, a + '            playerCharacter.SkillPoint -= 1; ' + mark + '\n')
-                 .replace(b, b + '            playerCharacter.StatPoint -= requireSkillPoint; ' + mark + '\n'))
+        c = '            if (!playerCharacter.AddAttribute(out UITextKeys gameMessage, request.dataId))\n'
+        d = '            int requireGold = skill.GetRequireCharacterGold(learnLevel);\n'
+        assert a in s and b in s and c in s and d in s, 'the kit changed: one_pool needs a new look'
+        check = ('            if (!TzRules.CanRaiseAttribute(playerCharacter, request.dataId, out UITextKeys tzMessage)) ' + mark + '\n'
+                 '            {\n'
+                 '                result.InvokeError(new ResponseIncreaseAttributeAmountMessage() { message = tzMessage });\n'
+                 '                return default;\n'
+                 '            }\n')
+        return (s.replace(c, check + c)
+                 .replace(a, a + '            playerCharacter.SkillPoint -= 1; ' + mark + '\n'
+                               + '            TzRules.PayForAttribute(playerCharacter, request.dataId); ' + mark + '\n')
+                 .replace(b, b + '            playerCharacter.StatPoint -= requireSkillPoint; ' + mark + '\n')
+                 .replace(d, '            int requireGold = TzRules.SkillGold(playerCharacter, skill, learnLevel); ' + mark + '\n'))
     edit('Core/Scripts/Networking/Implements/DefaultServerCharacterMessageHandlers.cs', fix)
+
 
 def drop_urp():
     """The graphic settings for URP need the URP package; we stay on the built-in pipeline for now."""

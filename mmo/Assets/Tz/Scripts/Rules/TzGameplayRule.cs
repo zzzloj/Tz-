@@ -54,6 +54,18 @@ public class TzGameplayRule : DefaultGameplayRule
     [ThreadStatic] static int strikingLevel;
     [ThreadStatic] static bool strikingPlayer;
 
+    /// <summary>When each character last struck or was struck (Time.unscaledTime): rest starts 10 s after.</summary>
+    static readonly Dictionary<uint, float> lastBlow = new Dictionary<uint, float>();
+
+    static void Blow(BaseCharacterEntity c)
+    {
+        if (c != null) lastBlow[c.ObjectId] = Time.unscaledTime;
+    }
+
+    /// <summary>Whether the character rests (no blows for RegenAfter seconds), so health and mana come back.</summary>
+    public static bool Resting(BaseCharacterEntity c) =>
+        !lastBlow.TryGetValue(c.ObjectId, out float t) || Time.unscaledTime - t >= Balance.RegenAfter;
+
     static DamageElement magicElement;
     /// <summary>The magic damage element (id "magic", made by TzImport): spells, staves, magic monsters.</summary>
     public static DamageElement MagicElement
@@ -91,6 +103,8 @@ public class TzGameplayRule : DefaultGameplayRule
         isBlocked = false;
         if (attacker == null)
             return true;
+        Blow(attacker);
+        Blow(damageReceiver);
         var spell = skill as TzSpell;
         bool magic = spell != null;
         if (!magic && damageAmounts != null)
@@ -195,16 +209,25 @@ public class TzGameplayRule : DefaultGameplayRule
         return UnityEngine.Random.Range(0, 101) <= chance * share;
     }
 
-    static BaseSkill stunSkill;
-    /// <summary>The character can do nothing for some seconds (the hidden skill tz.stun carries the buff; level = seconds).</summary>
-    public static void Stun(BaseCharacterEntity c, float seconds)
+    static readonly Dictionary<string, BaseSkill> carriers = new Dictionary<string, BaseSkill>();
+
+    static void Carrier(string id, BaseCharacterEntity c, float seconds)
     {
-        if (stunSkill == null)
+        if (!carriers.TryGetValue(id, out var skill) || skill == null)
+        {
             foreach (var s in GameInstance.Skills.Values)
-                if (s != null && s.Id == "tz.stun") { stunSkill = s; break; }
-        if (stunSkill == null || c == null || c.IsDead()) return;
-        c.ApplyBuff(stunSkill.DataId, BuffType.SkillBuff, Mathf.Max(1, Mathf.RoundToInt(seconds)), c.GetInfo(), CharacterItem.Empty);
+                if (s != null && s.Id == id) { skill = s; break; }
+            carriers[id] = skill;
+        }
+        if (skill == null || c == null || c.IsDead()) return;
+        c.ApplyBuff(skill.DataId, BuffType.SkillBuff, Mathf.Max(1, Mathf.RoundToInt(seconds)), c.GetInfo(), CharacterItem.Empty);
     }
+
+    /// <summary>The character can do nothing, not even walk, for some seconds (hidden skill tz.stun; level = seconds).</summary>
+    public static void Stun(BaseCharacterEntity c, float seconds) => Carrier("tz.stun", c, seconds);
+
+    /// <summary>The character is busy (eating, resting): no blows, skills or things, but may walk (hidden skill tz.busy).</summary>
+    public static void Busy(BaseCharacterEntity c, float seconds) => Carrier("tz.busy", c, seconds);
 
     /// <summary>The skill that serves a weapon class: fists — hand, bows, crossbows, thrown — ranged, the rest — coldweapon.</summary>
     public static string WeaponSkill(string weaponClass)
@@ -297,14 +320,40 @@ public class TzGameplayRule : DefaultGameplayRule
 
     public override float GetRecoveryHpPerSeconds(BaseCharacterEntity character)
     {
-        // The server heals RegenPerTick every RegenEvery seconds; here it flows evenly.
+        // The server heals RegenPerTick every RegenEvery seconds, from 10 s after the last blow; here it flows evenly.
+        if (!Resting(character)) return 0f;
         return (float)(Balance.RegenPerTick(character.GetCaches().MaxHp, SkillLevel(character, "regeneration"), false) / Balance.RegenEvery) + character.GetCaches().Stats.hpRecovery;
     }
 
     public override float GetRecoveryMpPerSeconds(BaseCharacterEntity character)
     {
         // Mana returns like health, with meditation in place of regeneration.
+        if (!Resting(character)) return 0f;
         return (float)(Balance.ManaRegenPerTick(character.GetCaches().MaxMp, SkillLevel(character, "meditation"), false) / Balance.RegenEvery) + character.GetCaches().Stats.mpRecovery;
+    }
+
+    /// <summary>The firebird's feather: it burns at death and the things stay (Game.kt killPlayer).</summary>
+    public const string Feather = "i.q.pjpt";
+
+    public override void GetPlayerDeadPunishment(DeadPunishmentType type, BasePlayerCharacterEntity player, BaseCharacterEntity attacker, out int decreaseExp, out int decreaseGold, out int decreaseItems, out int attackerPkPoint)
+    {
+        // Death (Game.kt killPlayer): no experience or money is lost; every thing, worn ones too, goes into the
+        // corpse for 10 minutes (the map's drop settings and GameInstance's corpse looting, TzImport), unless the
+        // firebird's feather burns instead.
+        base.GetPlayerDeadPunishment(type, player, attacker, out _, out _, out _, out attackerPkPoint);
+        decreaseExp = 0;
+        decreaseGold = 0;
+        decreaseItems = int.MaxValue;
+        foreach (var item in GameInstance.Items.Values)
+        {
+            if (item == null || item.Id != Feather) continue;
+            if (player.CountNonEquipItems(item.DataId) > 0 && player.DecreaseItems(item.DataId, 1))
+            {
+                player.FillEmptySlots();
+                decreaseItems = 0;
+            }
+            break;
+        }
     }
 
     public override bool RewardExp(BaseCharacterEntity character, int exp, float multiplier, RewardGivenType rewardGivenType, int giverLevel, int sourceLevel, out int rewardedExp)

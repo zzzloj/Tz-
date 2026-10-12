@@ -16,7 +16,7 @@ MonoBehaviour:
   increaseSkillPointEachLevel: 0
   increaseStatPointsUntilReachedLevel: 0
   increaseSkillPointsUntilReachedLevel: 0
-  expLostPercentageWhenDeath: 2
+  expLostPercentageWhenDeath: 0
   staminaRecoveryPerSeconds: 3
   staminaDecreasePerSeconds: 5
   moveSpeedRateWhileOverweight: 0.05

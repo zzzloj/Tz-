@@ -13,6 +13,10 @@ public partial class TzFoodItem : PotionItem, IPotionItem
     public float healPct;
     [Tooltip("Mana restored, percent of the maximum")]
     public float manaPct;
+    [Tooltip("Seconds of being busy after eating (content/crafting.json consumables \"busy\")")]
+    public float busySeconds;
+    [Tooltip("What is left after (an empty bottle)")]
+    public BaseItem leaves;
 
     public new bool UseItem(BaseCharacterEntity characterEntity, int itemIndex, CharacterItem characterItem)
     {
@@ -23,6 +27,10 @@ public partial class TzFoodItem : PotionItem, IPotionItem
             characterEntity.CurrentHp = Mathf.Min(characterEntity.MaxHp, characterEntity.CurrentHp + Mathf.FloorToInt(characterEntity.MaxHp * healPct / 100f));
         if (manaPct > 0)
             characterEntity.CurrentMp = Mathf.Min(characterEntity.MaxMp, characterEntity.CurrentMp + Mathf.FloorToInt(characterEntity.MaxMp * manaPct / 100f));
+        if (leaves != null && characterEntity.IncreaseItems(CharacterItem.Create(leaves, 1, 1)))
+            characterEntity.FillEmptySlots();
+        if (busySeconds > 0)
+            TzGameplayRule.Busy(characterEntity, busySeconds);
         return true;
     }
 }

@@ -49,9 +49,12 @@ public static class TzImport
         var skills = Skills(balance, magic);
         var spells = Spells(repoRoot, balance, skills, magic);
         var techniques = Techniques(repoRoot);
-        var stun = StunCarrier();
+        var stun = Carrier("tz.stun", "Оглушение", true);
+        var busy = Carrier("tz.busy", "Занят", false);
         var items = Items(repoRoot, balance, attributes, weaponTypes, armorTypes, spells, magic);
         AddFoodToSpells(spells, items);
+        FoodExtras(repoRoot, items);
+        Death();
         Player(balance, attributes, items, skills
             .Concat(spells.Select(kv => new KeyValuePair<string, BaseSkill>(kv.Key, kv.Value)))
             .Concat(techniques.Select(kv => new KeyValuePair<string, BaseSkill>(kv.Key, kv.Value)))
@@ -61,7 +64,7 @@ public static class TzImport
         var monsters = Monsters(repoRoot, balance, items, magic);
         Spawns(monsters);
         Shops(repoRoot, items);
-        Database(attributes.Values, weaponTypes.Values, armorTypes.Values, items.Values, skills.Values.Concat(spells.Values).Concat(techniques.Values).Concat(new[] { stun }), magic);
+        Database(attributes.Values, weaponTypes.Values, armorTypes.Values, items.Values, skills.Values.Concat(spells.Values).Concat(techniques.Values).Concat(new[] { stun, busy }), magic);
         try { CyrillicFont(); }
         catch (Exception e) { problems++; Debug.LogError("[TzImport] Cyrillic font: " + e); }
         AssetDatabase.SaveAssets();
@@ -329,7 +332,7 @@ public static class TzImport
         var result = new Dictionary<string, BaseSkill>();
         foreach (var (id, title) in SkillList)
         {
-            var skill = Make<Skill>($"{Generated}/Types/skill-{id}.asset");
+            var skill = Make<TzSkill>($"{Generated}/Types/skill-{id}.asset");
             var so = new SerializedObject(skill);
             S(so, "id", id);
             S(so, "defaultTitle", title);
@@ -599,18 +602,21 @@ public static class TzImport
         return result;
     }
 
-    /// <summary>The hidden skill tz.stun whose buff stuns (techniques and spells apply it; level = seconds).</summary>
-    static BaseSkill StunCarrier()
+    /// <summary>
+    /// A hidden skill whose buff the rules put on a character for some seconds (level = seconds):
+    /// tz.stun — nothing at all (оглушение, рой мошек); tz.busy — no blows, skills or things, walking allowed (eating).
+    /// </summary>
+    static BaseSkill Carrier(string id, string title, bool noMove)
     {
-        var skill = Make<Skill>($"{Generated}/Types/skill-tz.stun.asset");
+        var skill = Make<Skill>($"{Generated}/Types/skill-{id}.asset");
         var so = new SerializedObject(skill);
-        S(so, "id", "tz.stun");
-        S(so, "defaultTitle", "Оглушение");
+        S(so, "id", id);
+        S(so, "defaultTitle", title);
         P(so, "skillType").enumValueIndex = 0;
         P(so, "skillBuffType").enumValueIndex = 1;   // BuffToUser: TryGetBuff gives the buff
         F(so, "buff.duration.baseAmount", 1);
         F(so, "buff.duration.amountIncreaseEachLevel", 1);
-        P(so, "buff.disallowMove").boolValue = true;
+        P(so, "buff.disallowMove").boolValue = noMove;
         P(so, "buff.disallowAttack").boolValue = true;
         P(so, "buff.disallowUseSkill").boolValue = true;
         P(so, "buff.disallowUseItem").boolValue = true;
@@ -620,6 +626,47 @@ public static class TzImport
         so.ApplyModifiedPropertiesWithoutUndo();
         EditorUtility.SetDirty(skill);
         return skill;
+    }
+
+    /// <summary>Food's busy seconds and what is left after it (content/crafting.json "consumables").</summary>
+    static void FoodExtras(string root, Dictionary<string, BaseItem> items)
+    {
+        var file = Path.Combine(root, "content", "crafting.json");
+        if (!File.Exists(file) || !(Json(file).TryGetValue("consumables", out var cv) && cv is Dictionary<string, object> consumables)) return;
+        foreach (var kv in consumables)
+        {
+            if (!(items.TryGetValue(kv.Key, out var it) && it is TzFoodItem food) || !(kv.Value is Dictionary<string, object> o)) continue;
+            var so = new SerializedObject(food);
+            float busy = (float)N(o, "busy");
+            F(so, "busySeconds", busy);
+            F(so, "useItemCooldown", busy);
+            string leaves = o.TryGetValue("leaves", out var lv) ? lv as string : null;
+            P(so, "leaves").objectReferenceValue = leaves != null && items.TryGetValue(leaves, out var left) ? left : null;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(food);
+        }
+    }
+
+    /// <summary>
+    /// Death (Game.kt killPlayer): every thing, worn ones too, goes into the corpse for 10 minutes; only its
+    /// owner and the killer may take from it at first (the framework's corpse looting). Money stays with the
+    /// player: the framework keeps it apart from things and would only burn it.
+    /// </summary>
+    static void Death()
+    {
+        var map = AssetDatabase.LoadMainAssetAtPath(DemoMapInfo);
+        var so = new SerializedObject(map);
+        foreach (var f in new[] { "playerDeadDropsEquipWeapons", "playerDeadDropsEquipItems", "playerDeadDropsNonEquipItems" })
+            P(so, f).enumValueIndex = 1;   // AlwaysDrop
+        P(so, "playerDeadDropsGold").enumValueIndex = 0;
+        so.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(map);
+        var gi = AssetDatabase.LoadAssetAtPath<GameInstance>(DemoGameInstance);
+        var gso = new SerializedObject(gi);
+        P(gso, "playerDeadDropItemMode").enumValueIndex = 1;   // CorpseLooting
+        F(gso, "playerCorpseAppearDuration", 600);
+        gso.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(gi);
     }
 
     /// <summary>Создать еду and Букет make things, chosen as in Magic.kt (createfood weights by repeating).</summary>
