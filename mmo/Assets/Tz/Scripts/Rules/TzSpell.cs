@@ -15,7 +15,7 @@ using UnityEngine;
 /// </summary>
 public class TzSpell : Skill
 {
-    public enum Kind { Battle, Area, Heal, HealAll, Armor, Strength, Mana, Meditation, CreateFood, Bouquet, Other }
+    public enum Kind { Battle, Area, Heal, HealAll, Armor, Strength, Mana, Meditation, CreateFood, Bouquet, Other, Summon, Peace, Silence, Charm, Resurrect, Madness }
 
     [Header("Tz: spell")]
     public Kind kind;
@@ -31,6 +31,8 @@ public class TzSpell : Skill
     public bool vampire;
     [Tooltip("Things the spell may make (food, flowers), one at random")]
     public BaseItem[] makes = new BaseItem[0];
+    [Tooltip("The creature a summoning calls (its stats follow the mage's level)")]
+    public BaseMonsterCharacterEntity summonPrefab;
 
     static TzBalance B => TzGameplayRule.Balance;
 
@@ -129,10 +131,67 @@ public class TzSpell : Skill
                         player.FillEmptySlots();
                 }
                 break;
+            case Kind.Summon:
+                // Follows and guards 60–600 s at the mage's level (Pets.kt summon).
+                TzSummons.Summon(skillUser, summonPrefab, skillUser.Level, Random.Range(60, 601));
+                break;
+            case Kind.Peace:
+                if (target is BaseMonsterCharacterEntity calmed) Calm(calmed);
+                break;
+            case Kind.Silence:
+                foreach (var m in Around<BaseMonsterCharacterEntity>(skillUser, 10f)) Calm(m);
+                break;
+            case Kind.Charm:
+            {
+                // An animal with no master follows and guards 60–300 s; the firebird gives in once in ten.
+                if (!(target is BaseMonsterCharacterEntity animal) || animal.IsDead() || TzSummons.HasMaster(animal)) break;
+                string id = animal.CharacterDatabase != null ? animal.CharacterDatabase.Id : "";
+                if (!id.StartsWith("n.a.")) break;
+                if (id.StartsWith("n.a.b.jarpt") && Random.Range(0, 101) >= 10) break;
+                TzSummons.Adopt(skillUser, animal, Random.Range(60, 301));
+                break;
+            }
+            case Kind.Resurrect:
+            {
+                // A ghost comes back (the old game brought it back with no health; here with 1).
+                if (!(target is BasePlayerCharacterEntity ghost) || !ghost.IsDead()) break;
+                ghost.CurrentHp = 1;
+                ghost.StopMove();
+                ghost.CallRpcOnRespawn();
+                break;
+            }
+            case Kind.Madness:
+            {
+                // A random creature around falls on another random one (the mage among them).
+                var all = Around<BaseCharacterEntity>(skillUser, 10f);
+                all.Add(skillUser);
+                if (all.Count < 2) break;
+                var mad = all[Random.Range(0, all.Count)];
+                var victim = all[Random.Range(0, all.Count)];
+                if (mad != victim && mad is BaseMonsterCharacterEntity madMonster)
+                    madMonster.SetAttackTarget(victim);
+                break;
+            }
             default:
                 base.ApplySkillImplement(skillUser, skillLevel, weaponHandlingState, weapon, simulateSeed, triggerIndex, spreadIndex, damageAmounts, targetObjectId, aimPosition);
                 break;
         }
+    }
+
+    static void Calm(BaseMonsterCharacterEntity m)
+    {
+        // Усмирить: the monster forgets whom it fights.
+        m.SetAttackTarget(null);
+        m.SetTargetEntity(null);
+    }
+
+    static List<T> Around<T>(BaseCharacterEntity c, float distance) where T : BaseCharacterEntity
+    {
+        var list = new List<T>();
+        c.FindAliveEntities(list, distance, true, true, true,
+            GameInstance.Singleton.playerLayer.Mask | GameInstance.Singleton.playingLayer.Mask | GameInstance.Singleton.monsterLayer.Mask);
+        list.Remove(c as T);
+        return list;
     }
 
     static void Heal(BaseCharacterEntity who, int amount)

@@ -26,6 +26,12 @@ public class TzGameplayRule : DefaultGameplayRule
 {
     static TzBalance balance;
 
+    void OnEnable()
+    {
+        // Our subordinates are the framework's custom summons (TzSummons).
+        GameInstance.CustomSummonManager = TzSummons.Instance;
+    }
+
     /// <summary>The balance from Resources/Tz/balance.json; defaults of Balance.kt if it is missing.</summary>
     public static TzBalance Balance
     {
@@ -225,6 +231,13 @@ public class TzGameplayRule : DefaultGameplayRule
 
     /// <summary>The character can do nothing, not even walk, for some seconds (hidden skill tz.stun; level = seconds).</summary>
     public static void Stun(BaseCharacterEntity c, float seconds) => Carrier("tz.stun", c, seconds);
+
+    /// <summary>A raised zombie is weaker: health and blow × share (hidden skill tz.zombie; level = percent).</summary>
+    public static void Zombie(BaseCharacterEntity c, float share)
+    {
+        Carrier("tz.zombie", c, Mathf.Clamp(share * 100f, 1f, 100f));
+        c.CurrentHp = c.MaxHp;
+    }
 
     /// <summary>The character is busy (eating, resting): no blows, skills or things, but may walk (hidden skill tz.busy).</summary>
     public static void Busy(BaseCharacterEntity c, float seconds) => Carrier("tz.busy", c, seconds);

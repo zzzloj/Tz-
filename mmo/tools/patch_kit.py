@@ -38,6 +38,7 @@ def main():
                     .replace('.colliderEntityId == EntityId.None', '.colliderInstanceID == 0'))
     one_pool()
     keep_runes()
+    custom_summons()
 
 def one_pool():
     """Learning as in our game (claude/balance.md §4, TzRules): one pool of training points for attributes
@@ -82,6 +83,26 @@ def keep_runes():
         assert a in s, 'the kit changed: keep_runes needs a new look'
         return s.replace(a, 'if (IsServer && itemDataId.HasValue && !TzSpell.KeepsItem(itemDataId.Value) && Entity.DecreaseItems(itemDataId.Value, 1)) ' + mark)
     edit('Core/Scripts/Gameplay/CharacterSystems/CharacterActionsSystem/DefaultCharacterUseSkillComponent.cs', fix)
+
+
+def custom_summons():
+    """Our subordinates (TzSummons) are Custom summons whose dataId is the monster prefab's hash asset id; the
+    kit asks its single custom manager for one prefab, so look the prefab up by the id first."""
+    mark = '// Tz: custom summons'
+    def fix(s):
+        if mark in s: return s
+        a = '                case SummonType.Custom:\n                    return GameInstance.CustomSummonManager.GetPrefab('
+        assert a in s, 'the kit changed: custom_summons needs a new look'
+        return s.replace(a, '                case SummonType.Custom:\n'
+            '#if !EXCLUDE_PREFAB_REFS || DISABLE_ADDRESSABLES\n'
+            '                    if (GameInstance.MonsterCharacterEntities.TryGetValue(dataId, out BaseMonsterCharacterEntity tzPrefab) && tzPrefab != null) ' + mark + '\n'
+            '                    {\n'
+            '                        prefab = tzPrefab;\n'
+            '                        return false;\n'
+            '                    }\n'
+            '#endif\n'
+            '                    return GameInstance.CustomSummonManager.GetPrefab(')
+    edit('Core/Scripts/AddressableAssets/AssetReferenceExtensions.cs', fix)
 
 
 if __name__ == '__main__':

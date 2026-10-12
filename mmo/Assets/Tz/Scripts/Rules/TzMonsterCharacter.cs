@@ -21,6 +21,9 @@ public class TzMonsterCharacter : MonsterCharacter
         public int max;
     }
 
+    [Tooltip("Difficulty to tame (content char.tame_difficulty); 0 — cannot be tamed")]
+    public int tameDifficulty;
+
     [Header("Tz: drop of the old game")]
     public List<Drop> tzDrops = new List<Drop>();
 

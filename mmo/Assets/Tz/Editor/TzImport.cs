@@ -47,10 +47,13 @@ public static class TzImport
         var weaponTypes = WeaponTypes();
         var armorTypes = ArmorTypes();
         var skills = Skills(balance, magic);
-        var spells = Spells(repoRoot, balance, skills, magic);
+        var summons = SummonCreatures(balance, magic);
+        var spells = Spells(repoRoot, balance, skills, magic, summons);
         var techniques = Techniques(repoRoot);
         var stun = Carrier("tz.stun", "Оглушение", true);
         var busy = Carrier("tz.busy", "Занят", false);
+        var zombie = ZombieCarrier();
+        var actions = Actions(repoRoot);
         var items = Items(repoRoot, balance, attributes, weaponTypes, armorTypes, spells, magic);
         AddFoodToSpells(spells, items);
         FoodExtras(repoRoot, items);
@@ -58,13 +61,15 @@ public static class TzImport
         Player(balance, attributes, items, skills
             .Concat(spells.Select(kv => new KeyValuePair<string, BaseSkill>(kv.Key, kv.Value)))
             .Concat(techniques.Select(kv => new KeyValuePair<string, BaseSkill>(kv.Key, kv.Value)))
+            .Concat(actions.Select(kv => new KeyValuePair<string, BaseSkill>(kv.Key, kv.Value)))
             .ToDictionary(kv => kv.Key, kv => kv.Value));
         LoginDataManager();
         DefaultWeapon();
         var monsters = Monsters(repoRoot, balance, items, magic);
         Spawns(monsters);
         Shops(repoRoot, items);
-        Database(attributes.Values, weaponTypes.Values, armorTypes.Values, items.Values, skills.Values.Concat(spells.Values).Concat(techniques.Values).Concat(new[] { stun, busy }), magic);
+        AddMonsterPrefabs(monsters.Select(m => m.Prefab).Concat(summons.Values));
+        Database(attributes.Values, weaponTypes.Values, armorTypes.Values, items.Values, skills.Values.Concat(spells.Values).Concat(techniques.Values).Concat(new[] { stun, busy, zombie }).Concat(actions.Values), magic);
         try { CyrillicFont(); }
         catch (Exception e) { problems++; Debug.LogError("[TzImport] Cyrillic font: " + e); }
         AssetDatabase.SaveAssets();
@@ -319,6 +324,8 @@ public static class TzImport
         ("parring", "Парирование"), ("uklon", "Уклон"), ("regeneration", "Регенерация"),
         ("magic", "Магия"), ("magic_resist", "Сопротивление магии"), ("magic_uklon", "Уклон от магии"),
         ("meditation", "Медитация"), ("healing", "Лечение"),
+        ("look", "Осторожность"), ("steal", "Кража"), ("steallook", "Подглядывание"),
+        ("animaltaming", "Приручение животных"), ("animallore", "Изучение животных"), ("necro", "Некромантия"),
     };
 
     /// <summary>
@@ -385,6 +392,13 @@ public static class TzImport
             case "m.createfood": return TzSpell.Kind.CreateFood;
             case "m.buket": return TzSpell.Kind.Bouquet;
             case "m.n": case "m.roj": return TzSpell.Kind.Other;   // stun 20 s
+            case "m.s.wolf": case "m.s.skeleton": case "m.s.golem": case "m.s.fantom": case "m.s.tucha": case "m.s.demon":
+                return TzSpell.Kind.Summon;   // дерево и волна ждут карты: им нужны деревья и вода рядом
+            case "m.peace": return TzSpell.Kind.Peace;
+            case "m.silence": return TzSpell.Kind.Silence;
+            case "m.charm": return TzSpell.Kind.Charm;
+            case "m.ressurect": return TzSpell.Kind.Resurrect;
+            case "m.maddnes": return TzSpell.Kind.Madness;
             default: return null;
         }
     }
@@ -414,7 +428,7 @@ public static class TzImport
     /// staff's pause instead), circle, power; learnt once for the teacher's price (no training points),
     /// or cast from a scroll or rune without learning.
     /// </summary>
-    static Dictionary<string, TzSpell> Spells(string root, TzBalance b, Dictionary<string, BaseSkill> skills, DamageElement magic)
+    static Dictionary<string, TzSpell> Spells(string root, TzBalance b, Dictionary<string, BaseSkill> skills, DamageElement magic, Dictionary<string, GameObject> summons)
     {
         var result = new Dictionary<string, TzSpell>();
         var prices = TeacherPrices(root);
@@ -435,6 +449,8 @@ public static class TzImport
             I(so, "circle", (int)N(o, "level", 1));
             I(so, "powerMin", (int)N(o, "power_min"));
             I(so, "powerMax", (int)N(o, "power_max"));
+            if (summons.TryGetValue(id, out var creature))
+                P(so, "summonPrefab").objectReferenceValue = creature.GetComponent<BaseMonsterCharacterEntity>();
             P(so, "criminalsOnly").boolValue = N(o, "criminals_only") != 0;
             P(so, "drainsMana").boolValue = id == "m.w.hit";
             P(so, "vampire").boolValue = id == "m.w.vamp";
@@ -669,6 +685,200 @@ public static class TzImport
         EditorUtility.SetDirty(gi);
     }
 
+    // ---- summoned creatures -------------------------------------------------------------------------------
+    static readonly (string spell, string name, double hp, double dmg, double pause, bool magic)[] SummonTable =
+    {
+        // Pets.kt SUMMONS: health and blow as shares of an ordinary monster of the mage's level, pause in s.
+        ("m.s.wolf", "Призванный волк", 0.6, 0.7, 1.2, false),
+        ("m.s.skeleton", "Призванный скелет", 0.8, 0.8, 1.4, false),
+        ("m.s.golem", "Призванный голем", 1.2, 0.9, 1.6, false),
+        ("m.s.fantom", "Призванный фантом", 0.8, 0.8, 1.2, true),
+        ("m.s.tucha", "Призванная грозовая туча", 0.8, 1.0, 1.2, true),
+        ("m.s.demon", "Призванный демон", 1.4, 1.2, 1.5, false),
+    };
+
+    /// <summary>
+    /// The creatures summoning spells call: their stats follow the level they are summoned at (the mage's), so
+    /// every stat is written level by level 1..50 into the framework's per-level increments (Pets.kt summon).
+    /// </summary>
+    static Dictionary<string, GameObject> SummonCreatures(TzBalance b, DamageElement magic)
+    {
+        var result = new Dictionary<string, GameObject>();
+        int max = b.MaxLevel;
+        foreach (var c in SummonTable)
+        {
+            string id = "n." + c.spell.Substring(2);
+            double Hp(int l) => Math.Max(1, Math.Round(b.MonsterHp(l) * c.hp, MidpointRounding.AwayFromZero));
+            double Blow(int l) => b.MonsterDamagePer4s(l) * c.dmg * c.pause / 4;
+            double Min(int l) => Math.Round(Blow(l) * 0.6, MidpointRounding.AwayFromZero);
+            double Max(int l) => Math.Max(1, Math.Round(Blow(l) * 1.4, MidpointRounding.AwayFromZero));
+            double Hit(int l) => (int)(1.6 * l + 4);
+            double Dodge(int l) => (int)(1.3 * l);
+
+            string dataPath = $"{Generated}/Monsters/{id}.asset";
+            string prefabPath = $"{Generated}/Monsters/{id}.prefab";
+            AssetDatabase.DeleteAsset(prefabPath);
+            AssetDatabase.CopyAsset(DemoMonsterPrefab, prefabPath);
+            var data = Make<TzMonsterCharacter>(dataPath);
+            var so = new SerializedObject(data);
+            var demo = new SerializedObject(AssetDatabase.LoadMainAssetAtPath(DemoMonster));
+            var it = demo.GetIterator();
+            for (bool more = it.NextVisible(true); more; more = it.NextVisible(false))
+                if (it.name != "m_Script" && so.FindProperty(it.propertyPath) != null)
+                    so.CopyFromSerializedProperty(it);
+            S(so, "id", id);
+            S(so, "defaultTitle", c.name);
+            I(so, "defaultLevel", 1);
+            P(so, "characteristic").enumValueIndex = 0;
+            Zero(so, "stats.baseStats");
+            Zero(so, "stats.statsIncreaseEachLevel");
+            Zero(so, "stats.rateIncreaseEachLevel");
+            F(so, "stats.baseStats.hp", (float)Hp(1));
+            F(so, "stats.baseStats.accuracy", (float)Hit(1));
+            F(so, "stats.baseStats.evasion", (float)Dodge(1));
+            F(so, "stats.baseStats.criRate", 0.03f);
+            F(so, "stats.baseStats.criDmgRate", (float)b.CritMultiplier);
+            F(so, "stats.baseStats.moveSpeed", 5);
+            F(so, "stats.baseStats.atkSpeed", 1);
+            F(so, "stats.baseStats.rateOfFireRate", (float)(1 / c.pause - 1));
+            var byLevel = P(so, "stats.statsIncreaseEachLevelByLevels");
+            byLevel.arraySize = max - 1;
+            for (int l = 2; l <= max; l++)
+            {
+                var e = byLevel.GetArrayElementAtIndex(l - 2);
+                e.FindPropertyRelative("minLevel").intValue = l;
+                e.FindPropertyRelative("statsIncreaseEachLevel.hp").floatValue = (float)(Hp(l) - Hp(l - 1));
+                e.FindPropertyRelative("statsIncreaseEachLevel.accuracy").floatValue = (float)(Hit(l) - Hit(l - 1));
+                e.FindPropertyRelative("statsIncreaseEachLevel.evasion").floatValue = (float)(Dodge(l) - Dodge(l - 1));
+            }
+            var armors = P(so, "armors");
+            armors.arraySize = 0;
+            ArmorOf(armors, magic, 2, 2);   // magic defence 2·level
+            F(so, "damageAmount.amount.baseAmount.min", (float)Min(1));
+            F(so, "damageAmount.amount.baseAmount.max", (float)Max(1));
+            F(so, "damageAmount.amount.amountIncreaseEachLevel.min", 0);
+            F(so, "damageAmount.amount.amountIncreaseEachLevel.max", 0);
+            F(so, "damageAmount.amount.rateIncreaseEachLevel.min", 0);
+            F(so, "damageAmount.amount.rateIncreaseEachLevel.max", 0);
+            var dmgBy = P(so, "damageAmount.amount.amountIncreaseEachLevelByLevels");
+            dmgBy.arraySize = max - 1;
+            for (int l = 2; l <= max; l++)
+            {
+                var e = dmgBy.GetArrayElementAtIndex(l - 2);
+                e.FindPropertyRelative("minLevel").intValue = l;
+                e.FindPropertyRelative("amountIncreaseEachLevel.min").floatValue = (float)(Min(l) - Min(l - 1));
+                e.FindPropertyRelative("amountIncreaseEachLevel.max").floatValue = (float)(Max(l) - Max(l - 1));
+            }
+            P(so, "damageAmount.damageElement").objectReferenceValue = c.magic ? magic : null;
+            I(so, "randomExp.baseAmount.min", 0);
+            I(so, "randomExp.baseAmount.max", 0);
+            I(so, "randomGold.baseAmount.min", 0);
+            I(so, "randomGold.baseAmount.max", 0);
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(data);
+
+            var prefab = PrefabUtility.LoadPrefabContents(prefabPath);
+            var eso = new SerializedObject(prefab.GetComponent<BaseMonsterCharacterEntity>());
+            P(eso, "characterDatabase").objectReferenceValue = data;
+            S(eso, "entityTitle", c.name);
+            eso.ApplyModifiedPropertiesWithoutUndo();
+            var identity = prefab.GetComponent<LiteNetLibManager.LiteNetLibIdentity>();
+            if (identity != null)
+            {
+                var iso = new SerializedObject(identity);
+                P(iso, "assetId").stringValue = AssetDatabase.AssetPathToGUID(prefabPath);
+                iso.ApplyModifiedPropertiesWithoutUndo();
+            }
+            prefab.name = id;
+            PrefabUtility.SaveAsPrefabAsset(prefab, prefabPath);
+            PrefabUtility.UnloadPrefabContents(prefab);
+            result[c.spell] = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+        }
+        Debug.Log($"[TzImport] summoned creatures: {result.Count}");
+        return result;
+    }
+
+    /// <summary>Monster prefabs the framework must know to spawn over the network (summons are not in any spawn area).</summary>
+    static void AddMonsterPrefabs(IEnumerable<GameObject> prefabs)
+    {
+        var db = AssetDatabase.LoadMainAssetAtPath(DemoDatabase);
+        var so = new SerializedObject(db);
+        var list = P(so, "monsterCharacterEntities");
+        if (list == null) return;
+        foreach (var go in prefabs)
+        {
+            var e = go != null ? go.GetComponent<BaseMonsterCharacterEntity>() : null;
+            if (e == null) continue;
+            list.arraySize++;
+            list.GetArrayElementAtIndex(list.arraySize - 1).objectReferenceValue = e;
+        }
+        so.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(db);
+    }
+
+    /// <summary>The hidden skill tz.zombie: health and damage × level/100 (a raised zombie's weakness).</summary>
+    static BaseSkill ZombieCarrier()
+    {
+        var skill = Make<Skill>($"{Generated}/Types/skill-tz.zombie.asset");
+        var so = new SerializedObject(skill);
+        S(so, "id", "tz.zombie");
+        S(so, "defaultTitle", "Зомби");
+        P(so, "skillType").enumValueIndex = 0;
+        P(so, "skillBuffType").enumValueIndex = 1;
+        P(so, "buff.noDuration").boolValue = true;
+        // rate = −0.99 + 0.01·(level − 1) = level/100 − 1
+        F(so, "buff.increaseStatsRate.baseStats.hp", -0.99f);
+        F(so, "buff.increaseStatsRate.statsIncreaseEachLevel.hp", 0.01f);
+        var dmg = P(so, "buff.increaseDamagesRate");
+        dmg.arraySize = 1;
+        var d = dmg.GetArrayElementAtIndex(0);
+        d.FindPropertyRelative("damageElement").objectReferenceValue = null;
+        d.FindPropertyRelative("amount.baseAmount.min").floatValue = -0.99f;
+        d.FindPropertyRelative("amount.baseAmount.max").floatValue = -0.99f;
+        d.FindPropertyRelative("amount.amountIncreaseEachLevel.min").floatValue = 0.01f;
+        d.FindPropertyRelative("amount.amountIncreaseEachLevel.max").floatValue = 0.01f;
+        var steps = P(so, "requirementEachLevels");
+        steps.arraySize = 1;
+        steps.GetArrayElementAtIndex(0).FindPropertyRelative("disallow").boolValue = true;
+        so.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(skill);
+        return skill;
+    }
+
+    /// <summary>The actions of skills (TzAction): Приручить, Поднять труп, Подглядеть, Украсть — learnt with the skill, free.</summary>
+    static Dictionary<string, TzAction> Actions(string root)
+    {
+        var result = new Dictionary<string, TzAction>();
+        foreach (var (id, title, kind, mana, cooldown) in new[]
+        {
+            ("tz.tame", "Приручить", TzAction.Kind.Tame, 0, 5f),
+            ("tz.raise", "Поднять труп", TzAction.Kind.Raise, 6, 10f),
+            ("tz.peek", "Подглядеть", TzAction.Kind.Peek, 0, 5f),
+            ("tz.steal", "Украсть", TzAction.Kind.Steal, 0, 10f),
+        })
+        {
+            var a = Make<TzAction>($"{Generated}/Types/action-{id}.asset");
+            var so = new SerializedObject(a);
+            S(so, "id", id);
+            S(so, "defaultTitle", title);
+            P(so, "kind").enumValueIndex = (int)kind;
+            P(so, "skillType").enumValueIndex = 0;
+            I(so, "maxLevel", 1);
+            I(so, "consumeMp.baseAmount", mana);
+            F(so, "coolDownDuration.baseAmount", cooldown);
+            var steps = P(so, "requirementEachLevels");
+            steps.arraySize = 1;
+            var step = steps.GetArrayElementAtIndex(0);
+            step.FindPropertyRelative("disallow").boolValue = false;
+            step.FindPropertyRelative("skillPoint").floatValue = 0;
+            step.FindPropertyRelative("gold").intValue = 0;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(a);
+            result[id] = a;
+        }
+        return result;
+    }
+
     /// <summary>Создать еду and Букет make things, chosen as in Magic.kt (createfood weights by repeating).</summary>
     static void AddFoodToSpells(Dictionary<string, TzSpell> spells, Dictionary<string, BaseItem> items)
     {
@@ -804,6 +1014,8 @@ public static class TzImport
                 // Staves hit with magic, through armour (balance.md §7): the old verb says so.
                 string verb = src.TryGetValue("verb", out var vb) ? vb as string : null;
                 P(so, "damageAmount.damageElement").objectReferenceValue = verb == "магией" || verb == "молнией" ? magic : null;
+            string tame = File.Exists(file) && Json(file).TryGetValue("char", out var cv2) && cv2 is Dictionary<string, object> chr && chr.TryGetValue("tame_difficulty", out var tv2) ? tv2 as string : null;
+            I(so, "tameDifficulty", int.TryParse(tame, out var td) ? td : 0);
                 double pause = Math.Max(0.5, N(o, "pause", b.Pause(cls, 0)));
                 F(so, "rateOfFire", (float)(60 / pause));
                 F(so, "increaseStats.baseStats.criRate", (float)((b.CritBase(cls) - b.CritBase("hand")) / 100));
@@ -991,6 +1203,8 @@ public static class TzImport
             var eso = new SerializedObject(entity);
             P(eso, "characterDatabase").objectReferenceValue = data;
             S(eso, "entityTitle", name);
+            // The body lies a minute after death (a necromancer may raise it).
+            F(eso, "destroyDelay", 60f);
             eso.ApplyModifiedPropertiesWithoutUndo();
             var identity = prefab.GetComponent<LiteNetLibManager.LiteNetLibIdentity>();
             if (identity != null)
