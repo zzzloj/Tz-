@@ -101,7 +101,24 @@ public class TzGameplayRule : DefaultGameplayRule
         // Skill in the weapon in hand: +3 accuracy a step (balance.md §5); a spell +20 (Magic.kt battleSpell).
         string cls = WeaponClass(weapon);
         float acc = attacker.GetCaches().Stats.accuracy + (float)Balance.AccPerWeaponSkill * SkillLevel(attacker, WeaponSkill(cls)) + (spell != null ? 20f : 0f);
+        if (skill is TzTechnique tech)
+            acc += tech.hitShift - TzTechnique.IntPenalty(attacker);
         float eva = magic ? MagicEvasion(damageReceiver) : damageReceiver.GetCaches().Stats.evasion;
+        float blockTimes = 1f;
+        if (magic)
+        {
+            // Сбить заклинание: a tenth of its chance to null a magic blow, unless the mage's concentration holds.
+            bool concentration = Guarded(attacker, "p.d.c");
+            if (Stance(damageReceiver, "p.d.z", out _) && Guarded(damageReceiver, "p.d.z", 0.1f) && !concentration)
+                return false;
+        }
+        else
+        {
+            bool ranged = cls == "bow" || cls == "crossbow" || cls == "thrown";
+            if (ranged && Guarded(damageReceiver, "p.d.u")) eva += 35;   // уклон от стрел
+            if (Guarded(damageReceiver, "p.d.re")) eva += 20;            // реакция
+            if (Guarded(damageReceiver, "p.d.p")) blockTimes = 2f;       // закрыться щитом
+        }
         if (UnityEngine.Random.value * 100f >= Balance.HitChance(acc, eva))
             return false;
         float crit = GetCriticalChance(attacker, damageReceiver);
@@ -110,7 +127,7 @@ public class TzGameplayRule : DefaultGameplayRule
             crit = Mathf.Max(0f, crit - (float)(Balance.CritBase(cls) / 100.0)) + (float)(Balance.CritBase("spell") / 100.0);
         isCritical = UnityEngine.Random.value < crit;
         // A shield does not stop magic.
-        isBlocked = !magic && UnityEngine.Random.value < GetBlockChance(attacker, damageReceiver);
+        isBlocked = !magic && UnityEngine.Random.value < GetBlockChance(attacker, damageReceiver) * blockTimes;
         return true;
     }
 
@@ -120,16 +137,27 @@ public class TzGameplayRule : DefaultGameplayRule
         strikingLevel = attacker != null ? attacker.Level : 1;
         strikingPen = Balance.Penetration(cls);
         strikingPlayer = damageReceiver is BasePlayerCharacterEntity;
+        var technique = skill as TzTechnique;
+        if (technique != null && attacker != null)
+        {
+            // Удар в голову, в прыжке, сильный: strength and weapon skill on top (on the maximum, or both ends).
+            int extra = technique.Extra(attacker, weapon);
+            if (extra > 0)
+                damageAmount = new MinMaxFloat { min = damageAmount.min + (technique.extraOnMinToo ? extra : 0), max = damageAmount.max + extra };
+        }
         float damage = base.RandomAttackDamage(fromPosition, attacker, damageReceiver, damageElement, damageAmount, weapon, skill, skillLevel, randomSeed);
         bool physical = (damageElement == null || damageElement == GameInstance.Singleton.DefaultDamageElement) && !IsMagic(damageElement);
-        if (attacker != null && physical && skill == null && cls != "crossbow")
+        if (attacker != null && physical && (skill == null || technique != null) && cls != "crossbow")
         {
             // Strength adds str/2 per 4 s of pause to every blow, so damage per second stays fair (balance.md §5).
             var w = weapon.IsEmptySlot() ? null : weapon.GetWeaponItem();
             double pause = w != null && w.RateOfFire > 0 ? 60.0 / w.RateOfFire : Balance.Pause(cls, 0);
-            damage += (float)Balance.StrengthBonus(Mathf.RoundToInt(AttributeAmount(attacker, "str")), pause);
+            // A technique scales the strength part with the blow (Magic.kt scales the whole damage).
+            damage += (float)Balance.StrengthBonus(Mathf.RoundToInt(AttributeAmount(attacker, "str")), pause) * (technique != null ? technique.damageMultiplier : 1f);
         }
-        if (attacker != null && skill == null)
+        if (attacker != null && Stance(attacker, "p.d.re", out _))
+            damage *= 0.6f;   // in реакция your own blows are weaker
+        if (attacker != null && (skill == null || technique != null))
             // Skill in the weapon (staves' magic blows too): +3 % damage a step, on the weapon's damage and strength's (Combat.kt).
             damage *= (float)Balance.WeaponSkillMultiplier(SkillLevel(attacker, WeaponSkill(cls)));
         return damage;
@@ -143,6 +171,39 @@ public class TzGameplayRule : DefaultGameplayRule
         foreach (var kv in attributes)
             if (kv.Key != null && kv.Key.Id == id) return kv.Value;
         return 0;
+    }
+
+    /// <summary>Whether the character stands in this stance (TzTechnique p.d.*), and its chance.</summary>
+    public static bool Stance(BaseCharacterEntity c, string id, out int chance)
+    {
+        chance = 0;
+        if (c == null) return false;
+        foreach (var buff in c.Buffs)
+            if (buff.type == BuffType.SkillBuff && GameInstance.Skills.TryGetValue(buff.dataId, out var s) && s is TzTechnique t && t.stance && t.Id == id)
+            {
+                chance = buff.level;
+                return true;
+            }
+        return false;
+    }
+
+    /// <summary>A stance meets what it guards against: it is spent, and holds with its chance (× share).</summary>
+    public static bool Guarded(BaseCharacterEntity c, string id, float share = 1f)
+    {
+        if (!Stance(c, id, out int chance)) return false;
+        TzTechnique.RemoveStances(c);
+        return UnityEngine.Random.Range(0, 101) <= chance * share;
+    }
+
+    static BaseSkill stunSkill;
+    /// <summary>The character can do nothing for some seconds (the hidden skill tz.stun carries the buff; level = seconds).</summary>
+    public static void Stun(BaseCharacterEntity c, float seconds)
+    {
+        if (stunSkill == null)
+            foreach (var s in GameInstance.Skills.Values)
+                if (s != null && s.Id == "tz.stun") { stunSkill = s; break; }
+        if (stunSkill == null || c == null || c.IsDead()) return;
+        c.ApplyBuff(stunSkill.DataId, BuffType.SkillBuff, Mathf.Max(1, Mathf.RoundToInt(seconds)), c.GetInfo(), CharacterItem.Empty);
     }
 
     /// <summary>The skill that serves a weapon class: fists — hand, bows, crossbows, thrown — ranged, the rest — coldweapon.</summary>
@@ -222,6 +283,14 @@ public class TzGameplayRule : DefaultGameplayRule
 
     public override int GetTotalDamage(Vector3 fromPosition, EntityInfo instigator, DamageableEntity damageReceiver, float totalDamage, CharacterItem weapon, BaseSkill skill, int skillLevel)
     {
+        if (damageReceiver is BaseCharacterEntity receiver)
+        {
+            // Защита головы stops Удар в голову; глухая оборона takes 60 % off anything but a spell, for its whole time.
+            if (skill != null && skill.Id == "p.g" && Guarded(receiver, "p.d.g"))
+                return 0;
+            if (!(skill is TzSpell) && Stance(receiver, "p.d.o", out int defence) && UnityEngine.Random.Range(0, 101) <= defence)
+                totalDamage *= 0.4f;
+        }
         // As on the server: a blow that got through deals at least 1.
         return totalDamage <= 0f ? 0 : Mathf.Max(1, Mathf.RoundToInt(totalDamage));
     }

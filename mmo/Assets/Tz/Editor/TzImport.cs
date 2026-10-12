@@ -48,19 +48,24 @@ public static class TzImport
         var armorTypes = ArmorTypes();
         var skills = Skills(balance, magic);
         var spells = Spells(repoRoot, balance, skills, magic);
+        var techniques = Techniques(repoRoot);
+        var stun = StunCarrier();
         var items = Items(repoRoot, balance, attributes, weaponTypes, armorTypes, spells, magic);
         AddFoodToSpells(spells, items);
-        Player(balance, attributes, items, skills.Concat(spells.Select(kv => new KeyValuePair<string, BaseSkill>(kv.Key, kv.Value))).ToDictionary(kv => kv.Key, kv => kv.Value));
+        Player(balance, attributes, items, skills
+            .Concat(spells.Select(kv => new KeyValuePair<string, BaseSkill>(kv.Key, kv.Value)))
+            .Concat(techniques.Select(kv => new KeyValuePair<string, BaseSkill>(kv.Key, kv.Value)))
+            .ToDictionary(kv => kv.Key, kv => kv.Value));
         LoginDataManager();
         DefaultWeapon();
         var monsters = Monsters(repoRoot, balance, items, magic);
         Spawns(monsters);
         Shops(repoRoot, items);
-        Database(attributes.Values, weaponTypes.Values, armorTypes.Values, items.Values, skills.Values.Concat(spells.Values), magic);
+        Database(attributes.Values, weaponTypes.Values, armorTypes.Values, items.Values, skills.Values.Concat(spells.Values).Concat(techniques.Values).Concat(new[] { stun }), magic);
         try { CyrillicFont(); }
         catch (Exception e) { problems++; Debug.LogError("[TzImport] Cyrillic font: " + e); }
         AssetDatabase.SaveAssets();
-        Debug.Log($"[TzImport] done: {attributes.Count} attributes, {weaponTypes.Count} weapon types, {armorTypes.Count} armour slots, {items.Count} items, {skills.Count} skills, {spells.Count} spells, {monsters.Count} monsters, {problems} problems");
+        Debug.Log($"[TzImport] done: {attributes.Count} attributes, {weaponTypes.Count} weapon types, {armorTypes.Count} armour slots, {items.Count} items, {skills.Count} skills, {spells.Count} spells, {techniques.Count} techniques, {monsters.Count} monsters, {problems} problems");
     }
 
     // ---- helpers ---------------------------------------------------------------------------------
@@ -490,6 +495,131 @@ public static class TzImport
         }
         Debug.Log($"[TzImport] spells: {result.Count} — {string.Join(", ", result.Keys)}");
         return result;
+    }
+
+    // ---- techniques -------------------------------------------------------------------------------------
+    // id → accuracy shift, damage ×, extra damage (on min too?, str k, skill k, bare str k), twice, area, effect, effect shift
+    static readonly Dictionary<string, (int hit, float dmg, bool extra, bool both, int strK, int skillK, int bareK, bool twice, bool area, TzTechnique.Effect fx, int fxShift)> TechniqueTable =
+        new Dictionary<string, (int, float, bool, bool, int, int, int, bool, bool, TzTechnique.Effect, int)>
+        {
+            // Magic.kt technique (the busy times of быстрый удар and мельница are not carried over)
+            ["p.b"] = (0, 0.7f, false, false, 0, 0, 0, false, false, TzTechnique.Effect.None, 0),
+            ["p.d"] = (-15, 1f, false, false, 0, 0, 0, true, false, TzTechnique.Effect.None, 0),
+            ["p.me"] = (-10, 1f, false, false, 0, 0, 0, false, true, TzTechnique.Effect.None, 0),
+            ["p.m"] = (40, 0.7f, false, false, 0, 0, 0, false, false, TzTechnique.Effect.None, 0),
+            ["p.n"] = (0, 0.6f, false, false, 0, 0, 0, false, false, TzTechnique.Effect.Stun, 40),
+            ["p.r"] = (0, 0.4f, false, false, 0, 0, 0, false, false, TzTechnique.Effect.Disarm, 70),
+            ["p.vw"] = (0, 0.2f, false, false, 0, 0, 0, false, false, TzTechnique.Effect.KnockShield, 40),
+            ["p.g"] = (-30, 1f, true, true, 2, 1, 1, false, false, TzTechnique.Effect.None, 0),
+            ["p.p"] = (-20, 1f, true, false, 3, 2, 2, false, false, TzTechnique.Effect.None, 0),
+            ["p.s"] = (-10, 1f, true, false, 2, 1, 1, false, false, TzTechnique.Effect.None, 0),
+        };
+    /// <summary>Stances (p.d.s «остаться в седле» waits for horses).</summary>
+    static readonly HashSet<string> StanceIds = new HashSet<string> { "p.d.c", "p.d.o", "p.d.re", "p.d.z", "p.d.u", "p.d.g", "p.d.n", "p.d.p", "p.d.r" };
+
+    /// <summary>
+    /// Techniques and stances of content/items/p.*.json as TzTechnique skills: the weapon's blow ×damage with
+    /// the content cooldown, or a stance for the content time; learnt once for the teacher's price.
+    /// Выбить с седла and остаться в седле wait for horses.
+    /// </summary>
+    static Dictionary<string, TzTechnique> Techniques(string root)
+    {
+        var result = new Dictionary<string, TzTechnique>();
+        var prices = TeacherPrices(root);
+        foreach (var file in Directory.GetFiles(Path.Combine(root, "content", "items"), "p.*.json").OrderBy(f => f))
+        {
+            var o = Json(file);
+            string id = o.TryGetValue("id", out var iv) ? iv as string : null;
+            if (id == null) continue;
+            bool isStance = StanceIds.Contains(id);
+            if (!isStance && !TechniqueTable.ContainsKey(id)) continue;
+            string name = o.TryGetValue("name", out var nm) && nm is string s && s.Length > 0 ? char.ToUpper(s[0]) + s.Substring(1) : id;
+            var t = Make<TzTechnique>($"{Generated}/Types/technique-{id}.asset");
+            var so = new SerializedObject(t);
+            S(so, "id", id);
+            S(so, "defaultTitle", name);
+            S(so, "defaultDescription", o.TryGetValue("description", out var dv) ? dv as string ?? "" : "");
+            P(so, "skillType").enumValueIndex = 0;   // Active
+            I(so, "maxLevel", 1);
+            float time = (float)N(o, "cooldown");
+            P(so, "stance").boolValue = isStance;
+            if (isStance)
+            {
+                P(so, "skillAttackType").enumValueIndex = 0;
+                P(so, "skillBuffType").enumValueIndex = 1;   // BuffToUser (TzTechnique applies it with the chance as level)
+                F(so, "buff.duration.baseAmount", time);
+                F(so, "buff.duration.amountIncreaseEachLevel", 0);
+                if (id == "p.d.o")
+                {
+                    // Глухая оборона: the whole time you only stand and defend.
+                    P(so, "buff.disallowAttack").boolValue = true;
+                    P(so, "buff.disallowUseSkill").boolValue = true;
+                    P(so, "buff.disallowUseItem").boolValue = true;
+                }
+                if (id == "p.d.p") P(so, "requireShield").boolValue = true;
+            }
+            else
+            {
+                var r = TechniqueTable[id];
+                P(so, "skillAttackType").enumValueIndex = 2;   // BasedOnWeapon
+                F(so, "weaponDamageMultiplicator.baseAmount", r.dmg);
+                F(so, "coolDownDuration.baseAmount", time);
+                I(so, "hitShift", r.hit);
+                F(so, "damageMultiplier", r.dmg);
+                P(so, "extraDamage").boolValue = r.extra;
+                P(so, "extraOnMinToo").boolValue = r.both;
+                I(so, "extraStr", r.strK);
+                I(so, "extraSkill", r.skillK);
+                I(so, "extraStrBare", r.bareK);
+                P(so, "twice").boolValue = r.twice;
+                P(so, "area").boolValue = r.area;
+                P(so, "effect").enumValueIndex = (int)r.fx;
+                I(so, "effectShift", r.fxShift);
+                if (r.area)
+                {
+                    I(so, "damageInfo.damageType", 0);
+                    F(so, "damageInfo.hitDistance", 2.5f);
+                    F(so, "damageInfo.hitFov", 360f);
+                    P(so, "damageInfo.hitOnlySelectedTarget").boolValue = false;
+                }
+            }
+            int price = prices.TryGetValue(id, out var pr) ? pr : 0;
+            var steps = P(so, "requirementEachLevels");
+            steps.arraySize = 1;
+            var step = steps.GetArrayElementAtIndex(0);
+            step.FindPropertyRelative("disallow").boolValue = price <= 0;
+            step.FindPropertyRelative("characterLevel").intValue = 0;
+            step.FindPropertyRelative("skillPoint").floatValue = 0;
+            step.FindPropertyRelative("gold").intValue = price;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(t);
+            result[id] = t;
+        }
+        Debug.Log($"[TzImport] techniques: {result.Count} — {string.Join(", ", result.Keys)}");
+        return result;
+    }
+
+    /// <summary>The hidden skill tz.stun whose buff stuns (techniques and spells apply it; level = seconds).</summary>
+    static BaseSkill StunCarrier()
+    {
+        var skill = Make<Skill>($"{Generated}/Types/skill-tz.stun.asset");
+        var so = new SerializedObject(skill);
+        S(so, "id", "tz.stun");
+        S(so, "defaultTitle", "Оглушение");
+        P(so, "skillType").enumValueIndex = 0;
+        P(so, "skillBuffType").enumValueIndex = 1;   // BuffToUser: TryGetBuff gives the buff
+        F(so, "buff.duration.baseAmount", 1);
+        F(so, "buff.duration.amountIncreaseEachLevel", 1);
+        P(so, "buff.disallowMove").boolValue = true;
+        P(so, "buff.disallowAttack").boolValue = true;
+        P(so, "buff.disallowUseSkill").boolValue = true;
+        P(so, "buff.disallowUseItem").boolValue = true;
+        var steps = P(so, "requirementEachLevels");
+        steps.arraySize = 1;
+        steps.GetArrayElementAtIndex(0).FindPropertyRelative("disallow").boolValue = true;
+        so.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(skill);
+        return skill;
     }
 
     /// <summary>Создать еду and Букет make things, chosen as in Magic.kt (createfood weights by repeating).</summary>
