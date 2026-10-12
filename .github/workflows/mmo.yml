@@ -95,6 +95,9 @@ jobs:
             [ -n "$text" ] && echo "::notice title=editor errors ${{ matrix.out }}::$text"
             text=$(grep -E "^\[[A-Za-z]+\] \[Tz" mmo/build/editor-log.txt | head -60 | cut -c1-260 | sed ':a;N;$!ba;s/\n/%0A/g')
             [ -n "$text" ] && echo "::notice title=import ${{ matrix.out }}::$text"
+            # The importer's problems and its last lines (the summary) apart: the log above is cut at 60 lines.
+            text=$( { grep -E "^\[(Error|Warning)\] \[Tz" mmo/build/editor-log.txt | sort | uniq -c | sort -rn | head -30; grep -E "^\[[A-Za-z]+\] \[Tz" mmo/build/editor-log.txt | tail -12; } | cut -c1-260 | sed ':a;N;$!ba;s/\n/%0A/g')
+            [ -n "$text" ] && echo "::notice title=import problems ${{ matrix.out }}::$text"
           fi
           [ -f unity.log ] || { echo "::warning::no unity.log"; exit 0; }
           grep -E "error CS|[Ee]rror:|Exception|Failed|FAILURE|What went wrong|Unable|Cannot|not found|Build (Android|StandaloneLinux64):|Gradle|SDK|NDK|JDK" unity.log | grep -v Licensing | sort | uniq -c | sort -rn | head -45 \
