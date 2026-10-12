@@ -69,5 +69,27 @@
     ],
     "front": 0,
     "source": "Tripo API, content/art/topdown/objects/obj-crates.webp, task 28b391ec-41ea-45b3-9abb-fbe6351121e9"
+  },
+  "rat": {
+    "for": [
+      "n.c.rat"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/topdown/figures/fig-mob-rat.webp",
+    "rig": "quadruped",
+    "animations": [
+      "walk"
+    ]
+  },
+  "spider": {
+    "for": [
+      "n.c.pauk"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/topdown/figures/fig-mob-spider.webp",
+    "rig": "octopod",
+    "animations": [
+      "walk"
+    ]
   }
 }
