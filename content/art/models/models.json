@@ -18,5 +18,56 @@
     ],
     "front": 0,
     "source": "Tripo, image to 3D from content/art/topdown/objects/obj-tree.webp, 12.10.2026"
+  },
+  "house-b": {
+    "for": [
+      "home",
+      "house"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/topdown/objects/obj-house-b.webp, task 7dea168d-656e-4212-b535-0b31e5cd2deb"
+  },
+  "house-c": {
+    "for": [
+      "home",
+      "barn"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/topdown/objects/obj-house-c.webp, task a69df837-0f92-4694-9324-5114f2cede07"
+  },
+  "tree-dead": {
+    "for": [
+      "tree-dead"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/topdown/objects/obj-tree-dead.webp, task c2dc9b9a-2ea5-4ef3-8dc3-11992988040c"
+  },
+  "bush": {
+    "for": [
+      "bush"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/topdown/objects/obj-bush.webp, task e5320e1d-6baa-41ba-929b-42af661b3a6e"
+  },
+  "rocks": {
+    "for": [
+      "rock"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/topdown/objects/obj-rocks.webp, task 8692c43e-39e4-49cb-9d3d-a32cc51ef7c7"
+  },
+  "barrel": {
+    "for": [
+      "barrel"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/topdown/objects/obj-barrel.webp, task 2cd52abe-6531-41d5-8ba8-cf41a0f8e0f3"
+  },
+  "crates": {
+    "for": [
+      "crates"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/topdown/objects/obj-crates.webp, task 28b391ec-41ea-45b3-9abb-fbe6351121e9"
   }
 }
