@@ -173,7 +173,7 @@ public static class TzImport
                 e.FindPropertyRelative("skill").objectReferenceValue = all[i];
                 e.FindPropertyRelative("level").intValue = 0;
                 e.FindPropertyRelative("skillLevel.baseAmount").intValue = 0;
-                e.FindPropertyRelative("skillLevel.amountIncreaseEachLevel").intValue = 0;
+                e.FindPropertyRelative("skillLevel.amountIncreaseEachLevel").floatValue = 0;
             }
         }
         if (items.TryGetValue(StartWeapon, out var knife))
@@ -905,7 +905,7 @@ public static class TzImport
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(s);
         }
-        Fill("m.createfood", new[] { ("i.f.apple", 21), ("i.f.cabbage", 15), ("i.f.bread", 20), ("i.f.sandwich", 20), ("i.f.mushroom", 10), ("i.f.sausage", 15) });
+        Fill("m.createfood", new[] { ("i.f.apple", 21), ("i.f.gabbage", 15), ("i.f.bread", 20), ("i.f.sandwich", 20), ("i.f.mushroom", 10), ("i.f.sausage", 15) });
         Fill("m.buket", "roftphlgvadibjeknmxs".Select(c => ("i.bc." + c, 1)));
     }
 
