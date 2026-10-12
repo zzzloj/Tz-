@@ -369,6 +369,26 @@ public class TzGameplayRule : DefaultGameplayRule
         }
     }
 
+    public override bool CurrenciesEnoughToBuyItem(IPlayerCharacterData character, NpcSellItem sellItem, int amount)
+    {
+        // The trader's stock (TzShops): the framework asks this first when someone buys.
+        if (!TzShops.InStock(amount)) return false;
+        return base.CurrenciesEnoughToBuyItem(character, sellItem, amount);
+    }
+
+    public override void DecreaseCurrenciesWhenBuyItem(IPlayerCharacterData character, NpcSellItem sellItem, int amount)
+    {
+        base.DecreaseCurrenciesWhenBuyItem(character, sellItem, amount);
+        TzShops.Take(amount);
+    }
+
+    public override void IncreaseCurrenciesWhenSellItem(IPlayerCharacterData character, BaseItem item, int amount)
+    {
+        // The price × the trader's share, rounded over the whole batch (docs/mechanics-world.md §4.2).
+        int gold = Mathf.RoundToInt(item.SellPrice * amount * TzShops.BuyMultiplier);
+        if (gold > 0) character.Gold = character.Gold.Increase(gold);
+    }
+
     public override bool RewardExp(BaseCharacterEntity character, int exp, float multiplier, RewardGivenType rewardGivenType, int giverLevel, int sourceLevel, out int rewardedExp)
     {
         if (rewardGivenType == RewardGivenType.KillMonster || rewardGivenType == RewardGivenType.PartyShare)

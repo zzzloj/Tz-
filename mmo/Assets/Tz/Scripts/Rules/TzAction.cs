@@ -9,12 +9,13 @@ using UnityEngine;
 ///   needs animal lore; it stays 60 + up to old lore · 600 s. Busy 5 s.
 /// - Поднять труп: a monster or animal dead a moment ago rises as a zombie with 0.4 + 0.05·necromancy of
 ///   its health and blow for 300 + up to necromancy · 90 s; chance 10·necromancy %, 6 mana. Busy 10 s.
+/// - Спрятаться: with old hiding · 8 % you are hidden from eyes (monsters too) till you strike, use a skill, or 60 s.
 /// - Подглядеть / Украсть (players only): peek with 6·(old dex + old peeking − their old caution) %, then for a
 ///   minute steal a random stack of their backpack with 4·(old dex + old stealing − caution) %. Busy 5 / 10 s.
 /// </summary>
 public class TzAction : Skill
 {
-    public enum Kind { Tame, Raise, Peek, Steal }
+    public enum Kind { Tame, Raise, Peek, Steal, Hide }
 
     [Header("Tz: action")]
     public Kind kind;
@@ -64,6 +65,10 @@ public class TzAction : Skill
                     TzGameplayRule.Zombie(zombie, 0.4f + 0.05f * necro);
                 break;
             }
+            case Kind.Hide:
+                if (Random.Range(1, 101) <= Old(Skill(skillUser, "hiding")) * 8)
+                    skillUser.ApplyBuff(DataId, BuffType.SkillBuff, 1, skillUser.GetInfo(), weapon);
+                break;
             case Kind.Peek:
             {
                 TzGameplayRule.Busy(skillUser, 5);

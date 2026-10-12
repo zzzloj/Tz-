@@ -39,6 +39,7 @@ def main():
     one_pool()
     keep_runes()
     custom_summons()
+    shops()
 
 def one_pool():
     """Learning as in our game (claude/balance.md §4, TzRules): one pool of training points for attributes
@@ -104,6 +105,33 @@ def custom_summons():
             '                    return GameInstance.CustomSummonManager.GetPrefab(')
     edit('Core/Scripts/AddressableAssets/AssetReferenceExtensions.cs', fix)
 
+def shops():
+    """Traders of our game (TzShops): the stock of a position and what a trader buys and for how much depend
+    on the shop, which the kit's GameplayRule calls are not told — tell TzShops which shop and position it is."""
+    mark = 'Tz: shops'
+    def buy(s):
+        if mark in s: return s
+        a = '            if (!CurrentGameplayRule.CurrenciesEnoughToBuyItem(Entity, sellItem, amount))\n'
+        b = '            GameInstance.ServerLogHandlers.LogBuyNpcItem(Entity, sellItem, amount);\n'
+        assert a in s and b in s, 'the kit changed: shops needs a new look'
+        return (s.replace(a, '            TzShops.Current = dialog; TzShops.CurrentIndex = index; // ' + mark + '\n' + a)
+                 .replace(b, b + '            TzShops.CurrentIndex = -1; // ' + mark + '\n'))
+    edit('Core/Scripts/Gameplay/CharacterSystems/PlayerCharacterSystems/PlayerCharacterNpcActionComponent.cs', buy)
+    def sell(s):
+        if mark in s: return s
+        a = 'playerCharacterEntity.NpcActionComponent.AccessingNpcShopDialog(out _)'
+        assert s.count(a) == 2, 'the kit changed: shops needs a new look'
+        return s.replace(a, 'playerCharacterEntity.NpcActionComponent.AccessingNpcShopDialog(out TzShops.Current) /* Tz: shops */')
+    edit('Core/Scripts/Networking/Implements/DefaultServerInventoryMessageHandlers.cs', sell)
+    def validate(s):
+        if mark in s: return s
+        a = '            if (targetItemData.RestrictSelling)\n'
+        assert a in s, 'the kit changed: shops needs a new look'
+        return s.replace(a, '            if (targetItemData.RestrictSelling || !TzShops.Buys(TzShops.Current, targetItemData)) // ' + mark + '\n', 1)
+    edit('Core/Scripts/CharacterData/CharacterInventoryExtensions.cs', validate)
+
+
 
 if __name__ == '__main__':
     sys.exit(main())
+

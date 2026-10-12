@@ -324,7 +324,7 @@ public static class TzImport
         ("parring", "Парирование"), ("uklon", "Уклон"), ("regeneration", "Регенерация"),
         ("magic", "Магия"), ("magic_resist", "Сопротивление магии"), ("magic_uklon", "Уклон от магии"),
         ("meditation", "Медитация"), ("healing", "Лечение"),
-        ("look", "Осторожность"), ("steal", "Кража"), ("steallook", "Подглядывание"),
+        ("look", "Осторожность"), ("hiding", "Скрытность"), ("steal", "Кража"), ("steallook", "Подглядывание"),
         ("animaltaming", "Приручение животных"), ("animallore", "Изучение животных"), ("necro", "Некромантия"),
     };
 
@@ -855,6 +855,7 @@ public static class TzImport
             ("tz.raise", "Поднять труп", TzAction.Kind.Raise, 6, 10f),
             ("tz.peek", "Подглядеть", TzAction.Kind.Peek, 0, 5f),
             ("tz.steal", "Украсть", TzAction.Kind.Steal, 0, 10f),
+            ("tz.hide", "Спрятаться", TzAction.Kind.Hide, 0, 5f),
         })
         {
             var a = Make<TzAction>($"{Generated}/Types/action-{id}.asset");
@@ -866,6 +867,14 @@ public static class TzImport
             I(so, "maxLevel", 1);
             I(so, "consumeMp.baseAmount", mana);
             F(so, "coolDownDuration.baseAmount", cooldown);
+            if (kind == TzAction.Kind.Hide)
+            {
+                P(so, "skillBuffType").enumValueIndex = 1;   // BuffToUser: TzAction applies it on success
+                F(so, "buff.duration.baseAmount", 60f);
+                P(so, "buff.isHide").boolValue = true;
+                F(so, "buff.removeBuffWhenAttackChance.baseAmount", 1f);
+                F(so, "buff.removeBuffWhenUseSkillChance.baseAmount", 1f);
+            }
             var steps = P(so, "requirementEachLevels");
             steps.arraySize = 1;
             var step = steps.GetArrayElementAtIndex(0);
@@ -927,8 +936,7 @@ public static class TzImport
     /// balance of content/balance/items.json: damage, pause (rate of fire 60 / pause), class crit over
     /// the fists' one, armour, required level and attributes (req = [str, dex, int]). Other things
     /// (trophies, food, gems, books, materials) are plain things in stacks for now.
-    /// The price a trader pays (the framework has one per thing) is the price × the multiplier of the
-    /// trader who buys such things in the old game (docs/mechanics-world.md §4.3).
+    /// The thing's price is its base price; a trader pays it × his own share (TzShopDialog, TzGameplayRule).
     /// </summary>
     static Dictionary<string, BaseItem> Items(string root, TzBalance b, Dictionary<string, MultiplayerARPG.Attribute> attributes,
         Dictionary<string, WeaponType> weaponTypes, Dictionary<string, ArmorType> armorTypes, Dictionary<string, TzSpell> spells, DamageElement magic)
@@ -961,7 +969,7 @@ public static class TzImport
                 var sso = new SerializedObject(scroll);
                 S(sso, "id", id);
                 S(sso, "defaultTitle", name);
-                I(sso, "sellPrice", (int)Math.Round(price * SellMultiplier(id)));
+                I(sso, "sellPrice", (int)Math.Round(price));
                 I(sso, "maxStack", id.StartsWith("i.m.") ? 99 : 1);
                 P(sso, "usingSkill").objectReferenceValue = spellOfItem;
                 I(sso, "usingSkillLevel", 1);
@@ -977,7 +985,7 @@ public static class TzImport
                 var fso = new SerializedObject(food);
                 S(fso, "id", id);
                 S(fso, "defaultTitle", name);
-                I(fso, "sellPrice", (int)Math.Round(price * SellMultiplier(id)));
+                I(fso, "sellPrice", (int)Math.Round(price));
                 I(fso, "maxStack", 999);
                 F(fso, "healPct", (float)N(o, "healPct"));
                 F(fso, "manaPct", (float)N(o, "manaPct"));
@@ -992,7 +1000,7 @@ public static class TzImport
             var so = new SerializedObject(item);
             S(so, "id", id);
             S(so, "defaultTitle", name);
-            I(so, "sellPrice", (int)Math.Round(price * SellMultiplier(id)));
+            I(so, "sellPrice", (int)Math.Round(price));
             Zero(so, "increaseStats");
             F(so, "rateOfFire", 0);
             P(so, "weaponType").objectReferenceValue = null;
@@ -1014,8 +1022,6 @@ public static class TzImport
                 // Staves hit with magic, through armour (balance.md §7): the old verb says so.
                 string verb = src.TryGetValue("verb", out var vb) ? vb as string : null;
                 P(so, "damageAmount.damageElement").objectReferenceValue = verb == "магией" || verb == "молнией" ? magic : null;
-            string tame = File.Exists(file) && Json(file).TryGetValue("char", out var cv2) && cv2 is Dictionary<string, object> chr && chr.TryGetValue("tame_difficulty", out var tv2) ? tv2 as string : null;
-            I(so, "tameDifficulty", int.TryParse(tame, out var td) ? td : 0);
                 double pause = Math.Max(0.5, N(o, "pause", b.Pause(cls, 0)));
                 F(so, "rateOfFire", (float)(60 / pause));
                 F(so, "increaseStats.baseStats.criRate", (float)((b.CritBase(cls) - b.CritBase("hand")) / 100));
@@ -1059,17 +1065,6 @@ public static class TzImport
     /// <summary>The base price of every thing made (content), for the traders' prices.</summary>
     static readonly Dictionary<string, double> Prices = new Dictionary<string, double>();
 
-    /// <summary>What share of the price a trader pays for a thing (the old traders' sell multipliers).</summary>
-    static double SellMultiplier(string id)
-    {
-        if (id.StartsWith("i.w.") || id.StartsWith("i.a.")) return 0.6;      // Плант, Силт
-        if (id.StartsWith("i.f.b.")) return 0.5;                              // Витуан, Борн
-        if (id.StartsWith("i.h.")) return 0.8;                                // Лексли: шкуры, клыки
-        if (id.StartsWith("i.c.") || id.StartsWith("i.ring.") || id.StartsWith("i.oj.") || id.StartsWith("i.med.")) return 0.5;   // Махмет
-        if (id.StartsWith("i.bc")) return 1.0;                                // Катрина
-        if (id.StartsWith("i.log") || id.StartsWith("i.ruda")) return 0.8;   // Сарант, Ракс
-        return 0.7;                                                           // Гостон: всё
-    }
 
     /// <summary>Registers what was made in the demo's game database, so saved characters find their things.</summary>
     static void Database(IEnumerable<MultiplayerARPG.Attribute> attributes, IEnumerable<WeaponType> weaponTypes, IEnumerable<ArmorType> armorTypes, IEnumerable<BaseItem> items, IEnumerable<BaseSkill> skills, DamageElement magic)
@@ -1150,6 +1145,9 @@ public static class TzImport
                 if (it.name != "m_Script" && so.FindProperty(it.propertyPath) != null)
                     so.CopyFromSerializedProperty(it);
             Drops(so, file, items);
+            string tame = File.Exists(file) && Json(file).TryGetValue("char", out var cv2) && cv2 is Dictionary<string, object> chr && chr.TryGetValue("tame_difficulty", out var tv2)
+                ? Convert.ToString(tv2, System.Globalization.CultureInfo.InvariantCulture) : null;
+            I(so, "tameDifficulty", double.TryParse(tame, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var td) ? (int)td : 0);
             S(so, "id", id);
             S(so, "defaultTitle", name);
             I(so, "defaultLevel", m.Level);
@@ -1320,38 +1318,64 @@ public static class TzImport
             var topics = Json(dialogFile).TryGetValue("topics", out var tp) ? tp as Dictionary<string, object> : null;
             string greeting = topics != null && topics.TryGetValue("begin", out var bg) && bg is Dictionary<string, object> begin && begin.TryGetValue("text", out var tx) ? tx as string : "";
             greeting = (greeting ?? "").Replace("<imja>", "путник").Replace("  ", " ");
-            double mult = 1;
-            if (topics != null && topics.TryGetValue("buy", out var buy) && buy is string bs
-                && double.TryParse(bs.Split('|')[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var m) && m > 0)
-                mult = m;
+            double mult = 1, period = 1200;
+            if (topics != null && topics.TryGetValue("buy", out var buy) && buy is string bs)
+            {
+                var bp = bs.Split('|');
+                if (double.TryParse(bp[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var m) && m > 0) mult = m;
+                if (bp.Length > 1 && double.TryParse(bp[1], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var per) && per > 0) period = per;
+            }
+            // "sell": "share|prefix:prefix…" — what the trader buys and for what share; no topic — buys nothing.
+            double buys = 0;
+            var filters = new List<string>();
+            if (topics != null && topics.TryGetValue("sell", out var sl) && sl is string ss)
+            {
+                var sp = ss.Split('|');
+                double.TryParse(sp[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out buys);
+                if (sp.Length > 1) filters.AddRange(sp[1].Split(':').Where(f => f.Length > 0));
+            }
 
             // bank: "chance:min:max=item:…|…"
-            var stock = new List<string>();
+            var stock = new List<(string id, double chance, int min, int max)>();
             if (npc.TryGetValue("bank", out var bk) && bk is string bank)
                 foreach (var part in bank.Split('|'))
                 {
                     int eq = part.IndexOf('=');
                     if (eq < 0) continue;
                     string itemId = part.Substring(eq + 1).Split(':')[0];
-                    if (items.ContainsKey(itemId) && !stock.Contains(itemId)) stock.Add(itemId);
+                    var q = part.Substring(0, eq).Split(':');
+                    double ch = q.Length > 0 && double.TryParse(q[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var c0) ? c0 : 100;
+                    int mn = q.Length > 1 && int.TryParse(q[1], out var c1) ? c1 : 1, mx = q.Length > 2 && int.TryParse(q[2], out var c2) ? c2 : mn;
+                    if (items.ContainsKey(itemId) && !stock.Any(x => x.id == itemId)) stock.Add((itemId, ch, mn, mx));
                 }
 
-            var dialog = Make<NpcDialog>($"{Generated}/Npcs/{id}-shop.asset");
+            var dialog = Make<TzShopDialog>($"{Generated}/Npcs/{id}-shop.asset");
             var dso = new SerializedObject(dialog);
             S(dso, "title", name);
             S(dso, "description", greeting);
             P(dso, "type").enumValueIndex = 2;   // NpcDialogType.Shop
             var sell = P(dso, "sellItems");
             sell.arraySize = stock.Count;
+            var chances = P(dso, "stockChance"); chances.arraySize = stock.Count;
+            var mins = P(dso, "stockMin"); mins.arraySize = stock.Count;
+            var maxs = P(dso, "stockMax"); maxs.arraySize = stock.Count;
             for (int i = 0; i < stock.Count; i++)
             {
-                double price = Prices.TryGetValue(stock[i], out var pr) ? pr : 1;
+                double price = Prices.TryGetValue(stock[i].id, out var pr) ? pr : 1;
                 var e = sell.GetArrayElementAtIndex(i);
-                e.FindPropertyRelative("item").objectReferenceValue = items[stock[i]];
+                e.FindPropertyRelative("item").objectReferenceValue = items[stock[i].id];
                 e.FindPropertyRelative("level").intValue = 1;
                 e.FindPropertyRelative("amount").intValue = 1;
                 e.FindPropertyRelative("sellPrice").intValue = (int)Math.Max(1, Math.Round(price <= 1 ? price : price * mult));
+                chances.GetArrayElementAtIndex(i).floatValue = (float)stock[i].chance;
+                mins.GetArrayElementAtIndex(i).intValue = stock[i].min;
+                maxs.GetArrayElementAtIndex(i).intValue = stock[i].max;
             }
+            F(dso, "restockSeconds", (float)period);
+            F(dso, "buyMultiplier", (float)buys);
+            var bf = P(dso, "buyFilters");
+            bf.arraySize = filters.Count;
+            for (int i = 0; i < filters.Count; i++) bf.GetArrayElementAtIndex(i).stringValue = filters[i];
             dso.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(dialog);
 
@@ -1365,7 +1389,7 @@ public static class TzImport
             entry.FindPropertyRelative("rotation").vector3Value = new Vector3(0, angle + 180, 0);
             entry.FindPropertyRelative("title").stringValue = name;
             entry.FindPropertyRelative("startDialog").objectReferenceValue = dialog;
-            Debug.Log($"[TzImport] trader {id} «{name}» at {pos}: {stock.Count} things, ×{mult}");
+            Debug.Log($"[TzImport] trader {id} «{name}» at {pos}: {stock.Count} things, ×{mult}, buys ×{buys} {string.Join(":", filters)}");
         }
         so.ApplyModifiedPropertiesWithoutUndo();
         EditorUtility.SetDirty(db);
