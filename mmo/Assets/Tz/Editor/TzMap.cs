@@ -52,15 +52,15 @@ public static class TzMap
     {
         switch (s)
         {
-            case TzWorld.Surface.Grass: return Mat("ground-grass", Color.white, "ground-grass");
+            case TzWorld.Surface.Grass: return Mat("ground-grass", new Color(1.2f, 1.2f, 1.1f), "ground-grass");
             case TzWorld.Surface.ForestFloor: return Mat("ground-forest", new Color(0.75f, 0.85f, 0.7f), "ground-grass");
             case TzWorld.Surface.Dirt: return Mat("ground-dirt", Color.white, "ground-dirt");
-            case TzWorld.Surface.Sand: return Mat("ground-sand", new Color(1.6f, 1.4f, 1.0f), "ground-dirt");
+            case TzWorld.Surface.Sand: return Mat("ground-sand", new Color(1.35f, 1.2f, 0.95f), "ground-dirt");
             case TzWorld.Surface.Swamp: return Mat("ground-swamp", new Color(0.7f, 0.8f, 0.6f), "ground-grass");
             case TzWorld.Surface.Cobble: return Mat("ground-cobble", Color.white, "ground-cobble");
             case TzWorld.Surface.Planks: return Mat("ground-planks", Color.white, "ground-planks");
             case TzWorld.Surface.Road: return Mat("ground-road", Color.white, "ground-road");
-            default: return Mat("ground-water", Color.white, "ground-water", 0.8f);
+            default: return Mat("ground-water", new Color(0.8f, 0.95f, 1.15f), "ground-water", 0.5f);
         }
     }
 
