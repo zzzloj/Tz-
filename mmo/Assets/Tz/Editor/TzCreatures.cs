@@ -56,6 +56,8 @@ public static class TzCreatures
         if (capsule == null || model == null) { Debug.LogError($"[TzImport] creature {def.Name}: no CapsuleModel or character model in {root.name}"); return false; }
         foreach (var r in capsule.GetComponents<Renderer>()) Object.DestroyImmediate(r);
         foreach (var mf in capsule.GetComponents<MeshFilter>()) Object.DestroyImmediate(mf);
+        // The capsule's "face" (a flat cylinder in front) goes with it.
+        for (int i = capsule.childCount - 1; i >= 0; i--) Object.DestroyImmediate(capsule.GetChild(i).gameObject);
 
         var g = new Gltf(def.File);
         var body = new GameObject("Body").transform;
