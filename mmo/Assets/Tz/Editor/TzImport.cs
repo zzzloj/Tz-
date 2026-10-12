@@ -1400,7 +1400,6 @@ public static class TzImport
 
     // ---- maps and portals ----------------------------------------------------------------------------------
     const string MapsDir = "Assets/Tz/Generated/Maps";
-    const string DemoServerInstance = "Assets/Tz/BaseDemo/Prefabs/MMOServerInstance-CE.prefab";
     const string DemoWarpDatabase = "Assets/Tz/BaseDemo/GameData/WarpPortalDatabase-CE.asset";
     const string DemoWarpPortal = "Assets/Tz/BaseDemo/Prefabs/GamePlay/WarpPortalEntity-CE.prefab";
 
