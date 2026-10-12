@@ -33,7 +33,21 @@ public static class TzShots
         string outDir = Path.Combine(repo, "mmo", "build", "shots");
         Directory.CreateDirectory(outDir);
         Debug.Log("[TzShots] graphics: " + SystemInfo.graphicsDeviceType + " " + SystemInfo.graphicsDeviceName);
+        // The other maps from above first (their scenes are copies made by the import).
+        for (int i = 1; i < TzWorld.Maps.Length; i++)
+        {
+            var def = TzWorld.Maps[i];
+            string path = $"Assets/Tz/Generated/Maps/{def.scene}.unity";
+            if (!def.on || !File.Exists(Path.Combine(Application.dataPath, "..", path))) continue;
+            EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
+            Unfold();
+            var wi = TzWorld.Build(repo, i, id => false);
+            var c = TopCamera(wi);
+            Shot(c, Path.Combine(outDir, $"0{i}-map-{def.scene}.jpg"), 2048, Mathf.RoundToInt(2048 * (float)((wi.MaxZ - wi.MinZ) / (wi.MaxX - wi.MinX))));
+        }
+
         EditorSceneManager.OpenScene(DemoMap, OpenSceneMode.Single);
+        Unfold();
         var world = TzWorld.Build(repo, 0, id => false);
 
         // Capsules where the people and the monsters will stand.
@@ -98,6 +112,36 @@ public static class TzShots
             Shot(cam, Path.Combine(outDir, v.name + ".jpg"), 1600, 900);
         }
         Debug.Log($"[TzShots] {views.Count + 1} pictures in {outDir}");
+    }
+
+    /// <summary>The instanced trees and props (TzInstancer draws them only in play) as plain objects for the pictures.</summary>
+    static void Unfold()
+    {
+        int n = 0;
+        foreach (var r in Object.FindObjectsByType<TzInstancer>(FindObjectsSortMode.None))
+            foreach (var m in r.matrices)
+            {
+                var go = new GameObject("shot");
+                go.transform.SetPositionAndRotation(m.GetColumn(3), m.rotation);
+                go.transform.localScale = m.lossyScale;
+                go.AddComponent<MeshFilter>().sharedMesh = r.nearMesh;
+                go.AddComponent<MeshRenderer>().sharedMaterial = r.nearMaterial;
+                n++;
+            }
+        Debug.Log($"[TzShots] {n} instanced copies unfolded");
+    }
+
+    /// <summary>A camera over the whole map, looking down.</summary>
+    static Camera TopCamera(TzWorld world)
+    {
+        var cam = new GameObject("TzShotCamera").AddComponent<Camera>();
+        cam.clearFlags = CameraClearFlags.SolidColor;
+        cam.backgroundColor = new Color(0.55f, 0.65f, 0.75f);
+        cam.farClipPlane = 3000;
+        cam.orthographic = true;
+        cam.orthographicSize = (float)(world.MaxZ - world.MinZ) / 2;
+        cam.transform.SetPositionAndRotation(new Vector3((float)(world.MinX + world.MaxX) / 2, 400, (float)(world.MinZ + world.MaxZ) / 2), Quaternion.Euler(90, 0, 0));
+        return cam;
     }
 
     static Vector3 W(TzWorld.V v) => new Vector3((float)v.X, 0, (float)v.Z);
