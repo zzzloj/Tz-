@@ -14,7 +14,8 @@ using Object = UnityEngine.Object;
 /// hangs under it as "Body", so the creature does all that too. Its own clips (&lt;name&gt;@&lt;animation&gt;.glb)
 /// replace the demo's: idle → idle, walk (or fly) → moving forward, run → sprint, slash/shoot → the blow,
 /// hurt → the flinch, fall → death (not looped). Size: "height" (a standing figure) or else "size" (the longest
-/// horizontal side) in metres.
+/// horizontal side) in metres. Birds have no clips (Tripo's avian rig made neither fly nor walk, 13.10): they keep
+/// the demo capsule's moves only.
 /// glTF → Unity: x mirrored (positions, rotations (x, −y, −z, w), matrices S·M·S), triangles turned round.
 /// </summary>
 public static class TzCreatures
