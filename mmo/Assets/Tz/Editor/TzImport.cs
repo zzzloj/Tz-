@@ -82,6 +82,7 @@ public static class TzImport
             Spawns(monsters, w, maps[w.MapIndex].scene);
         }
         People(repoRoot, items, worlds, maps);
+        Heroes();
         Portals(worlds, maps);
         problems += TzMobile.Build();
         AddMonsterPrefabs(monsters.Select(m => m.Prefab).Concat(summons.Values));
@@ -1341,6 +1342,7 @@ public static class TzImport
     static void People(string root, Dictionary<string, BaseItem> items, List<Tz.World.TzWorld> worlds, Dictionary<int, (string scene, string info)> mapAssets)
     {
         var prefab = NpcPrefab();
+        var bodies = new Dictionary<string, NpcEntity>();   // a prefab for each 3D body in use
         var db = AssetDatabase.LoadMainAssetAtPath(DemoNpcDatabase);
         var so = new SerializedObject(db);
         var maps = P(so, "maps");
@@ -1386,7 +1388,9 @@ public static class TzImport
 
             npcs.arraySize++;
             var entry = npcs.GetArrayElementAtIndex(npcs.arraySize - 1);
-            entry.FindPropertyRelative("entityPrefab").objectReferenceValue = prefab;
+            string bodyName = TzCreatures.BodyFor(name);
+            if (bodyName != null && !bodies.ContainsKey(bodyName)) bodies[bodyName] = NpcPrefab(bodyName);
+            entry.FindPropertyRelative("entityPrefab").objectReferenceValue = bodyName != null ? bodies[bodyName] : prefab;
             entry.FindPropertyRelative("position").vector3Value = new Vector3((float)person.Pos.X, 0.05f, (float)person.Pos.Z);
             entry.FindPropertyRelative("rotation").vector3Value = new Vector3(0, (float)person.Rot, 0);
             entry.FindPropertyRelative("title").stringValue = name;
@@ -1395,7 +1399,7 @@ public static class TzImport
         }
         so.ApplyModifiedPropertiesWithoutUndo();
         EditorUtility.SetDirty(db);
-        Debug.Log($"[TzImport] people: {worlds.Sum(w => w.Npcs.Count)} on {worlds.Count} maps ({shops} traders, {talkers} others)");
+        Debug.Log($"[TzImport] people: {worlds.Sum(w => w.Npcs.Count)} on {worlds.Count} maps ({shops} traders, {talkers} others), 3D bodies: {(bodies.Count > 0 ? string.Join(", ", bodies.Keys) : "none")}");
     }
 
     // ---- maps and portals ----------------------------------------------------------------------------------
@@ -1572,21 +1576,25 @@ public static class TzImport
     }
 
     /// <summary>A trader on the map: a capsule with the framework's NpcEntity and its own network asset id.</summary>
-    static NpcEntity NpcPrefab()
+    static NpcEntity NpcPrefab(string body = null)
     {
-        string path = $"{Generated}/Npcs/TzNpc.prefab";
+        string path = body == null ? $"{Generated}/Npcs/TzNpc.prefab" : $"{Generated}/Npcs/TzNpc-{body}.prefab";
         AssetDatabase.DeleteAsset(path);
-        var go = new GameObject("TzNpc");
+        var go = new GameObject(body == null ? "TzNpc" : "TzNpc-" + body);
         go.AddComponent<NpcEntity>();
         var collider = go.AddComponent<CapsuleCollider>();
         collider.height = 2;
         collider.radius = 0.5f;
         collider.center = new Vector3(0, 1, 0);
-        var body = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-        UnityEngine.Object.DestroyImmediate(body.GetComponent<Collider>());
-        body.name = "Model";
-        body.transform.SetParent(go.transform, false);
-        body.transform.localPosition = new Vector3(0, 1, 0);
+        if (body != null) TzCreatures.DressPerson(go.transform, body);   // the 3D townsman (TzCreatures)
+        else
+        {
+            var capsule = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            UnityEngine.Object.DestroyImmediate(capsule.GetComponent<Collider>());
+            capsule.name = "Model";
+            capsule.transform.SetParent(go.transform, false);
+            capsule.transform.localPosition = new Vector3(0, 1, 0);
+        }
         PrefabUtility.SaveAsPrefabAsset(go, path);
         UnityEngine.Object.DestroyImmediate(go);
 
@@ -1602,6 +1610,57 @@ public static class TzImport
         PrefabUtility.SaveAsPrefabAsset(contents, path);
         PrefabUtility.UnloadPrefabContents(contents);
         return AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<NpcEntity>();
+    }
+
+    // ---- heroes ------------------------------------------------------------------------------------
+    const string DemoPlayerPrefab = "Assets/Tz/BaseDemo/Prefabs/GamePlay/CharacterEntities/BaseCharacter-CE.prefab";
+
+    /// <summary>
+    /// The hero and the heroine (content/art/models hero-m, hero-f): copies of the demo's player entity with
+    /// the 3D figure (TzCreatures) are the game's player entities — the character creation offers both.
+    /// Without both models the demo's capsule stays.
+    /// </summary>
+    static void Heroes()
+    {
+        var made = new List<UnityEngine.Object>();
+        foreach (var (model, title) in new[] { ("hero-m", "Герой"), ("hero-f", "Героиня") })
+        {
+            if (!TzCreatures.Has(model)) continue;
+            string path = $"{Generated}/Characters/TzHero-{model}.prefab";
+            Directory.CreateDirectory($"{Generated}/Characters");
+            AssetDatabase.DeleteAsset(path);
+            if (!AssetDatabase.CopyAsset(DemoPlayerPrefab, path)) { problems++; Debug.LogError("[TzImport] cannot copy " + DemoPlayerPrefab); return; }
+            var prefab = PrefabUtility.LoadPrefabContents(path);
+            var identity = prefab.GetComponent<LiteNetLibManager.LiteNetLibIdentity>();
+            if (identity != null)
+            {
+                var iso = new SerializedObject(identity);
+                P(iso, "assetId").stringValue = AssetDatabase.AssetPathToGUID(path);
+                iso.ApplyModifiedPropertiesWithoutUndo();
+            }
+            var entity = prefab.GetComponent<BasePlayerCharacterEntity>();
+            if (entity != null)
+            {
+                var eso = new SerializedObject(entity);
+                S(eso, "entityTitle", title);
+                eso.ApplyModifiedPropertiesWithoutUndo();
+            }
+            TzCreatures.Dress(prefab, model);
+            prefab.name = "TzHero-" + model;
+            PrefabUtility.SaveAsPrefabAsset(prefab, path);
+            PrefabUtility.UnloadPrefabContents(prefab);
+            made.Add(AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<BasePlayerCharacterEntity>());
+        }
+        if (made.Count < 2) { Debug.Log("[TzImport] heroes: no 3D hero and heroine yet, the demo's capsule stays"); return; }
+        var db = AssetDatabase.LoadMainAssetAtPath(DemoDatabase);
+        var so = new SerializedObject(db);
+        var list = P(so, "playerCharacterEntities");
+        if (list == null) return;
+        list.arraySize = made.Count;
+        for (int i = 0; i < made.Count; i++) list.GetArrayElementAtIndex(i).objectReferenceValue = made[i];
+        so.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(db);
+        Debug.Log("[TzImport] heroes: " + string.Join(", ", made.Select(m => m.name)));
     }
 
     // ---- font --------------------------------------------------------------------------------------

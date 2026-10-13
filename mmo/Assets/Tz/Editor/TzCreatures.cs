@@ -11,20 +11,30 @@ using Object = UnityEngine.Object;
 /// Monsters with a rigged model (content/art/models/models.json entries with "rig": &lt;name&gt;.glb is the skinned
 /// creature, &lt;name&gt;@walk.glb its walk from Tripo). The demo monster's capsule stays as the invisible
 /// "CapsuleModel" the demo's clips move (idle sway, the blow's lunge, the flinch, the fall on death): our model
-/// hangs under it as "Body", so the creature does all that too, and its own walk clip replaces the demo's.
+/// hangs under it as "Body", so the creature does all that too. Its own clips (&lt;name&gt;@&lt;animation&gt;.glb)
+/// replace the demo's: idle → idle, walk (or fly) → moving forward, run → sprint, slash/shoot → the blow,
+/// hurt → the flinch, fall → death (not looped). Size: "height" (a standing figure) or else "size" (the longest
+/// horizontal side) in metres.
 /// glTF → Unity: x mirrored (positions, rotations (x, −y, −z, w), matrices S·M·S), triangles turned round.
 /// </summary>
 public static class TzCreatures
 {
     const string Dir = "Assets/Tz/Generated/Creatures";
 
-    class Def { public string Name, File, Walk; public float Front, Size; }
+    class Def { public string Name, File, People; public float Front, Size, Height; public Dictionary<string, string> Anims = new Dictionary<string, string>(); }
     static Dictionary<string, Def> byMonster = new Dictionary<string, Def>();
+    static Dictionary<string, Def> byName = new Dictionary<string, Def>();
+
+    // People of the maps who are not townsfolk: a creature's body (by its model's name).
+    static readonly (string re, string body)[] Beasts = { ("^волк", "wolf"), ("^орк", "orcbron"), ("^Вельзевул", "demon") };
+    // Townsmen matched by no model's "people": one of these by the name's hash.
+    static readonly string[] Plain = { "man-merchant", "man-barkeep", "man-smith", "man-old" };
 
     /// <summary>Reads which monsters get which creature.</summary>
     public static void Load(string repoRoot)
     {
         byMonster.Clear();
+        byName.Clear();
         string folder = Path.Combine(repoRoot, "content", "art", "models");
         string index = Path.Combine(folder, "models.json");
         AssetDatabase.DeleteAsset(Dir);
@@ -38,10 +48,16 @@ public static class TzCreatures
                 Name = kv.Key, File = Path.Combine(folder, kv.Key + ".glb"),
                 Front = o.TryGetValue("front", out var f) && f is double fd ? (float)fd : 0f,
                 Size = o.TryGetValue("size", out var s) && s is double sd ? (float)sd : 1.5f,
+                Height = o.TryGetValue("height", out var h) && h is double hd ? (float)hd : 0f,
+                People = o.TryGetValue("people", out var pp) && pp is string ps ? ps : null,
             };
-            string walk = Path.Combine(folder, kv.Key + "@walk.glb");
-            if (File.Exists(walk)) d.Walk = walk;
+            foreach (var a in new[] { "idle", "walk", "fly", "run", "slash", "shoot", "hurt", "fall" })
+            {
+                string ap = Path.Combine(folder, kv.Key + "@" + a + ".glb");
+                if (File.Exists(ap)) d.Anims[a] = ap;
+            }
             if (!File.Exists(d.File)) continue;
+            byName[d.Name] = d;
             if (o.TryGetValue("for", out var u) && u is List<object> ul)
                 foreach (var m in ul.OfType<string>()) byMonster[m] = d;
         }
@@ -59,13 +75,80 @@ public static class TzCreatures
         // The capsule's "face" (a flat cylinder in front) goes with it.
         for (int i = capsule.childCount - 1; i >= 0; i--) Object.DestroyImmediate(capsule.GetChild(i).gameObject);
 
+        var nodes = Body(capsule, def, -capsule.localPosition, out var smr, out float k);   // feet on the ground: the capsule's centre is above it
+
+        var so = new SerializedObject(model);
+        var smrProp = so.FindProperty("skinnedMeshRenderer");
+        if (smrProp != null) smrProp.objectReferenceValue = smr;
+        var done = Animate(so, def, root.transform, nodes);
+        so.ApplyModifiedPropertiesWithoutUndo();
+        Debug.Log($"[TzImport] creature {def.Name} on {monsterId}: {smr.sharedMesh.triangles.Length / 3} triangles, {smr.bones.Length} bones, ×{k:0.00}, clips: {(done.Count > 0 ? string.Join(", ", done) : "none")}");
+        return true;
+    }
+
+    /// <summary>Whether a model of this name (models.json key) was loaded.</summary>
+    public static bool Has(string model) => byName.ContainsKey(model);
+
+    /// <summary>
+    /// The body of a person of the map by the name: the model whose "people" regex matches (the risen dead
+    /// "-зомби" as the living), a beast's for wolves and orcs, else a plain townsman by the name's hash; null —
+    /// no models yet.
+    /// </summary>
+    public static string BodyFor(string personName)
+    {
+        string n = System.Text.RegularExpressions.Regex.Replace(personName ?? "", "-зомби$", "");
+        foreach (var (re, body) in Beasts)
+            if (System.Text.RegularExpressions.Regex.IsMatch(n, re, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                return byName.ContainsKey(body) ? body : null;
+        foreach (var d in byName.Values.OrderBy(d => d.Name))
+            if (!string.IsNullOrEmpty(d.People) && System.Text.RegularExpressions.Regex.IsMatch(n, d.People, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                return d.Name;
+        var plain = Plain.Where(byName.ContainsKey).ToArray();
+        if (plain.Length == 0) return null;
+        uint h = 2166136261;
+        foreach (char c in n) h = (h ^ c) * 16777619;
+        return plain[h % (uint)plain.Length];
+    }
+
+    /// <summary>
+    /// A person's body: the model [body] under [parent] standing on its origin, its idle played by a legacy
+    /// Animation (people only stand and talk; the framework does not animate them).
+    /// </summary>
+    public static void DressPerson(Transform parent, string body)
+    {
+        var def = byName[body];
+        var holder = new GameObject("Model").transform;
+        holder.SetParent(parent, false);
+        var nodes = Body(holder, def, Vector3.zero, out var smr, out _);
+        string a = def.Anims.ContainsKey("idle") ? "idle" : def.Anims.ContainsKey("walk") ? "walk" : null;
+        if (a == null) return;
+        var map = new Dictionary<string, Transform>();
+        foreach (var t in nodes) if (t != null && !map.ContainsKey(t.name)) map[t.name] = t;
+        string clipPath = $"{Dir}/{def.Name}-{a}-legacy.anim";
+        var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(clipPath)
+                   ?? new Gltf(def.Anims[a]).Clip(holder, map, def.Name + "-" + a + "-legacy", Dir, loop: true, legacy: true);
+        if (clip == null) return;
+        var anim = holder.gameObject.AddComponent<Animation>();
+        anim.clip = clip;
+        anim.AddClip(clip, clip.name);
+        anim.playAutomatically = true;
+        anim.wrapMode = WrapMode.Loop;
+        anim.cullingType = AnimationCullingType.BasedOnRenderers;
+    }
+
+    /// <summary>
+    /// The skinned model of [def] built under [parent] (feet at [feet] in its space, front turned), scaled to
+    /// its height or size; the nodes by glTF index.
+    /// </summary>
+    static Transform[] Body(Transform parent, Def def, Vector3 feet, out SkinnedMeshRenderer smr, out float k)
+    {
         var g = new Gltf(def.File);
         var body = new GameObject("Body").transform;
-        body.SetParent(capsule, false);
-        body.localPosition = -capsule.localPosition;   // feet on the ground: the capsule's centre is above it
+        body.SetParent(parent, false);
+        body.localPosition = feet;
         body.localRotation = Quaternion.Euler(0, def.Front, 0);
-        var nodes = g.Build(body, def.Name, Dir, out var smr);
-        // Size: the longest horizontal side of the posed mesh (in the body's space) becomes def.Size metres.
+        string meshName = def.Name;
+        var nodes = g.Build(body, meshName, Dir, out smr);
         var baked = new Mesh();
         smr.BakeMesh(baked);
         var toBody = body.worldToLocalMatrix * smr.transform.localToWorldMatrix;
@@ -73,25 +156,60 @@ public static class TzCreatures
         Object.DestroyImmediate(baked);
         var min = new Vector3(bv.Min(v => v.x), bv.Min(v => v.y), bv.Min(v => v.z));
         var max = new Vector3(bv.Max(v => v.x), bv.Max(v => v.y), bv.Max(v => v.z));
-        float k = def.Size / Mathf.Max(0.01f, Mathf.Max(max.x - min.x, max.z - min.z));
+        k = def.Height > 0 ? def.Height / Mathf.Max(0.01f, max.y - min.y)
+                           : def.Size / Mathf.Max(0.01f, Mathf.Max(max.x - min.x, max.z - min.z));
         body.localScale = Vector3.one * k;
-        body.localPosition = -capsule.localPosition - Vector3.up * min.y * k;
+        body.localPosition = feet - Vector3.up * min.y * k;
         smr.localBounds = new Bounds((min + max) / 2, (max - min) * 1.5f);
+        return nodes;
+    }
 
-        var so = new SerializedObject(model);
-        var smrProp = so.FindProperty("skinnedMeshRenderer");
-        if (smrProp != null) smrProp.objectReferenceValue = smr;
-        if (def.Walk != null)
+    /// <summary>The model's own clips into the character model's default animations; returns which went in.</summary>
+    static List<string> Animate(SerializedObject so, Def def, Transform root, Transform[] nodes)
+    {
+        var done = new List<string>();
+        var byName = new Dictionary<string, Transform>();
+        foreach (var t in nodes) if (t != null && !byName.ContainsKey(t.name)) byName[t.name] = t;
+        var clips = new Dictionary<string, AnimationClip>();
+        AnimationClip Get(string a)
         {
-            var byName = new Dictionary<string, Transform>();
-            foreach (var t in nodes) if (t != null && !byName.ContainsKey(t.name)) byName[t.name] = t;
-            var clip = new Gltf(def.Walk).Clip(root.transform, byName, def.Name + "-walk", Dir);
-            var fwd = so.FindProperty("defaultAnimations.moveStates.forwardState.clip");
-            if (clip != null && fwd != null) fwd.objectReferenceValue = clip;
+            if (clips.TryGetValue(a, out var c)) return c;
+            if (!def.Anims.TryGetValue(a, out var file)) return clips[a] = null;
+            return clips[a] = AssetDatabase.LoadAssetAtPath<AnimationClip>($"{Dir}/{def.Name}-{a}.anim")
+                ?? new Gltf(file).Clip(root, byName, def.Name + "-" + a, Dir, loop: a != "fall" && a != "slash" && a != "shoot" && a != "hurt");
         }
-        so.ApplyModifiedPropertiesWithoutUndo();
-        Debug.Log($"[TzImport] creature {def.Name} on {monsterId}: {smr.sharedMesh.triangles.Length / 3} triangles, {smr.bones.Length} bones, ×{k:0.00}, walk {(def.Walk != null ? "yes" : "no")}");
-        return true;
+        void Set(string prop, string a)
+        {
+            var c = Get(a);
+            var p = so.FindProperty(prop);
+            if (c == null || p == null) return;
+            p.objectReferenceValue = c;
+            done.Add(a + "→" + prop.Replace("defaultAnimations.", ""));
+        }
+        // A small bird walks; the others fly (low, as the game moves them on the ground).
+        string move = def.Name == "hen" ? (def.Anims.ContainsKey("walk") ? "walk" : "fly") : (def.Anims.ContainsKey("fly") ? "fly" : "walk");
+        Set("defaultAnimations.idleState.clip", "idle");
+        Set("defaultAnimations.moveStates.forwardState.clip", move);
+        Set("defaultAnimations.walkStates.forwardState.clip", move);
+        Set("defaultAnimations.sprintStates.forwardState.clip", def.Anims.ContainsKey("run") ? "run" : move);
+        Set("defaultAnimations.hurtState.clip", "hurt");
+        Set("defaultAnimations.deadState.clip", "fall");
+        var blow = Get("slash") ?? Get("shoot");
+        var attacks = so.FindProperty("defaultAnimations.rightHandAttackAnimations");
+        if (blow != null && attacks != null)
+        {
+            if (attacks.arraySize == 0)
+            {
+                attacks.arraySize = 1;
+                var rates = attacks.GetArrayElementAtIndex(0).FindPropertyRelative("triggerDurationRates");
+                rates.arraySize = 1;
+                rates.GetArrayElementAtIndex(0).floatValue = 0.5f;
+            }
+            for (int i = 0; i < attacks.arraySize; i++)
+                attacks.GetArrayElementAtIndex(i).FindPropertyRelative("state.clip").objectReferenceValue = blow;
+            done.Add(blow.name + "→attack");
+        }
+        return done;
     }
 
     // The framework's character model component (PlayableCharacterModel) without naming its namespace here.
@@ -217,12 +335,15 @@ public static class TzCreatures
                 }
                 mesh.bindposes = binds;
                 mesh.RecalculateBounds();
-                AssetDatabase.CreateAsset(mesh, $"{dir}/{name}.asset");
+                // One model may dress several prefabs (monsters, people): its mesh and material are made once.
+                var made = AssetDatabase.LoadAssetAtPath<Mesh>($"{dir}/{name}.asset");
+                if (made != null) { Object.DestroyImmediate(mesh); mesh = made; }
+                else AssetDatabase.CreateAsset(mesh, $"{dir}/{name}.asset");
                 smr = t[i].gameObject.AddComponent<SkinnedMeshRenderer>();
                 smr.sharedMesh = mesh;
                 smr.bones = joints.Select(x => t[x]).ToArray();
                 smr.rootBone = t[joints[0]];
-                smr.sharedMaterial = Material(prim, name, dir);
+                smr.sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>($"{dir}/{name}.mat") ?? Material(prim, name, dir);
                 smr.updateWhenOffscreen = false;
                 break;
             }
@@ -269,15 +390,15 @@ public static class TzCreatures
 
         /// <summary>
         /// The first animation as a clip on the skeleton built from the rigged model (bones match by name),
-        /// paths from [root] (the animator's object). Looped.
+        /// paths from [root] (the animator's object). Looped unless [loop] is false.
         /// </summary>
-        public AnimationClip Clip(Transform root, Dictionary<string, Transform> byName, string name, string dir)
+        public AnimationClip Clip(Transform root, Dictionary<string, Transform> byName, string name, string dir, bool loop = true, bool legacy = false)
         {
             var anims = L("animations");
             if (anims.Count == 0) return null;
             var a = D(anims[0]);
             var samplers = (List<object>)a["samplers"];
-            var clip = new AnimationClip { name = name, frameRate = 30, legacy = false };
+            var clip = new AnimationClip { name = name, frameRate = 30, legacy = legacy };
             foreach (var chObj in (List<object>)a["channels"])
             {
                 var ch = D(chObj);
@@ -320,7 +441,7 @@ public static class TzCreatures
             }
             clip.EnsureQuaternionContinuity();
             var settings = AnimationUtility.GetAnimationClipSettings(clip);
-            settings.loopTime = true;
+            settings.loopTime = loop;
             AnimationUtility.SetAnimationClipSettings(clip, settings);
             AssetDatabase.CreateAsset(clip, $"{dir}/{name}.anim");
             return clip;

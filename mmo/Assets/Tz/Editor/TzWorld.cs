@@ -512,6 +512,7 @@ namespace Tz.World
             PlaceBuildings(free);
             // Houses of a town and the fill of the wild off the paths.
             var rnd = new Random(Hash(MapName));
+            PlaceTown(rnd);
             PlaceHouses(free, near, rnd);
             PlaceWild(free, near, rnd);
             PlacePeople();
@@ -592,6 +593,58 @@ namespace Tz.World
                 }
         }
 
+        /// <summary>
+        /// The things of the towns: a well by every fourth town place, a brazier each side of a public building's
+        /// door, a boat on the water by every pier.
+        /// </summary>
+        void PlaceTown(Random rnd)
+        {
+            bool Dry(V c)
+            {
+                int i = CI(c.X), j = CJ(c.Z);
+                return i >= 0 && j >= 0 && i < Ground.GetLength(0) && j < Ground.GetLength(1) && Ground[i, j] != Surface.Water;
+            }
+            void Put(string kind, V c, double rot, double r)
+            {
+                Props.Add(new Prop { Kind = kind, Pos = c, Rot = rot, Scale = 1 });
+                Block(c, r);
+            }
+            foreach (var p in Places.Where(p => !p.Indoor && p.Kind == Kind.Town && Hash(p.Id) % 4 == 0))
+                for (int a = 0; a < 8; a++)
+                {
+                    double ang = (a * 45 + Hash(p.Id) % 45) * Math.PI / 180;
+                    // On the square (the place's clearing), off the ways through it.
+                    var c = p.Pos + new V(Math.Sin(ang), Math.Cos(ang)) * 6;
+                    double f = Paths.Count == 0 ? 99 : Paths.Min(w => SegmentDistance(c, w.A.Pos, w.B.Pos) - w.Width / 2);
+                    if (!Dry(c) || f < 1.4 || Taken(c, 1.4)) continue;
+                    Put("well", c, Deg(NearestPathPoint(c) - c), 1.3);
+                    break;
+                }
+            foreach (var b in Buildings.Where(b => b.Rooms.Count > 0))
+            {
+                var fwd = (b.Door - b.Pos).Norm;
+                var side = new V(fwd.Z, -fwd.X);
+                foreach (var k in new[] { -1.0, 1.0 })
+                {
+                    var c = b.Door + side * (1.8 * k) + fwd * 0.6;
+                    if (Dry(c) && !Taken(c, 0.4)) Put("brazier", c, b.Rot, 0.4);
+                }
+            }
+            foreach (var p in Places.Where(p => !p.Indoor && p.Kind == Kind.Pier))
+            {
+                V best = default; double bestD = double.MaxValue;
+                for (double dx = -20; dx <= 20; dx += 2)
+                    for (double dz = -20; dz <= 20; dz += 2)
+                    {
+                        var c = p.Pos + new V(dx, dz);
+                        if (Dry(c) || !Dry(c + new V(5, 0)) && !Dry(c + new V(-5, 0)) && !Dry(c + new V(0, 5)) && !Dry(c + new V(0, -5))) continue;
+                        double d = (c - p.Pos).Len;
+                        if (d < bestD && d > 3) { bestD = d; best = c; }
+                    }
+                if (bestD < double.MaxValue) Props.Add(new Prop { Kind = "boat", Pos = best, Rot = Deg(best - p.Pos) + 90, Scale = 1 });
+            }
+        }
+
         /// <summary>Trees, bushes, rocks, graves off the paths by the kind of the nearest place; the edge closed by trees.</summary>
         void PlaceWild(double[,] free, Place[,] near, Random rnd)
         {
@@ -618,7 +671,7 @@ namespace Tz.World
                         case Kind.Rocks: if (roll < 0.18) kind = "rock"; break;
                         case Kind.Road: case Kind.Field: if (roll < 0.10) kind = roll < 0.05 ? "tree" : "bush"; break;
                         case Kind.Lake: case Kind.Shore: if (roll < 0.10) kind = "bush"; break;
-                        case Kind.Town: case Kind.Pier: if (f > 3 && roll < 0.04) kind = roll < 0.02 ? "barrel" : "crates"; break;
+                        case Kind.Town: case Kind.Pier: if (f > 3 && roll < 0.052) kind = roll < 0.02 ? "barrel" : roll < 0.04 ? "crates" : roll < 0.046 ? "cart" : "stall"; break;
                     }
                     if (kind == null || f < clearance || Taken(c, 1.2)) continue;
                     double scale = kind == "rock" ? 0.8 + rnd.NextDouble() * 1.4 : 0.8 + rnd.NextDouble() * 0.5;

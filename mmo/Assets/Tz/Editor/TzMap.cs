@@ -491,12 +491,14 @@ public static class TzMap
     static readonly Dictionary<string, float> PropHeight = new Dictionary<string, float>
     {
         ["tree-dead"] = 7f, ["bush"] = 1.4f, ["rock"] = 1.1f, ["barrel"] = 1.1f, ["crates"] = 1.3f, ["grave"] = 1.0f,
+        ["well"] = 2.6f, ["cart"] = 1.7f, ["stall"] = 2.6f, ["brazier"] = 1.3f, ["boat"] = 1.1f,
     };
 
     /// <summary>How far a prop of a kind is seen, metres.</summary>
     static readonly Dictionary<string, float> PropDistance = new Dictionary<string, float>
     {
         ["tree-dead"] = 120f, ["bush"] = 50f, ["rock"] = 120f, ["barrel"] = 45f, ["crates"] = 45f, ["grave"] = 40f,
+        ["well"] = 90f, ["cart"] = 60f, ["stall"] = 70f, ["brazier"] = 50f, ["boat"] = 90f,
     };
 
     /// <summary>The box that stops walkers at a prop of a kind (none — walk through).</summary>
@@ -504,6 +506,8 @@ public static class TzMap
     {
         ["tree-dead"] = new Vector3(0.6f, 3f, 0.6f), ["rock"] = new Vector3(1.5f, 1.2f, 1.1f),
         ["barrel"] = new Vector3(0.8f, 1f, 0.8f), ["crates"] = new Vector3(1f, 1f, 1f),
+        ["well"] = new Vector3(1.8f, 1.2f, 1.8f), ["cart"] = new Vector3(1.4f, 1.2f, 2.4f), ["stall"] = new Vector3(2.2f, 1.2f, 1.2f),
+        ["brazier"] = new Vector3(0.5f, 1f, 0.5f),
     };
 
     /// <summary>Copies of models to draw by GPU instancing (TzInstancer), by model and chunk.</summary>
