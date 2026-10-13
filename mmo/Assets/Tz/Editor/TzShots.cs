@@ -102,10 +102,15 @@ public static class TzShots
         }
         Rows("10-creatures", Prefabs("Assets/Tz/Generated/Monsters"));
         Rows("11-people", Prefabs("Assets/Tz/Generated/Npcs").Concat(Prefabs("Assets/Tz/Generated/Characters")).ToArray());
-        var origin = W(world.Start) + new Vector3(0, 0, -40);
+        // A plain floor beside the map, so that houses, trees and water do not hide them.
+        var origin = new Vector3((float)world.MinX - 300, 0, (float)world.MinZ);
+        var floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        floor.transform.position = origin + new Vector3(0, 0, -rows.Count * 15 + 10);
+        floor.transform.localScale = new Vector3(6, 1, rows.Count * 3f + 4);
+        floor.GetComponent<MeshRenderer>().sharedMaterial = new Material(Shader.Find("Standard")) { color = new Color(0.45f, 0.42f, 0.36f) };
         for (int r = 0; r < rows.Count; r++)
         {
-            var at = origin + Vector3.back * r * 12;
+            var at = origin + Vector3.back * r * 30;
             for (int i = 0; i < rows[r].list.Length; i++)
             {
                 var c = (GameObject)PrefabUtility.InstantiatePrefab(rows[r].list[i]);
@@ -117,12 +122,13 @@ public static class TzShots
                 if (legacy != null && legacy.clip != null) legacy.clip.SampleAnimation(legacy.gameObject, legacy.clip.length * 0.3f);
                 Debug.Log($"[TzShots] {rows[r].name}: {rows[r].list[i].name}, clip {(clip ?? legacy?.clip)?.name ?? "none"}");
             }
-            views.Add((rows[r].name, at + Vector3.up * 0.3f, 180, 13));
+            views.Add((rows[r].name, at + Vector3.up * 0.3f, 180, -13));   // negative: a low camera (see below)
         }
         foreach (var v in views)
         {
-            var rot = Quaternion.Euler(40, v.yaw, 0);
-            cam.transform.SetPositionAndRotation(v.at + Vector3.up * 1.5f - rot * Vector3.forward * v.dist, rot);
+            // A negative distance: the lineups, seen from low (18°) and near to tell the figures apart.
+            var rot = Quaternion.Euler(v.dist < 0 ? 18 : 40, v.yaw, 0);
+            cam.transform.SetPositionAndRotation(v.at + Vector3.up * 1.5f - rot * Vector3.forward * Mathf.Abs(v.dist), rot);
             Shot(cam, Path.Combine(outDir, v.name + ".jpg"), 1600, 900);
         }
         Debug.Log($"[TzShots] {views.Count + 1} pictures in {outDir}");
