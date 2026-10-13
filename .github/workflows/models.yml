@@ -19,6 +19,7 @@ jobs:
     timeout-minutes: 340
     permissions:
       contents: write
+      actions: read     # an earlier run's artifact (salvage)
     steps:
       - uses: actions/checkout@v4
 
@@ -26,6 +27,26 @@ jobs:
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq libopengl0 libglu1-mesa > /dev/null
           python3 -m pip install --quiet --break-system-packages pillow numpy pymeshlab
+
+      # Downloads an earlier run did not commit (orders.json "_salvage_run"): taken first, no credits.
+      - name: Earlier run to salvage
+        id: salvage
+        run: echo "run=$(python3 -c 'import json; print(json.load(open("content/art/models/orders.json")).get("_salvage_run", ""))')" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/download-artifact@v4
+        if: steps.salvage.outputs.run != ''
+        continue-on-error: true
+        with:
+          name: tripo-raw
+          path: tools/models/raw
+          run-id: ${{ steps.salvage.outputs.run }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Salvage
+        if: steps.salvage.outputs.run != ''
+        run: |
+          python3 tools/models/salvage.py ${{ steps.salvage.outputs.run }} 2>&1 | grep -v "Qt Plugin\|Cannot load library\|plugins:" | tee salvage.log
+          echo "::notice title=salvage::$(tail -2 salvage.log | cut -c1-1500 | sed ':a;N;$!ba;s/\n/%0A/g')"
 
       - name: Order the models
         env:
@@ -36,7 +57,11 @@ jobs:
           python3 tools/models/tripo.py > tripo.log 2>&1 || code=$?
           grep -v "Qt Plugin\|Cannot load library\|plugins:\|^$" tripo.log > tripo-short.log || true
           cat tripo-short.log
+          mkdir -p tools/models/raw && cp tripo.log tools/models/raw/ || true   # the whole log goes with the artifact
           echo "::notice title=tripo::$(cut -c1-300 tripo-short.log | tail -60 | sed ':a;N;$!ba;s/\n/%0A/g')"
+          grep -E "^(done:|[a-z0-9-]+: (FAILED|not ordered))" tripo-short.log | cut -c1-200 > tripo-summary.txt || true
+          echo "::notice title=tripo summary::$(head -80 tripo-summary.txt | sed ':a;N;$!ba;s/\n/%0A/g')"
+          if [ -s tripo-failures.txt ]; then echo "::warning title=tripo failures::$(head -c 6000 tripo-failures.txt | sed ':a;N;$!ba;s/\n/%0A/g')"; fi
           exit $code
 
       - uses: actions/upload-artifact@v4
@@ -54,4 +79,9 @@ jobs:
           if [ -z "$(git status --porcelain content/art/models | grep '\.glb')" ]; then echo "no new models"; exit 0; fi
           git add content/art/models
           git -c user.name="tripo ci" -c user.email="ci@localhost" commit -qm "Модели из Tripo: $(git diff --cached --name-only | sed -n 's#content/art/models/\(.*\)\.glb#\1#p' | tr '\n' ' ')"
-          git push -q origin HEAD:main
+          # main may have moved while the models were made: on top of it (only content/art/models is ours).
+          for i in 1 2 3 4 5; do
+            git pull -q --rebase origin main && git push -q origin HEAD:main && exit 0
+            sleep 10
+          done
+          exit 1

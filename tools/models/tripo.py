@@ -24,7 +24,11 @@ sys.path.insert(0, HERE)
 import prepare  # noqa: E402
 
 spent = []
-WORKERS = int(os.environ.get("TRIPO_WORKERS", "4"))
+# Tripo runs 3 animation tasks at once per account (rigs and retargets share it).
+WORKERS = int(os.environ.get("TRIPO_WORKERS", "3"))
+# The rig version by skeleton: v1.0 for humanoids (presets preset:biped:*), v2.5 for the others.
+RIG_MODELS = {"biped": "v1.0-20240301"}
+DETAILS = []   # full texts of the failures, for the run's annotation
 
 # For a portrait: the whole figure, as the image-to-3D generator likes it (by the skeleton it will get).
 COMPLETE_TAIL = ", the whole figure visible with margin, plain light grey background, no shadow, same painted style and colours"
@@ -109,6 +113,14 @@ def download(url, path):
     return path
 
 
+def save_tasks(raw, **ids):
+    """The task ids of an order in raw/<name>/tasks.json (the artifact keeps them: a rig can be animated later)."""
+    p = os.path.join(raw, "tasks.json")
+    d = json.load(open(p)) if os.path.exists(p) else {}
+    d.update(ids)
+    json.dump(d, open(p, "w"))
+
+
 def order(name, o, index):
     raw = os.path.join(HERE, "raw", name)
     os.makedirs(raw, exist_ok=True)
@@ -135,11 +147,13 @@ def order(name, o, index):
             download(url, os.path.join(raw, name + "-figure.png"))
             break
         source = img_task
+        save_tasks(raw, figure=img_task)
     body = {"input": source, "model": o.get("model", "v3.1-20260211"), "texture": True, "pbr": True,
             "texture_quality": o.get("texture_quality", "detailed"), "orientation": o.get("orientation", "align_image")}
     if o.get("faces"): body["face_limit"] = int(o["faces"])
     if o.get("smart_low_poly"): body["smart_low_poly"] = True
     task = call("POST", "/generation/image-to-model", body)["task_id"]
+    save_tasks(raw, model=task)
     d = wait(task, "model")
     links = urls(d.get("output", {}))
     if not links: raise RuntimeError(f"no model in {json.dumps(d)[:500]}")
@@ -151,15 +165,22 @@ def order(name, o, index):
     if o.get("rig"):
         check = call("POST", "/animations/rig-check", {"input": task})
         print(f"  rig check: {json.dumps(check)[:300]}")
-        rig_task = call("POST", "/animations/rig", {"input": task, "model": o.get("rig_model", "v2.5-20260210"),
+        rig_task = call("POST", "/animations/rig", {"input": task, "model": o.get("rig_model", RIG_MODELS.get(o["rig"], "v2.5-20260210")),
                                                      "rig_type": o["rig"], "spec": o.get("spec", "tripo"), "out_format": "glb"})["task_id"]
+        save_tasks(raw, rig=rig_task)
         d = wait(rig_task, "rig")
         rigged = download(urls(d.get("output", {}))[0][1], os.path.join(raw, name + "-rig.glb"))
         prepare.shrink_textures(*prepare.read_glb(rigged), os.path.join(MODELS, name + ".glb"))
         entry["rig"] = o["rig"]
         index[name] = entry   # kept even when an animation fails: the rigged model is there already
         print(f"  {name} rig task {rig_task} (give it as \"rig_task\" to order only animations later)")
-        animate(name, o, rig_task, raw, entry)
+        try:
+            animate(name, o, rig_task, raw, entry)
+        except Exception:
+            # A figure that cannot move is not kept (the order stays to be made again).
+            index.pop(name, None)
+            if os.path.exists(os.path.join(MODELS, name + ".glb")): os.remove(os.path.join(MODELS, name + ".glb"))
+            raise
     else:
         import subprocess
         subprocess.run([sys.executable, os.path.join(HERE, "prepare.py"), model_path, name], check=True)
@@ -183,6 +204,7 @@ def animate(name, o, rig_task, raw, entry):
             entry["animations"].append(anim)
         except Exception as e:
             print(f"  {name} {preset}: FAILED {str(e)[:1500]}")
+            with LOCK: DETAILS.append(f"{name} {preset}: {str(e)[:2500]}")
             bad.append(preset)
     if bad and not entry["animations"] and o.get("rig") == "biped":
         raise RuntimeError("no animation came: " + ", ".join(bad))
@@ -212,6 +234,7 @@ def main():
             order(name, o, mine)
         except Exception as e:
             print(f"{name}: FAILED {e}", flush=True)
+            with LOCK: DETAILS.append(f"{name}: {str(e)[:2500]}")
             with LOCK: failed.append(name)
             if "2010" in str(e):
                 print("no credits left on the API balance: stopping", flush=True)
@@ -221,10 +244,24 @@ def main():
             index.update(mine)
             json.dump(index, open(index_path, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
 
+    # The first order of each skeleton alone first: when it gets no animation, the others of that skeleton
+    # are not ordered (they would fail the same and waste the model and the rig).
+    probes, seen = [], set()
+    for n, o in todo:
+        if o.get("rig") and o["rig"] not in seen:
+            seen.add(o["rig"]); probes.append((n, o))
     with ThreadPoolExecutor(WORKERS) as pool:
-        list(pool.map(one, todo))
+        list(pool.map(one, probes))
+    bad_rigs = {o["rig"] for n, o in probes if any(d.startswith(n + ": no animation") for d in DETAILS)}
+    rest = [(n, o) for n, o in todo if (n, o) not in probes and o.get("rig") not in bad_rigs]
+    for n, o in todo:
+        if o.get("rig") in bad_rigs and (n, o) not in probes: print(f"{n}: not ordered, its skeleton {o['rig']} failed on {[p for p, q in probes if q.get('rig') == o['rig']][0]}")
+    with ThreadPoolExecutor(WORKERS) as pool:
+        list(pool.map(one, rest))
     total = sum(c for _, _, c in spent if isinstance(c, (int, float)))
     print(f"done: {len(spent)} tasks, {total} credits; failed: {', '.join(failed) or 'none'}")
+    with open(os.path.join(HERE, "..", "..", "tripo-failures.txt"), "w") as f:
+        f.write("\n".join(DETAILS[:6]))
     if failed:
         sys.exit(1)
 

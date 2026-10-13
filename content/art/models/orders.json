@@ -1,5 +1,6 @@
 {
- "_doc": "Orders for Tripo's API (tools/models/tripo.py, run by .github/workflows/models.yml when this file changes on main; needs the secret TRIPO_API_KEY). Key — the model's name (content/art/models/<name>.glb); a model already there is not ordered again unless \"redo\": true. image — the picture to make it from; faces — the generator's face limit; for — what it replaces on the map (see models.json); front — degrees that turn its front to the street; rig — skeleton type (biped, quadruped, hexapod, octopod, avian, serpentine, aquatic); rig_task — a rig already made (only the animations are ordered); animations — the API's preset names (biped: preset:idle, walk, run, jump, slash, shoot, hurt, fall and ~100 preset:biped:*; other rigs — tested 12.10: only their own walk, preset:quadruped:walk, preset:octopod:walk, preset:hexapod:walk, preset:serpentine:march, preset:aquatic:march; idle, slash, hurt, fall fail for them, the game moves them itself). Prices (12.10.2026): model with HD texture ~40 credits, rig 25, an animation 10; 100 credits = $1. complete — the picture is a portrait: first the whole figure is drawn from it (image-to-image, template character_completion; prompt by the rig or complete_prompt). size — the creature's longest horizontal side in metres, height — a standing figure's height; people — a regex of the map's people names dressed in this model.",
+ "_doc": "Orders for Tripo's API (tools/models/tripo.py, run by .github/workflows/models.yml when this file changes on main; needs the secret TRIPO_API_KEY). Key — the model's name (content/art/models/<name>.glb); a model already there is not ordered again unless \"redo\": true. image — the picture to make it from; faces — the generator's face limit; for — what it replaces on the map (see models.json); front — degrees that turn its front to the street; rig — skeleton type (biped, quadruped, hexapod, octopod, avian, serpentine, aquatic); rig_task — a rig already made (only the animations are ordered); animations — the API's preset names (biped (rig v1.0, 13.10: the v2.5 rig's preset:idle etc. failed for all) preset:biped:idle, walk, run, jump, slash, shoot, hurt, fall and ~90 more preset:biped:*; other rigs — tested 12.10: only their own walk, preset:quadruped:walk, preset:octopod:walk, preset:hexapod:walk, preset:serpentine:march, preset:aquatic:march; idle, slash, hurt, fall fail for them, the game moves them itself). Prices (12.10.2026): model with HD texture ~40 credits, rig 25, an animation 10; 100 credits = $1. complete — the picture is a portrait: first the whole figure is drawn from it (image-to-image, template character_completion; prompt by the rig or complete_prompt). size — the creature's longest horizontal side in metres, height — a standing figure's height; people — a regex of the map's people names dressed in this model. _salvage_run — a run of models.yml whose downloads (artifact tripo-raw) were not committed: they are taken first (tools/models/salvage.py), nothing ordered for them.",
+ "_salvage_run": "38364709280",
  "house-b": {
   "image": "content/art/topdown/objects/obj-house-b.webp",
   "faces": 6000,
@@ -430,11 +431,11 @@
   "rig": "biped",
   "height": 2.0,
   "animations": [
-   "preset:idle",
-   "preset:walk",
-   "preset:slash",
-   "preset:hurt",
-   "preset:fall"
+   "preset:biped:idle",
+   "preset:biped:walk",
+   "preset:biped:slash",
+   "preset:biped:hurt",
+   "preset:biped:fall"
   ]
  },
  "demon": {
@@ -447,11 +448,11 @@
   "rig": "biped",
   "height": 2.6,
   "animations": [
-   "preset:idle",
-   "preset:walk",
-   "preset:slash",
-   "preset:hurt",
-   "preset:fall"
+   "preset:biped:idle",
+   "preset:biped:walk",
+   "preset:biped:slash",
+   "preset:biped:hurt",
+   "preset:biped:fall"
   ]
  },
  "gholl": {
@@ -464,11 +465,11 @@
   "rig": "biped",
   "height": 1.7,
   "animations": [
-   "preset:idle",
-   "preset:walk",
-   "preset:slash",
-   "preset:hurt",
-   "preset:fall"
+   "preset:biped:idle",
+   "preset:biped:walk",
+   "preset:biped:slash",
+   "preset:biped:hurt",
+   "preset:biped:fall"
   ]
  },
  "ghost": {
@@ -481,11 +482,11 @@
   "rig": "biped",
   "height": 1.8,
   "animations": [
-   "preset:idle",
-   "preset:walk",
-   "preset:slash",
-   "preset:hurt",
-   "preset:fall"
+   "preset:biped:idle",
+   "preset:biped:walk",
+   "preset:biped:slash",
+   "preset:biped:hurt",
+   "preset:biped:fall"
   ]
  },
  "gargoyle-stone": {
@@ -498,11 +499,11 @@
   "rig": "biped",
   "height": 2.2,
   "animations": [
-   "preset:idle",
-   "preset:walk",
-   "preset:slash",
-   "preset:hurt",
-   "preset:fall"
+   "preset:biped:idle",
+   "preset:biped:walk",
+   "preset:biped:slash",
+   "preset:biped:hurt",
+   "preset:biped:fall"
   ]
  },
  "giant": {
@@ -515,11 +516,11 @@
   "rig": "biped",
   "height": 3.5,
   "animations": [
-   "preset:idle",
-   "preset:walk",
-   "preset:slash",
-   "preset:hurt",
-   "preset:fall"
+   "preset:biped:idle",
+   "preset:biped:walk",
+   "preset:biped:slash",
+   "preset:biped:hurt",
+   "preset:biped:fall"
   ]
  },
  "lich": {
@@ -532,11 +533,11 @@
   "rig": "biped",
   "height": 1.9,
   "animations": [
-   "preset:idle",
-   "preset:walk",
-   "preset:slash",
-   "preset:hurt",
-   "preset:fall"
+   "preset:biped:idle",
+   "preset:biped:walk",
+   "preset:biped:slash",
+   "preset:biped:hurt",
+   "preset:biped:fall"
   ]
  },
  "licharchy": {
@@ -549,11 +550,11 @@
   "rig": "biped",
   "height": 2.1,
   "animations": [
-   "preset:idle",
-   "preset:walk",
-   "preset:slash",
-   "preset:hurt",
-   "preset:fall"
+   "preset:biped:idle",
+   "preset:biped:walk",
+   "preset:biped:slash",
+   "preset:biped:hurt",
+   "preset:biped:fall"
   ]
  },
  "firephantom": {
@@ -566,11 +567,11 @@
   "rig": "biped",
   "height": 2.2,
   "animations": [
-   "preset:idle",
-   "preset:walk",
-   "preset:slash",
-   "preset:hurt",
-   "preset:fall"
+   "preset:biped:idle",
+   "preset:biped:walk",
+   "preset:biped:slash",
+   "preset:biped:hurt",
+   "preset:biped:fall"
   ]
  },
  "ogrwar": {
@@ -583,11 +584,11 @@
   "rig": "biped",
   "height": 2.8,
   "animations": [
-   "preset:idle",
-   "preset:walk",
-   "preset:slash",
-   "preset:hurt",
-   "preset:fall"
+   "preset:biped:idle",
+   "preset:biped:walk",
+   "preset:biped:slash",
+   "preset:biped:hurt",
+   "preset:biped:fall"
   ]
  },
  "orcbron": {
@@ -600,11 +601,11 @@
   "rig": "biped",
   "height": 2.1,
   "animations": [
-   "preset:idle",
-   "preset:walk",
-   "preset:slash",
-   "preset:hurt",
-   "preset:fall"
+   "preset:biped:idle",
+   "preset:biped:walk",
+   "preset:biped:slash",
+   "preset:biped:hurt",
+   "preset:biped:fall"
   ]
  },
  "orcchem": {
@@ -617,11 +618,11 @@
   "rig": "biped",
   "height": 2.2,
   "animations": [
-   "preset:idle",
-   "preset:walk",
-   "preset:slash",
-   "preset:hurt",
-   "preset:fall"
+   "preset:biped:idle",
+   "preset:biped:walk",
+   "preset:biped:slash",
+   "preset:biped:hurt",
+   "preset:biped:fall"
   ]
  },
  "skeletbow": {
@@ -634,11 +635,11 @@
   "rig": "biped",
   "height": 1.8,
   "animations": [
-   "preset:idle",
-   "preset:walk",
-   "preset:shoot",
-   "preset:hurt",
-   "preset:fall"
+   "preset:biped:idle",
+   "preset:biped:walk",
+   "preset:biped:shoot",
+   "preset:biped:hurt",
+   "preset:biped:fall"
   ]
  },
  "skeletlord": {
@@ -651,11 +652,11 @@
   "rig": "biped",
   "height": 2.0,
   "animations": [
-   "preset:idle",
-   "preset:walk",
-   "preset:slash",
-   "preset:hurt",
-   "preset:fall"
+   "preset:biped:idle",
+   "preset:biped:walk",
+   "preset:biped:slash",
+   "preset:biped:hurt",
+   "preset:biped:fall"
   ]
  },
  "vampire": {
@@ -668,11 +669,11 @@
   "rig": "biped",
   "height": 1.85,
   "animations": [
-   "preset:idle",
-   "preset:walk",
-   "preset:slash",
-   "preset:hurt",
-   "preset:fall"
+   "preset:biped:idle",
+   "preset:biped:walk",
+   "preset:biped:slash",
+   "preset:biped:hurt",
+   "preset:biped:fall"
   ]
  },
  "werwolf": {
@@ -685,11 +686,11 @@
   "rig": "biped",
   "height": 2.2,
   "animations": [
-   "preset:idle",
-   "preset:walk",
-   "preset:slash",
-   "preset:hurt",
-   "preset:fall"
+   "preset:biped:idle",
+   "preset:biped:walk",
+   "preset:biped:slash",
+   "preset:biped:hurt",
+   "preset:biped:fall"
   ]
  },
  "witch": {
@@ -702,11 +703,11 @@
   "rig": "biped",
   "height": 1.65,
   "animations": [
-   "preset:idle",
-   "preset:walk",
-   "preset:slash",
-   "preset:hurt",
-   "preset:fall"
+   "preset:biped:idle",
+   "preset:biped:walk",
+   "preset:biped:slash",
+   "preset:biped:hurt",
+   "preset:biped:fall"
   ]
  },
  "wolfmag": {
@@ -719,11 +720,11 @@
   "rig": "biped",
   "height": 2.0,
   "animations": [
-   "preset:idle",
-   "preset:walk",
-   "preset:slash",
-   "preset:hurt",
-   "preset:fall"
+   "preset:biped:idle",
+   "preset:biped:walk",
+   "preset:biped:slash",
+   "preset:biped:hurt",
+   "preset:biped:fall"
   ]
  },
  "zombie": {
@@ -736,11 +737,11 @@
   "rig": "biped",
   "height": 1.75,
   "animations": [
-   "preset:idle",
-   "preset:walk",
-   "preset:slash",
-   "preset:hurt",
-   "preset:fall"
+   "preset:biped:idle",
+   "preset:biped:walk",
+   "preset:biped:slash",
+   "preset:biped:hurt",
+   "preset:biped:fall"
   ]
  },
  "man-merchant": {
@@ -751,8 +752,8 @@
   "height": 1.75,
   "people": "торговец|банкир|букмекер|гилдмастер|Дворецкий|Махмет|Поло",
   "animations": [
-   "preset:idle",
-   "preset:walk"
+   "preset:biped:idle",
+   "preset:biped:walk"
   ],
   "complete": true
  },
@@ -764,8 +765,8 @@
   "height": 1.75,
   "people": "",
   "animations": [
-   "preset:idle",
-   "preset:walk"
+   "preset:biped:idle",
+   "preset:biped:walk"
   ],
   "complete": true
  },
@@ -777,8 +778,8 @@
   "height": 1.8,
   "people": "кузнец|Гном",
   "animations": [
-   "preset:idle",
-   "preset:walk"
+   "preset:biped:idle",
+   "preset:biped:walk"
   ],
   "complete": true
  },
@@ -790,8 +791,8 @@
   "height": 1.7,
   "people": "Старый дед|лекарь|Словен",
   "animations": [
-   "preset:idle",
-   "preset:walk"
+   "preset:biped:idle",
+   "preset:biped:walk"
   ],
   "complete": true
  },
@@ -803,8 +804,8 @@
   "height": 1.8,
   "people": "Маг|маг\\]|друид|Шаман|Милтон|Кантарес|Кениус|Клавдиус",
   "animations": [
-   "preset:idle",
-   "preset:walk"
+   "preset:biped:idle",
+   "preset:biped:walk"
   ],
   "complete": true
  },
@@ -816,8 +817,8 @@
   "height": 1.85,
   "people": "Палладин|Барон|Лорд",
   "animations": [
-   "preset:idle",
-   "preset:walk"
+   "preset:biped:idle",
+   "preset:biped:walk"
   ],
   "complete": true
  },
@@ -829,8 +830,8 @@
   "height": 1.65,
   "people": "Милта|Катрина|Лайма|Сильвия|Ракша|Сурри|Рене",
   "animations": [
-   "preset:idle",
-   "preset:walk"
+   "preset:biped:idle",
+   "preset:biped:walk"
   ],
   "complete": true,
   "complete_prompt": "full body of the same woman from head to feet without the puppy, standing in a neutral pose facing the viewer, arms slightly away from the body, the whole figure visible with margin, plain light grey background, no shadow, same painted style and colours"
@@ -843,8 +844,8 @@
   "height": 1.8,
   "people": "страж|охранник|Новобранец|офицер",
   "animations": [
-   "preset:idle",
-   "preset:walk"
+   "preset:biped:idle",
+   "preset:biped:walk"
   ]
  },
  "boy": {
@@ -855,8 +856,8 @@
   "height": 1.35,
   "people": "Мальчуган",
   "animations": [
-   "preset:idle",
-   "preset:walk"
+   "preset:biped:idle",
+   "preset:biped:walk"
   ]
  },
  "man-keeper": {
@@ -867,8 +868,8 @@
   "height": 1.75,
   "people": "Привратник",
   "animations": [
-   "preset:idle",
-   "preset:walk"
+   "preset:biped:idle",
+   "preset:biped:walk"
   ]
  },
  "hero-m": {
@@ -880,13 +881,13 @@
   "rig": "biped",
   "height": 1.8,
   "animations": [
-   "preset:idle",
-   "preset:walk",
-   "preset:run",
-   "preset:slash",
-   "preset:shoot",
-   "preset:hurt",
-   "preset:fall"
+   "preset:biped:idle",
+   "preset:biped:walk",
+   "preset:biped:run",
+   "preset:biped:slash",
+   "preset:biped:shoot",
+   "preset:biped:hurt",
+   "preset:biped:fall"
   ]
  },
  "hero-f": {
@@ -898,13 +899,13 @@
   "rig": "biped",
   "height": 1.7,
   "animations": [
-   "preset:idle",
-   "preset:walk",
-   "preset:run",
-   "preset:slash",
-   "preset:shoot",
-   "preset:hurt",
-   "preset:fall"
+   "preset:biped:idle",
+   "preset:biped:walk",
+   "preset:biped:run",
+   "preset:biped:slash",
+   "preset:biped:shoot",
+   "preset:biped:hurt",
+   "preset:biped:fall"
   ]
  },
  "well": {
