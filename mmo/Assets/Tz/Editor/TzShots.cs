@@ -131,7 +131,34 @@ public static class TzShots
             cam.transform.SetPositionAndRotation(v.at + Vector3.up * 1.5f - rot * Vector3.forward * Mathf.Abs(v.dist), rot);
             Shot(cam, Path.Combine(outDir, v.name + ".jpg"), 1600, 900);
         }
+        Home(cam, outDir);
         Debug.Log($"[TzShots] {views.Count + 1} pictures in {outDir}");
+    }
+
+    /// <summary>The first screens (login, registration, a new character) with their look (TzHomeSkin), 20:9 like a phone.</summary>
+    static void Home(Camera cam, string outDir)
+    {
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Tz/BaseDemo/Prefabs/UI/Home/CanvasHome-CE.prefab");
+        if (prefab == null) return;
+        cam.orthographic = false;
+        cam.transform.SetPositionAndRotation(new Vector3(0, -500, 0), Quaternion.identity);   // nothing of the map in view
+        cam.backgroundColor = new Color(0.06f, 0.04f, 0.04f);
+        foreach (var screen in new[] { "UILogin", "UIRegister", "UICharacterCreate" })
+        {
+            var ui = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+            var canvas = ui.GetComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = cam;
+            canvas.planeDistance = 1;
+            foreach (Transform child in ui.transform) child.gameObject.SetActive(child.name == screen);
+            var skin = ui.GetComponent<TzHomeSkin>();
+            if (skin != null) skin.Preview();
+            foreach (Transform child in ui.transform)
+                if (child.name.StartsWith("Tz")) child.gameObject.SetActive(screen != "UICharacterCreate" && child.name != "TzToast");
+            Canvas.ForceUpdateCanvases();
+            Shot(cam, Path.Combine(outDir, $"12-home-{screen}.jpg"), 1600, 720);
+            Object.DestroyImmediate(ui);
+        }
     }
 
     /// <summary>The instanced trees and props (TzInstancer draws them only in play) as plain objects for the pictures.</summary>

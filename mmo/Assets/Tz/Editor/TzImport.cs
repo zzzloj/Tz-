@@ -85,6 +85,7 @@ public static class TzImport
         Heroes();
         Portals(worlds, maps);
         problems += TzMobile.Build();
+        problems += TzHome.Build();
         AddMonsterPrefabs(monsters.Select(m => m.Prefab).Concat(summons.Values));
         Database(attributes.Values, weaponTypes.Values, armorTypes.Values, items.Values, skills.Values.Concat(spells.Values).Concat(techniques.Values).Concat(new[] { stun, busy, zombie }).Concat(actions.Values), magic);
         try { CyrillicFont(); }
@@ -94,6 +95,14 @@ public static class TzImport
     }
 
     // ---- helpers ---------------------------------------------------------------------------------
+    /// <summary>
+    /// The network asset id of a generated prefab: its path, not its GUID. The server and the phone are
+    /// built by separate imports, and a prefab made anew gets a new GUID each time — with GUIDs the server
+    /// did not know the phone's hero («Invalid character entity», 13.10) nor, the same way, its monsters.
+    /// </summary>
+    static string StableAssetId(string path) => "tz:" + path;
+
+
     static SerializedProperty P(SerializedObject so, string path)
     {
         var p = so.FindProperty(path);
@@ -803,7 +812,7 @@ public static class TzImport
             if (identity != null)
             {
                 var iso = new SerializedObject(identity);
-                P(iso, "assetId").stringValue = AssetDatabase.AssetPathToGUID(prefabPath);
+                P(iso, "assetId").stringValue = StableAssetId(prefabPath);
                 iso.ApplyModifiedPropertiesWithoutUndo();
             }
             prefab.name = id;
@@ -1226,7 +1235,7 @@ public static class TzImport
             if (identity != null)
             {
                 var iso = new SerializedObject(identity);
-                P(iso, "assetId").stringValue = AssetDatabase.AssetPathToGUID(prefabPath);
+                P(iso, "assetId").stringValue = StableAssetId(prefabPath);
                 iso.ApplyModifiedPropertiesWithoutUndo();
             }
             TzCreatures.Dress(prefab, id);   // its 3D creature, if there is one
@@ -1603,7 +1612,7 @@ public static class TzImport
         if (identity != null)
         {
             var iso = new SerializedObject(identity);
-            P(iso, "assetId").stringValue = AssetDatabase.AssetPathToGUID(path);
+            P(iso, "assetId").stringValue = StableAssetId(path);
             iso.ApplyModifiedPropertiesWithoutUndo();
         }
         else { problems++; Debug.LogError("[TzImport] the trader prefab has no LiteNetLibIdentity"); }
@@ -1635,7 +1644,7 @@ public static class TzImport
             if (identity != null)
             {
                 var iso = new SerializedObject(identity);
-                P(iso, "assetId").stringValue = AssetDatabase.AssetPathToGUID(path);
+                P(iso, "assetId").stringValue = StableAssetId(path);
                 iso.ApplyModifiedPropertiesWithoutUndo();
             }
             var entity = prefab.GetComponent<BasePlayerCharacterEntity>();
