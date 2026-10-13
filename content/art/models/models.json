@@ -93,5 +93,301 @@
       "walk"
     ],
     "size": 1.6
+  },
+  "bear": {
+    "for": [
+      "n.a.bear"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/ani-bear.webp (run 38364709280)",
+    "size": 2.2,
+    "rig": "quadruped",
+    "animations": [
+      "walk"
+    ]
+  },
+  "cat": {
+    "for": [
+      "n.a.cat"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/ani-cat.webp (run 38364709280)",
+    "size": 0.6,
+    "rig": "quadruped",
+    "animations": [
+      "walk"
+    ]
+  },
+  "cow": {
+    "for": [
+      "n.a.cow"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/ani-cow.webp (run 38364709280)",
+    "size": 2.3,
+    "rig": "quadruped",
+    "animations": [
+      "walk"
+    ]
+  },
+  "deer": {
+    "for": [
+      "n.a.deer"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/ani-deer.webp (run 38364709280)",
+    "size": 1.8,
+    "rig": "quadruped",
+    "animations": [
+      "walk"
+    ]
+  },
+  "dog": {
+    "for": [
+      "n.a.dog"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/ani-dog.webp (run 38364709280)",
+    "size": 1.0,
+    "rig": "quadruped",
+    "animations": [
+      "walk"
+    ]
+  },
+  "hare": {
+    "for": [
+      "n.a.hare"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/ani-hare.webp (run 38364709280)",
+    "size": 0.55,
+    "rig": "quadruped",
+    "animations": [
+      "walk"
+    ]
+  },
+  "jaguar": {
+    "for": [
+      "n.a.jaguar"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/ani-jaguar.webp (run 38364709280)",
+    "size": 1.9,
+    "rig": "quadruped",
+    "animations": [
+      "walk"
+    ]
+  },
+  "boar": {
+    "for": [
+      "n.a.kaban"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/ani-boar.webp (run 38364709280)",
+    "size": 1.6,
+    "rig": "quadruped",
+    "animations": [
+      "walk"
+    ]
+  },
+  "rabbit": {
+    "for": [
+      "n.a.krolik"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/ani-rabbit.webp (run 38364709280)",
+    "size": 0.45,
+    "rig": "quadruped",
+    "animations": [
+      "walk"
+    ]
+  },
+  "mole": {
+    "for": [
+      "n.a.krot"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/ani-mole.webp (run 38364709280)",
+    "size": 0.3,
+    "rig": "quadruped",
+    "animations": [
+      "walk"
+    ]
+  },
+  "elk": {
+    "for": [
+      "n.a.los"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/ani-elk.webp (run 38364709280)",
+    "size": 2.7,
+    "rig": "quadruped",
+    "animations": [
+      "walk"
+    ]
+  },
+  "horse": {
+    "for": [
+      "n.a.losh"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/ani-horse.webp (run 38364709280)",
+    "size": 2.4,
+    "rig": "quadruped",
+    "animations": [
+      "walk"
+    ]
+  },
+  "mouse": {
+    "for": [
+      "n.a.mouse"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/ani-mouse.webp (run 38364709280)",
+    "size": 0.2,
+    "rig": "quadruped",
+    "animations": [
+      "walk"
+    ]
+  },
+  "pig": {
+    "for": [
+      "n.a.pig"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/ani-pig.webp (run 38364709280)",
+    "size": 1.5,
+    "rig": "quadruped",
+    "animations": [
+      "walk"
+    ]
+  },
+  "sheep": {
+    "for": [
+      "n.a.sheep"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/ani-sheep.webp (run 38364709280)",
+    "size": 1.3,
+    "rig": "quadruped",
+    "animations": [
+      "walk"
+    ]
+  },
+  "bear-north": {
+    "for": [
+      "n.c.bear.sev"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/mob-bear-north.webp (run 38364709280)",
+    "size": 2.8,
+    "rig": "quadruped",
+    "animations": [
+      "walk"
+    ]
+  },
+  "darkwolf": {
+    "for": [
+      "n.c.darkwolf"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/mob-darkwolf.webp (run 38364709280)",
+    "size": 1.9,
+    "rig": "quadruped",
+    "animations": [
+      "walk"
+    ]
+  },
+  "wolf": {
+    "for": [
+      "n.c.wolf"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/mob-wolf.webp (run 38364709280)",
+    "size": 1.6,
+    "rig": "quadruped",
+    "animations": [
+      "walk"
+    ]
+  },
+  "dove": {
+    "for": [
+      "n.a.b.gol"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/ani-dove.webp (run 38364709280)",
+    "size": 0.6,
+    "rig": "avian",
+    "animations": []
+  },
+  "kite": {
+    "for": [
+      "n.a.b.kor"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/ani-kite.webp (run 38364709280)",
+    "size": 1.5,
+    "rig": "avian",
+    "animations": []
+  },
+  "hen": {
+    "for": [
+      "n.a.b.kur"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/topdown/figures/fig-ani-hen.webp (run 38364709280)",
+    "size": 0.5,
+    "rig": "avian",
+    "animations": []
+  },
+  "eagle": {
+    "for": [
+      "n.a.b.ore"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/ani-eagle.webp (run 38364709280)",
+    "size": 2.0,
+    "rig": "avian",
+    "animations": []
+  },
+  "tit": {
+    "for": [
+      "n.a.b.sin"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/ani-tit.webp (run 38364709280)",
+    "size": 0.3,
+    "rig": "avian",
+    "animations": []
+  },
+  "falcon": {
+    "for": [
+      "n.a.b.sok"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/ani-falcon.webp (run 38364709280)",
+    "size": 1.1,
+    "rig": "avian",
+    "animations": []
+  },
+  "raven": {
+    "for": [
+      "n.a.b.vor"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/ani-raven.webp (run 38364709280)",
+    "size": 1.0,
+    "rig": "avian",
+    "animations": []
+  },
+  "hawk": {
+    "for": [
+      "n.a.b.yas"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/ani-hawk.webp (run 38364709280)",
+    "size": 1.1,
+    "rig": "avian",
+    "animations": []
   }
 }
