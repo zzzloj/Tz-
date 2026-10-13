@@ -11,7 +11,8 @@ For every order whose model is not there yet (or has "redo": true):
   4. the raw files to tools/models/raw/<name>/ (CI keeps them as an artifact), the light ones to
      content/art/models/<name>.glb (and <name>@<animation>.glb), the order's "for" and "front" to models.json.
 The credits each task took are printed (the run's annotation shows them)."""
-import io, json, os, sys, time, urllib.request, urllib.error, uuid
+import io, json, os, sys, threading, time, urllib.request, urllib.error, uuid
+from concurrent.futures import ThreadPoolExecutor
 from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -23,8 +24,14 @@ sys.path.insert(0, HERE)
 import prepare  # noqa: E402
 
 spent = []
+WORKERS = int(os.environ.get("TRIPO_WORKERS", "4"))
 
-# For a portrait: the whole figure, as the image-to-3D generator likes it.
+# For a portrait: the whole figure, as the image-to-3D generator likes it (by the skeleton it will get).
+COMPLETE_TAIL = ", the whole figure visible with margin, plain light grey background, no shadow, same painted style and colours"
+COMPLETE_PROMPTS = {
+    "quadruped": "full body of the same animal from nose to tail, standing on all four legs, three-quarter side view" + COMPLETE_TAIL,
+    "avian": "full body of the same bird, standing with wings slightly open, three-quarter front view" + COMPLETE_TAIL,
+}
 COMPLETE_PROMPT = ("full body of the same character from head to feet, standing in a neutral pose facing the viewer, "
                    "arms slightly away from the body, the whole figure visible with margin, plain light grey background, "
                    "no shadow, same dark fantasy painted style and colours")
@@ -44,12 +51,22 @@ def call(method, path, body=None, files=None):
     elif body is not None:
         data = json.dumps(body).encode()
         headers["Content-Type"] = "application/json"
-    req = urllib.request.Request(url, data=data, headers=headers, method=method)
-    try:
-        with urllib.request.urlopen(req, timeout=120) as r:
-            res = json.loads(r.read())
-    except urllib.error.HTTPError as e:
-        raise RuntimeError(f"{method} {path}: HTTP {e.code} {e.read()[:500]!r}")
+    for attempt in range(8):
+        req = urllib.request.Request(url, data=data, headers=headers, method=method)
+        try:
+            with urllib.request.urlopen(req, timeout=120) as r:
+                res = json.loads(r.read())
+            break
+        except urllib.error.HTTPError as e:
+            text = e.read()[:500]
+            # Too many tasks at once or a passing server error: wait and again.
+            if (e.code == 429 or e.code >= 500) and attempt < 7:
+                time.sleep(15 * (attempt + 1)); continue
+            raise RuntimeError(f"{method} {path}: HTTP {e.code} {text!r}")
+        except (urllib.error.URLError, TimeoutError) as e:
+            if attempt < 7:
+                time.sleep(10); continue
+            raise RuntimeError(f"{method} {path}: {e}")
     if res.get("code", 0) != 0:
         raise RuntimeError(f"{method} {path}: {json.dumps(res)[:500]}")
     return res.get("data", res)
@@ -63,7 +80,7 @@ def wait(task, what):
         if st == "success":
             c = d.get("credits_consumed") or d.get("consumed_credit") or d.get("credits")
             spent.append((what, task, c))
-            print(f"  {what}: {task} done in {time.time() - t0:.0f} s, credits {c}")
+            print(f"  {threading.current_thread().name} {what}: {task} done in {time.time() - t0:.0f} s, credits {c}")
             return d
         if st in ("failed", "cancelled", "banned", "expired", "unknown"):
             raise RuntimeError(f"{what}: task {task} {st}: {json.dumps(d)[:1500]}")
@@ -111,7 +128,7 @@ def order(name, o, index):
         # A portrait → the whole figure standing on a plain background (the generator's "character_completion"),
         # then the model from that picture (its task id is the model's input).
         body = {"input": token, "template": "character_completion", "model": o.get("image_model", "seedream_v5"),
-                "prompt": o.get("complete_prompt", COMPLETE_PROMPT)}
+                "prompt": o.get("complete_prompt", COMPLETE_PROMPTS.get(o.get("rig"), COMPLETE_PROMPT))}
         img_task = call("POST", "/generation/image-to-image", body)["task_id"]
         d = wait(img_task, "full figure")
         for key, url in [(k, v) for k, v in (d.get("output") or {}).items() if isinstance(v, str) and v.startswith("http")]:
@@ -140,7 +157,8 @@ def order(name, o, index):
         rigged = download(urls(d.get("output", {}))[0][1], os.path.join(raw, name + "-rig.glb"))
         prepare.shrink_textures(*prepare.read_glb(rigged), os.path.join(MODELS, name + ".glb"))
         entry["rig"] = o["rig"]
-        print(f"  rig task {rig_task} (give it as \"rig_task\" to order only animations later)")
+        index[name] = entry   # kept even when an animation fails: the rigged model is there already
+        print(f"  {name} rig task {rig_task} (give it as \"rig_task\" to order only animations later)")
         animate(name, o, rig_task, raw, entry)
     else:
         import subprocess
@@ -164,10 +182,13 @@ def animate(name, o, rig_task, raw, entry):
             prepare.shrink_textures(*prepare.read_glb(p), os.path.join(MODELS, f"{name}@{anim}.glb"))
             entry["animations"].append(anim)
         except Exception as e:
-            print(f"  {preset}: FAILED {str(e)[:1500]}")
+            print(f"  {name} {preset}: FAILED {str(e)[:1500]}")
             bad.append(preset)
-    if bad and not entry["animations"]:
+    if bad and not entry["animations"] and o.get("rig") == "biped":
         raise RuntimeError("no animation came: " + ", ".join(bad))
+
+
+LOCK = threading.Lock()
 
 
 def main():
@@ -177,20 +198,31 @@ def main():
     index_path = os.path.join(MODELS, "models.json")
     index = json.load(open(index_path, encoding="utf-8"))
     failed = []
-    for name, o in orders.items():
-        if name.startswith("_") or not isinstance(o, dict): continue
-        if os.path.exists(os.path.join(MODELS, name + ".glb")) and not o.get("redo"):
-            continue
+    stop = threading.Event()
+    todo = [(n, o) for n, o in orders.items() if not n.startswith("_") and isinstance(o, dict)
+            and (o.get("redo") or not os.path.exists(os.path.join(MODELS, n + ".glb")))]
+    print(f"{len(todo)} to order, {WORKERS} at a time")
+
+    def one(item):
+        name, o = item
+        if stop.is_set(): return
+        threading.current_thread().name = name
+        mine = {name: index[name]} if name in index else {}
         try:
-            order(name, o, index)
+            order(name, o, mine)
         except Exception as e:
-            print(f"{name}: FAILED {e}")
-            failed.append(name)
+            print(f"{name}: FAILED {e}", flush=True)
+            with LOCK: failed.append(name)
             if "2010" in str(e):
-                print("no credits left on the API balance: stopping")
-                break
-            continue
-        json.dump(index, open(index_path, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+                print("no credits left on the API balance: stopping", flush=True)
+                stop.set()
+            if name not in mine: return
+        with LOCK:
+            index.update(mine)
+            json.dump(index, open(index_path, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+
+    with ThreadPoolExecutor(WORKERS) as pool:
+        list(pool.map(one, todo))
     total = sum(c for _, _, c in spent if isinstance(c, (int, float)))
     print(f"done: {len(spent)} tasks, {total} credits; failed: {', '.join(failed) or 'none'}")
     if failed:

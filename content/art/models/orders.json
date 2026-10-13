@@ -1,14 +1,945 @@
 {
-  "_doc": "Orders for Tripo's API (tools/models/tripo.py, run by .github/workflows/models.yml when this file changes on main; needs the secret TRIPO_API_KEY). Key — the model's name (content/art/models/<name>.glb); a model already there is not ordered again unless \"redo\": true. image — the picture to make it from; faces — the generator's face limit; for — what it replaces on the map (see models.json); front — degrees that turn its front to the street; rig — skeleton type (biped, quadruped, hexapod, octopod, avian, serpentine, aquatic); rig_task — a rig already made (only the animations are ordered); animations — the API's preset names (biped: preset:idle, walk, run, jump, slash, shoot, hurt, fall and ~100 preset:biped:*; other rigs — tested 12.10: only their own walk, preset:quadruped:walk, preset:octopod:walk, preset:hexapod:walk, preset:serpentine:march, preset:aquatic:march; idle, slash, hurt, fall fail for them, the game moves them itself). Prices (12.10.2026): model with HD texture ~40 credits, rig 25, an animation 10; 100 credits = $1.",
-  "house-b": {"image": "content/art/topdown/objects/obj-house-b.webp", "faces": 6000, "for": ["home", "house"]},
-  "house-c": {"image": "content/art/topdown/objects/obj-house-c.webp", "faces": 6000, "for": ["home", "barn"]},
-  "tree-dead": {"image": "content/art/topdown/objects/obj-tree-dead.webp", "faces": 3000, "for": ["tree-dead"]},
-  "bush": {"image": "content/art/topdown/objects/obj-bush.webp", "faces": 1500, "for": ["bush"]},
-  "rocks": {"image": "content/art/topdown/objects/obj-rocks.webp", "faces": 1500, "for": ["rock"]},
-  "barrel": {"image": "content/art/topdown/objects/obj-barrel.webp", "faces": 1500, "for": ["barrel"]},
-  "crates": {"image": "content/art/topdown/objects/obj-crates.webp", "faces": 1500, "for": ["crates"]},
-  "rat": {"image": "content/art/topdown/figures/fig-mob-rat.webp", "faces": 5000, "for": ["n.c.rat"], "rig": "quadruped", "rig_task": "96d5aff0-6a43-4eeb-8dbc-3869aff8ddf1",
-          "animations": ["preset:quadruped:walk"]},
-  "spider": {"image": "content/art/topdown/figures/fig-mob-spider.webp", "faces": 5000, "for": ["n.c.pauk"], "rig": "octopod", "rig_task": "ed518847-18a2-40c9-8d70-d2a9fea9b622",
-             "animations": ["preset:octopod:walk"]}
+ "_doc": "Orders for Tripo's API (tools/models/tripo.py, run by .github/workflows/models.yml when this file changes on main; needs the secret TRIPO_API_KEY). Key — the model's name (content/art/models/<name>.glb); a model already there is not ordered again unless \"redo\": true. image — the picture to make it from; faces — the generator's face limit; for — what it replaces on the map (see models.json); front — degrees that turn its front to the street; rig — skeleton type (biped, quadruped, hexapod, octopod, avian, serpentine, aquatic); rig_task — a rig already made (only the animations are ordered); animations — the API's preset names (biped: preset:idle, walk, run, jump, slash, shoot, hurt, fall and ~100 preset:biped:*; other rigs — tested 12.10: only their own walk, preset:quadruped:walk, preset:octopod:walk, preset:hexapod:walk, preset:serpentine:march, preset:aquatic:march; idle, slash, hurt, fall fail for them, the game moves them itself). Prices (12.10.2026): model with HD texture ~40 credits, rig 25, an animation 10; 100 credits = $1. complete — the picture is a portrait: first the whole figure is drawn from it (image-to-image, template character_completion; prompt by the rig or complete_prompt). size — the creature's longest horizontal side in metres, height — a standing figure's height; people — a regex of the map's people names dressed in this model.",
+ "house-b": {
+  "image": "content/art/topdown/objects/obj-house-b.webp",
+  "faces": 6000,
+  "for": [
+   "home",
+   "house"
+  ]
+ },
+ "house-c": {
+  "image": "content/art/topdown/objects/obj-house-c.webp",
+  "faces": 6000,
+  "for": [
+   "home",
+   "barn"
+  ]
+ },
+ "tree-dead": {
+  "image": "content/art/topdown/objects/obj-tree-dead.webp",
+  "faces": 3000,
+  "for": [
+   "tree-dead"
+  ]
+ },
+ "bush": {
+  "image": "content/art/topdown/objects/obj-bush.webp",
+  "faces": 1500,
+  "for": [
+   "bush"
+  ]
+ },
+ "rocks": {
+  "image": "content/art/topdown/objects/obj-rocks.webp",
+  "faces": 1500,
+  "for": [
+   "rock"
+  ]
+ },
+ "barrel": {
+  "image": "content/art/topdown/objects/obj-barrel.webp",
+  "faces": 1500,
+  "for": [
+   "barrel"
+  ]
+ },
+ "crates": {
+  "image": "content/art/topdown/objects/obj-crates.webp",
+  "faces": 1500,
+  "for": [
+   "crates"
+  ]
+ },
+ "rat": {
+  "image": "content/art/topdown/figures/fig-mob-rat.webp",
+  "faces": 5000,
+  "for": [
+   "n.c.rat"
+  ],
+  "rig": "quadruped",
+  "rig_task": "96d5aff0-6a43-4eeb-8dbc-3869aff8ddf1",
+  "animations": [
+   "preset:quadruped:walk"
+  ]
+ },
+ "spider": {
+  "image": "content/art/topdown/figures/fig-mob-spider.webp",
+  "faces": 5000,
+  "for": [
+   "n.c.pauk"
+  ],
+  "rig": "octopod",
+  "rig_task": "ed518847-18a2-40c9-8d70-d2a9fea9b622",
+  "animations": [
+   "preset:octopod:walk"
+  ]
+ },
+ "bear": {
+  "image": "content/art/mobs/ani-bear.webp",
+  "complete": true,
+  "faces": 8000,
+  "for": [
+   "n.a.bear"
+  ],
+  "rig": "quadruped",
+  "size": 2.2,
+  "animations": [
+   "preset:quadruped:walk"
+  ]
+ },
+ "cat": {
+  "image": "content/art/mobs/ani-cat.webp",
+  "complete": true,
+  "faces": 8000,
+  "for": [
+   "n.a.cat"
+  ],
+  "rig": "quadruped",
+  "size": 0.6,
+  "animations": [
+   "preset:quadruped:walk"
+  ]
+ },
+ "cow": {
+  "image": "content/art/mobs/ani-cow.webp",
+  "complete": true,
+  "faces": 8000,
+  "for": [
+   "n.a.cow"
+  ],
+  "rig": "quadruped",
+  "size": 2.3,
+  "animations": [
+   "preset:quadruped:walk"
+  ]
+ },
+ "deer": {
+  "image": "content/art/mobs/ani-deer.webp",
+  "complete": true,
+  "faces": 8000,
+  "for": [
+   "n.a.deer"
+  ],
+  "rig": "quadruped",
+  "size": 1.8,
+  "animations": [
+   "preset:quadruped:walk"
+  ]
+ },
+ "dog": {
+  "image": "content/art/mobs/ani-dog.webp",
+  "complete": true,
+  "faces": 8000,
+  "for": [
+   "n.a.dog"
+  ],
+  "rig": "quadruped",
+  "size": 1.0,
+  "animations": [
+   "preset:quadruped:walk"
+  ]
+ },
+ "hare": {
+  "image": "content/art/mobs/ani-hare.webp",
+  "complete": true,
+  "faces": 8000,
+  "for": [
+   "n.a.hare"
+  ],
+  "rig": "quadruped",
+  "size": 0.55,
+  "animations": [
+   "preset:quadruped:walk"
+  ]
+ },
+ "jaguar": {
+  "image": "content/art/mobs/ani-jaguar.webp",
+  "complete": true,
+  "faces": 8000,
+  "for": [
+   "n.a.jaguar"
+  ],
+  "rig": "quadruped",
+  "size": 1.9,
+  "animations": [
+   "preset:quadruped:walk"
+  ]
+ },
+ "boar": {
+  "image": "content/art/mobs/ani-boar.webp",
+  "complete": true,
+  "faces": 8000,
+  "for": [
+   "n.a.kaban"
+  ],
+  "rig": "quadruped",
+  "size": 1.6,
+  "animations": [
+   "preset:quadruped:walk"
+  ]
+ },
+ "rabbit": {
+  "image": "content/art/mobs/ani-rabbit.webp",
+  "complete": true,
+  "faces": 8000,
+  "for": [
+   "n.a.krolik"
+  ],
+  "rig": "quadruped",
+  "size": 0.45,
+  "animations": [
+   "preset:quadruped:walk"
+  ]
+ },
+ "mole": {
+  "image": "content/art/mobs/ani-mole.webp",
+  "complete": true,
+  "faces": 8000,
+  "for": [
+   "n.a.krot"
+  ],
+  "rig": "quadruped",
+  "size": 0.3,
+  "animations": [
+   "preset:quadruped:walk"
+  ]
+ },
+ "elk": {
+  "image": "content/art/mobs/ani-elk.webp",
+  "complete": true,
+  "faces": 8000,
+  "for": [
+   "n.a.los"
+  ],
+  "rig": "quadruped",
+  "size": 2.7,
+  "animations": [
+   "preset:quadruped:walk"
+  ]
+ },
+ "horse": {
+  "image": "content/art/mobs/ani-horse.webp",
+  "complete": true,
+  "faces": 8000,
+  "for": [
+   "n.a.losh"
+  ],
+  "rig": "quadruped",
+  "size": 2.4,
+  "animations": [
+   "preset:quadruped:walk"
+  ]
+ },
+ "mouse": {
+  "image": "content/art/mobs/ani-mouse.webp",
+  "complete": true,
+  "faces": 8000,
+  "for": [
+   "n.a.mouse"
+  ],
+  "rig": "quadruped",
+  "size": 0.2,
+  "animations": [
+   "preset:quadruped:walk"
+  ]
+ },
+ "pig": {
+  "image": "content/art/mobs/ani-pig.webp",
+  "complete": true,
+  "faces": 8000,
+  "for": [
+   "n.a.pig"
+  ],
+  "rig": "quadruped",
+  "size": 1.5,
+  "animations": [
+   "preset:quadruped:walk"
+  ]
+ },
+ "sheep": {
+  "image": "content/art/mobs/ani-sheep.webp",
+  "complete": true,
+  "faces": 8000,
+  "for": [
+   "n.a.sheep"
+  ],
+  "rig": "quadruped",
+  "size": 1.3,
+  "animations": [
+   "preset:quadruped:walk"
+  ]
+ },
+ "bear-north": {
+  "image": "content/art/mobs/mob-bear-north.webp",
+  "complete": true,
+  "faces": 8000,
+  "for": [
+   "n.c.bear.sev"
+  ],
+  "rig": "quadruped",
+  "size": 2.8,
+  "animations": [
+   "preset:quadruped:walk"
+  ]
+ },
+ "darkwolf": {
+  "image": "content/art/mobs/mob-darkwolf.webp",
+  "complete": true,
+  "faces": 8000,
+  "for": [
+   "n.c.darkwolf"
+  ],
+  "rig": "quadruped",
+  "size": 1.9,
+  "animations": [
+   "preset:quadruped:walk"
+  ]
+ },
+ "wolf": {
+  "image": "content/art/mobs/mob-wolf.webp",
+  "complete": true,
+  "faces": 8000,
+  "for": [
+   "n.c.wolf"
+  ],
+  "rig": "quadruped",
+  "size": 1.6,
+  "animations": [
+   "preset:quadruped:walk"
+  ]
+ },
+ "dove": {
+  "image": "content/art/mobs/ani-dove.webp",
+  "complete": true,
+  "faces": 5000,
+  "for": [
+   "n.a.b.gol"
+  ],
+  "rig": "avian",
+  "size": 0.6,
+  "animations": [
+   "preset:avian:fly",
+   "preset:avian:walk"
+  ]
+ },
+ "kite": {
+  "image": "content/art/mobs/ani-kite.webp",
+  "complete": true,
+  "faces": 5000,
+  "for": [
+   "n.a.b.kor"
+  ],
+  "rig": "avian",
+  "size": 1.5,
+  "animations": [
+   "preset:avian:fly",
+   "preset:avian:walk"
+  ]
+ },
+ "hen": {
+  "image": "content/art/topdown/figures/fig-ani-hen.webp",
+  "faces": 5000,
+  "for": [
+   "n.a.b.kur"
+  ],
+  "rig": "avian",
+  "size": 0.5,
+  "animations": [
+   "preset:avian:fly",
+   "preset:avian:walk"
+  ]
+ },
+ "eagle": {
+  "image": "content/art/mobs/ani-eagle.webp",
+  "complete": true,
+  "faces": 5000,
+  "for": [
+   "n.a.b.ore"
+  ],
+  "rig": "avian",
+  "size": 2.0,
+  "animations": [
+   "preset:avian:fly",
+   "preset:avian:walk"
+  ]
+ },
+ "tit": {
+  "image": "content/art/mobs/ani-tit.webp",
+  "complete": true,
+  "faces": 5000,
+  "for": [
+   "n.a.b.sin"
+  ],
+  "rig": "avian",
+  "size": 0.3,
+  "animations": [
+   "preset:avian:fly",
+   "preset:avian:walk"
+  ]
+ },
+ "falcon": {
+  "image": "content/art/mobs/ani-falcon.webp",
+  "complete": true,
+  "faces": 5000,
+  "for": [
+   "n.a.b.sok"
+  ],
+  "rig": "avian",
+  "size": 1.1,
+  "animations": [
+   "preset:avian:fly",
+   "preset:avian:walk"
+  ]
+ },
+ "raven": {
+  "image": "content/art/mobs/ani-raven.webp",
+  "complete": true,
+  "faces": 5000,
+  "for": [
+   "n.a.b.vor"
+  ],
+  "rig": "avian",
+  "size": 1.0,
+  "animations": [
+   "preset:avian:fly",
+   "preset:avian:walk"
+  ]
+ },
+ "hawk": {
+  "image": "content/art/mobs/ani-hawk.webp",
+  "complete": true,
+  "faces": 5000,
+  "for": [
+   "n.a.b.yas"
+  ],
+  "rig": "avian",
+  "size": 1.1,
+  "animations": [
+   "preset:avian:fly",
+   "preset:avian:walk"
+  ]
+ },
+ "darkpal": {
+  "image": "content/art/mobs/mob-darkpal.webp",
+  "complete": true,
+  "faces": 10000,
+  "for": [
+   "n.c.darkpal"
+  ],
+  "rig": "biped",
+  "height": 2.0,
+  "animations": [
+   "preset:idle",
+   "preset:walk",
+   "preset:slash",
+   "preset:hurt",
+   "preset:fall"
+  ]
+ },
+ "demon": {
+  "image": "content/art/mobs/mob-demon.webp",
+  "complete": true,
+  "faces": 10000,
+  "for": [
+   "n.c.demon"
+  ],
+  "rig": "biped",
+  "height": 2.6,
+  "animations": [
+   "preset:idle",
+   "preset:walk",
+   "preset:slash",
+   "preset:hurt",
+   "preset:fall"
+  ]
+ },
+ "gholl": {
+  "image": "content/art/mobs/mob-gholl.webp",
+  "complete": true,
+  "faces": 10000,
+  "for": [
+   "n.c.gholl"
+  ],
+  "rig": "biped",
+  "height": 1.7,
+  "animations": [
+   "preset:idle",
+   "preset:walk",
+   "preset:slash",
+   "preset:hurt",
+   "preset:fall"
+  ]
+ },
+ "ghost": {
+  "image": "content/art/mobs/mob-ghost.webp",
+  "complete": true,
+  "faces": 10000,
+  "for": [
+   "n.c.ghost"
+  ],
+  "rig": "biped",
+  "height": 1.8,
+  "animations": [
+   "preset:idle",
+   "preset:walk",
+   "preset:slash",
+   "preset:hurt",
+   "preset:fall"
+  ]
+ },
+ "gargoyle-stone": {
+  "image": "content/art/mobs/mob-gargoyle-stone.webp",
+  "complete": true,
+  "faces": 10000,
+  "for": [
+   "n.c.gorg.k"
+  ],
+  "rig": "biped",
+  "height": 2.2,
+  "animations": [
+   "preset:idle",
+   "preset:walk",
+   "preset:slash",
+   "preset:hurt",
+   "preset:fall"
+  ]
+ },
+ "giant": {
+  "image": "content/art/mobs/mob-giant.webp",
+  "complete": true,
+  "faces": 10000,
+  "for": [
+   "n.c.gornvel"
+  ],
+  "rig": "biped",
+  "height": 3.5,
+  "animations": [
+   "preset:idle",
+   "preset:walk",
+   "preset:slash",
+   "preset:hurt",
+   "preset:fall"
+  ]
+ },
+ "lich": {
+  "image": "content/art/mobs/mob-lich.webp",
+  "complete": true,
+  "faces": 10000,
+  "for": [
+   "n.c.lich"
+  ],
+  "rig": "biped",
+  "height": 1.9,
+  "animations": [
+   "preset:idle",
+   "preset:walk",
+   "preset:slash",
+   "preset:hurt",
+   "preset:fall"
+  ]
+ },
+ "licharchy": {
+  "image": "content/art/mobs/mob-licharchy.webp",
+  "complete": true,
+  "faces": 10000,
+  "for": [
+   "n.c.licharchy"
+  ],
+  "rig": "biped",
+  "height": 2.1,
+  "animations": [
+   "preset:idle",
+   "preset:walk",
+   "preset:slash",
+   "preset:hurt",
+   "preset:fall"
+  ]
+ },
+ "firephantom": {
+  "image": "content/art/mobs/mob-firephantom.webp",
+  "complete": true,
+  "faces": 10000,
+  "for": [
+   "n.c.ognfan"
+  ],
+  "rig": "biped",
+  "height": 2.2,
+  "animations": [
+   "preset:idle",
+   "preset:walk",
+   "preset:slash",
+   "preset:hurt",
+   "preset:fall"
+  ]
+ },
+ "ogrwar": {
+  "image": "content/art/mobs/mob-ogrwar.webp",
+  "complete": true,
+  "faces": 10000,
+  "for": [
+   "n.c.ogrwar"
+  ],
+  "rig": "biped",
+  "height": 2.8,
+  "animations": [
+   "preset:idle",
+   "preset:walk",
+   "preset:slash",
+   "preset:hurt",
+   "preset:fall"
+  ]
+ },
+ "orcbron": {
+  "image": "content/art/mobs/mob-orcbron.webp",
+  "complete": true,
+  "faces": 10000,
+  "for": [
+   "n.c.orcbron"
+  ],
+  "rig": "biped",
+  "height": 2.1,
+  "animations": [
+   "preset:idle",
+   "preset:walk",
+   "preset:slash",
+   "preset:hurt",
+   "preset:fall"
+  ]
+ },
+ "orcchem": {
+  "image": "content/art/mobs/mob-orcchem.webp",
+  "complete": true,
+  "faces": 10000,
+  "for": [
+   "n.c.orcchem"
+  ],
+  "rig": "biped",
+  "height": 2.2,
+  "animations": [
+   "preset:idle",
+   "preset:walk",
+   "preset:slash",
+   "preset:hurt",
+   "preset:fall"
+  ]
+ },
+ "skeletbow": {
+  "image": "content/art/mobs/mob-skeletbow.webp",
+  "complete": true,
+  "faces": 10000,
+  "for": [
+   "n.c.skeletbow"
+  ],
+  "rig": "biped",
+  "height": 1.8,
+  "animations": [
+   "preset:idle",
+   "preset:walk",
+   "preset:shoot",
+   "preset:hurt",
+   "preset:fall"
+  ]
+ },
+ "skeletlord": {
+  "image": "content/art/mobs/mob-skeletlord.webp",
+  "complete": true,
+  "faces": 10000,
+  "for": [
+   "n.c.skeletlord"
+  ],
+  "rig": "biped",
+  "height": 2.0,
+  "animations": [
+   "preset:idle",
+   "preset:walk",
+   "preset:slash",
+   "preset:hurt",
+   "preset:fall"
+  ]
+ },
+ "vampire": {
+  "image": "content/art/mobs/mob-vampire.webp",
+  "complete": true,
+  "faces": 10000,
+  "for": [
+   "n.c.vampire"
+  ],
+  "rig": "biped",
+  "height": 1.85,
+  "animations": [
+   "preset:idle",
+   "preset:walk",
+   "preset:slash",
+   "preset:hurt",
+   "preset:fall"
+  ]
+ },
+ "werwolf": {
+  "image": "content/art/mobs/mob-werwolf.webp",
+  "complete": true,
+  "faces": 10000,
+  "for": [
+   "n.c.werwolf"
+  ],
+  "rig": "biped",
+  "height": 2.2,
+  "animations": [
+   "preset:idle",
+   "preset:walk",
+   "preset:slash",
+   "preset:hurt",
+   "preset:fall"
+  ]
+ },
+ "witch": {
+  "image": "content/art/mobs/mob-witch.webp",
+  "complete": true,
+  "faces": 10000,
+  "for": [
+   "n.c.witch"
+  ],
+  "rig": "biped",
+  "height": 1.65,
+  "animations": [
+   "preset:idle",
+   "preset:walk",
+   "preset:slash",
+   "preset:hurt",
+   "preset:fall"
+  ]
+ },
+ "wolfmag": {
+  "image": "content/art/mobs/mob-wolfmag.webp",
+  "complete": true,
+  "faces": 10000,
+  "for": [
+   "n.c.wolfmag"
+  ],
+  "rig": "biped",
+  "height": 2.0,
+  "animations": [
+   "preset:idle",
+   "preset:walk",
+   "preset:slash",
+   "preset:hurt",
+   "preset:fall"
+  ]
+ },
+ "zombie": {
+  "image": "content/art/mobs/mob-zombie.webp",
+  "complete": true,
+  "faces": 10000,
+  "for": [
+   "n.c.zombie"
+  ],
+  "rig": "biped",
+  "height": 1.75,
+  "animations": [
+   "preset:idle",
+   "preset:walk",
+   "preset:slash",
+   "preset:hurt",
+   "preset:fall"
+  ]
+ },
+ "man-merchant": {
+  "image": "content/art/npcs/npc-merchant-goods.webp",
+  "faces": 8000,
+  "for": [],
+  "rig": "biped",
+  "height": 1.75,
+  "people": "торговец|банкир|букмекер|гилдмастер|Дворецкий|Махмет|Поло",
+  "animations": [
+   "preset:idle",
+   "preset:walk"
+  ],
+  "complete": true
+ },
+ "man-barkeep": {
+  "image": "content/art/npcs/npc-barkeep.webp",
+  "faces": 8000,
+  "for": [],
+  "rig": "biped",
+  "height": 1.75,
+  "people": "",
+  "animations": [
+   "preset:idle",
+   "preset:walk"
+  ],
+  "complete": true
+ },
+ "man-smith": {
+  "image": "content/art/npcs/npc-smith.webp",
+  "faces": 8000,
+  "for": [],
+  "rig": "biped",
+  "height": 1.8,
+  "people": "кузнец|Гном",
+  "animations": [
+   "preset:idle",
+   "preset:walk"
+  ],
+  "complete": true
+ },
+ "man-old": {
+  "image": "content/art/npcs/npc-oldman.webp",
+  "faces": 8000,
+  "for": [],
+  "rig": "biped",
+  "height": 1.7,
+  "people": "Старый дед|лекарь|Словен",
+  "animations": [
+   "preset:idle",
+   "preset:walk"
+  ],
+  "complete": true
+ },
+ "man-mage": {
+  "image": "content/art/npcs/npc-mage-guard.webp",
+  "faces": 8000,
+  "for": [],
+  "rig": "biped",
+  "height": 1.8,
+  "people": "Маг|маг\\]|друид|Шаман|Милтон|Кантарес|Кениус|Клавдиус",
+  "animations": [
+   "preset:idle",
+   "preset:walk"
+  ],
+  "complete": true
+ },
+ "man-paladin": {
+  "image": "content/art/npcs/npc-paladin.webp",
+  "faces": 8000,
+  "for": [],
+  "rig": "biped",
+  "height": 1.85,
+  "people": "Палладин|Барон|Лорд",
+  "animations": [
+   "preset:idle",
+   "preset:walk"
+  ],
+  "complete": true
+ },
+ "woman": {
+  "image": "content/art/npcs/npc-milta.webp",
+  "faces": 8000,
+  "for": [],
+  "rig": "biped",
+  "height": 1.65,
+  "people": "Милта|Катрина|Лайма|Сильвия|Ракша|Сурри|Рене",
+  "animations": [
+   "preset:idle",
+   "preset:walk"
+  ],
+  "complete": true,
+  "complete_prompt": "full body of the same woman from head to feet without the puppy, standing in a neutral pose facing the viewer, arms slightly away from the body, the whole figure visible with margin, plain light grey background, no shadow, same painted style and colours"
+ },
+ "man-guard": {
+  "image": "content/art/topdown/figures/fig-npc-guard.webp",
+  "faces": 8000,
+  "for": [],
+  "rig": "biped",
+  "height": 1.8,
+  "people": "страж|охранник|Новобранец|офицер",
+  "animations": [
+   "preset:idle",
+   "preset:walk"
+  ]
+ },
+ "boy": {
+  "image": "content/art/topdown/figures/fig-npc-boy.webp",
+  "faces": 8000,
+  "for": [],
+  "rig": "biped",
+  "height": 1.35,
+  "people": "Мальчуган",
+  "animations": [
+   "preset:idle",
+   "preset:walk"
+  ]
+ },
+ "man-keeper": {
+  "image": "content/art/topdown/figures/fig-npc-beginner.webp",
+  "faces": 8000,
+  "for": [],
+  "rig": "biped",
+  "height": 1.75,
+  "people": "Привратник",
+  "animations": [
+   "preset:idle",
+   "preset:walk"
+  ]
+ },
+ "hero-m": {
+  "image": "content/art/topdown/figures/fig-hero-m.webp",
+  "faces": 12000,
+  "for": [
+   "hero-m"
+  ],
+  "rig": "biped",
+  "height": 1.8,
+  "animations": [
+   "preset:idle",
+   "preset:walk",
+   "preset:run",
+   "preset:slash",
+   "preset:shoot",
+   "preset:hurt",
+   "preset:fall"
+  ]
+ },
+ "hero-f": {
+  "image": "content/art/topdown/figures/fig-hero-f.webp",
+  "faces": 12000,
+  "for": [
+   "hero-f"
+  ],
+  "rig": "biped",
+  "height": 1.7,
+  "animations": [
+   "preset:idle",
+   "preset:walk",
+   "preset:run",
+   "preset:slash",
+   "preset:shoot",
+   "preset:hurt",
+   "preset:fall"
+  ]
+ },
+ "well": {
+  "image": "content/art/topdown/objects/obj-well.webp",
+  "faces": 3000,
+  "for": [
+   "well"
+  ]
+ },
+ "cart": {
+  "image": "content/art/topdown/objects/obj-cart.webp",
+  "faces": 3000,
+  "for": [
+   "cart"
+  ]
+ },
+ "stall": {
+  "image": "content/art/topdown/objects/obj-stall.webp",
+  "faces": 3000,
+  "for": [
+   "stall"
+  ]
+ },
+ "brazier": {
+  "image": "content/art/topdown/objects/obj-brazier.webp",
+  "faces": 3000,
+  "for": [
+   "brazier"
+  ]
+ },
+ "boat": {
+  "image": "content/art/topdown/objects/obj-boat.webp",
+  "faces": 3000,
+  "for": [
+   "boat"
+  ]
+ }
 }

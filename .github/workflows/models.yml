@@ -16,7 +16,7 @@ concurrency:
 jobs:
   order:
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 340
     permissions:
       contents: write
     steps:
