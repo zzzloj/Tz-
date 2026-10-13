@@ -389,5 +389,493 @@
     "size": 1.1,
     "rig": "avian",
     "animations": []
+  },
+  "darkpal": {
+    "for": [
+      "n.c.darkpal"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/mob-darkpal.webp, task 56f92dba-c508-4214-a5af-2dad89d17cfa",
+    "height": 2.0,
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk",
+      "slash",
+      "hurt",
+      "fall"
+    ]
+  },
+  "demon": {
+    "for": [
+      "n.c.demon"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/mob-demon.webp, task a6bcc1e6-5412-416c-8d14-cd21121e65d3",
+    "height": 2.6,
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk",
+      "slash",
+      "hurt",
+      "fall"
+    ]
+  },
+  "gholl": {
+    "for": [
+      "n.c.gholl"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/mob-gholl.webp, task e797ff90-aff5-4923-a48d-926ab8d541ae",
+    "height": 1.7,
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk",
+      "slash",
+      "hurt",
+      "fall"
+    ]
+  },
+  "ghost": {
+    "for": [
+      "n.c.ghost"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/mob-ghost.webp, task 0ee2c365-3fd3-43b4-a940-1a9bce3c07e6",
+    "height": 1.8,
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk",
+      "slash",
+      "hurt",
+      "fall"
+    ]
+  },
+  "gargoyle-stone": {
+    "for": [
+      "n.c.gorg.k"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/mob-gargoyle-stone.webp, task dedb633b-c2ba-4402-aeb3-a7cffd019197",
+    "height": 2.2,
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk",
+      "slash",
+      "hurt",
+      "fall"
+    ]
+  },
+  "giant": {
+    "for": [
+      "n.c.gornvel"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/mob-giant.webp, task cfbfb122-85ff-4cb6-aca7-1a506cc8733b",
+    "height": 3.5,
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk",
+      "slash",
+      "hurt",
+      "fall"
+    ]
+  },
+  "lich": {
+    "for": [
+      "n.c.lich"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/mob-lich.webp, task 65f3fa3a-0b75-42a9-a5d8-d79714f10ac4",
+    "height": 1.9,
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk",
+      "slash",
+      "hurt",
+      "fall"
+    ]
+  },
+  "licharchy": {
+    "for": [
+      "n.c.licharchy"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/mob-licharchy.webp, task 95bd2efc-b902-4b83-a6a1-527278b13398",
+    "height": 2.1,
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk",
+      "slash",
+      "hurt",
+      "fall"
+    ]
+  },
+  "firephantom": {
+    "for": [
+      "n.c.ognfan"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/mob-firephantom.webp, task 1a5b8f07-deac-4868-b0ce-0e529b52f72a",
+    "height": 2.2,
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk",
+      "slash",
+      "hurt",
+      "fall"
+    ]
+  },
+  "ogrwar": {
+    "for": [
+      "n.c.ogrwar"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/mob-ogrwar.webp, task 56ebc6fb-d016-483d-a65a-46b2f41b5e7f",
+    "height": 2.8,
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk",
+      "slash",
+      "hurt",
+      "fall"
+    ]
+  },
+  "orcbron": {
+    "for": [
+      "n.c.orcbron"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/mob-orcbron.webp, task 7a050c7a-4ed4-47e1-9d38-b6d98c25c3d5",
+    "height": 2.1,
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk",
+      "slash",
+      "hurt",
+      "fall"
+    ]
+  },
+  "orcchem": {
+    "for": [
+      "n.c.orcchem"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/mob-orcchem.webp, task f7d63f7d-f33d-4bbc-b68f-5f1d950ccd9b",
+    "height": 2.2,
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk",
+      "slash",
+      "hurt",
+      "fall"
+    ]
+  },
+  "skeletbow": {
+    "for": [
+      "n.c.skeletbow"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/mob-skeletbow.webp, task 913f0ea3-d092-40ec-9c23-d5c2c7320172",
+    "height": 1.8,
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk",
+      "shoot",
+      "hurt",
+      "fall"
+    ]
+  },
+  "skeletlord": {
+    "for": [
+      "n.c.skeletlord"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/mob-skeletlord.webp, task eb4f4ecb-f1c7-4f96-abd9-cb37c152d8ce",
+    "height": 2.0,
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk",
+      "slash",
+      "hurt",
+      "fall"
+    ]
+  },
+  "vampire": {
+    "for": [
+      "n.c.vampire"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/mob-vampire.webp, task cc8ff899-4e40-4e4a-b946-89afb8219805",
+    "height": 1.85,
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk",
+      "slash",
+      "hurt",
+      "fall"
+    ]
+  },
+  "werwolf": {
+    "for": [
+      "n.c.werwolf"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/mob-werwolf.webp, task 06195bc9-ad24-49a3-8be6-c173f16e97b1",
+    "height": 2.2,
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk",
+      "slash",
+      "hurt",
+      "fall"
+    ]
+  },
+  "witch": {
+    "for": [
+      "n.c.witch"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/mob-witch.webp, task 7d359efc-a74f-4919-96f8-bc16a362f8fc",
+    "height": 1.65,
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk",
+      "slash",
+      "hurt",
+      "fall"
+    ]
+  },
+  "wolfmag": {
+    "for": [
+      "n.c.wolfmag"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/mob-wolfmag.webp, task da1c84fb-af1d-4537-b920-ff146c741e8e",
+    "height": 2.0,
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk",
+      "slash",
+      "hurt",
+      "fall"
+    ]
+  },
+  "zombie": {
+    "for": [
+      "n.c.zombie"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/mobs/mob-zombie.webp, task e959cc5f-b3a2-4873-8d53-39e5f7203f74",
+    "height": 1.75,
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk",
+      "slash",
+      "hurt",
+      "fall"
+    ]
+  },
+  "man-merchant": {
+    "for": [],
+    "front": 0,
+    "source": "Tripo API, content/art/npcs/npc-merchant-goods.webp, task dfc06e36-4b47-42ce-90b7-38b7e92655fe",
+    "height": 1.75,
+    "people": "торговец|банкир|букмекер|гилдмастер|Дворецкий|Махмет|Поло",
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk"
+    ]
+  },
+  "man-barkeep": {
+    "for": [],
+    "front": 0,
+    "source": "Tripo API, content/art/npcs/npc-barkeep.webp, task 7018460a-d7ec-4f30-85dc-4d7c5a2282d9",
+    "height": 1.75,
+    "people": "",
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk"
+    ]
+  },
+  "man-smith": {
+    "for": [],
+    "front": 0,
+    "source": "Tripo API, content/art/npcs/npc-smith.webp, task 542b409f-629e-49a8-a49b-12ef16a6bc0a",
+    "height": 1.8,
+    "people": "кузнец|Гном",
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk"
+    ]
+  },
+  "man-old": {
+    "for": [],
+    "front": 0,
+    "source": "Tripo API, content/art/npcs/npc-oldman.webp, task 755565d2-044c-4e46-b614-f7e5fb381bae",
+    "height": 1.7,
+    "people": "Старый дед|лекарь|Словен",
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk"
+    ]
+  },
+  "man-mage": {
+    "for": [],
+    "front": 0,
+    "source": "Tripo API, content/art/npcs/npc-mage-guard.webp, task d38e8531-7f15-45cd-afc2-7856ae994b66",
+    "height": 1.8,
+    "people": "Маг|маг\\]|друид|Шаман|Милтон|Кантарес|Кениус|Клавдиус",
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk"
+    ]
+  },
+  "man-paladin": {
+    "for": [],
+    "front": 0,
+    "source": "Tripo API, content/art/npcs/npc-paladin.webp, task 2531e755-b38b-4187-b7a2-f1553fe4a4a8",
+    "height": 1.85,
+    "people": "Палладин|Барон|Лорд",
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk"
+    ]
+  },
+  "woman": {
+    "for": [],
+    "front": 0,
+    "source": "Tripo API, content/art/npcs/npc-milta.webp, task a92db7e1-b838-4549-9e67-32568c47b0fe",
+    "height": 1.65,
+    "people": "Милта|Катрина|Лайма|Сильвия|Ракша|Сурри|Рене",
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk"
+    ]
+  },
+  "man-guard": {
+    "for": [],
+    "front": 0,
+    "source": "Tripo API, content/art/topdown/figures/fig-npc-guard.webp, task 37340785-a228-4533-be90-1854dccf7118",
+    "height": 1.8,
+    "people": "страж|охранник|Новобранец|офицер",
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk"
+    ]
+  },
+  "boy": {
+    "for": [],
+    "front": 0,
+    "source": "Tripo API, content/art/topdown/figures/fig-npc-boy.webp, task 6c6c41e4-7851-46e9-a04b-d1569e148d3e",
+    "height": 1.35,
+    "people": "Мальчуган",
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk"
+    ]
+  },
+  "man-keeper": {
+    "for": [],
+    "front": 0,
+    "source": "Tripo API, content/art/topdown/figures/fig-npc-beginner.webp, task c5ae1738-bb4b-4e93-bb78-7c0143ce0287",
+    "height": 1.75,
+    "people": "Привратник",
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk"
+    ]
+  },
+  "hero-m": {
+    "for": [
+      "hero-m"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/topdown/figures/fig-hero-m.webp, task 24473769-f1c1-4467-8a71-7e1893e19503",
+    "height": 1.8,
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk",
+      "run",
+      "slash",
+      "shoot",
+      "hurt",
+      "fall"
+    ]
+  },
+  "hero-f": {
+    "for": [
+      "hero-f"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/topdown/figures/fig-hero-f.webp, task 04a780ea-6358-49e1-8008-fe19278cee2b",
+    "height": 1.7,
+    "rig": "biped",
+    "animations": [
+      "idle",
+      "walk",
+      "run",
+      "slash",
+      "shoot",
+      "hurt",
+      "fall"
+    ]
+  },
+  "cart": {
+    "for": [
+      "cart"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/topdown/objects/obj-cart.webp, task 10d4b3d7-ef39-4a48-a787-f24f6573773a"
+  },
+  "well": {
+    "for": [
+      "well"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/topdown/objects/obj-well.webp, task 55c170fd-2061-4344-9a12-67fedaecbca8"
+  },
+  "stall": {
+    "for": [
+      "stall"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/topdown/objects/obj-stall.webp, task 61d0924c-ec4a-48d3-af5a-2e02465ebd46"
+  },
+  "brazier": {
+    "for": [
+      "brazier"
+    ],
+    "front": 0,
+    "source": "Tripo API, content/art/topdown/objects/obj-brazier.webp, task 2678d7fb-d20b-47fc-9195-6423e6435e95"
   }
 }
