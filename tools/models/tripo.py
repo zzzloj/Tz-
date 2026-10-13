@@ -24,6 +24,11 @@ import prepare  # noqa: E402
 
 spent = []
 
+# For a portrait: the whole figure, as the image-to-3D generator likes it.
+COMPLETE_PROMPT = ("full body of the same character from head to feet, standing in a neutral pose facing the viewer, "
+                   "arms slightly away from the body, the whole figure visible with margin, plain light grey background, "
+                   "no shadow, same dark fantasy painted style and colours")
+
 
 def call(method, path, body=None, files=None):
     url = BASE + path
@@ -101,7 +106,19 @@ def order(name, o, index):
     img = Image.open(os.path.join(ROOT, o["image"])).convert("RGBA")
     buf = io.BytesIO(); img.save(buf, "PNG")
     token = call("POST", "/files", files={"file": (name + ".png", buf.getvalue(), "image/png")})["file_token"]
-    body = {"input": token, "model": o.get("model", "v3.1-20260211"), "texture": True, "pbr": True,
+    source = token
+    if o.get("complete"):
+        # A portrait → the whole figure standing on a plain background (the generator's "character_completion"),
+        # then the model from that picture (its task id is the model's input).
+        body = {"input": token, "template": "character_completion", "model": o.get("image_model", "seedream_v5"),
+                "prompt": o.get("complete_prompt", COMPLETE_PROMPT)}
+        img_task = call("POST", "/generation/image-to-image", body)["task_id"]
+        d = wait(img_task, "full figure")
+        for key, url in [(k, v) for k, v in (d.get("output") or {}).items() if isinstance(v, str) and v.startswith("http")]:
+            download(url, os.path.join(raw, name + "-figure.png"))
+            break
+        source = img_task
+    body = {"input": source, "model": o.get("model", "v3.1-20260211"), "texture": True, "pbr": True,
             "texture_quality": o.get("texture_quality", "detailed"), "orientation": o.get("orientation", "align_image")}
     if o.get("faces"): body["face_limit"] = int(o["faces"])
     if o.get("smart_low_poly"): body["smart_low_poly"] = True
@@ -112,6 +129,8 @@ def order(name, o, index):
     model_path = download(dict(links).get("pbr_model", links[0][1]), os.path.join(raw, name + ".glb"))
 
     entry = {"for": o.get("for", []), "front": o.get("front", 0), "source": f"Tripo API, {o['image']}, task {task}"}
+    for k in ("size", "height", "people"):
+        if k in o: entry[k] = o[k]
     if o.get("rig"):
         check = call("POST", "/animations/rig-check", {"input": task})
         print(f"  rig check: {json.dumps(check)[:300]}")
