@@ -153,7 +153,11 @@ public class TzHomeSkin : MonoBehaviour
             var button = go.GetComponent<Button>();
             if (button != null)
             {
-                g.color = MainButtons.Contains(n) ? Primary : Secondary;
+                // In the login form «Создать аккаунт» (ButtonRegister) only leads to the other form, and back.
+                var screen = go.GetComponentInParent<UIBase>(true);
+                bool main = MainButtons.Contains(n)
+                    && !(n == "ButtonRegister" && screen is UIMmoLogin) && !(n == "ButtonLogin" && screen is UIMmoRegister);
+                g.color = main ? Primary : Secondary;
                 Colors(button);
             }
             else if (go.GetComponent<InputField>() != null) g.color = Field;
