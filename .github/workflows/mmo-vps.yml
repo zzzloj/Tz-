@@ -28,7 +28,14 @@ jobs:
       - name: Restart
         run: |
           scp deploy/vps/mmo/* "$VPS_USER@$VPS_HOST:~/tz-mmo/"
-          ssh "$VPS_USER@$VPS_HOST" 'cd ~/tz-mmo; docker compose down; [ -x ./diag.sh ] && ./diag.sh > diag.txt 2>&1; docker compose up -d --build'
+          # once.py: a one-time change of the database while the server is stopped (once per its version).
+          ssh "$VPS_USER@$VPS_HOST" 'cd ~/tz-mmo; docker compose down; [ -x ./diag.sh ] && ./diag.sh > diag.txt 2>&1;
+            if [ -f once.py ] && [ "$(sha1sum once.py | cut -c1-40)" != "$(cat data/once.sha 2>/dev/null)" ]; then
+              docker run --rm -v "$PWD/data:/data" -v "$PWD/once.py:/once.py:ro" python:3.12-alpine python /once.py > once.txt 2>&1 \
+                && sha1sum once.py | cut -c1-40 | docker run --rm -i -v "$PWD/data:/data" python:3.12-alpine sh -c "cat > /data/once.sha";
+            fi;
+            docker compose up -d --build'
+          echo "::notice title=database::$(ssh "$VPS_USER@$VPS_HOST" 'cat ~/tz-mmo/once.txt 2>/dev/null' | cut -c1-600 | sed ':a;N;$!ba;s/\n/%0A/g')"
       - name: State and log as annotations
         if: always()
         run: |
