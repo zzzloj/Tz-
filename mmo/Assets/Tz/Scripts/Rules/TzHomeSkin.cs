@@ -34,11 +34,12 @@ public class TzHomeSkin : MonoBehaviour
     {
         ["Servers"] = "Сервер", ["Connect"] = "Войти в мир", ["Exit"] = "Выход", ["Channels"] = "Канал",
         ["Logout"] = "Выйти", ["Disconnect"] = "Назад", ["Login"] = "Вход", ["Register"] = "Регистрация",
-        ["Username"] = "Логин", ["Password"] = "Пароль", ["Enter username..."] = "Логин (латиница, цифры)",
+        ["Username"] = "Логин", ["Password"] = "Пароль", ["Enter username..."] = "латинские буквы и цифры",
         ["Enter password..."] = "Пароль", ["Go to Register"] = "Создать аккаунт", ["Go to Login"] = "У меня есть аккаунт",
         ["- OR -"] = "или", ["Select Character"] = "Персонажи", ["Start Game"] = "В игру", ["Delete"] = "Удалить",
         ["Create"] = "Создать", ["Back"] = "Назад", ["Entity"] = "Облик", ["Class"] = "Класс", ["Faction"] = "Сторона",
-        ["Hair"] = "Причёска", ["Hair Color"] = "Цвет волос", ["Enter character name..."] = "Имя героя", ["Select"] = "Выбрать",
+        ["Okay"] = "Ок", ["OK"] = "Ок", ["Ok"] = "Ок", ["Cancel"] = "Отмена", ["Yes"] = "Да", ["No"] = "Нет",
+        ["Confirm"] = "Подтвердить", ["Hair"] = "Причёска", ["Hair Color"] = "Цвет волос", ["Enter character name..."] = "Имя героя", ["Select"] = "Выбрать",
     };
     // Buttons that do the main thing of their screen.
     static readonly HashSet<string> MainButtons = new HashSet<string>
@@ -82,6 +83,16 @@ public class TzHomeSkin : MonoBehaviour
                 if (t.name == name) Hide(t.gameObject);
         foreach (var v in FindObjectsByType<VersionText>(FindObjectsInactive.Include, FindObjectsSortMode.None))
             v.gameObject.SetActive(false);
+        // The kit's logo with its version (CanvasGlobal-CE «Logo»).
+        foreach (var t in FindObjectsByType<RectTransform>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            if (t.name == "Logo" && t.Find("TextVersion") != null) t.gameObject.SetActive(false);
+        // Login and registration: no way back to the one-server list (the phone's Back button leaves the game).
+        foreach (var path in new[] { "UILogin/ButtonDisconnect", "UIRegister/ButtonExit" })
+        {
+            var b = transform.Find(path);
+            if (b != null) Hide(b.gameObject);
+        }
+        Logins();
         Toast();
         Style();
         AutoLoginAfterRegistration();
@@ -89,7 +100,14 @@ public class TzHomeSkin : MonoBehaviour
 
     void Update()
     {
-        if (Time.unscaledTime >= nextPass) { nextPass = Time.unscaledTime + 0.3f; Style(); }   // entries appear later
+        if (Time.unscaledTime >= nextPass)
+        {
+            nextPass = Time.unscaledTime + 0.3f;
+            Style();   // entries appear later
+            foreach (var c in FindObjectsByType<Canvas>(FindObjectsSortMode.None))
+                if (c.name.StartsWith("CanvasGlobal")) Style(c.transform);   // the message and input dialogs
+        }
+        OneServer();
         bool over = false;
         foreach (var name in OverPicture)
         {
@@ -122,7 +140,7 @@ public class TzHomeSkin : MonoBehaviour
         var nt = (RectTransform)gameName.transform;
         nt.SetParent(transform, false);
         nt.SetSiblingIndex(picture != null ? 1 : 0);
-        nt.anchorMin = nt.anchorMax = new Vector2(0.25f, 0.84f);
+        nt.anchorMin = nt.anchorMax = new Vector2(0.5f, 0.86f);
         nt.sizeDelta = new Vector2(520, 70);
         var text = gameName.GetComponent<Text>();
         text.text = "Амулет дракона";
@@ -130,21 +148,23 @@ public class TzHomeSkin : MonoBehaviour
         text.fontSize = 46; text.alignment = TextAnchor.MiddleCenter; text.color = Gold; text.raycastTarget = false;
         gameName.GetComponent<Shadow>().effectColor = new Color(0, 0, 0, 0.8f);
         done.Add(text.GetInstanceID());
-        // The forms of the first screens on the dark left part of the picture.
+        // The forms of the first screens in the middle, under the name.
         foreach (var name in OverPicture)
         {
             var w = transform.Find(name + "/Window") as RectTransform;
             if (w == null) continue;
-            w.anchorMin = w.anchorMax = new Vector2(0.25f, 0.47f);
+            w.anchorMin = w.anchorMax = new Vector2(0.5f, 0.44f);
             w.pivot = new Vector2(0.5f, 0.5f);
             w.anchoredPosition = Vector2.zero;
         }
     }
 
     // ---- colours and words ----
-    void Style()
+    void Style() => Style(transform);
+
+    void Style(Transform root)
     {
-        foreach (var g in GetComponentsInChildren<Graphic>(true))
+        foreach (var g in root.GetComponentsInChildren<Graphic>(true))
         {
             if (!done.Add(g.GetInstanceID())) continue;
             if (g is Text t) { Letters(t); continue; }
@@ -168,8 +188,10 @@ public class TzHomeSkin : MonoBehaviour
             else if (n == "Scroll View" || n == "Viewport" || n == "Info" || n == "ListContainer") g.color = new Color(0, 0, 0, 0.25f);
             else if (n.ToLowerInvariant().Contains("select") || n.ToLowerInvariant().Contains("highlight") || n.ToLowerInvariant().Contains("frame"))
                 g.color = new Color(Gold.r, Gold.g, Gold.b, g.color.a);
-            else if (g is Image img && img.color.r > 0.6f && img.color.g > 0.6f && img.color.b > 0.6f && img.sprite != null && img.sprite.name.StartsWith("UISprite"))
-                g.color = Secondary;   // the demo's light boxes
+            else if (g.color.r > 0.5f && g.color.b > 0.75f && g.color.g < 0.35f) g.color = TitleBar;   // the demo's purple bars
+            else if (g is Image img && img.color.r > 0.6f && img.color.g > 0.6f && img.color.b > 0.6f
+                     && (img.sprite == null || !img.sprite.name.ToLowerInvariant().Contains("icon")))
+                g.color = Panel;   // the demo's light boxes
         }
     }
 
@@ -256,6 +278,63 @@ public class TzHomeSkin : MonoBehaviour
         toast.gameObject.SetActive(true);
     }
 
+    // ---- one server: no list ----
+    bool triedServer;
+    float showServerListAt = -1;
+
+    /// <summary>
+    /// With one server the list is of no use: it connects by itself, the list stays hidden; it shows (to try
+    /// again) only when the connection did not come in 8 s.
+    /// </summary>
+    void OneServer()
+    {
+        var list = GetComponentInChildren<UIMmoServerList>();
+        var window = transform.Find("UIServerList/Window");
+        if (list == null || window == null) { showServerListAt = -1; return; }
+        var group = window.GetComponent<CanvasGroup>();
+        if (group == null) group = window.gameObject.AddComponent<CanvasGroup>();
+        if (!triedServer)
+        {
+            if (list.SelectionManager == null || list.SelectionManager.SelectedUI == null || list.SelectionManager.Count != 1)
+            {
+                group.alpha = 0; return;   // the list is not read yet
+            }
+            triedServer = true;
+            group.alpha = 0; group.blocksRaycasts = false;
+            Say("Подключение…", 8);
+            showServerListAt = Time.unscaledTime + 8;
+            list.OnClickConnect();
+            return;
+        }
+        if (showServerListAt > 0 && Time.unscaledTime > showServerListAt) { group.alpha = 1; group.blocksRaycasts = true; showServerListAt = -1; }
+        else if (showServerListAt < 0 && group.alpha < 1) { group.alpha = 1; group.blocksRaycasts = true; }
+    }
+
+    // ---- logins ----
+    /// <summary>
+    /// Login fields take only latin letters, digits and _ and make capitals small: the phone's keyboard starts
+    /// a word with a capital, and «Scuko» was not the account «scuko» (13.10).
+    /// </summary>
+    void Logins()
+    {
+        var fields = new List<InputField>();
+        var login = GetComponentInChildren<UIMmoLogin>(true);
+        var reg = GetComponentInChildren<UIMmoRegister>(true);
+        if (login != null && login.uiTextUsername != null && login.uiTextUsername.unityInputField != null) fields.Add(login.uiTextUsername.unityInputField);
+        if (reg != null && reg.uiTextUsername != null && reg.uiTextUsername.unityInputField != null) fields.Add(reg.uiTextUsername.unityInputField);
+        foreach (var f in fields)
+        {
+            f.keyboardType = TouchScreenKeyboardType.ASCIICapable;
+            f.characterLimit = 24;
+            f.onValidateInput = (text, index, c) =>
+            {
+                c = char.ToLowerInvariant(c);
+                return (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' ? c : '\0';
+            };
+            f.text = f.text.ToLowerInvariant();
+        }
+    }
+
     // ---- the phone's keyboard ----
     void KeepAboveKeyboard()
     {
@@ -270,12 +349,17 @@ public class TzHomeSkin : MonoBehaviour
         foreach (var rt in back) { if (rt != null) rt.anchoredPosition = lifted[rt]; lifted.Remove(rt); }
         if (target == null || canvas == null) return;
         if (!lifted.ContainsKey(target)) lifted[target] = target.anchoredPosition;
-        // The keyboard's top: its area when the system tells it, else ~60 % of a landscape screen.
-        float keyboard = TouchScreenKeyboard.area.height > 1 ? TouchScreenKeyboard.area.height : Screen.height * 0.6f;
+        // A landscape phone's keyboard takes about two thirds of the screen (13.10, the area it reports was too
+        // small): the field goes to the top of the screen, its window above it out of view for the while.
         var corners = new Vector3[4];
         ((RectTransform)focused.transform).GetWorldCorners(corners);
-        float bottom = corners[0].y - (target.anchoredPosition.y - lifted[target].y) * canvas.scaleFactor;   // where it was
-        float need = keyboard + 16 - bottom;
+        float lift = (target.anchoredPosition.y - lifted[target].y) * canvas.scaleFactor;
+        float top = corners[1].y - lift;   // the field's top where it was
+        float keyboard = Mathf.Max(TouchScreenKeyboard.area.height, Screen.height * 0.66f);
+        float room = Screen.height - keyboard;   // what is left above the keyboard
+        float fieldHeight = corners[1].y - corners[0].y;
+        float want = Screen.height - Mathf.Max(8, (room - fieldHeight) / 2);   // the field in the middle of that room
+        float need = want - top;
         target.anchoredPosition = lifted[target] + new Vector2(0, Mathf.Max(0, need) / canvas.scaleFactor);
     }
 
